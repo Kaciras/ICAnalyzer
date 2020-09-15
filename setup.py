@@ -10,7 +10,6 @@ setup(
 	install_requires=[
 		"fire",
 		"colorama",
-		"PIL",
 		"opencv-python",
 		"matplotlib",
 		"numpy",
