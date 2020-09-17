@@ -30,5 +30,5 @@ htmlcov/
 .vscode
 
 # Others
-/data
-/encoder
+data/
+encoder/

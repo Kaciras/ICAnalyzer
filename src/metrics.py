@@ -50,21 +50,23 @@ class Runner:
 		with file.open("rb") as fp:
 			self.origin = fp.read()
 
-		raw = Path("data", file, "image.ext").with_suffix(file.suffix)
-		shutil.copyfile(file, raw)
+		temp_origin = TEMP_DIR.joinpath(file.name)
+		temp_origin.write_bytes(self.origin)
 
-		self.file = file
+		self.store = FileResultStoreFactory(file)
+
+		self.file = temp_origin
 		self.encode = encode
 		self.mat = get_mat(self.origin)
 
-		self.store = Path("data").joinpath(file)
-		self.store.mkdir()
-
 	async def compute_all(self, args_list, name):
-		store = FileResultStore(self.file, name, args_list)
-		tasks = (self.compute(args_list[i], i, store) for i in range(args_list))
+		store = self.store.create(name, args_list)
+
+		tasks = (self.compute(args_list[i], i, store) for i in range(len(args_list)))
 		data = await asyncio.gather(*tasks)
+
 		store.close()
+		return data
 
 	async def compute(self, args, i, store):
 		async with semaphore:
@@ -80,16 +82,36 @@ class Runner:
 
 		diff_ = await loop.run_in_executor(executor, cv2.absdiff, self.mat, mat)
 
-		store.handle((ratio, ssim, speed), diff_)
+		store.handle(i, (ratio, ssim, speed), diff_)
 
 		return ratio, ssim, speed
+
+	def close(self):
+		self.file.unlink()
+
+
+class FileResultStoreFactory:
+
+	def __init__(self, file, name=None):
+		if name is None:
+			name = file.stem
+
+		self.dir_ = Path("web/data", name)
+		self.dir_.mkdir(parents=True, exist_ok=True)
+
+		raw = self.dir_.joinpath("image.ext").with_suffix(file.suffix)
+		shutil.copyfile(file, raw)
+
+	def create(self, name, argslist):
+		return FileResultStore(self.dir_, name, argslist)
 
 
 class FileResultStore:
 
-	def __init__(self, target, name, argslist):
-		self.directory = Path("data", target, name)
-		self.data = [None] * argslist
+	def __init__(self, dir_, title, argslist):
+		self.directory = dir_.joinpath(title)
+		self.directory.mkdir(exist_ok=True)
+		self.data = [None] * len(argslist)
 
 	def handle(self, i, metrics, diff_):
 		self.data[i] = metrics
@@ -99,5 +121,5 @@ class FileResultStore:
 
 	def close(self):
 		csv_file = self.directory.joinpath("metrics.csv")
-		data = np.asarray(self.data)
+		data = np.asarray(self.data).T
 		np.savetxt(csv_file, data, delimiter=",")

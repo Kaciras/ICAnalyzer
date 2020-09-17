@@ -1,3 +1,5 @@
+import * as Canvas from "./canvas.js";
+
 // 基于准备好的dom，初始化echarts实例
 const myChart = echarts.init(document.getElementById('metrics'), null, { renderer: 'svg' });
 
@@ -16,16 +18,18 @@ const option = {
 	yAxis: {},
 	series: [{
 		name: '销量',
-		type: 'bar',
+		type: 'line',
 		data: [5, 20, 36, 10, 10, 20]
 	}]
 };
 
+async function drawChart(name) {
+	const response = await fetch(`../data/${name}/Quality/metrics.csv`);
+	(await response.text()).split("\n")
+}
+
 // 使用刚指定的配置项和数据显示图表。
 myChart.setOption(option);
-
-const ctxP = document.getElementById("preview").getContext("2d");
-const ctxD = document.getElementById("diff").getContext("2d");
 
 function loadImageData(url) {
 	const img = document.createElement("img");
@@ -36,25 +40,33 @@ function loadImageData(url) {
 	});
 }
 
+
+async function loadDiffs(name, type, count) {
+	const diffs = [];
+	for (let i = 0; i < count; i++) {
+		diffs.push(await loadImageData(`../data/${name}/${type}/${i}.png`));
+	}
+	return diffs;
+}
+
 async function load(name) {
 	const parent = document.getElementById("blend");
-	parent.style = `background: url("../data/${name}/image.png")`;
+	parent.style = `background-image: url("../data/${name}/image.png")`;
 
-	const diffs = [];
-	for (let i = 0; i < 20; i++) {
-		diffs.push(await loadImageData(`../data/${name}/Quality/${i}.png`));
-	}
+	const diffs = await loadDiffs(name, "Quality", 80);
+	// await drawChart(name);
 
-	function show(image) {
-		ctxP.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, 600, 400);
-		ctxD.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, 600, 400);
+	function show(image, i) {
+		Canvas.show(image);
+		document.getElementById("diff").src = `../data/${name}/Quality/${i}.png`;
 	}
 
 	document.getElementById("range").oninput = (event) => {
-		show(diffs[event.target.valueAsNumber]);
+		show(diffs[event.target.valueAsNumber], event.target.valueAsNumber);
 	};
 
-	show(diffs[19]);
+	document.getElementById("range").value = 0;
+	show(diffs[0], 0);
 }
 
 load("6f6a94d94f9eb1a25faaa68ea3f8565ad09a80b4458bcdbb6bea9ed95f5a3df0");

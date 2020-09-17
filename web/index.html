@@ -5,19 +5,23 @@
 	<title>Image codec analyzer</title>
 	<link rel="stylesheet" href="index.css">
 	<script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.common.js" defer></script>
-	<script src="index.js" defer></script>
+	<script type="module" src="canvas.js" defer></script>
+	<script type="module" src="index.js" defer></script>
 </head>
 <body>
 <section>
 	<div id="blend">
-		<canvas id="preview"></canvas>
+		<canvas id="preview" width="600" height="400"></canvas>
 	</div>
-	<canvas id="diff"></canvas>
+	<canvas id="diff" width="600" height="400"></canvas>
 </section>
 <section>
 	<div id="metrics"></div>
-
-	<input id="range" type="range" min="0" max="20" step="1">
+	<form>
+		<label for="range">Quality (-q)</label>
+		<input id="range" type="range" min="0" max="80" step="1">
+	</form>
 </section>
+<div id="loading">Loading...</div>
 </body>
 </html>
