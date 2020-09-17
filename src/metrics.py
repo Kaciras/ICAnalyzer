@@ -2,6 +2,7 @@
 提供基于 asyncio 的各种指标计算功能，同时提供对转码过程的优化工具。
 """
 import asyncio
+import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 from pathlib import Path
 from time import time
@@ -41,34 +42,62 @@ async def get_ssim(img_a, img_b):
 	return await loop.run_in_executor(executor, _compute_ssim, img_a, img_b)
 
 
-class ImageCodecAnalyzer:
+class Runner:
 
 	def __init__(self, file, encode):
-		with open(file, "rb") as fp:
+		file = Path(file)
+
+		with file.open("rb") as fp:
 			self.origin = fp.read()
+
+		raw = Path("data", file, "image.ext").with_suffix(file.suffix)
+		shutil.copyfile(file, raw)
 
 		self.file = file
 		self.encode = encode
 		self.mat = get_mat(self.origin)
 
-	async def compute_all(self, args_list):
-		tasks = (self.compute(x) for x in args_list)
-		return await asyncio.gather(*tasks)
+		self.store = Path("data").joinpath(file)
+		self.store.mkdir()
 
-	async def compute(self, args):
+	async def compute_all(self, args_list, name):
+		store = FileResultStore(self.file, name, args_list)
+		tasks = (self.compute(args_list[i], i, store) for i in range(args_list))
+		data = await asyncio.gather(*tasks)
+		store.close()
+
+	async def compute(self, args, i, store):
 		async with semaphore:
 			start = time()
-			buffer, mux = await self.encode(self.file, args)
+			buffer, mat = await self.encode(self.file, args)
 			etime = time() - start
 
 		raw_size = len(self.origin)
 
 		ratio = len(buffer) / raw_size
-		ssim = await get_ssim(self.mat, mux)
+		ssim = await get_ssim(self.mat, mat)
 		speed = raw_size / etime / 1024
+
+		diff_ = await loop.run_in_executor(executor, cv2.absdiff, self.mat, mat)
+
+		store.handle((ratio, ssim, speed), diff_)
 
 		return ratio, ssim, speed
 
-	async def diff(self, *args):
-		buffer, mat = await self.encode(self.file, args)
-		return await asyncio.get_event_loop().run_in_executor(executor, cv2.absdiff, self.mat, mat)
+
+class FileResultStore:
+
+	def __init__(self, target, name, argslist):
+		self.directory = Path("data", target, name)
+		self.data = [None] * argslist
+
+	def handle(self, i, metrics, diff_):
+		self.data[i] = metrics
+
+		dfile = self.directory.joinpath(f"{i}.png")
+		cv2.imwrite(str(dfile), diff_)
+
+	def close(self):
+		csv_file = self.directory.joinpath("metrics.csv")
+		data = np.asarray(self.data)
+		np.savetxt(csv_file, data, delimiter=",")

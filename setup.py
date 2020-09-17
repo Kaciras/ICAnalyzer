@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
 	name="image-codec-analyzer",
 	version="1.0.0",
-	description='几个运维脚本',
+	description='Analyze the effect of image optimization tools',
 	author="Kaciras",
 	platforms='any',
 	python_requires='>=3.8',
