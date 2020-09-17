@@ -3,10 +3,21 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Image codec analyzer</title>
+	<link rel="stylesheet" href="index.css">
 	<script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.common.js" defer></script>
 	<script src="index.js" defer></script>
 </head>
 <body>
-	<div id="main" style="width: 600px;height:400px;"></div>
+<section>
+	<div id="blend">
+		<canvas id="preview"></canvas>
+	</div>
+	<canvas id="diff"></canvas>
+</section>
+<section>
+	<div id="metrics"></div>
+
+	<input id="range" type="range" min="0" max="20" step="1">
+</section>
 </body>
 </html>
