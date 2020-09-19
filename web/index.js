@@ -1,35 +1,40 @@
 import * as Canvas from "./canvas.js";
 
-// 基于准备好的dom，初始化echarts实例
-const myChart = echarts.init(document.getElementById('metrics'), null, { renderer: 'svg' });
+document.getElementById("file").oninput = loadFile;
 
-// 指定图表的配置项和数据
-const option = {
-	title: {
-		text: 'ECharts 入门示例'
-	},
-	tooltip: {},
-	legend: {
-		data: ['销量']
-	},
-	xAxis: {
-		data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
-	},
-	yAxis: {},
-	series: [{
-		name: '销量',
-		type: 'line',
-		data: [5, 20, 36, 10, 10, 20]
-	}]
-};
+async function loadFile(event) {
+	const bitmap = await createImageBitmap(event.target.files[0]);
+	const { width, height } = bitmap;
 
-async function drawChart(name) {
-	const response = await fetch(`../data/${name}/Quality/metrics.csv`);
-	(await response.text()).split("\n")
+	const canvas = document.getElementById("diff");
+	canvas.width = width;
+	canvas.height = height;
+
+	const ctx = canvas.getContext("2d");
+	ctx.drawImage(bitmap, 0, 0);
+	const canvasData = ctx.getImageData(0, 0, width, height);
+
+	const worker = new Worker("encoder.js");
+
+	const image = { width, height, buffer: canvasData.data.buffer, channels: 4 };
+	const options = { use_sharp_yuv: 1 };
+	worker.postMessage({ image, options }, [canvasData.data.buffer]);
+
+	const webp = await new Promise(resolve => {
+		worker.addEventListener("message", e => resolve(e.data));
+	});
+	const blob = new Blob([webp], { type: 'image/webp' });
+
+	const canvasP = document.getElementById("preview");
+	canvasP.width = width;
+	canvasP.height = height;
+	const ctxP = canvasP.getContext("2d");
+	ctxP.drawImage(await createImageBitmap(blob), 0, 0);
+
+	console.info(`Origin: ${event.target.files[0].size}`);
+	console.info(`WebP: ${webp.byteLength}`);
+	console.info(`Compress ratio: ${webp.byteLength / event.target.files[0].size * 100}%`);
 }
-
-// 使用刚指定的配置项和数据显示图表。
-myChart.setOption(option);
 
 function loadImageData(url) {
 	const img = document.createElement("img");
@@ -39,7 +44,6 @@ function loadImageData(url) {
 		img.onload = () => resolve(img);
 	});
 }
-
 
 async function loadDiffs(name, type, count) {
 	const diffs = [];
@@ -54,6 +58,7 @@ async function load(name) {
 	parent.style = `background-image: url("../data/${name}/image.png")`;
 
 	const diffs = await loadDiffs(name, "Quality", 80);
+
 	// await drawChart(name);
 
 	function show(image, i) {
@@ -69,4 +74,4 @@ async function load(name) {
 	show(diffs[0], 0);
 }
 
-load("6f6a94d94f9eb1a25faaa68ea3f8565ad09a80b4458bcdbb6bea9ed95f5a3df0");
+// load("6f6a94d94f9eb1a25faaa68ea3f8565ad09a80b4458bcdbb6bea9ed95f5a3df0");
