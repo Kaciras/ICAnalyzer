@@ -40,10 +40,11 @@ async function initialize(image) {
 }
 
 function encode(options) {
-	const { buffer, width, height, channels } = imageToEncode;
+	const { data, width, height } = imageToEncode;
+	const channels = data.byteLength / width / height;
 	options = { ...DEFAULT, ...options };
 
-	const result = webpModule.encode(buffer, width, height, channels, options);
+	const result = webpModule.encode(data, width, height, channels, options);
 	webpModule.free();
 	return result;
 }

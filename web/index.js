@@ -18,8 +18,7 @@ async function loadFile(event) {
 	const worker = new Worker("encoder.js");
 	const encoder = Comlink.wrap(worker);
 
-	const image = { width, height, buffer: canvasData.data.buffer, channels: 4 };
-	await encoder.initialize(Comlink.transfer(image, [canvasData.data.buffer]));
+	await encoder.initialize(Comlink.transfer(canvasData, [canvasData.data.buffer]));
 	const webp = await encoder.encode({ use_sharp_yuv: 1 });
 
 	const blob = new Blob([webp], { type: 'image/webp' });
