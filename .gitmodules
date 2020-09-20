@@ -1,0 +1,3 @@
+[submodule "deps/butteraugli"]
+	path = deps/butteraugli
+	url = https://github.com/google/butteraugli.git
