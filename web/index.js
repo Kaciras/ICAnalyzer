@@ -1,75 +1,82 @@
 import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
-import * as Canvas from "./canvas.js";
 
 document.getElementById("file").oninput = loadFile;
 
+const canvasP = document.getElementById("preview");
+const canvasD = document.getElementById("diff");
+const ctxP = canvasP.getContext("2d");
+const ctxD = canvasD.getContext("2d");
+
 async function loadFile(event) {
-	const bitmap = await createImageBitmap(event.target.files[0]);
+	const file = event.target.files[0];
+	const bitmap = await createImageBitmap(file);
 	const { width, height } = bitmap;
 
-	const canvas = document.getElementById("diff");
-	canvas.width = width;
-	canvas.height = height;
+	canvasP.width = width;
+	canvasP.height = height;
+	canvasD.width = width;
+	canvasD.height = height;
 
-	const ctx = canvas.getContext("2d");
-	ctx.drawImage(bitmap, 0, 0);
-	const canvasData = ctx.getImageData(0, 0, width, height);
+	ctxP.drawImage(bitmap, 0, 0);
+	const canvasData = ctxP.getImageData(0, 0, width, height);
+
+	const optionsList = new Array(101);
+	for (let i = 1; i < 100; i++) {
+		optionsList[i] = { quality: i };
+	}
+	return load(file, await encode(canvasData, optionsList));
+
+	// console.info(`Origin: ${file.size}`);
+	// console.info(`WebP: ${webp.byteLength}`);
+	// console.info(`Compress ratio: ${webp.byteLength / event.target.files[0].size * 100}%`);
+}
+
+async function encode(canvasData, optionsList) {
+	const THREAD_COUNT = Math.min(4, optionsList.length);
+	let index = 0;
+	const tasks = [];
+	const results = new Array(optionsList.length);
+
+	async function drain(encoder) {
+		while (index < optionsList.length) {
+			const i = index++;
+			const webp = await encoder.encode(optionsList[i]);
+			const blob = new Blob([webp], { type: "image/webp" });
+			results[i] = await createImageBitmap(blob);
+		}
+	}
+
+	for (let i = 1; i < THREAD_COUNT; i++) {
+		const worker = new Worker("encoder.js");
+		const encoder = Comlink.wrap(worker);
+
+		await encoder.initialize(canvasData);
+		tasks.push(drain(encoder));
+	}
 
 	const worker = new Worker("encoder.js");
 	const encoder = Comlink.wrap(worker);
 
 	await encoder.initialize(Comlink.transfer(canvasData, [canvasData.data.buffer]));
-	const webp = await encoder.encode({ use_sharp_yuv: 1 });
+	tasks.push(drain(encoder));
 
-	const blob = new Blob([webp], { type: 'image/webp' });
-
-	const canvasP = document.getElementById("preview");
-	canvasP.width = width;
-	canvasP.height = height;
-	const ctxP = canvasP.getContext("2d");
-	ctxP.drawImage(await createImageBitmap(blob), 0, 0);
-
-	console.info(`Origin: ${event.target.files[0].size}`);
-	console.info(`WebP: ${webp.byteLength}`);
-	console.info(`Compress ratio: ${webp.byteLength / event.target.files[0].size * 100}%`);
+	return Promise.all(tasks).then(() => results);
 }
 
-function loadImageData(url) {
-	const img = document.createElement("img");
-	img.src = url;
-	return new Promise((resolve, reject) => {
-		img.onerror = reject;
-		img.onload = () => resolve(img);
-	});
-}
-
-async function loadDiffs(name, type, count) {
-	const diffs = [];
-	for (let i = 0; i < count; i++) {
-		diffs.push(await loadImageData(`../data/${name}/${type}/${i}.png`));
-	}
-	return diffs;
-}
-
-async function load(name) {
+async function load(file, encodedFiles) {
+	const rawUrl = URL.createObjectURL(file);
 	const parent = document.getElementById("blend");
-	parent.style = `background-image: url("../data/${name}/image.png")`;
+	parent.style = `background-image: url("${rawUrl}")`;
 
-	const diffs = await loadDiffs(name, "Quality", 80);
-
-	// await drawChart(name);
-
-	function show(image, i) {
-		Canvas.show(image);
-		document.getElementById("diff").src = `../data/${name}/Quality/${i}.png`;
+	function show(i) {
+		ctxP.drawImage(encodedFiles[i], 0, 0);
+		ctxD.drawImage(encodedFiles[i], 0, 0);
 	}
 
 	document.getElementById("range").oninput = (event) => {
-		show(diffs[event.target.valueAsNumber], event.target.valueAsNumber);
+		show(event.target.valueAsNumber);
 	};
 
-	document.getElementById("range").value = 0;
-	show(diffs[0], 0);
+	document.getElementById("range").value = 75;
+	show(75);
 }
-
-// load("6f6a94d94f9eb1a25faaa68ea3f8565ad09a80b4458bcdbb6bea9ed95f5a3df0");

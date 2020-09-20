@@ -6,19 +6,17 @@ section {
 	display: flex;
 }
 
-#blend {
+#blend, #preview, #diff {
 	width: 600px;
 	height: 400px;
+}
+
+#blend {
 	background-size: 100% 100%;
 }
 
 #preview {
 	mix-blend-mode: exclusion;
-}
-
-#diff {
-	width: 600px;
-	height: 400px;
 }
 
 #metrics {
