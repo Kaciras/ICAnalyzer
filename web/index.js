@@ -1,3 +1,4 @@
+import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
 import * as Canvas from "./canvas.js";
 
 document.getElementById("file").oninput = loadFile;
@@ -15,14 +16,12 @@ async function loadFile(event) {
 	const canvasData = ctx.getImageData(0, 0, width, height);
 
 	const worker = new Worker("encoder.js");
+	const encoder = Comlink.wrap(worker);
 
 	const image = { width, height, buffer: canvasData.data.buffer, channels: 4 };
-	const options = { use_sharp_yuv: 1 };
-	worker.postMessage({ image, options }, [canvasData.data.buffer]);
+	await encoder.initialize(Comlink.transfer(image, [canvasData.data.buffer]));
+	const webp = await encoder.encode({ use_sharp_yuv: 1 });
 
-	const webp = await new Promise(resolve => {
-		worker.addEventListener("message", e => resolve(e.data));
-	});
 	const blob = new Blob([webp], { type: 'image/webp' });
 
 	const canvasP = document.getElementById("preview");

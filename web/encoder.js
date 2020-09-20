@@ -1,3 +1,4 @@
+importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
 importScripts('wasm_webp.js');
 
 const DEFAULT = {
@@ -30,19 +31,21 @@ const DEFAULT = {
 	use_sharp_yuv: 0
 };
 
-async function encodeWebp(image, options) {
+let webpModule;
+let imageToEncode;
+
+async function initialize(image) {
+	imageToEncode = image;
+	webpModule = await wasm_webp();
+}
+
+function encode(options) {
+	const { buffer, width, height, channels } = imageToEncode;
 	options = { ...DEFAULT, ...options };
-	const { buffer, width, height, channels } = image;
-	const webpModule = await wasm_webp();
 
 	const result = webpModule.encode(buffer, width, height, channels, options);
 	webpModule.free();
 	return result;
 }
 
-addEventListener("message", async event => {
-	const { image, options } = event.data;
-	const encoded = await encodeWebp(image, options);
-	postMessage(encoded);
-	close();
-});
+Comlink.expose({ initialize, encode });
