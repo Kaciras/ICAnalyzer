@@ -47,14 +47,14 @@ async function encode(canvasData, optionsList) {
 	}
 
 	for (let i = 1; i < THREAD_COUNT; i++) {
-		const worker = new Worker("encoder.js");
+		const worker = new Worker("worker/webp-encoder.js");
 		const encoder = Comlink.wrap(worker);
 
 		await encoder.initialize(canvasData);
 		tasks.push(drain(encoder));
 	}
 
-	const worker = new Worker("encoder.js");
+	const worker = new Worker("worker/webp-encoder.js");
 	const encoder = Comlink.wrap(worker);
 
 	await encoder.initialize(Comlink.transfer(canvasData, [canvasData.data.buffer]));

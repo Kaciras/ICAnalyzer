@@ -1,7 +1,13 @@
-importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
-importScripts('wasm_webp.js');
+import type * as ComlinkType from "comlink";
+import type WebpEncWASM, { EncodeOptions, WebPModule } from "./webp_enc";
 
-const DEFAULT = {
+importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
+importScripts("webp_enc.js");
+
+declare const Comlink: typeof ComlinkType;
+declare const webp_enc: typeof WebpEncWASM;
+
+const DEFAULT: EncodeOptions = {
 	quality: 75,
 	target_size: 0,
 	target_PSNR: 0,
@@ -28,25 +34,31 @@ const DEFAULT = {
 	low_memory: 0,
 	near_lossless: 100,
 	use_delta_palette: 0,
-	use_sharp_yuv: 0
+	use_sharp_yuv: 0,
 };
 
-let webpModule;
-let imageToEncode;
+let webpModule: WebPModule;
+let imageToEncode: ImageData;
 
-async function initialize(image) {
+async function initialize(image: ImageData) {
 	imageToEncode = image;
-	webpModule = await wasm_webp();
+	webpModule = await webp_enc({});
 }
 
-function encode(options) {
+function encode(options: EncodeOptions) {
 	const { data, width, height } = imageToEncode;
-	const channels = data.byteLength / width / height;
 	options = { ...DEFAULT, ...options };
 
-	const result = webpModule.encode(data, width, height, channels, options);
-	webpModule.free();
+	const result = webpModule.encode(data, width, height, options);
+	if (!result) {
+		throw new Error("Encoding error.");
+	}
 	return result;
+}
+
+export interface WebpWorker {
+	initialize: typeof initialize;
+	encode: typeof encode;
 }
 
 Comlink.expose({ initialize, encode });
