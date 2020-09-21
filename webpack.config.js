@@ -1,5 +1,4 @@
 const path = require("path");
-const { IgnorePlugin } = require("webpack");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
@@ -42,13 +41,21 @@ module.exports = {
 		new WorkerPlugin(),
 
 		new HtmlPlugin({
-			filename: path.join(__dirname, "build/index.html"),
+			filename: "index.html",
 			template: "web/index.html",
+			inject: "head",
+			scriptLoading: "defer",
 		}),
 	],
 	node: {
 		fs: "empty",
+		crypto: "empty",
+		path: "empty",
 		__filename: "mock",
 		__dirname: "mock",
+		process: false,
+		Buffer: false,
+		setImmediate: false,
+		console: false,
 	},
 };
