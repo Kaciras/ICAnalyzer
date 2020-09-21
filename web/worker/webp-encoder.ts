@@ -1,11 +1,7 @@
-import type * as ComlinkType from "comlink";
-import type WebpEncWASM, { EncodeOptions, WebPModule } from "./webp_enc";
-
-importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
-importScripts("webp_enc.js");
-
-declare const Comlink: typeof ComlinkType;
-declare const webp_enc: typeof WebpEncWASM;
+import * as Comlink from "comlink";
+import webp_enc, { EncodeOptions, WebPModule } from "./webp_enc";
+import { initEmscriptenModule } from "./utils";
+import wasmUrl from "./webp_enc.wasm";
 
 const DEFAULT: EncodeOptions = {
 	quality: 75,
@@ -42,7 +38,7 @@ let imageToEncode: ImageData;
 
 async function initialize(image: ImageData) {
 	imageToEncode = image;
-	webpModule = await webp_enc({});
+	webpModule = await initEmscriptenModule(webp_enc, wasmUrl);
 }
 
 function encode(options: EncodeOptions) {
