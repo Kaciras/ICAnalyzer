@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "ES2019",
+		"lib": ["ESNext", "DOM", "WebWorker"],
+		"module": "ESNext",
+		"moduleResolution": "Node",
+
+		"newLine": "LF",
+		"strict": true,
+
+		"esModuleInterop": true,
+		"removeComments": true,
+		"sourceMap": true,
+		"experimentalDecorators": true
+	}
+}
