@@ -41,7 +41,7 @@ class Encoder<T> {
 		const length = this.optionsList.length;
 		threadCount = Math.min(threadCount, length);
 
-		const results = new Array<Uint8Array>(length);
+		this.results = new Array<Uint8Array>(length);
 		const tasks = new Array(threadCount);
 
 		for (let i = 0; i < threadCount; i++) {
@@ -53,7 +53,7 @@ class Encoder<T> {
 			tasks.push(this.poll(wrapper));
 		}
 
-		return Promise.all(tasks).then(() => results);
+		return Promise.all(tasks).then(() => this.results);
 	}
 
 	stop() {

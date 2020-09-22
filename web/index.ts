@@ -1,9 +1,13 @@
-import { createWebPEncoder } from "./encoding";
+import { createAVIFEncoder, createWebPEncoder } from "./encoding";
 import { drawChart } from "./chart";
 import { WebPEncodeOptions } from "./worker/webp-encoder";
+import { AVIFEncodeOptions, Subsample } from "./worker/avif-encoder";
+import { isSupportAVIF } from "./utils";
 
 const fileInput = document.getElementById("file") as HTMLInputElement;
 fileInput.oninput = loadFile;
+
+const rangeInput = document.getElementById("range") as HTMLInputElement;
 
 const canvasP = document.getElementById("preview") as HTMLCanvasElement;
 const canvasD = document.getElementById("diff") as HTMLCanvasElement;
@@ -11,6 +15,8 @@ const ctxP = canvasP.getContext("2d")!;
 const ctxD = canvasD.getContext("2d")!;
 
 async function loadFile() {
+
+
 	const file = fileInput.files![0];
 	const bitmap = await createImageBitmap(file);
 	const { width, height } = bitmap;
@@ -23,7 +29,10 @@ async function loadFile() {
 	ctxP.drawImage(bitmap, 0, 0);
 	const canvasData = ctxP.getImageData(0, 0, width, height);
 
-	return showResult(file, await encode(canvasData));
+	if (!(await isSupportAVIF())) {
+		return alert("Your browser does not support avif image.");
+	}
+	return showResult(file, await encodeAvif(canvasData));
 
 	// console.info(`Origin: ${file.size}`);
 	// console.info(`WebP: ${webp.byteLength}`);
@@ -46,6 +55,34 @@ function encode(image: ImageData) {
 	return encoder.encode(image, optionsList).start();
 }
 
+function encodeAvif(image: ImageData) {
+	const optionsList = new Array<AVIFEncodeOptions>();
+
+	for (let i = 0; i < 32; i++) {
+		optionsList[i] = {
+			minQuantizer: i * 2,
+			maxQuantizer: 63,
+			minQuantizerAlpha: i * 2,
+			maxQuantizerAlpha: 63,
+			tileColsLog2: 0,
+			tileRowsLog2: 0,
+			speed: 8,
+			subsample: Subsample.YUV444, // 4:4:4 无转换损失
+		};
+	}
+
+	rangeInput.max = "31";
+
+	const progress = document.getElementById("progress") as HTMLProgressElement;
+	progress.value = 0;
+	progress.max = optionsList.length;
+
+	const encoder = createAVIFEncoder();
+	encoder.onProgress = value => progress.value = value;
+
+	return encoder.encode(image, optionsList).start();
+}
+
 async function showResult(file: File, encodedFiles: Uint8Array[]) {
 	const rawUrl = URL.createObjectURL(file);
 	const parent = document.getElementById("blend")!;
@@ -54,12 +91,11 @@ async function showResult(file: File, encodedFiles: Uint8Array[]) {
 	const brightnessInput = document.getElementById("brightness") as HTMLInputElement;
 	brightnessInput.oninput = () => parent.style.setProperty("--brightness", brightnessInput.value + "%");
 
-	const rangeInput = document.getElementById("range") as HTMLInputElement;
 	const label = document.getElementById("range-label") as HTMLLabelElement;
 
 	const bitmaps: ImageBitmap[] = [];
 	for (const data of encodedFiles) {
-		const blob = new Blob([data], { type: "image/webp" });
+		const blob = new Blob([data], { type: "image/avif" });
 		bitmaps.push(await createImageBitmap(blob));
 	}
 
@@ -91,8 +127,8 @@ async function showResult(file: File, encodedFiles: Uint8Array[]) {
 		// chart.dispatchAction({ type: "showTip", x: i, y: 0,position: ["50%", "50%"] });
 	}
 
-	show(75);
-
 	rangeInput.valueAsNumber = 75;
 	rangeInput.oninput = () => show(rangeInput.valueAsNumber);
+
+	show(parseInt(rangeInput.max));
 }
