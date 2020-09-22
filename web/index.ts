@@ -1,4 +1,5 @@
 import { encodeWebP } from "./encoding";
+import { drawChart } from "./chart";
 import { WebPEncodeOptions } from "./worker/webp-encoder";
 
 const fileInput = document.getElementById("file") as HTMLInputElement;
@@ -23,7 +24,7 @@ async function loadFile() {
 	const canvasData = ctxP.getImageData(0, 0, width, height);
 
 	const optionsList = new Array<WebPEncodeOptions>(101);
-	for (let i = 1; i < 100; i++) {
+	for (let i = 0; i < 101; i++) {
 		optionsList[i] = { quality: i };
 	}
 	return load(file, await encodeWebP(canvasData, optionsList));
@@ -33,7 +34,7 @@ async function loadFile() {
 	// console.info(`Compress ratio: ${webp.byteLength / event.target.files[0].size * 100}%`);
 }
 
-async function load(file: File, encodedFiles: ImageBitmap[]) {
+async function load(file: File, encodedFiles: Uint8Array[]) {
 	const rawUrl = URL.createObjectURL(file);
 	const parent = document.getElementById("blend")!;
 	parent.style.backgroundImage = `url("${rawUrl}")`;
@@ -41,10 +42,38 @@ async function load(file: File, encodedFiles: ImageBitmap[]) {
 	const rangeInput = document.getElementById("range") as HTMLInputElement;
 	const label = document.getElementById("range-label") as HTMLLabelElement;
 
+	const bitmaps: ImageBitmap[] = [];
+	for (const data of encodedFiles) {
+		const blob = new Blob([data], { type: "image/webp" });
+		bitmaps.push(await createImageBitmap(blob));
+	}
+
+	const chart = drawChart({
+		title: {
+			text: "Quality (-q)"
+		},
+		tooltip: {
+			trigger: "axis",
+		},
+		legend: {
+			data: ["Compression Ratio"]
+		},
+		xAxis: {
+			data: encodedFiles.map((_, i) => i)
+		},
+		yAxis: {},
+		series: [{
+			name: "Compression Ratio %",
+			type: "line",
+			data: encodedFiles.map(({ length }) => length / file.size * 100),
+		}],
+	});
+
 	function show(i: number) {
 		label.textContent = `Quality (-q) = ${i}`;
-		ctxP.drawImage(encodedFiles[i], 0, 0);
-		ctxD.drawImage(encodedFiles[i], 0, 0);
+		ctxP.drawImage(bitmaps[i], 0, 0);
+		ctxD.drawImage(bitmaps[i], 0, 0);
+		// chart.dispatchAction({ type: "showTip", x: i, y: 0,position: ["50%", "50%"] });
 	}
 
 	show(75);

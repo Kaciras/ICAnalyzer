@@ -7,7 +7,7 @@ import WebPUrl from "worker-plugin/loader?esModule&name=webp!./worker/webp-encod
 
 async function encode<T>(url: string, image: ImageData, optionsList: T[]) {
 	const THREAD_COUNT = Math.min(4, optionsList.length);
-	const results = new Array<ImageBitmap>(optionsList.length);
+	const results = new Array<Uint8Array>(optionsList.length);
 
 	let index = 0;
 	const tasks = new Array(THREAD_COUNT);
@@ -15,9 +15,7 @@ async function encode<T>(url: string, image: ImageData, optionsList: T[]) {
 	async function drain(encoder: Comlink.Remote<EncodeWorker<T>>) {
 		while (index < optionsList.length) {
 			const i = index++;
-			const webp = await encoder.encode(optionsList[i]);
-			const blob = new Blob([webp], { type: "image/webp" });
-			results[i] = await createImageBitmap(blob);
+			results[i] =  await encoder.encode(optionsList[i]);
 		}
 	}
 

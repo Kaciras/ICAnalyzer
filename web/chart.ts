@@ -1,4 +1,4 @@
-import echarts from "echarts";
+import echarts, { EChartOption } from "echarts";
 
 const mountEl = document.getElementById("metrics");
 
@@ -6,7 +6,7 @@ const mountEl = document.getElementById("metrics");
 const myChart = echarts.init(mountEl as HTMLDivElement, { renderer: "svg" });
 
 // 指定图表的配置项和数据
-const option = {
+const option: EChartOption = {
 	title: {
 		text: "ECharts 入门示例"
 	},
@@ -25,7 +25,7 @@ const option = {
 	}]
 };
 
-async function drawChart(metrics: any) {
-	// 使用刚指定的配置项和数据显示图表。
-	myChart.setOption(option);
+export function drawChart(metrics: EChartOption) {
+	myChart.setOption(metrics);
+	return myChart;
 }
