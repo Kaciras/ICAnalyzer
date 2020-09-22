@@ -29,15 +29,13 @@ async function initialize(image: ImageData) {
 	wasmModule = await initEmscriptenModule(avif_enc, wasmUrl);
 }
 
-export function encode(options: AVIFEncodeOptions) {
+function encode(options: AVIFEncodeOptions) {
 	const { data, width, height } = imageToEncode;
 
 	const result = wasmModule.encode(data, width, height, options);
 	if (!result) {
 		throw new Error("Encoding error");
 	}
-
-	// wasm can’t run on SharedArrayBuffers, so we hard-cast to ArrayBuffer.
 	return result;
 }
 

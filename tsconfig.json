@@ -8,7 +8,6 @@
 		"newLine": "LF",
 		"strict": true,
 
-		"esModuleInterop": true,
 		"removeComments": true,
 		"sourceMap": true,
 		"experimentalDecorators": true
