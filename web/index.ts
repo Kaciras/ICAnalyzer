@@ -1,4 +1,5 @@
 import { encodeWebP } from "./encoding";
+import { WebPEncodeOptions } from "./worker/webp-encoder";
 
 const fileInput = document.getElementById("file") as HTMLInputElement;
 fileInput.oninput = loadFile;
@@ -21,7 +22,7 @@ async function loadFile() {
 	ctxP.drawImage(bitmap, 0, 0);
 	const canvasData = ctxP.getImageData(0, 0, width, height);
 
-	const optionsList = new Array(101);
+	const optionsList = new Array<WebPEncodeOptions>(101);
 	for (let i = 1; i < 100; i++) {
 		optionsList[i] = { quality: i };
 	}
@@ -37,14 +38,17 @@ async function load(file: File, encodedFiles: ImageBitmap[]) {
 	const parent = document.getElementById("blend")!;
 	parent.style.backgroundImage = `url("${rawUrl}")`;
 
+	const rangeInput = document.getElementById("range") as HTMLInputElement;
+	const label = document.getElementById("range-label") as HTMLLabelElement;
+
 	function show(i: number) {
+		label.textContent = `Quality (-q) = ${i}`;
 		ctxP.drawImage(encodedFiles[i], 0, 0);
 		ctxD.drawImage(encodedFiles[i], 0, 0);
 	}
 
 	show(75);
 
-	const rangeInput = document.getElementById("range") as HTMLInputElement;
 	rangeInput.valueAsNumber = 75;
 	rangeInput.oninput = () => show(rangeInput.valueAsNumber);
 }
