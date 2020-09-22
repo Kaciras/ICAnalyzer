@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import avif_enc, { AVIFModule } from "./avif_enc";
-import { initEmscriptenModule } from "./utils";
+import { EncodeWorker, initEmscriptenModule } from "./utils";
 import wasmUrl from "./avif_enc.wasm";
 
 export enum Subsample {
@@ -29,9 +29,10 @@ async function initialize(image: ImageData) {
 	wasmModule = await initEmscriptenModule(avif_enc, wasmUrl);
 }
 
-export async function encode(data: Buffer, width: number, height: number, options: AVIFEncodeOptions) {
-	const result = wasmModule.encode(data, width, height, options);
+export function encode(options: AVIFEncodeOptions) {
+	const { data, width, height } = imageToEncode;
 
+	const result = wasmModule.encode(data, width, height, options);
 	if (!result) {
 		throw new Error("Encoding error");
 	}
@@ -40,9 +41,6 @@ export async function encode(data: Buffer, width: number, height: number, option
 	return result;
 }
 
-export interface AvifWorker {
-	initialize: typeof initialize;
-	encode: typeof encode;
-}
+export type AvifWorker = EncodeWorker<AVIFEncodeOptions>;
 
-Comlink.expose({ initialize, encode });
+Comlink.expose({ initialize, encode } as AvifWorker);

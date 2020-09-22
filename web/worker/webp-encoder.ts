@@ -1,7 +1,44 @@
 import * as Comlink from "comlink";
-import webp_enc, { WebPEncodeOptions, WebPModule } from "./webp_enc";
-import { initEmscriptenModule } from "./utils";
+import webp_enc, { WebPModule } from "./webp_enc";
+import { EncodeWorker, initEmscriptenModule } from "./utils";
 import wasmUrl from "./webp_enc.wasm";
+
+export enum WebPImageHint {
+	WEBP_HINT_DEFAULT, // default preset.
+	WEBP_HINT_PICTURE, // digital picture, like portrait, inner shot
+	WEBP_HINT_PHOTO,   // outdoor photograph, with natural lighting
+	WEBP_HINT_GRAPH,   // Discrete tone image (graph, map-tile etc).
+}
+
+export interface WebPEncodeOptions {
+	quality: number;
+	target_size: number;
+	target_PSNR: number;
+	method: number;
+	sns_strength: number;
+	filter_strength: number;
+	filter_sharpness: number;
+	filter_type: number;
+	partitions: number;
+	segments: number;
+	pass: number;
+	show_compressed: number;
+	preprocessing: number;
+	autofilter: number;
+	partition_limit: number;
+	alpha_compression: number;
+	alpha_filtering: number;
+	alpha_quality: number;
+	lossless: number;
+	exact: number;
+	image_hint: WebPImageHint;
+	emulate_jpeg_size: number;
+	thread_level: number;
+	low_memory: number;
+	near_lossless: number;
+	use_delta_palette: number;
+	use_sharp_yuv: number;
+}
 
 const DEFAULT: WebPEncodeOptions = {
 	quality: 75,
@@ -52,9 +89,6 @@ function encode(options: WebPEncodeOptions) {
 	return result;
 }
 
-export interface WebpWorker {
-	initialize: typeof initialize;
-	encode: typeof encode;
-}
+export type WebPWorker = EncodeWorker<WebPEncodeOptions>;
 
-Comlink.expose({ initialize, encode });
+Comlink.expose({ initialize, encode } as WebPWorker);
