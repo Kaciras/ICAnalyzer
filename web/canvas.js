@@ -22,8 +22,8 @@ function zoomHandler(event) {
 	zoomRatio += event.deltaY;
 }
 
-imageEl.addEventListener("wheel", zoomHandler);
-diffEl.addEventListener("wheel", zoomHandler);
+imageEl.addEventListener("wheel", zoomHandler, {passive:false});
+diffEl.addEventListener("wheel", zoomHandler, {passive:false});
 
 function animationLoop() {
 	ctxImage.drawImage(difference, 0, 0, 600, 400);

@@ -10,7 +10,7 @@ export enum Subsample {
 	YUV444 = 3,
 }
 
-export interface EncodeOptions {
+export interface AVIFEncodeOptions {
 	minQuantizer: number;
 	maxQuantizer: number;
 	minQuantizerAlpha: number;
@@ -29,7 +29,7 @@ async function initialize(image: ImageData) {
 	wasmModule = await initEmscriptenModule(avif_enc, wasmUrl);
 }
 
-export async function encode(data: Buffer, width: number, height: number, options: EncodeOptions) {
+export async function encode(data: Buffer, width: number, height: number, options: AVIFEncodeOptions) {
 	const result = wasmModule.encode(data, width, height, options);
 
 	if (!result) {

@@ -1,9 +1,9 @@
 import * as Comlink from "comlink";
-import webp_enc, { EncodeOptions, WebPModule } from "./webp_enc";
+import webp_enc, { WebPEncodeOptions, WebPModule } from "./webp_enc";
 import { initEmscriptenModule } from "./utils";
 import wasmUrl from "./webp_enc.wasm";
 
-const DEFAULT: EncodeOptions = {
+const DEFAULT: WebPEncodeOptions = {
 	quality: 75,
 	target_size: 0,
 	target_PSNR: 0,
@@ -41,7 +41,7 @@ async function initialize(image: ImageData) {
 	webpModule = await initEmscriptenModule(webp_enc, wasmUrl);
 }
 
-function encode(options: EncodeOptions) {
+function encode(options: WebPEncodeOptions) {
 	const { data, width, height } = imageToEncode;
 	options = { ...DEFAULT, ...options };
 

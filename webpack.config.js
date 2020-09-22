@@ -2,6 +2,8 @@ const path = require("path");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
+// noinspection WebpackConfigHighlighting
+
 module.exports = {
 	mode: "development",
 	context: __dirname,

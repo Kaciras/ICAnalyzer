@@ -5,7 +5,7 @@ export enum WebPImageHint {
 	WEBP_HINT_GRAPH,   // Discrete tone image (graph, map-tile etc).
 }
 
-export interface EncodeOptions {
+export interface WebPEncodeOptions {
 	quality: number;
 	target_size: number;
 	target_PSNR: number;
@@ -36,7 +36,7 @@ export interface EncodeOptions {
 }
 
 interface WebPModule extends EmscriptenModule {
-	encode(data: BufferSource, width: number, height: number, options: EncodeOptions): Uint8Array | null;
+	encode(data: BufferSource, width: number, height: number, options: WebPEncodeOptions): Uint8Array | null;
 }
 
 export default function (opts: Partial<EmscriptenModule>): Promise<WebPModule>;
