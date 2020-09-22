@@ -13,6 +13,7 @@ section {
 
 #blend {
 	background-size: 100% 100%;
+	filter: brightness(var(--brightness));
 }
 
 #diff {
@@ -28,6 +29,7 @@ section {
 	width: 400px;
 }
 
-#loading {
-
+#form {
+	display: flex;
+	flex-direction: column;
 }

@@ -14,12 +14,16 @@
 </section>
 <section>
 	<div id="metrics"></div>
-	<form>
+	<form id="form">
 		<input id="file" type="file" accept="image/*">
+
 		<label id="range-label" for="range">Quality (-q)</label>
 		<input id="range" type="range" min="0" max="100" step="1">
+
+		<input id="brightness" type="number" min="100" step="20">
+
+		<progress id="progress"></progress>
 	</form>
 </section>
-<div id="loading">Loading...</div>
 </body>
 </html>

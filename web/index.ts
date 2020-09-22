@@ -1,4 +1,4 @@
-import { encodeWebP } from "./encoding";
+import { createWebPEncoder } from "./encoding";
 import { drawChart } from "./chart";
 import { WebPEncodeOptions } from "./worker/webp-encoder";
 
@@ -23,21 +23,36 @@ async function loadFile() {
 	ctxP.drawImage(bitmap, 0, 0);
 	const canvasData = ctxP.getImageData(0, 0, width, height);
 
-	const optionsList = new Array<WebPEncodeOptions>(101);
-	for (let i = 0; i < 101; i++) {
-		optionsList[i] = { quality: i };
-	}
-	return load(file, await encodeWebP(canvasData, optionsList));
+	return showResult(file, await encode(canvasData));
 
 	// console.info(`Origin: ${file.size}`);
 	// console.info(`WebP: ${webp.byteLength}`);
 	// console.info(`Compress ratio: ${webp.byteLength / event.target.files[0].size * 100}%`);
 }
 
-async function load(file: File, encodedFiles: Uint8Array[]) {
+function encode(image: ImageData) {
+	const optionsList = new Array<WebPEncodeOptions>(101);
+	for (let i = 0; i < 101; i++) {
+		optionsList[i] = { quality: i };
+	}
+
+	const progress = document.getElementById("progress") as HTMLProgressElement;
+	progress.value = 0;
+	progress.max = optionsList.length;
+
+	const encoder = createWebPEncoder();
+	encoder.onProgress = value => progress.value = value;
+
+	return encoder.encode(image, optionsList).start();
+}
+
+async function showResult(file: File, encodedFiles: Uint8Array[]) {
 	const rawUrl = URL.createObjectURL(file);
 	const parent = document.getElementById("blend")!;
 	parent.style.backgroundImage = `url("${rawUrl}")`;
+
+	const brightnessInput = document.getElementById("brightness") as HTMLInputElement;
+	brightnessInput.oninput = () => parent.style.setProperty("--brightness", brightnessInput.value + "%");
 
 	const rangeInput = document.getElementById("range") as HTMLInputElement;
 	const label = document.getElementById("range-label") as HTMLLabelElement;

@@ -5,38 +5,76 @@ import { EncodeWorker } from "./worker/utils";
 import AVIFUrl from "worker-plugin/loader?esModule&name=avif!./worker/avif-encoder";
 import WebPUrl from "worker-plugin/loader?esModule&name=webp!./worker/webp-encoder";
 
-async function encode<T>(url: string, image: ImageData, optionsList: T[]) {
-	const THREAD_COUNT = Math.min(4, optionsList.length);
-	const results = new Array<Uint8Array>(optionsList.length);
+class Encoder<T> {
 
-	let index = 0;
-	const tasks = new Array(THREAD_COUNT);
+	private readonly url: string;
 
-	async function drain(encoder: Comlink.Remote<EncodeWorker<T>>) {
-		while (index < optionsList.length) {
-			const i = index++;
-			results[i] =  await encoder.encode(optionsList[i]);
+	private image?: ImageData;
+	private optionsList!: T[];
+
+	private index = 0;
+	private workers: Worker[] = [];
+	private results!: Uint8Array[];
+
+	constructor(url: string) {
+		this.url = url;
+	}
+
+	onProgress(value: number) {
+		// noop by default
+	}
+
+	encode(image: ImageData, optionsList: T[]) {
+		this.image = image;
+		this.optionsList = optionsList;
+		return this;
+	}
+
+	async start(threadCount = 4) {
+		if (!this.image) {
+			throw new Error("You should call encode() before start.");
+		}
+		if (threadCount < 1) {
+			throw new Error("Thread count must be at least 1");
+		}
+
+		const length = this.optionsList.length;
+		threadCount = Math.min(threadCount, length);
+
+		const results = new Array<Uint8Array>(length);
+		const tasks = new Array(threadCount);
+
+		for (let i = 0; i < threadCount; i++) {
+			const worker = new Worker(this.url);
+			const wrapper = Comlink.wrap<EncodeWorker<T>>(worker);
+			await wrapper.initialize(this.image);
+
+			this.workers.push(worker);
+			tasks.push(this.poll(wrapper));
+		}
+
+		return Promise.all(tasks).then(() => results);
+	}
+
+	stop() {
+		this.workers.forEach(worker => worker.terminate());
+	}
+
+	private async poll(wrapper: Comlink.Remote<EncodeWorker<T>>) {
+		const { results, optionsList } = this;
+
+		while (this.index < optionsList.length) {
+			const i = this.index++;
+			this.onProgress(i);
+			results[i] = await wrapper.encode(optionsList[i]);
 		}
 	}
-
-	async function addWorker(initData: any) {
-		const encoder = Comlink.wrap<EncodeWorker<T>>(new Worker(url));
-		await encoder.initialize(initData);
-		tasks.push(drain(encoder));
-	}
-
-	for (let i = 1; i < THREAD_COUNT; i++) {
-		await addWorker(image);
-	}
-	await addWorker(Comlink.transfer(image, [image.data.buffer]));
-
-	return Promise.all(tasks).then(() => results);
 }
 
-export function encodeAVIF(image: ImageData, optionsList: AVIFEncodeOptions[]) {
-	return encode(AVIFUrl, image, optionsList);
+export function createAVIFEncoder() {
+	return new Encoder<AVIFEncodeOptions>(AVIFUrl);
 }
 
-export function encodeWebP(image: ImageData, optionsList: WebPEncodeOptions[]) {
-	return encode(WebPUrl, image, optionsList);
+export function createWebPEncoder() {
+	return new Encoder<WebPEncodeOptions>(WebPUrl);
 }

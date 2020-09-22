@@ -16,9 +16,6 @@ module.exports = {
 	devtool: "source-map",
 	resolve: {
 		extensions: [".ts", ".mjs", ".js", ".json"],
-		alias: {
-			echarts: "echarts/echarts.common.js",
-		}
 	},
 	module: {
 		rules: [
