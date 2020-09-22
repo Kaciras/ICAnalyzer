@@ -2,7 +2,6 @@ const path = require("path");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
-// noinspection WebpackConfigHighlighting
 
 module.exports = {
 	mode: "development",
@@ -17,6 +16,9 @@ module.exports = {
 	devtool: "source-map",
 	resolve: {
 		extensions: [".ts", ".mjs", ".js", ".json"],
+		alias: {
+			echarts: "echarts/echarts.common.js",
+		}
 	},
 	module: {
 		rules: [
@@ -49,6 +51,18 @@ module.exports = {
 			scriptLoading: "defer",
 		}),
 	],
+	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				vendor:{
+					name: "vendors",
+					test: /[\\/]node_modules[\\/]/,
+					priority: -10,
+					chunks: "initial",
+				}
+			}
+		}
+	},
 	node: {
 		fs: "empty",
 		crypto: "empty",
