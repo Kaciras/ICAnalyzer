@@ -142,8 +142,13 @@ void ConvertImage(string data, size_t xsize, size_t ysize, vector<Image8>& rgb) 
 	}
 }
 
+struct ButteraugliOptions {
+	float hfAsymmetry = 1.0;
+	double goodQualitySeek = 1.5;
+	double badQualitySeek = 0.5;
+};
 
-val getButteraugli(string data1, string data2, size_t width, size_t height) {
+val getButteraugli(string data1, string data2, size_t width, size_t height, ButteraugliOptions options) {
 	auto length = data1.length();
 
 	if (data2.length() != length) {
@@ -160,7 +165,7 @@ val getButteraugli(string data1, string data2, size_t width, size_t height) {
 
 	ImageF diff_map;
 	double diff_value;
-	if (!ButteraugliInterface(linear1, linear2, 1.0, diff_map, diff_value)) {
+	if (!ButteraugliInterface(linear1, linear2, options.hfAsymmetry, diff_map, diff_value)) {
 		throw "test error";
 	}
 
@@ -170,7 +175,7 @@ val getButteraugli(string data1, string data2, size_t width, size_t height) {
 
 	ImageF diff_map_on_white;
 	double diff_value_on_white;
-	if (!ButteraugliInterface(linear1, linear2, 1.0, diff_map_on_white, diff_value_on_white)) {
+	if (!ButteraugliInterface(linear1, linear2, options.hfAsymmetry, diff_map_on_white, diff_value_on_white)) {
 		throw "test error";
 	}
 
@@ -180,8 +185,8 @@ val getButteraugli(string data1, string data2, size_t width, size_t height) {
 		diff_map_ptr = &diff_map_on_white;
 	}
 
-	const double good_quality = ButteraugliFuzzyInverse(1.5);
-	const double bad_quality = ButteraugliFuzzyInverse(0.5);
+	const double good_quality = ButteraugliFuzzyInverse(options.goodQualitySeek);
+	const double bad_quality = ButteraugliFuzzyInverse(options.badQualitySeek);
 	vector<uint8_t> heatMap;
 	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, rgb1[0].xsize(), rgb2[0].ysize(), &heatMap);
 
@@ -203,5 +208,10 @@ double getPSNR(string data1, string data2, size_t width, size_t height) {
 //}
 
 EMSCRIPTEN_BINDINGS(my_module) {
+	value_object<ButteraugliOptions>("ButteraugliOptions")
+		.field("hfAsymmetry", &ButteraugliOptions::hfAsymmetry)
+		.field("goodQualitySeek", &ButteraugliOptions::goodQualitySeek)
+		.field("badQualitySeek", &ButteraugliOptions::badQualitySeek);
+
 	function("getButteraugli", &getButteraugli);
 }
