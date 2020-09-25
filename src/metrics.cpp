@@ -1,7 +1,6 @@
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <butteraugli/butteraugli.h>
-#include <map>
 
 using namespace butteraugli;
 using namespace emscripten;
@@ -81,17 +80,17 @@ static void ScoreToRgb(double score, double good_threshold, double bad_threshold
 	  { 1, 1, 1, },
 	  { 1, 1, 1, },
 	};
+
 	if (score < good_threshold) {
 		score = (score / good_threshold) * 0.3;
 	}
 	else if (score < bad_threshold) {
-		score = 0.3 + (score - good_threshold) /
-			(bad_threshold - good_threshold) * 0.15;
+		score = 0.3 + (score - good_threshold) / (bad_threshold - good_threshold) * 0.15;
 	}
 	else {
-		score = 0.45 + (score - bad_threshold) /
-			(bad_threshold * 12) * 0.5;
+		score = 0.45 + (score - bad_threshold) / (bad_threshold * 12) * 0.5;
 	}
+
 	static const int kTableSize = sizeof(heatmap) / sizeof(heatmap[0]);
 	score = std::min<double>(std::max<double>(score * (kTableSize - 1), 0.0), kTableSize - 2);
 	int ix = static_cast<int>(score);
@@ -143,9 +142,9 @@ void ConvertImage(string data, size_t xsize, size_t ysize, vector<Image8>& rgb) 
 }
 
 struct ButteraugliOptions {
-	float hfAsymmetry = 1.0;
-	double goodQualitySeek = 1.5;
-	double badQualitySeek = 0.5;
+	float hfAsymmetry;
+	double goodQualitySeek;
+	double badQualitySeek;
 };
 
 val getButteraugli(string data1, string data2, size_t width, size_t height, ButteraugliOptions options) {
@@ -199,13 +198,27 @@ val getButteraugli(string data1, string data2, size_t width, size_t height, Butt
 	return rv;
 }
 
-double getPSNR(string data1, string data2, size_t width, size_t height) {
 
+double getMSE(string data1, string data2, size_t width, size_t height) {
+	auto length = data1.length();
+
+	auto p1 = data1.data();
+	auto p2 = data2.data();
+
+	double mse = 0;
+
+	for (size_t i = 0; i < length; ++i)
+	{
+		auto e = *(p1 + i) - *(p2 + i);
+		mse += e * e;
+	}
+
+	return mse / length;
 }
 
-//double getSSIM(dataA, dataB, length, width, height) {
-//
-//}
+double getSSIM(string data1, string data2, size_t width, size_t height) {
+
+}
 
 EMSCRIPTEN_BINDINGS(my_module) {
 	value_object<ButteraugliOptions>("ButteraugliOptions")
@@ -213,5 +226,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
 		.field("goodQualitySeek", &ButteraugliOptions::goodQualitySeek)
 		.field("badQualitySeek", &ButteraugliOptions::badQualitySeek);
 
+	function("getMSE", &getMSE);
+	function("getSSIM", &getSSIM);
 	function("getButteraugli", &getButteraugli);
 }
