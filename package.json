@@ -12,7 +12,9 @@
 	"dependencies": {
 		"@saschazar/wasm-webp": "^2.0.0",
 		"comlink": "^4.3.0",
-		"echarts": "^4.9.0"
+		"echarts": "^4.9.0",
+		"opencv-wasm": "^4.3.0-4",
+		"ssim.js": "^3.3.0"
 	},
 	"devDependencies": {
 		"@types/echarts": "^4.6.5",

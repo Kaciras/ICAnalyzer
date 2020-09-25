@@ -147,12 +147,8 @@ struct ButteraugliOptions {
 	double badQualitySeek;
 };
 
-val getButteraugli(string data1, string data2, size_t width, size_t height, ButteraugliOptions options) {
+val GetButteraugli(string data1, string data2, size_t width, size_t height, ButteraugliOptions options) {
 	auto length = data1.length();
-
-	if (data2.length() != length) {
-		throw "test error";
-	}
 
 	vector<Image8> rgb1, rgb2;
 	ConvertImage(data1, width, height, rgb1);
@@ -199,24 +195,24 @@ val getButteraugli(string data1, string data2, size_t width, size_t height, Butt
 }
 
 
-double getMSE(string data1, string data2, size_t width, size_t height) {
+double GetMSE(string data1, string data2, size_t width, size_t height) {
 	auto length = data1.length();
 
-	auto p1 = data1.data();
-	auto p2 = data2.data();
+	auto p1 = reinterpret_cast<const uint8_t*>(data1.data());
+	auto p2 = reinterpret_cast<const uint8_t*>(data2.data());
 
-	double mse = 0;
+	double sum = 0;
 
-	for (size_t i = 0; i < length; ++i)
+	for (auto i = 0; i < length; ++i)
 	{
 		auto e = *(p1 + i) - *(p2 + i);
-		mse += e * e;
+		sum += e * e;
 	}
 
-	return mse / length;
+	return sum / length;
 }
 
-double getSSIM(string data1, string data2, size_t width, size_t height) {
+double GetSSIM(string data1, string data2, size_t width, size_t height) {
 
 }
 
@@ -226,7 +222,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
 		.field("goodQualitySeek", &ButteraugliOptions::goodQualitySeek)
 		.field("badQualitySeek", &ButteraugliOptions::badQualitySeek);
 
-	function("getMSE", &getMSE);
-	function("getSSIM", &getSSIM);
-	function("getButteraugli", &getButteraugli);
+	function("GetMSE", &GetMSE);
+	function("GetSSIM", &GetSSIM);
+	function("GetButteraugli", &GetButteraugli);
 }
