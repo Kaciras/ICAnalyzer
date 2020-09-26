@@ -6,7 +6,8 @@
 	"license": "MIT",
 	"main": "index.js",
 	"scripts": {
-		"compile": "emcc -O2 --bind -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -I deps/butteraugli src/metrics.cpp deps/butteraugli/butteraugli/butteraugli.cc -o build/metrics.js",
+		"lint": "eslint --fix --ext .js,.ts web",
+		"compile": "emcc -O2 --bind --closure 1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -I deps/butteraugli src/metrics.cpp deps/butteraugli/butteraugli/butteraugli.cc -o build/metrics.js",
 		"build": "webpack"
 	},
 	"dependencies": {
