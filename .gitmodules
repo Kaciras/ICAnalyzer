@@ -1,3 +1,6 @@
 [submodule "deps/butteraugli"]
 	path = deps/butteraugli
 	url = https://github.com/google/butteraugli.git
+[submodule "deps/squoosh"]
+	path = deps/squoosh
+	url = https://github.com/GoogleChromeLabs/squoosh.git

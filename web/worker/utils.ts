@@ -1,8 +1,8 @@
 export interface EncodeWorker<T> {
 
-	initialize(image: ImageData): Promise<void>;
+	initialize(image: ImageData): void;
 
-	encode(options: T): Uint8Array;
+	encode(options: T): Promise<ArrayBuffer>;
 }
 
 

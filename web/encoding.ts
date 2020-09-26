@@ -1,5 +1,5 @@
 import * as Comlink from "comlink";
-import { AVIFEncodeOptions } from "./worker/avif-encoder";
+import { Options } from "./worker/avif-encoder";
 import { WebPEncodeOptions } from "./worker/webp-encoder";
 import { EncodeWorker } from "./worker/utils";
 import AVIFUrl from "worker-plugin/loader?esModule&name=avif!./worker/avif-encoder";
@@ -14,7 +14,7 @@ class Encoder<T> {
 
 	private index = 0;
 	private workers: Worker[] = [];
-	private results!: Uint8Array[];
+	private results!: ArrayBuffer[];
 
 	constructor(url: string) {
 		this.url = url;
@@ -72,7 +72,7 @@ class Encoder<T> {
 }
 
 export function createAVIFEncoder() {
-	return new Encoder<AVIFEncodeOptions>(AVIFUrl);
+	return new Encoder<Options>(AVIFUrl);
 }
 
 export function createWebPEncoder() {

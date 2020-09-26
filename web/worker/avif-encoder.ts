@@ -1,7 +1,7 @@
 import * as Comlink from "comlink";
-import avif_enc, { AVIFModule } from "./avif_enc";
-import { EncodeWorker, initEmscriptenModule } from "./utils";
-import wasmUrl from "./avif_enc.wasm";
+import * as AVifEncoder from "../../deps/squoosh/src/codecs/avif/encoder";
+import { EncodeOptions } from "../../deps/squoosh/src/codecs/avif/encoder-meta";
+import { EncodeWorker } from "./utils";
 
 export enum Subsample {
 	YUV400 = 0,
@@ -10,35 +10,17 @@ export enum Subsample {
 	YUV444 = 3,
 }
 
-export interface AVIFEncodeOptions {
-	minQuantizer: number;
-	maxQuantizer: number;
-	minQuantizerAlpha: number;
-	maxQuantizerAlpha: number;
-	tileRowsLog2: number;
-	tileColsLog2: number;
-	speed: number;
+export interface Options extends Omit<EncodeOptions, "subsample"> {
 	subsample: Subsample;
 }
 
-let wasmModule: AVIFModule;
 let imageToEncode: ImageData;
 
-async function initialize(image: ImageData) {
-	imageToEncode = image;
-	wasmModule = await initEmscriptenModule(avif_enc, wasmUrl);
-}
-
-function encode(options: AVIFEncodeOptions) {
-	const { data, width, height } = imageToEncode;
-
-	const result = wasmModule.encode(data, width, height, options);
-	if (!result) {
-		throw new Error("Encoding error");
-	}
-	return result;
-}
-
-export type AvifWorker = EncodeWorker<AVIFEncodeOptions>;
-
-Comlink.expose({ initialize, encode } as AvifWorker);
+Comlink.expose({
+	initialize(image: ImageData) {
+		imageToEncode = image;
+	},
+	encode(options: Options) {
+		return AVifEncoder.encode(imageToEncode, options);
+	},
+} as EncodeWorker<Options>);

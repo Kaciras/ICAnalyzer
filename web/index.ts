@@ -1,7 +1,7 @@
 import { createAVIFEncoder, createWebPEncoder } from "./encoding";
 import { drawChart } from "./chart";
 import { WebPEncodeOptions } from "./worker/webp-encoder";
-import { AVIFEncodeOptions, Subsample } from "./worker/avif-encoder";
+import { Options, Subsample } from "./worker/avif-encoder";
 import { isSupportAVIF } from "./utils";
 
 const fileInput = document.getElementById("file") as HTMLInputElement;
@@ -15,8 +15,6 @@ const ctxP = canvasP.getContext("2d")!;
 const ctxD = canvasD.getContext("2d")!;
 
 async function loadFile() {
-
-
 	const file = fileInput.files![0];
 	const bitmap = await createImageBitmap(file);
 	const { width, height } = bitmap;
@@ -56,7 +54,7 @@ function encode(image: ImageData) {
 }
 
 function encodeAvif(image: ImageData) {
-	const optionsList = new Array<AVIFEncodeOptions>();
+	const optionsList = new Array<Options>();
 
 	for (let i = 0; i < 32; i++) {
 		optionsList[i] = {
@@ -83,7 +81,7 @@ function encodeAvif(image: ImageData) {
 	return encoder.encode(image, optionsList).start();
 }
 
-async function showResult(file: File, encodedFiles: Uint8Array[]) {
+async function showResult(file: File, encodedFiles: ArrayBuffer[]) {
 	const rawUrl = URL.createObjectURL(file);
 	const parent = document.getElementById("blend")!;
 	parent.style.backgroundImage = `url("${rawUrl}")`;
@@ -116,7 +114,7 @@ async function showResult(file: File, encodedFiles: Uint8Array[]) {
 		series: [{
 			name: "Compression Ratio %",
 			type: "line",
-			data: encodedFiles.map(({ length }) => length / file.size * 100),
+			data: encodedFiles.map(({ byteLength }) => byteLength / file.size * 100),
 		}],
 	});
 
