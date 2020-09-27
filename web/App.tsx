@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import ImageDifference from "./component/ImageDifference";
 import { createAVIFEncoder, createWebPEncoder } from "./encoding";
 import { drawChart } from "./chart";
 import { WebPEncodeOptions } from "./worker/webp-encoder";
@@ -15,8 +17,6 @@ const ctxP = canvasP.getContext("2d")!;
 const ctxD = canvasD.getContext("2d")!;
 
 async function loadFile() {
-
-
 	const file = fileInput.files![0];
 	const bitmap = await createImageBitmap(file);
 	const { width, height } = bitmap;
@@ -131,4 +131,29 @@ async function showResult(file: File, encodedFiles: Uint8Array[]) {
 	rangeInput.oninput = () => show(rangeInput.valueAsNumber);
 
 	show(parseInt(rangeInput.max));
+}
+
+export default function App() {
+	const [original, setOriginal] = useState<File>();
+
+	return (
+		<>
+			<section>
+				<ImageDifference original={original} optimized={undefined}/>
+				<canvas></canvas>
+			</section>
+			<section>
+				<div id="metrics"></div>
+				<form id="form">
+					<input id="file" type="file" accept="image/*"/>
+
+					<label id="range-label" htmlFor="range">Quality (-q)</label>
+					<input id="range" type="range" min="0" step="1"/>
+
+					<input id="brightness" type="number" min="100" step="20" value="100"/>
+					<progress id="progress"></progress>
+				</form>
+			</section>
+		</>
+	);
 }

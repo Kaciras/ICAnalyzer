@@ -4,10 +4,12 @@
 		"lib": ["ESNext", "DOM", "WebWorker"],
 		"module": "ESNext",
 		"moduleResolution": "Node",
+		"jsx": "react",
 
 		"newLine": "LF",
 		"strict": true,
 
+		"esModuleInterop": true,
 		"removeComments": true,
 		"sourceMap": true,
 		"experimentalDecorators": true

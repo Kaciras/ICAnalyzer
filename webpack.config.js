@@ -2,7 +2,6 @@ const path = require("path");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
-
 module.exports = {
 	mode: "development",
 	context: __dirname,
@@ -15,7 +14,7 @@ module.exports = {
 	},
 	devtool: "source-map",
 	resolve: {
-		extensions: [".ts", ".mjs", ".js", ".json"],
+		extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
 	},
 	module: {
 		rules: [
@@ -29,6 +28,34 @@ module.exports = {
 				},
 			},
 			{
+				oneOf: [
+					{
+						test: /\.(scss|sass)$/,
+						include: path.join(__dirname, "web", "component"),
+						use: [
+							"style-loader",
+							{
+								loader: "css-loader",
+								options: {
+									modules: {
+										localIdentName: "[name]_[local]_[hash:base64:5]",
+									}
+								}
+							},
+							"sass-loader",
+						]
+					},
+					{
+						test: /\.(scss|sass)$/,
+						use: [
+							"style-loader",
+							"css-loader",
+							"sass-loader",
+						]
+					}
+				]
+			},
+			{
 				test: /\.wasm$/,
 				type: "javascript/auto",
 				loader: "file-loader",
@@ -39,7 +66,9 @@ module.exports = {
 		],
 	},
 	plugins: [
-		new WorkerPlugin(),
+		new WorkerPlugin({
+			globalObject: "self",
+		}),
 
 		new HtmlPlugin({
 			filename: "index.html",
@@ -51,7 +80,7 @@ module.exports = {
 	optimization: {
 		splitChunks: {
 			cacheGroups: {
-				vendor:{
+				vendor: {
 					name: "vendors",
 					test: /[\\/]node_modules[\\/]/,
 					priority: -10,
@@ -71,4 +100,9 @@ module.exports = {
 		setImmediate: false,
 		console: false,
 	},
+	devServer: {
+		compress: true,
+		stats: "minimal",
+		clientLogLevel: "none",
+	}
 };
