@@ -2,6 +2,7 @@ import React, { FormEvent, useRef, useState } from "react";
 import ImageDiff from "./ImageDiff";
 import { createWebPEncoder } from "../encoding";
 import type { WebPEncodeOptions } from "../worker/webp-encoder";
+import type { EChartOption } from "echarts";
 import Chart from "./Chart";
 import style from "./App.scss";
 
@@ -19,6 +20,7 @@ export default function App() {
 	const [optimized, setOptimized] = useState<ImageBitmap>();
 
 	const [index, setIndex] = useState(0);
+	const [chartOptions, setChartOptions] = useState<EChartOption>({});
 
 	async function loadFile(event: FormEvent<HTMLInputElement>) {
 		const file = event.currentTarget.files![0];
@@ -66,27 +68,26 @@ export default function App() {
 		}
 		setResults(bitmaps);
 
-		// const chart = drawChart({
-		// 	title: {
-		// 		text: "Quality (-q)"
-		// 	},
-		// 	tooltip: {
-		// 		trigger: "axis",
-		// 	},
-		// 	legend: {
-		// 		data: ["Compression Ratio"]
-		// 	},
-		// 	xAxis: {
-		// 		data: encodedFiles.map((_, i) => i)
-		// 	},
-		// 	yAxis: {},
-		// 	series: [{
-		// 		name: "Compression Ratio %",
-		// 		type: "line",
-		// 		data: encodedFiles.map(({ length }) => length / file.size * 100),
-		// 	}],
-		// });
-
+		setChartOptions({
+			title: {
+				text: "Quality (-q)"
+			},
+			tooltip: {
+				trigger: "axis",
+			},
+			legend: {
+				data: ["Compression Ratio"]
+			},
+			xAxis: {
+				data: encodedFiles.map((_, i) => i)
+			},
+			yAxis: {},
+			series: [{
+				name: "Compression Ratio %",
+				type: "line",
+				data: encodedFiles.map(({ length }) => length / file.size * 100),
+			}],
+		});
 
 		setIndex(75);
 		setOptimized(bitmaps[75]);
@@ -113,7 +114,7 @@ export default function App() {
 				<canvas ref={canvasRef}/>
 			</section>
 			<section>
-				<Chart/>
+				<Chart options={chartOptions}/>
 				<form className={style.form}>
 					<input type="file" accept="image/*" onChange={loadFile}/>
 

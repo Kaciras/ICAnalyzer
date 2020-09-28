@@ -1,5 +1,5 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import style from "./ImageDiff.scss";
+import React, { CSSProperties, useEffect, useReducer, useRef, useState } from "react";
+import Styles from "./ImageDiff.scss";
 
 export interface ImageDiffProps {
 	original?: Blob;
@@ -11,7 +11,13 @@ export interface ImageDiffProps {
 
 export default function ImageDiff(props: ImageDiffProps) {
 	const canvasEl = useRef<HTMLCanvasElement>(null);
+
 	const [wrapperStyle, setWrapperStyle] = useState<CSSProperties>({});
+
+	const style = Object.assign(
+		{ "--brightness": `${props.brightness}%` },
+		wrapperStyle
+	);
 
 	useEffect(() => {
 		if (!props.original) {
@@ -38,8 +44,8 @@ export default function ImageDiff(props: ImageDiffProps) {
 	}, [props.optimized]);
 
 	return (
-		<div className={style.container} style={wrapperStyle}>
-			<canvas className={style.canvas} ref={canvasEl}/>
+		<div className={Styles.container} style={style}>
+			<canvas className={Styles.canvas} ref={canvasEl}/>
 		</div>
 	);
 }
