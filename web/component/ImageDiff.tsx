@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import style from "./imageDifference.scss";
+import style from "./ImageDiff.scss";
 
 export interface ImageDiffProps {
 	original?: Blob;
@@ -9,7 +9,7 @@ export interface ImageDiffProps {
 	brightness: number;
 }
 
-export default function ImageDifference(props: ImageDiffProps) {
+export default function ImageDiff(props: ImageDiffProps) {
 	const canvasEl = useRef<HTMLCanvasElement>(null);
 	const [wrapperStyle, setWrapperStyle] = useState<CSSProperties>({});
 

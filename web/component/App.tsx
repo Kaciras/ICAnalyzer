@@ -1,37 +1,9 @@
 import React, { FormEvent, useRef, useState } from "react";
-import ImageDifference from "./component/ImageDifference";
-import { createAVIFEncoder, createWebPEncoder } from "./encoding";
-import { WebPEncodeOptions } from "./worker/webp-encoder";
-import { AVIFEncodeOptions, Subsample } from "./worker/avif-encoder";
-import Chart from "./component/Chart";
-
-function encodeAvif(image: ImageData) {
-	const optionsList = new Array<AVIFEncodeOptions>();
-
-	for (let i = 0; i < 32; i++) {
-		optionsList[i] = {
-			minQuantizer: i * 2,
-			maxQuantizer: 63,
-			minQuantizerAlpha: i * 2,
-			maxQuantizerAlpha: 63,
-			tileColsLog2: 0,
-			tileRowsLog2: 0,
-			speed: 8,
-			subsample: Subsample.YUV444, // 4:4:4 无转换损失
-		};
-	}
-
-	// rangeInput.max = "31";
-
-	const progress = document.getElementById("progress") as HTMLProgressElement;
-	progress.value = 0;
-	progress.max = optionsList.length;
-
-	const encoder = createAVIFEncoder();
-	encoder.onProgress = value => progress.value = value;
-
-	return encoder.encode(image, optionsList).start();
-}
+import ImageDiff from "./ImageDiff";
+import { createWebPEncoder } from "../encoding";
+import type { WebPEncodeOptions } from "../worker/webp-encoder";
+import Chart from "./Chart";
+import style from "./App.scss";
 
 export default function App() {
 	const [original, setOriginal] = useState<File>();
@@ -54,9 +26,9 @@ export default function App() {
 
 		const bitmap = await createImageBitmap(file);
 		const { width, height } = bitmap;
-		setOriginal(file);
 		setWidth(width);
 		setHeight(height);
+		setOriginal(file);
 		canvas.width = width;
 		canvas.height = height;
 
@@ -130,8 +102,8 @@ export default function App() {
 
 	return (
 		<>
-			<section>
-				<ImageDifference
+			<section className={style.imageViews}>
+				<ImageDiff
 					original={original}
 					optimized={optimized}
 					width={width}
@@ -142,25 +114,27 @@ export default function App() {
 			</section>
 			<section>
 				<Chart/>
-				<form id="form">
+				<form className={style.form}>
 					<input type="file" accept="image/*" onChange={loadFile}/>
 
-					<label htmlFor="range">Quality (-q) {index}</label>
-					<input
-						id="range"
-						type="range"
-						value={index}
-						min={0}
-						step={1}
-						onChange={handleIndexChange}
-					/>
+					<label>
+						<p>Quality (-q) {index}</p>
+						<input
+							className={style.range}
+							type="range"
+							value={index}
+							min={0}
+							step={1}
+							onChange={handleIndexChange}
+						/>
+					</label>
 
 					<input
 						id="brightness"
 						type="number"
-						min="100"
-						step="50"
-						value="100"
+						min={100}
+						step={50}
+						value={brightness}
 						onChange={e => setBrightness(e.currentTarget.valueAsNumber)}
 					/>
 
