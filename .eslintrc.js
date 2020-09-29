@@ -11,8 +11,15 @@ module.exports = {
 		sourceType: "module"
 	},
 	plugins: [
-		"@typescript-eslint"
+		"@typescript-eslint",
+		"react",
+		"react-hooks",
 	],
+	settings: {
+		react: {
+			version: "detect"
+		}
+	},
 	rules: {
 		"quotes": ["error", "double", { avoidEscape: true }],
 		"indent": ["error", "tab"],
@@ -21,11 +28,17 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ["web/*.{j,t}s?(x)",],
+			files: ["*.{j,t}sx"],
 			env: {
-				node: false,
 				browser: true,
+				node: false,
 			},
+			extends: [
+				"plugin:react/recommended",
+			],
+			rules: {
+				"react-hooks/rules-of-hooks": "error",
+			}
 		},
 		{
 			files: ["*.ts?(x)"],
@@ -37,7 +50,19 @@ module.exports = {
 				"@typescript-eslint/no-non-null-assertion": ["off"],
 				"@typescript-eslint/no-explicit-any": ["off"],
 				"@typescript-eslint/explicit-module-boundary-types": ["off"],
+				"@typescript-eslint/ban-ts-comment": ["off"],
 			},
+		},
+
+		{
+			files: ["**/test/*-test.{j,t}s"],
+			env: {
+				jest: true,
+			},
+			extends: [
+				"plugin:jest/style",
+				"plugin:jest/recommended",
+			],
 		},
 	],
 };
