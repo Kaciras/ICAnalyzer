@@ -30,6 +30,7 @@ void FromSrgbToLinear(const vector<Image8>& rgb, vector<ImageF>& linear, int bac
 			for (int y = 0; y < ysize; ++y) {
 				const uint8_t* const BUTTERAUGLI_RESTRICT row_rgb = rgb[c].Row(y);
 				float* const BUTTERAUGLI_RESTRICT row_linear = linear[c].Row(y);
+
 				for (size_t x = 0; x < xsize; x++) {
 					const int value = row_rgb[x];
 					row_linear[x] = kSrgbToLinearTable[value];
@@ -44,6 +45,7 @@ void FromSrgbToLinear(const vector<Image8>& rgb, vector<ImageF>& linear, int bac
 				const uint8_t* const BUTTERAUGLI_RESTRICT row_rgb = rgb[c].Row(y);
 				float* const BUTTERAUGLI_RESTRICT row_linear = linear[c].Row(y);
 				const uint8_t* const BUTTERAUGLI_RESTRICT row_alpha = rgb[3].Row(y);
+
 				for (size_t x = 0; x < xsize; x++) {
 					int value;
 					if (row_alpha[x] == 255) {
@@ -55,8 +57,7 @@ void FromSrgbToLinear(const vector<Image8>& rgb, vector<ImageF>& linear, int bac
 					else {
 						const int fg_weight = row_alpha[x];
 						const int bg_weight = 255 - fg_weight;
-						value =
-							(row_rgb[x] * fg_weight + background * bg_weight + 127) / 255;
+						value = (row_rgb[x] * fg_weight + background * bg_weight + 127) / 255;
 					}
 					row_linear[x] = kSrgbToLinearTable[value];
 				}
@@ -122,21 +123,43 @@ void CreateHeatMapImage(
 }
 
 void ConvertImage(string data, size_t xsize, size_t ysize, vector<Image8>& rgb) {
-	rgb = CreatePlanes<uint8_t>(xsize, ysize, 4);
-	auto buffer = reinterpret_cast<const uint8_t*>(data.data());
+	auto channels = data.length() / xsize / ysize;
+	auto rowLenth = xsize * channels;
 
-	for (int y = 0; y < ysize; y++) {
-		const uint8_t* const BUTTERAUGLI_RESTRICT row = buffer + (y * xsize * 4);
-		uint8_t* const BUTTERAUGLI_RESTRICT row0 = rgb[0].Row(y);
-		uint8_t* const BUTTERAUGLI_RESTRICT row1 = rgb[1].Row(y);
-		uint8_t* const BUTTERAUGLI_RESTRICT row2 = rgb[2].Row(y);
-		uint8_t* const BUTTERAUGLI_RESTRICT row3 = rgb[3].Row(y);
+	const uint8_t* BUTTERAUGLI_RESTRICT buffer = reinterpret_cast<const uint8_t*>(data.data());
 
-		for (int x = 0; x < xsize; x++) {
-			row0[x] = row[4 * x + 0];
-			row1[x] = row[4 * x + 1];
-			row2[x] = row[4 * x + 2];
-			row3[x] = row[4 * x + 3];
+	if (channels == 3) {
+		rgb = CreatePlanes<uint8_t>(xsize, ysize, 3);
+
+		for (int y = 0; y < ysize; y++) {
+			uint8_t* const BUTTERAUGLI_RESTRICT r = rgb[0].Row(y);
+			uint8_t* const BUTTERAUGLI_RESTRICT g = rgb[1].Row(y);
+			uint8_t* const BUTTERAUGLI_RESTRICT b = rgb[2].Row(y);
+
+			for (int x = 0; x < xsize; x++) {
+				const int offset = (y * rowLenth) + (x * 3);
+				r[x] = buffer[offset + 0];
+				g[x] = buffer[offset + 1];
+				b[x] = buffer[offset + 2];
+			}
+		}
+	}
+	else {
+		rgb = CreatePlanes<uint8_t>(xsize, ysize, 4);
+
+		for (int y = 0; y < ysize; y++) {
+			uint8_t* const BUTTERAUGLI_RESTRICT r = rgb[0].Row(y);
+			uint8_t* const BUTTERAUGLI_RESTRICT g = rgb[1].Row(y);
+			uint8_t* const BUTTERAUGLI_RESTRICT b = rgb[2].Row(y);
+			uint8_t* const BUTTERAUGLI_RESTRICT a = rgb[3].Row(y);
+
+			for (int x = 0; x < xsize; x++) {
+				const int offset = (y * rowLenth) + (x * 4);
+				r[x] = buffer[offset + 0];
+				g[x] = buffer[offset + 1];
+				b[x] = buffer[offset + 2];
+				a[x] = buffer[offset + 3];
+			}
 		}
 	}
 }
@@ -147,6 +170,19 @@ struct ButteraugliOptions {
 	double badQualitySeek;
 };
 
+double Calc(vector<Image8>& rgb1, vector<Image8>& rgb2, int background, float hfAsymmetry, ImageF& diffMap) {
+	vector<ImageF> linear1, linear2;
+	FromSrgbToLinear(rgb1, linear1, background);
+	FromSrgbToLinear(rgb2, linear2, background);
+
+	double diff_value;
+	if (!ButteraugliInterface(linear1, linear2, hfAsymmetry, diffMap, diff_value)) {
+		throw "test error";
+	}
+
+	return diff_value;
+}
+
 val GetButteraugli(string data1, string data2, size_t width, size_t height, ButteraugliOptions options) {
 	auto length = data1.length();
 
@@ -154,36 +190,23 @@ val GetButteraugli(string data1, string data2, size_t width, size_t height, Butt
 	ConvertImage(data1, width, height, rgb1);
 	ConvertImage(data2, width, height, rgb2);
 
-	vector<ImageF> linear1, linear2;
-	FromSrgbToLinear(rgb1, linear1, 0);
-	FromSrgbToLinear(rgb2, linear2, 0);
-
-	ImageF diff_map;
-	double diff_value;
-	if (!ButteraugliInterface(linear1, linear2, options.hfAsymmetry, diff_map, diff_value)) {
-		throw "test error";
-	}
-
-	// If the alpha channel is present, overlay the image over a white background as well.
-	FromSrgbToLinear(rgb1, linear1, 255);
-	FromSrgbToLinear(rgb2, linear2, 255);
-
-	ImageF diff_map_on_white;
-	double diff_value_on_white;
-	if (!ButteraugliInterface(linear1, linear2, options.hfAsymmetry, diff_map_on_white, diff_value_on_white)) {
-		throw "test error";
-	}
+	ImageF diff_map, diff_map_on_white;
+	auto diff_value = Calc(rgb1, rgb2, 0, options.hfAsymmetry, diff_map);
 
 	ImageF* diff_map_ptr = &diff_map;
-	if (diff_value_on_white > diff_value) {
-		diff_value = diff_value_on_white;
-		diff_map_ptr = &diff_map_on_white;
+	if (length / width / height == 4) {
+		double diff_value_on_white = Calc(rgb1, rgb2, 0, options.hfAsymmetry, diff_map_on_white);
+
+		if (diff_value_on_white > diff_value) {
+			diff_value = diff_value_on_white;
+			diff_map_ptr = &diff_map_on_white;
+		}
 	}
 
 	const double good_quality = ButteraugliFuzzyInverse(options.goodQualitySeek);
 	const double bad_quality = ButteraugliFuzzyInverse(options.badQualitySeek);
 	vector<uint8_t> heatMap;
-	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, rgb1[0].xsize(), rgb2[0].ysize(), &heatMap);
+	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, width, height, &heatMap);
 
 	auto jsSource = val(diff_value);
 	auto jsHeatMap = val(typed_memory_view(heatMap.size(), heatMap.data()));

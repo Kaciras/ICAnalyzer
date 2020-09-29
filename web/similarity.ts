@@ -1,6 +1,13 @@
 // @ts-ignore
 import metrics from "../build/metrics";
 
+export interface TwoImages {
+	dataA: Uint8Array;
+	dataB: Uint8Array;
+	width: number;
+	height: number;
+}
+
 export interface ButteraugliOptions {
 	hfAsymmetry: number;
 	goodQualitySeek: number;
@@ -13,31 +20,19 @@ const DEFAULT_OPTIONS: ButteraugliOptions = {
 	badQualitySeek: 0.5,
 };
 
-interface ButteraugliResult {
-	source: number;
-	heatMap: Uint8Array;
-}
+type ButteraugliResult = [number, ArrayBuffer];
 
-function checkImages(imageA: ImageData, imageB: ImageData) {
-	const { width, height } = imageA;
-	const lenA = imageA.data.byteLength;
-	const lenB = imageB.data.byteLength;
+export async function butteraugli(twoImages: TwoImages, options?: Partial<ButteraugliOptions>) {
+	const { dataA, dataB, width, height } = twoImages;
 
-	if (width !== imageB.width) {
-		throw new Error(`Images have different width ${width} vs. ${imageB.width}`);
+	if (dataA.byteLength !== dataB.byteLength) {
+		throw new Error(`Image buffers have different length ${dataA.byteLength} vs. ${dataB.byteLength}`);
 	}
-	if (height !== imageB.height) {
-		throw new Error(`Images have different height ${height} vs. ${imageB.height}`);
-	}
-	if (lenA !== lenB) {
-		throw new Error(`Images have different length ${lenA} vs. ${lenB}`);
-	}
-}
 
-export async function butteraugli(imageA: ImageData, imageB: ImageData, options?: Partial<ButteraugliOptions>) {
-	const { width, height } = imageA;
-	const merged = options = { ...DEFAULT_OPTIONS, ...options };
-
+	const merged = {
+		...DEFAULT_OPTIONS,
+		...options,
+	};
 	if (merged.goodQualitySeek < 0 || merged.goodQualitySeek >= 2) {
 		throw new Error("goodQualitySeek must between 0, 2");
 	}
@@ -46,15 +41,15 @@ export async function butteraugli(imageA: ImageData, imageB: ImageData, options?
 	}
 
 	const wasmModule = await metrics();
-	return wasmModule.getButteraugli(imageA.data, imageB.data, width, height, options) as ButteraugliResult;
+	return wasmModule.GetButteraugli(dataA, dataB, width, height, merged) as ButteraugliResult;
 }
 
-export async function getPSNR(imageA: ImageData, imageB: ImageData) {
-	const { width, height } = imageA;
-	checkImages(imageA, imageB);
+export async function getPSNR(twoImages: TwoImages) {
+	const { dataA, dataB, width, height } = twoImages;
 
 	const wasmModule = await metrics();
-	return wasmModule.getPSNR(imageA.data, imageB.data, width, height) as number;
+	const mse = wasmModule.GetMSE(dataA, dataB, width, height) as number;
+	return 10 * Math.log10(255 * 255 / mse);
 }
 
 // export function getSSIM(imageA: ImageData, imageB: ImageData) {
