@@ -1,7 +1,8 @@
 module.exports = {
 	testMatch: [
-		"**/test/*-test.[jt]s",
+		"**/test/*.spec.[jt]s",
 	],
+	preset: "ts-jest",
 	testEnvironment: "node",
 	clearMocks: true,
 	coverageDirectory: "coverage",
