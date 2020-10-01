@@ -13,5 +13,9 @@
 		"removeComments": true,
 		"sourceMap": true,
 		"experimentalDecorators": true
-	}
+	},
+	"exclude": [
+		"deps",
+		"node_modules"
+	]
 }
