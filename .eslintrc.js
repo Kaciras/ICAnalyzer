@@ -55,7 +55,7 @@ module.exports = {
 		},
 
 		{
-			files: ["**/test/*-test.{j,t}s"],
+			files: ["**/test/*.spec.{j,t}s"],
 			env: {
 				jest: true,
 			},
