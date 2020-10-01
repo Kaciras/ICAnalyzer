@@ -1,14 +1,14 @@
 module.exports = {
 	env: {
 		node: true,
-		es2021: true
+		es2021: true,
 	},
 	extends: [
 		"eslint:recommended",
 	],
 	parserOptions: {
 		ecmaVersion: 12,
-		sourceType: "module"
+		sourceType: "module",
 	},
 	plugins: [
 		"@typescript-eslint",
@@ -17,14 +17,15 @@ module.exports = {
 	],
 	settings: {
 		react: {
-			version: "detect"
-		}
+			version: "detect",
+		},
 	},
 	rules: {
 		"quotes": ["error", "double", { avoidEscape: true }],
 		"indent": ["error", "tab"],
 		"linebreak-style": ["error", "unix"],
 		"semi": ["error", "always"],
+		"comma-dangle": ["error", "always-multiline"],
 	},
 	overrides: [
 		{
@@ -38,7 +39,7 @@ module.exports = {
 			],
 			rules: {
 				"react-hooks/rules-of-hooks": "error",
-			}
+			},
 		},
 		{
 			files: ["*.ts?(x)"],
@@ -53,7 +54,6 @@ module.exports = {
 				"@typescript-eslint/ban-ts-comment": ["off"],
 			},
 		},
-
 		{
 			files: ["**/test/*.spec.{j,t}s"],
 			env: {
