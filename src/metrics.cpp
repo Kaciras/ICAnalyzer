@@ -1,9 +1,7 @@
-#include <emscripten/bind.h>
-#include <emscripten/val.h>
 #include <butteraugli/butteraugli.h>
+#include "metrics.h"
 
 using namespace butteraugli;
-using namespace emscripten;
 
 using std::vector;
 using std::string;
@@ -104,11 +102,8 @@ static void ScoreToRgb(double score, double good_threshold, double bad_threshold
 }
 
 void CreateHeatMapImage(
-	const ImageF& distmap,
-	double good_threshold,
-	double bad_threshold,
-	size_t xsize,
-	size_t ysize,
+	const ImageF& distmap, double good_threshold,
+	double bad_threshold, size_t xsize, size_t ysize,
 	vector<uint8_t>* heatmap)
 {
 	heatmap->resize(3 * xsize * ysize);
@@ -125,77 +120,63 @@ void CreateHeatMapImage(
 void ConvertImage(string data, size_t xsize, size_t ysize, vector<Image8>& rgb) {
 	auto channels = data.length() / xsize / ysize;
 	auto rowLenth = xsize * channels;
-
 	const uint8_t* BUTTERAUGLI_RESTRICT buffer = reinterpret_cast<const uint8_t*>(data.data());
+	rgb = CreatePlanes<uint8_t>(xsize, ysize, channels);
 
 	if (channels == 3) {
-		rgb = CreatePlanes<uint8_t>(xsize, ysize, 3);
-
 		for (int y = 0; y < ysize; y++) {
 			uint8_t* const BUTTERAUGLI_RESTRICT r = rgb[0].Row(y);
 			uint8_t* const BUTTERAUGLI_RESTRICT g = rgb[1].Row(y);
 			uint8_t* const BUTTERAUGLI_RESTRICT b = rgb[2].Row(y);
 
-			for (int x = 0; x < xsize; x++) {
-				const int offset = (y * rowLenth) + (x * 3);
-				r[x] = buffer[offset + 0];
-				g[x] = buffer[offset + 1];
-				b[x] = buffer[offset + 2];
+			for (int x = 0; x < xsize; x++, buffer += 3) {
+				r[x] = buffer[0];
+				g[x] = buffer[1];
+				b[x] = buffer[2];
 			}
 		}
 	}
 	else {
-		rgb = CreatePlanes<uint8_t>(xsize, ysize, 4);
-
 		for (int y = 0; y < ysize; y++) {
 			uint8_t* const BUTTERAUGLI_RESTRICT r = rgb[0].Row(y);
 			uint8_t* const BUTTERAUGLI_RESTRICT g = rgb[1].Row(y);
 			uint8_t* const BUTTERAUGLI_RESTRICT b = rgb[2].Row(y);
 			uint8_t* const BUTTERAUGLI_RESTRICT a = rgb[3].Row(y);
 
-			for (int x = 0; x < xsize; x++) {
-				const int offset = (y * rowLenth) + (x * 4);
-				r[x] = buffer[offset + 0];
-				g[x] = buffer[offset + 1];
-				b[x] = buffer[offset + 2];
-				a[x] = buffer[offset + 3];
+			for (int x = 0; x < xsize; x++, buffer += 4) {
+				r[x] = buffer[0];
+				g[x] = buffer[1];
+				b[x] = buffer[2];
+				a[x] = buffer[3];
 			}
 		}
 	}
 }
-
-struct ButteraugliOptions {
-	float hfAsymmetry;
-	double goodQualitySeek;
-	double badQualitySeek;
-};
 
 double Calc(vector<Image8>& rgb1, vector<Image8>& rgb2, int background, float hfAsymmetry, ImageF& diffMap) {
 	vector<ImageF> linear1, linear2;
 	FromSrgbToLinear(rgb1, linear1, background);
 	FromSrgbToLinear(rgb2, linear2, background);
 
-	double diff_value;
-	if (!ButteraugliInterface(linear1, linear2, hfAsymmetry, diffMap, diff_value)) {
-		throw "test error";
-	}
-
-	return diff_value;
+	ButteraugliDiffmap(linear1, linear2, hfAsymmetry, diffMap);
+	return ButteraugliScoreFromDiffmap(diffMap);
 }
 
-val GetButteraugli(string data1, string data2, size_t width, size_t height, ButteraugliOptions options) {
-	auto length = data1.length();
+void Butteraugli(TwoImages images, ButteraugliOptions options, double& diff_value, vector<uint8_t>& heatMap) {
+	const auto length = images.dataA.length();
+	const auto width = images.width;
+	const auto height = images.height;
 
 	vector<Image8> rgb1, rgb2;
-	ConvertImage(data1, width, height, rgb1);
-	ConvertImage(data2, width, height, rgb2);
+	ConvertImage(images.dataA, width, height, rgb1);
+	ConvertImage(images.dataB, width, height, rgb2);
 
 	ImageF diff_map, diff_map_on_white;
-	auto diff_value = Calc(rgb1, rgb2, 0, options.hfAsymmetry, diff_map);
+	diff_value = Calc(rgb1, rgb2, 0, options.hfAsymmetry, diff_map);
 
 	ImageF* diff_map_ptr = &diff_map;
 	if (length / width / height == 4) {
-		double diff_value_on_white = Calc(rgb1, rgb2, 0, options.hfAsymmetry, diff_map_on_white);
+		double diff_value_on_white = Calc(rgb1, rgb2, 255, options.hfAsymmetry, diff_map_on_white);
 
 		if (diff_value_on_white > diff_value) {
 			diff_value = diff_value_on_white;
@@ -205,47 +186,26 @@ val GetButteraugli(string data1, string data2, size_t width, size_t height, Butt
 
 	const double good_quality = ButteraugliFuzzyInverse(options.goodQualitySeek);
 	const double bad_quality = ButteraugliFuzzyInverse(options.badQualitySeek);
-	vector<uint8_t> heatMap;
 	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, width, height, &heatMap);
-
-	auto jsSource = val(diff_value);
-	auto jsHeatMap = val(typed_memory_view(heatMap.size(), heatMap.data()));
-
-	auto rv = val::array();
-	rv.call<void>("push", jsSource);
-	rv.call<void>("push", jsHeatMap);
-	return rv;
 }
 
+double GetMSE(TwoImages images) {
+	auto length = images.dataA.length();
 
-double GetMSE(string data1, string data2, size_t width, size_t height) {
-	auto length = data1.length();
-
-	auto p1 = reinterpret_cast<const uint8_t*>(data1.data());
-	auto p2 = reinterpret_cast<const uint8_t*>(data2.data());
+	auto p1 = reinterpret_cast<const uint8_t*>(images.dataA.data());
+	auto p2 = reinterpret_cast<const uint8_t*>(images.dataB.data());
 
 	double sum = 0;
 
 	for (auto i = 0; i < length; ++i)
 	{
-		auto e = *(p1 + i) - *(p2 + i);
+		const auto e = *(p1 + i) - *(p2 + i);
 		sum += e * e;
 	}
 
 	return sum / length;
 }
 
-double GetSSIM(string data1, string data2, size_t width, size_t height) {
-
-}
-
-EMSCRIPTEN_BINDINGS(my_module) {
-	value_object<ButteraugliOptions>("ButteraugliOptions")
-		.field("hfAsymmetry", &ButteraugliOptions::hfAsymmetry)
-		.field("goodQualitySeek", &ButteraugliOptions::goodQualitySeek)
-		.field("badQualitySeek", &ButteraugliOptions::badQualitySeek);
-
-	function("GetMSE", &GetMSE);
-	function("GetSSIM", &GetSSIM);
-	function("GetButteraugli", &GetButteraugli);
+double GetSSIM(TwoImages images) {
+	return 0.0;
 }

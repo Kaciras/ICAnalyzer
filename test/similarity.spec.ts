@@ -1,6 +1,22 @@
 import { butteraugli, getPSNR } from "../web/similarity";
 import { readImage } from "./test-helper";
 
+it("should check image data have same length", () => {
+	const dataA = Buffer.alloc(900);
+	const dataB = Buffer.alloc(1200);
+	const ti = { dataA, dataB, width: 30, height: 10 };
+
+	return expect(butteraugli(ti)).rejects.toThrow();
+});
+
+it("should check image is RGB", () => {
+	const dataA = Buffer.alloc(900);
+	const dataB = Buffer.alloc(1200);
+	const ti = { dataA, dataB, width: 30, height: 20 };
+
+	return expect(butteraugli(ti)).rejects.toThrow();
+});
+
 it("should get butteraugli source & heatMap", async () => {
 	const { data, info } = await readImage("image.jpg");
 	const dataB = (await readImage("image.webp")).data;
