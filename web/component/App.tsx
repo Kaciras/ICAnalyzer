@@ -1,19 +1,16 @@
 import React, { FormEvent, useRef, useState } from "react";
 import ImageDiff from "./ImageDiff";
-import { createWebPEncoder } from "../encoding";
-import type { WebPEncodeOptions } from "../worker/webp-encoder";
 import type { EChartOption } from "echarts";
 import Chart from "./Chart";
 import style from "./App.scss";
+import CompressDialog from "./CompressDialog";
 
 export default function App() {
 	const [original, setOriginal] = useState<File>();
+
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [width, setWidth] = useState(0);
 	const [height, setHeight] = useState(0);
-
-	const [max, setMax] = useState(1);
-	const [progress, setProgress] = useState(0);
 
 	const [results, setResults] = useState<ImageBitmap[]>([]);
 	const [brightness, setBrightness] = useState(100);
@@ -22,44 +19,10 @@ export default function App() {
 	const [index, setIndex] = useState(0);
 	const [chartOptions, setChartOptions] = useState<EChartOption>({});
 
-	async function loadFile(event: FormEvent<HTMLInputElement>) {
-		const file = event.currentTarget.files![0];
-		const canvas = canvasRef.current!;
-
-		const bitmap = await createImageBitmap(file);
-		const { width, height } = bitmap;
-		setWidth(width);
-		setHeight(height);
-		setOriginal(file);
-		canvas.width = width;
-		canvas.height = height;
-
-		const ctx = canvas.getContext("2d")!;
-		ctx.drawImage(bitmap, 0, 0);
-		const canvasData = ctx.getImageData(0, 0, width, height);
-
-		// if (!(await isSupportAVIF())) {
-		// 	return alert("Your browser does not support avif image.");
-		// }
-
-		return showResult(file, await encode(canvasData));
-	}
-
-	function encode(image: ImageData) {
-		const optionsList = new Array<WebPEncodeOptions>(101);
-		for (let i = 0; i < 101; i++) {
-			optionsList[i] = { quality: i };
-		}
-
-		setMax(optionsList.length);
-		setProgress(0);
-
-		const encoder = createWebPEncoder();
-		encoder.onProgress = setProgress;
-		return encoder.encode(image, optionsList).start();
-	}
+	const [showDialog, setShowDialog] = useState(false);
 
 	async function showResult(file: File, encodedFiles: Uint8Array[]) {
+		setShowDialog(false);
 
 		const bitmaps: ImageBitmap[] = [];
 		for (const data of encodedFiles) {
@@ -70,16 +33,16 @@ export default function App() {
 
 		setChartOptions({
 			title: {
-				text: "Quality (-q)"
+				text: "Quality (-q)",
 			},
 			tooltip: {
 				trigger: "axis",
 			},
 			legend: {
-				data: ["Compression Ratio"]
+				data: ["Compression Ratio"],
 			},
 			xAxis: {
-				data: encodedFiles.map((_, i) => i)
+				data: encodedFiles.map((_, i) => i),
 			},
 			yAxis: {},
 			series: [{
@@ -116,8 +79,6 @@ export default function App() {
 			<section>
 				<Chart options={chartOptions}/>
 				<form className={style.form}>
-					<input type="file" accept="image/*" onChange={loadFile}/>
-
 					<label>
 						<p>Quality (-q) {index}</p>
 						<input
@@ -129,18 +90,19 @@ export default function App() {
 							onChange={handleIndexChange}
 						/>
 					</label>
-
-					<input
-						id="brightness"
-						type="number"
-						min={100}
-						step={50}
-						value={brightness}
-						onChange={e => setBrightness(e.currentTarget.valueAsNumber)}
-					/>
-
-					<progress id="progress" value={progress} max={max}/>
+					<label>
+						brightness %
+						<input
+							type="number"
+							min={100}
+							step={50}
+							value={brightness}
+							onChange={e => setBrightness(e.currentTarget.valueAsNumber)}
+						/>
+					</label>
 				</form>
+				<button onClick={() => setShowDialog(true)}>Show Dialog</button>
+				{ showDialog && <CompressDialog onClose={() => setShowDialog(false)} onChange={showResult}/> }
 			</section>
 		</>
 	);
