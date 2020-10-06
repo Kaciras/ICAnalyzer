@@ -70,6 +70,10 @@ class NumberRangeTemplate implements OptionType<any, any> {
 	}
 }
 
+class BooleanTemplate {
+
+}
+
 interface OptionTemplate {
 	label: string;
 	name: string;
@@ -88,6 +92,16 @@ const WebPOptionsTemplate: OptionTemplate[] = [
 		label: "Method (-m)",
 		name: "method",
 		type: new NumberRangeTemplate(0, 6, 4),
+	},
+	{
+		label: "Spatial noise shaping (-sns)",
+		name: "sns",
+		type: new NumberRangeTemplate(0, 6, 4),
+	},
+	{
+		label: "Filter sharpness (-f)",
+		name: "filter_sharpness",
+		type: new NumberRangeTemplate(0, 100, 4),
 	},
 ];
 
@@ -182,6 +196,7 @@ export default function CompressDialog(props: Props) {
 				<fieldset>
 					<input type="file" accept="image/*" onChange={start}/>
 				</fieldset>
+
 				<fieldset>
 					<h2>Options</h2>
 					{fields}

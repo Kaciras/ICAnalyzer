@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useReducer, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import Styles from "./ImageDiff.scss";
 
 export interface ImageDiffProps {
@@ -6,13 +6,13 @@ export interface ImageDiffProps {
 	optimized?: ImageBitmap;
 	width: number;
 	height: number;
-	brightness: number;
 }
 
 export default function ImageDiff(props: ImageDiffProps) {
 	const canvasEl = useRef<HTMLCanvasElement>(null);
 
 	const [wrapperStyle, setWrapperStyle] = useState<CSSProperties>({});
+	const [brightness, setBrightness] = useState(100);
 
 	const style = Object.assign(
 		{ "--brightness": `${props.brightness}%` },
@@ -46,6 +46,17 @@ export default function ImageDiff(props: ImageDiffProps) {
 	return (
 		<div className={Styles.container} style={style}>
 			<canvas className={Styles.canvas} ref={canvasEl}/>
+
+			<label className={Styles.range}>
+				brightness %
+				<input
+					type="number"
+					min={100}
+					step={50}
+					value={brightness}
+					onChange={e => setBrightness(e.currentTarget.valueAsNumber)}
+				/>
+			</label>
 		</div>
 	);
 }

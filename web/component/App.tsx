@@ -1,9 +1,10 @@
 import React, { FormEvent, useRef, useState } from "react";
-import ImageDiff from "./ImageDiff";
 import type { EChartOption } from "echarts";
-import Chart from "./Chart";
-import style from "./App.scss";
+import IconButton from "./IconButton";
 import CompressDialog from "./CompressDialog";
+import Chart from "./Chart";
+import ImageDiff from "./ImageDiff";
+import style from "./App.scss";
 
 export default function App() {
 	const [original, setOriginal] = useState<File>();
@@ -13,7 +14,7 @@ export default function App() {
 	const [height, setHeight] = useState(0);
 
 	const [results, setResults] = useState<ImageBitmap[]>([]);
-	const [brightness, setBrightness] = useState(100);
+
 	const [optimized, setOptimized] = useState<ImageBitmap>();
 
 	const [index, setIndex] = useState(0);
@@ -66,19 +67,36 @@ export default function App() {
 
 	return (
 		<>
-			<section className={style.imageViews}>
+			<section className={style.main}>
 				<ImageDiff
 					original={original}
 					optimized={optimized}
 					width={width}
 					height={height}
-					brightness={brightness}
 				/>
 				<canvas ref={canvasRef}/>
-			</section>
-			<section>
+
 				<Chart options={chartOptions}/>
-				<form className={style.form}>
+
+				<div className={style.buttonGroup}>
+					<IconButton
+						title="Show chart"
+						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
+					/>
+					<IconButton
+						title="Select file"
+						onClick={() => setShowDialog(true)}
+						icon={require("bootstrap-icons/icons/cloud-upload.svg")}
+					/>
+					<IconButton
+						title="Download"
+						disabled={true}
+						onClick={() => setShowDialog(true)}
+						icon={require("bootstrap-icons/icons/download.svg")}
+					/>
+				</div>
+
+				<form className={style.variableGroup}>
 					<label>
 						<p>Quality (-q) {index}</p>
 						<input
@@ -90,20 +108,10 @@ export default function App() {
 							onChange={handleIndexChange}
 						/>
 					</label>
-					<label>
-						brightness %
-						<input
-							type="number"
-							min={100}
-							step={50}
-							value={brightness}
-							onChange={e => setBrightness(e.currentTarget.valueAsNumber)}
-						/>
-					</label>
 				</form>
-				<button onClick={() => setShowDialog(true)}>Show Dialog</button>
-				{ showDialog && <CompressDialog onClose={() => setShowDialog(false)} onChange={showResult}/> }
 			</section>
+
+			{showDialog && <CompressDialog onClose={() => setShowDialog(false)} onChange={showResult}/>}
 		</>
 	);
 }

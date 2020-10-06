@@ -1,13 +1,37 @@
-.imageViews > * {
-	width: 50vw;
-	height: 50vh;
+.main {
+	width: 100%;
+	height: 100%;
+
+	background-image:
+			linear-gradient(45deg, #eee 25%, transparent 0),
+			linear-gradient(45deg, transparent 75%, #eee 0),
+			linear-gradient(45deg, #eee 25%, transparent 0),
+			linear-gradient(45deg, transparent 75%, #eee 0);
+	background-size: 20px 20px;
+	background-position: 0 0, 10px 10px, 10px 10px, 0 0;
 }
 
-.range {
-	width: 400px;
+.buttonGroup {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	color: white;
+
+	border-top-right-radius: 4px;
+	overflow: hidden;
+	background: rgba(0, 0, 0, .7);
 }
 
-.form {
-	display: flex;
-	flex-direction: column;
+
+.variableGroup {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+
+	padding: 10px;
+	color: white;
+
+	border-top-left-radius: 4px;
+	overflow: hidden;
+	background: rgba(0, 0, 0, .7);
 }
