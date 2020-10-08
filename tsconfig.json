@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "ES2019",
 		"lib": ["ESNext", "DOM", "WebWorker"],
-		"module": "ESNext",
+		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"jsx": "react",
 

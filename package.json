@@ -17,6 +17,7 @@
 		"bootstrap-icons": "^1.0.0",
 		"comlink": "^4.3.0",
 		"echarts": "^4.9.0",
+		"gpu.js": "^2.10.4",
 		"opencv-wasm": "^4.3.0-4",
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1",

@@ -23,6 +23,9 @@ module.exports = {
 				use: {
 					loader: "ts-loader",
 					options: {
+						compilerOptions: {
+							module: "ESNext",
+						},
 						transpileOnly: true,
 					},
 				},
@@ -39,11 +42,11 @@ module.exports = {
 								options: {
 									modules: {
 										localIdentName: "[name]_[local]_[hash:base64:5]",
-									}
-								}
+									},
+								},
 							},
 							"sass-loader",
-						]
+						],
 					},
 					{
 						test: /\.(scss|sass)$/,
@@ -51,9 +54,9 @@ module.exports = {
 							"style-loader",
 							"css-loader",
 							"sass-loader",
-						]
-					}
-				]
+						],
+					},
+				],
 			},
 			{
 				test: /\.wasm$/,
@@ -85,9 +88,9 @@ module.exports = {
 					test: /[\\/]node_modules[\\/]/,
 					priority: -10,
 					chunks: "initial",
-				}
-			}
-		}
+				},
+			},
+		},
 	},
 	node: {
 		fs: "empty",
@@ -104,5 +107,5 @@ module.exports = {
 		compress: true,
 		stats: "minimal",
 		clientLogLevel: "none",
-	}
+	},
 };
