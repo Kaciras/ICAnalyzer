@@ -5,6 +5,7 @@ import CompressDialog from "./CompressDialog";
 import Chart from "./Chart";
 import ImageDiff from "./ImageDiff";
 import style from "./App.scss";
+import RangeInput from "./RangeInput";
 
 export default function App() {
 	const [original, setOriginal] = useState<File>();
@@ -60,8 +61,8 @@ export default function App() {
 	function handleIndexChange(e: FormEvent<HTMLInputElement>) {
 		const i = e.currentTarget.valueAsNumber;
 		setIndex(i);
-		setOptimized(results[i]);
-		canvasRef.current!.getContext("2d")!.drawImage(results[i], 0, 0);
+		// setOptimized(results[i]);
+		// canvasRef.current!.getContext("2d")!.drawImage(results[i], 0, 0);
 		// chart.dispatchAction({ type: "showTip", x: i, y: 0,position: ["50%", "50%"] });
 	}
 
@@ -99,12 +100,11 @@ export default function App() {
 				<form className={style.variableGroup}>
 					<label>
 						<p>Quality (-q) {index}</p>
-						<input
-							className={style.range}
-							type="range"
+						<RangeInput
 							value={index}
 							min={0}
 							step={1}
+							max={100}
 							onChange={handleIndexChange}
 						/>
 					</label>

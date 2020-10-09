@@ -66,6 +66,10 @@ module.exports = {
 					name: "[name].[hash:5].[ext]",
 				},
 			},
+			{
+				test: /\.svg$/,
+				loader: "svg-inline-loader",
+			},
 		],
 	},
 	plugins: [

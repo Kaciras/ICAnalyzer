@@ -2,6 +2,7 @@ import React, { FormEvent, useState } from "react";
 import Styles from "./CompressDialog.scss";
 import { WebPEncodeOptions } from "../worker/webp-encoder";
 import { createWebPEncoder } from "../encoding";
+import NumberInput from "./NumberInput";
 
 interface OptionType<F, V> {
 
@@ -55,7 +56,7 @@ class NumberRangeTemplate implements OptionType<any, any> {
 				<p>{name}</p>
 				<label>
 					<span>min: </span>
-					<input type="number" min={min} max={max} value={value.min}/>
+					<NumberInput value={value.min} min={min} max={max} onChange={}/>
 				</label>
 				<label>
 					<span>max: </span>
@@ -197,15 +198,17 @@ export default function CompressDialog(props: Props) {
 					<input type="file" accept="image/*" onChange={start}/>
 				</fieldset>
 
-				<fieldset>
+				<fieldset className={Styles.fieldset}>
 					<h2>Options</h2>
 					{fields}
 				</fieldset>
 
-				<progress id="progress" value={progress} max={max}/>
+				<div>
+					<progress id="progress" value={progress} max={max}/>
 
-				<button onClick={props.onClose}>Cancel</button>
-				<button onClick={start}>Start</button>
+					<button onClick={props.onClose}>Cancel</button>
+					<button onClick={start}>Start</button>
+				</div>
 			</form>
 		</div>
 	);
