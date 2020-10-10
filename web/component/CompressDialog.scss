@@ -16,15 +16,48 @@
 .dialog {
 	display: flex;
 	flex-direction: column;
+
 	width: 640px;
 	height: 500px;
-	padding: 20px;
+
 	border-radius: 4px;
 	background-color: white;
+	overflow: hidden;
 }
 
 .fieldset {
 	border: none;
 	flex: 1;
 	overflow: auto;
+}
+
+.dialog > header {
+	display: flex;
+}
+
+.tab {
+	flex: 1;
+	position: relative;
+	padding: 12px;
+
+	color: white;
+	background: #888;
+	cursor: pointer;
+}
+
+.active {
+	color: black;
+	background: white;
+}
+
+.form {
+	padding: 15px;
+	flex: 1;
+	overflow: auto;
+}
+
+.footer {
+	display: flex;
+	padding: 15px;
+	justify-content: flex-end;
 }

@@ -1,8 +1,9 @@
-import React, { FormEvent, useState } from "react";
+import React, { ChangeEvent, Dispatch, FormEvent, useState } from "react";
 import Styles from "./CompressDialog.scss";
 import { WebPEncodeOptions } from "../worker/webp-encoder";
 import { createWebPEncoder } from "../encoding";
 import NumberInput from "./NumberInput";
+import clsx from "clsx";
 
 interface OptionType<F, V> {
 
@@ -56,7 +57,7 @@ class NumberRangeTemplate implements OptionType<any, any> {
 				<p>{name}</p>
 				<label>
 					<span>min: </span>
-					<NumberInput value={value.min} min={min} max={max} onChange={}/>
+					<NumberInput value={value.min} min={min} max={max}/>
 				</label>
 				<label>
 					<span>max: </span>
@@ -113,23 +114,30 @@ interface OptionsInstance {
 	}
 }
 
-interface Props {
-	onChange: (file: File, encodedFiles: Uint8Array[]) => void;
-	onClose: () => void;
+interface SFProps {
+	setFile: Dispatch<File>
 }
 
-// enum, intRange, bool, 互斥mode
-export default function CompressDialog(props: Props) {
-	const [file, setFile] = useState<File>();
+function SelectFilePanel(props: SFProps) {
 
-	const [vars, setVars] = useState<string[]>(() => WebPOptionsTemplate
-		.filter(t  => t.defaultVariable).map(t => t.name));
-
-	const [options, setOptions] = useState<OptionsInstance>({});
-
-	function loadFile(event: FormEvent<HTMLInputElement>) {
-		setFile(event.currentTarget.files![0]);
+	function handleChange(event: ChangeEvent<HTMLInputElement>) {
+		props.setFile(event.currentTarget.files![0]);
 	}
+
+	return (
+		<form className={Styles.form}>
+			<input type="file" accept="image/*" onChange={handleChange}/>
+		</form>
+	);
+}
+
+interface OProps {
+	vars: string[];
+	options: any;
+}
+
+function OptionsPanel(props: OProps) {
+	const { vars, options } = props;
 
 	const fields: React.ReactElement[] = [];
 
@@ -151,6 +159,35 @@ export default function CompressDialog(props: Props) {
 		}
 
 		fields.push(<div key={name}><input type="radio"/>{element}</div>);
+	}
+
+	return <form className={Styles.form}>{fields}</form>;
+}
+
+function MetricsPanel() {
+	return (
+		<form className={Styles.form}>
+
+		</form>
+	);
+}
+
+interface Props {
+	onChange: (file: File, encodedFiles: Uint8Array[]) => void;
+	onClose: () => void;
+}
+
+// enum, intRange, bool, 互斥mode
+export default function CompressDialog(props: Props) {
+	const [file, setFile] = useState<File>();
+
+	const [vars, setVars] = useState<string[]>(() => WebPOptionsTemplate
+		.filter(t => t.defaultVariable).map(t => t.name));
+
+	const [options, setOptions] = useState<OptionsInstance>({});
+
+	function loadFile(event: FormEvent<HTMLInputElement>) {
+		setFile(event.currentTarget.files![0]);
 	}
 
 	async function start() {
@@ -191,25 +228,51 @@ export default function CompressDialog(props: Props) {
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
+	const [index, setIndex] = useState(0);
+
+	const panels = [
+		{ name: "Select File", component: SelectFilePanel },
+		{ name: "Options", component: OptionsPanel },
+		{ name: "Metrics", component: MetricsPanel },
+	];
+
+	const tabs = [];
+	for (let i = 0; i < panels.length; i++) {
+		const panel = panels[i];
+		const clazz = i === index ? clsx(Styles.tab, Styles.active) : Styles.tab;
+		tabs.push(<div className={clazz} onClick={() => setIndex(i)}>{panel.name}</div>);
+	}
+
+	let panel;
+
+	switch (index) {
+	case 0:
+		panel = <SelectFilePanel setFile={setFile}/>;
+		break;
+	case 1:
+		panel = <OptionsPanel vars={vars} options={options}/>;
+		break;
+		case 2:
+			panel= <MetricsPanel/>
+			break;
+	default:
+		throw new Error();
+	}
+
 	return (
 		<div className={Styles.dimmer}>
-			<form className={Styles.dialog}>
-				<fieldset>
-					<input type="file" accept="image/*" onChange={start}/>
-				</fieldset>
-
-				<fieldset className={Styles.fieldset}>
-					<h2>Options</h2>
-					{fields}
-				</fieldset>
-
-				<div>
-					<progress id="progress" value={progress} max={max}/>
+			<div className={Styles.dialog}>
+				<header>
+					{tabs}
+				</header>
+				{panel}
+				<div className={Styles.footer}>
+					{/*<progress id="progress" value={progress} max={max}/>*/}
 
 					<button onClick={props.onClose}>Cancel</button>
 					<button onClick={start}>Start</button>
 				</div>
-			</form>
+			</div>
 		</div>
 	);
 }
