@@ -50,8 +50,8 @@ async function benchmark(name, func) {
 
 
 async function run() {
-	const { data, info } = await readImage("image.jpg");
-	const dataB = (await readImage("image.webp")).data;
+	const { data, info } = await readImage("image.jpg", 4);
+	const dataB = (await readImage("image.webp", 4)).data;
 	const { width, height } = info;
 
 	const images = {
