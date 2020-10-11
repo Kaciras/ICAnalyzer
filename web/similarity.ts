@@ -1,5 +1,6 @@
 // @ts-ignore
 import metrics from "../build/metrics";
+import ssim from "ssim.js";
 
 export interface TwoImages {
 	dataA: Uint8Array;
@@ -62,6 +63,9 @@ export async function getPSNR(twoImages: TwoImages) {
 	return 10 * Math.log10(255 * 255 / mse);
 }
 
-// export function getSSIM(imageA: ImageData, imageB: ImageData) {
-//
-// }
+export function getSSIM(twoImages: TwoImages) {
+	const { width, height } = twoImages;
+	const a = { data: new Uint8ClampedArray(twoImages.dataA), width, height };
+	const b = { data: new Uint8ClampedArray(twoImages.dataB), width, height };
+	return ssim(a, b).mssim;
+}

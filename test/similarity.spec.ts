@@ -1,4 +1,4 @@
-import { butteraugli, getPSNR } from "../web/similarity";
+import { butteraugli, getPSNR, getSSIM } from "../web/similarity";
 import { readImage } from "./test-helper";
 
 it("should check image data have same length", () => {
@@ -37,4 +37,14 @@ it("should get PSNR", async () => {
 	const psnr = await getPSNR({ dataA: data, dataB, width, height });
 
 	expect(psnr).toBeCloseTo(35.778, 2);
+});
+
+it("should get SSIM", async () => {
+	const { data, info } = await readImage("image.jpg");
+	const dataB = (await readImage("image.webp")).data;
+
+	const { width, height } = info;
+	const psnr = await getSSIM({ dataA: data, dataB, width, height });
+
+	expect(psnr).toBeCloseTo(0.99783, 4);
 });
