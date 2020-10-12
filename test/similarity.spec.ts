@@ -1,4 +1,4 @@
-import { butteraugli, getPSNR, getSSIM } from "../web/similarity";
+import { butteraugli, getPSNR, getSSIM } from "../lib/similarity";
 import { readImage } from "./test-helper";
 
 it("should check image data have same length", () => {

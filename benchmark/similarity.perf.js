@@ -1,5 +1,5 @@
 const { performance } = require("perf_hooks");
-const { getPSNR } = require("../web/similarity.js");
+const { getPSNR } = require("../lib/similarity.js");
 const { readImage } = require("../test/test-helper.js");
 const { GPU } = require("gpu.js");
 
