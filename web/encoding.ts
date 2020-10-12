@@ -5,7 +5,7 @@ import type { EncodeWorker } from "./worker/utils";
 import AVIFUrl from "worker-plugin/loader?esModule&name=avif!./worker/avif-encoder";
 import WebPUrl from "worker-plugin/loader?esModule&name=webp!./worker/webp-encoder";
 
-class BatchEncoder<T> {
+export class BatchEncoder<T> {
 
 	private readonly url: string;
 
@@ -20,6 +20,7 @@ class BatchEncoder<T> {
 		this.url = url;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	onProgress(value: number) {
 		// noop by default
 	}

@@ -3,7 +3,6 @@ import type { EChartOption } from "echarts";
 import IconButton from "./IconButton";
 import CompressDialog from "./CompressDialog";
 import Chart from "./Chart";
-import ImageDiff from "./ImageDiff";
 import style from "./App.scss";
 import RangeInput from "./RangeInput";
 
@@ -69,29 +68,25 @@ export default function App() {
 	return (
 		<>
 			<section className={style.main}>
-				<ImageDiff
-					original={original}
-					optimized={optimized}
-					width={width}
-					height={height}
-				/>
+
 				<canvas ref={canvasRef}/>
 
 				<Chart options={chartOptions}/>
 
 				<div className={style.buttonGroup}>
 					<IconButton
-						title="Show chart"
-						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
-					/>
-					<IconButton
 						title="Select file"
 						onClick={() => setShowDialog(true)}
 						icon={require("bootstrap-icons/icons/cloud-upload.svg")}
 					/>
 					<IconButton
+						title="Show chart"
+						disabled={!original}
+						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
+					/>
+					<IconButton
 						title="Download"
-						disabled={true}
+						disabled={!original}
 						onClick={() => setShowDialog(true)}
 						icon={require("bootstrap-icons/icons/download.svg")}
 					/>

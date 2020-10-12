@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import Styles from "./ImageView.scss";
+import ImageDiff from "./ImageDiff";
 
 interface Props {
 	original?: string;
@@ -20,12 +21,28 @@ export enum ViewType {
 export default function ImageView(props: Props) {
 	const [type, setType] = useState<ViewType>();
 
+	interface ImageViewTabProps {
+		target: ViewType;
+		children: ReactNode;
+	}
+
+	function ImageViewTab(props: ImageViewTabProps) {
+		const { children, target } = props;
+		return <button data-actived={type === target} onClick={() => setType(target)}>{children}</button>;
+	}
+
+	let view;
 	if (type === ViewType.Original) {
-		return <img alt="Original Image" src={props.original}/>;
+		view = <img alt="Original Image" src={props.original}/>;
 	} else if (type === ViewType.Compressed) {
 
-	} else if(type === ViewType.AbsDiff) {
-
+	} else if (type === ViewType.AbsDiff) {
+		view = <ImageDiff
+			original={props.original}
+			optimized={props.optimized}
+			width={props.width}
+			height={props.height}
+		/>;
 	} else if (type === ViewType.HeatMap) {
 
 	}
@@ -33,33 +50,12 @@ export default function ImageView(props: Props) {
 	return (
 		<section className={Styles.container}>
 			<aside>
-				<button
-					data-actived={type === 0}
-					onClick={() => setType(0)}
-				>
-					Original
-				</button>
-				<button
-					data-actived={type === 1}
-					onClick={() => setType(1)}
-				>
-					Compressed
-				</button>
-				<button
-					data-actived={type === 2}
-					onClick={() => setType(2)}
-				>
-					Abs Diff
-				</button>
-				<button
-					disabled={!!props.heatMap}
-					data-actived={type === 3}
-					onClick={() => setType(3)}
-				>
-					Heat Map
-				</button>
+				<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
+				<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
+				<ImageViewTab target={ViewType.AbsDiff}>AbsDiff</ImageViewTab>
+				<ImageViewTab target={ViewType.HeatMap}>HeatMap</ImageViewTab>
 			</aside>
-
+			{view}
 		</section>
 	);
 }

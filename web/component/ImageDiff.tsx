@@ -2,7 +2,7 @@ import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import Styles from "./ImageDiff.scss";
 
 export interface ImageDiffProps {
-	original?: Blob;
+	original?: string;
 	optimized?: ImageBitmap;
 	width: number;
 	height: number;
@@ -15,24 +15,21 @@ export default function ImageDiff(props: ImageDiffProps) {
 	const [brightness, setBrightness] = useState(100);
 
 	const style = Object.assign(
-		{ "--brightness": `${props.brightness}%` },
-		wrapperStyle
+		{ "--brightness": `${brightness}%` },
+		wrapperStyle,
 	);
 
 	useEffect(() => {
 		if (!props.original) {
 			return;
 		}
-		const rawUrl = URL.createObjectURL(props.original);
-
 		const canvas = canvasEl.current!;
 		canvas.width = props.width;
 		canvas.height = props.height;
 
 		setWrapperStyle({
-			backgroundImage: `url("${rawUrl}")`,
+			backgroundImage: `url("${props.original}")`,
 		});
-		return () => URL.revokeObjectURL(rawUrl);
 	}, [props.original]);
 
 	useEffect(() => {

@@ -14,6 +14,7 @@ export default function IconButton(props: Props) {
 			className={Styles.iconButton}
 			title={props.title}
 			disabled={props.disabled}
+			type="button"
 			onClick={props.onClick}
 			dangerouslySetInnerHTML={{ __html: props.icon }}
 		/>
