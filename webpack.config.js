@@ -4,7 +4,7 @@ const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
 module.exports = function (env) {
-	const isProd = env?.production;
+	const isProd = Boolean(env?.production);
 
 	function cssLoaderChain(cssModules) {
 		const outputLoader = isProd ? MiniCssExtractPlugin.loader : "style-loader";
@@ -26,10 +26,16 @@ module.exports = function (env) {
 	return {
 		mode: isProd ? "production" : "development",
 		context: __dirname,
+		performance: false,
 		entry: {
 			index: "./web/index",
 		},
 		devtool: isProd ? "source-map" : "inline-source-map",
+		devServer: {
+			compress: true,
+			stats: "minimal",
+			clientLogLevel: "none",
+		},
 		resolve: {
 			extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
 			fallback: {
@@ -42,6 +48,11 @@ module.exports = function (env) {
 			type: "filesystem",
 			buildDependencies: {
 				config: [__filename],
+			},
+		},
+		optimization: {
+			splitChunks: {
+				chunks: "all",
 			},
 		},
 		module: {
@@ -103,16 +114,5 @@ module.exports = function (env) {
 				filename: "[name].[contenthash:5].css",
 			}),
 		],
-		optimization: {
-			splitChunks: {
-				chunks: "all",
-			},
-		},
-		devServer: {
-			compress: true,
-			stats: "minimal",
-			clientLogLevel: "none",
-		},
-		performance: false,
 	};
 };
