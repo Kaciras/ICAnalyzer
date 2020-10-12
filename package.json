@@ -8,7 +8,7 @@
 	"scripts": {
 		"lint": "eslint --fix --ext .js,.ts web",
 		"compile": "emcc -O3 --bind --closure 1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -I deps/butteraugli src/metrics.cpp deps/butteraugli/butteraugli/butteraugli.cc -o build/metrics.js",
-		"dev": "webpack-dev-server --hot",
+		"dev": "webpack-cli serve",
 		"test": "jest",
 		"build": "webpack"
 	},
@@ -33,7 +33,6 @@
 		"@types/sharp": "^0.26.0",
 		"@typescript-eslint/eslint-plugin": "^4.4.0",
 		"@typescript-eslint/parser": "^4.4.0",
-		"copy-webpack-plugin": "^6.2.1",
 		"css-loader": "^4.3.0",
 		"eslint": "^7.11.0",
 		"eslint-plugin-jest": "^24.1.0",
@@ -51,8 +50,8 @@
 		"ts-jest": "^26.4.1",
 		"ts-loader": "^8.0.4",
 		"typescript": "^4.0.3",
-		"webpack": "^4.44.2",
-		"webpack-cli": "^3.3.12",
+		"webpack": "^5.0.0",
+		"webpack-cli": "^4.0.0",
 		"webpack-dev-server": "^3.11.0",
 		"worker-plugin": "^5.0.0"
 	}
