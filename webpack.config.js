@@ -15,6 +15,10 @@ module.exports = {
 	devtool: "source-map",
 	resolve: {
 		extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
+		fallback: {
+			fs: false,
+			path: false,
+		},
 	},
 	module: {
 		rules: [
@@ -95,17 +99,6 @@ module.exports = {
 				},
 			},
 		},
-	},
-	node: {
-		fs: "empty",
-		crypto: "empty",
-		path: "empty",
-		__filename: "mock",
-		__dirname: "mock",
-		process: false,
-		Buffer: false,
-		setImmediate: false,
-		console: false,
 	},
 	devServer: {
 		compress: true,
