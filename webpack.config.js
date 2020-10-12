@@ -19,6 +19,12 @@ module.exports = function(env) {
 				path: false,
 			},
 		},
+		cache: {
+			type: "filesystem",
+			buildDependencies: {
+				config: [__filename],
+			},
+		},
 		module: {
 			rules: [
 				{
