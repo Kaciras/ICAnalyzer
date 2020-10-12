@@ -1,19 +1,5 @@
-// @ts-ignore
-import metrics from "../build/metrics";
+import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "../dist/metrics";
 import ssim from "ssim.js";
-
-export interface TwoImages {
-	dataA: Uint8Array;
-	dataB: Uint8Array;
-	width: number;
-	height: number;
-}
-
-export interface ButteraugliOptions {
-	hfAsymmetry: number;
-	goodQualitySeek: number;
-	badQualitySeek: number;
-}
 
 const DEFAULT_OPTIONS: ButteraugliOptions = {
 	hfAsymmetry: 1.0,
@@ -21,9 +7,7 @@ const DEFAULT_OPTIONS: ButteraugliOptions = {
 	badQualitySeek: 0.5,
 };
 
-type ButteraugliResult = [number, ArrayBuffer];
-
-let wasmModule: any;
+let wasmModule: MetricsModule;
 
 function checkImages(twoImages: TwoImages) {
 	const { dataA, dataB, width, height } = twoImages;
@@ -51,7 +35,7 @@ export async function butteraugli(twoImages: TwoImages, options?: Partial<Butter
 		throw new Error("badQualitySeek must between 0, 2");
 	}
 	checkImages(twoImages);
-	return wasmModule.GetButteraugli(twoImages, merged) as ButteraugliResult;
+	return wasmModule.GetButteraugli(twoImages, merged);
 }
 
 export async function getPSNR(twoImages: TwoImages) {
