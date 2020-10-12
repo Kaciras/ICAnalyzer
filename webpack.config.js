@@ -8,10 +8,6 @@ module.exports = {
 	entry: {
 		index: "./web/index",
 	},
-	output: {
-		path: path.resolve(__dirname, "build"),
-		filename: "[name].js",
-	},
 	devtool: "source-map",
 	resolve: {
 		extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
@@ -90,14 +86,7 @@ module.exports = {
 	],
 	optimization: {
 		splitChunks: {
-			cacheGroups: {
-				vendor: {
-					name: "vendors",
-					test: /[\\/]node_modules[\\/]/,
-					priority: -10,
-					chunks: "initial",
-				},
-			},
+			chunks: "all",
 		},
 	},
 	devServer: {
