@@ -1,9 +1,27 @@
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
-module.exports = function(env) {
+module.exports = function (env) {
 	const isProd = env?.production;
+
+	function cssLoaderChain(cssModules) {
+		const outputLoader = isProd ? MiniCssExtractPlugin.loader : "style-loader";
+
+		const cssLoader = {
+			loader: "css-loader",
+			options: {
+				importLoaders: 1,
+			},
+		};
+		if (cssModules) {
+			cssLoader.options.modules = {
+				localIdentName: isProd ? "[hash:base64:5]" : "[local]_[hash:base64:5]",
+			};
+		}
+		return [outputLoader, cssLoader, "sass-loader"];
+	}
 
 	return {
 		mode: isProd ? "production" : "development",
@@ -45,26 +63,11 @@ module.exports = function(env) {
 						{
 							test: /\.(scss|sass)$/,
 							include: path.join(__dirname, "web", "component"),
-							use: [
-								"style-loader",
-								{
-									loader: "css-loader",
-									options: {
-										modules: {
-											localIdentName: "[name]_[local]_[hash:base64:5]",
-										},
-									},
-								},
-								"sass-loader",
-							],
+							use: cssLoaderChain(true),
 						},
 						{
 							test: /\.(scss|sass)$/,
-							use: [
-								"style-loader",
-								"css-loader",
-								"sass-loader",
-							],
+							use: cssLoaderChain(false),
 						},
 					],
 				},
@@ -94,6 +97,10 @@ module.exports = function(env) {
 				template: "web/index.html",
 				inject: "head",
 				scriptLoading: "defer",
+			}),
+
+			isProd && new MiniCssExtractPlugin({
+				filename: "[name].[contenthash:5].css",
 			}),
 		],
 		optimization: {
