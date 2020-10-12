@@ -15,8 +15,9 @@ module.exports = function(env) {
 		resolve: {
 			extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
 			fallback: {
-				fs: false,
 				path: false,
+				fs: false,
+				crypto: false,
 			},
 		},
 		cache: {
@@ -82,6 +83,8 @@ module.exports = function(env) {
 			],
 		},
 		plugins: [
+
+			// Replace with webpack5 native worker support ?
 			new WorkerPlugin({
 				globalObject: "self",
 			}),
@@ -103,5 +106,6 @@ module.exports = function(env) {
 			stats: "minimal",
 			clientLogLevel: "none",
 		},
+		performance: false,
 	};
 };
