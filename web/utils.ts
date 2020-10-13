@@ -3,7 +3,7 @@
  *
  * @return true if supported, otherwise false.
  */
-export async function isSupportAVIF() {
+export function isSupportAVIF() {
 	const image = new Image();
 	image.src = "data:image/avif;base64," +
 		"AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUEAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAG" +

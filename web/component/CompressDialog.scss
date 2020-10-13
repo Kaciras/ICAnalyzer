@@ -1,0 +1,63 @@
+.dimmer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	background-color: rgba(0, 0, 0, .2);
+	backdrop-filter: blur(4px); // not working
+}
+
+.dialog {
+	display: flex;
+	flex-direction: column;
+
+	width: 640px;
+	height: 500px;
+
+	border-radius: 4px;
+	background-color: white;
+	overflow: hidden;
+}
+
+.fieldset {
+	border: none;
+	flex: 1;
+	overflow: auto;
+}
+
+.dialog > header {
+	display: flex;
+}
+
+.tab {
+	flex: 1;
+	position: relative;
+	padding: 12px;
+
+	color: white;
+	background: #888;
+	cursor: pointer;
+}
+
+.active {
+	color: black;
+	background: white;
+}
+
+.form {
+	padding: 15px;
+	flex: 1;
+	overflow: auto;
+}
+
+.footer {
+	display: flex;
+	padding: 15px;
+	justify-content: flex-end;
+}

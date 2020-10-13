@@ -2,14 +2,20 @@
 	"compilerOptions": {
 		"target": "ES2019",
 		"lib": ["ESNext", "DOM", "WebWorker"],
-		"module": "ESNext",
+		"module": "CommonJS",
 		"moduleResolution": "Node",
+		"jsx": "react",
 
 		"newLine": "LF",
 		"strict": true,
 
+		"esModuleInterop": true,
 		"removeComments": true,
 		"sourceMap": true,
 		"experimentalDecorators": true
-	}
+	},
+	"exclude": [
+		"deps",
+		"node_modules"
+	]
 }

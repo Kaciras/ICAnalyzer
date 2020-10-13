@@ -2,6 +2,7 @@ const sharp = require("sharp");
 const metrics = require("./build/metrics");
 const { cv, cvTranslateError } = require("opencv-wasm");
 const ssim = require("ssim.js").default;
+const { performance } = require("perf_hooks");
 
 async function getData(fileA, fileB) {
 	const { data, info } = await sharp(fileA)
@@ -23,21 +24,41 @@ async function sharpToImageData(sharp) {
 }
 
 async function butteraugli() {
-	const args = await getData("", "");
+	const args = await getData(
+		"G:/blog/image/2ed8be3bf60361bf63ef04abc7aff4d80b093ea5576a869bac8eea965f9ebb5b.jpg",
+		"G:\\blog\\cache\\webp/2ed8be3bf60361bf63ef04abc7aff4d80b093ea5576a869bac8eea965f9ebb5b.webp");
 
 	// 越大质量越差，相同图片为0
 	const wasmModule = await metrics();
+
+	const start = performance.now();
 	const [source, heatMap] = wasmModule.GetButteraugli(...args, {
 		hfAsymmetry: 1.0,
 		goodQualitySeek: 1.5,
 		badQualitySeek: 0.5,
 	});
+	const end = performance.now();
+
+	console.log(`${(end - start).toFixed(3)}ms`);
+	console.log(source);
+
+	return sharp(Buffer.from(heatMap), {
+		raw: {
+			channels: 3,
+			width: args[2],
+			height: args[3],
+		}
+	}).png().toFile("heatmap.png");
 }
 
 async function psnr() {
-	const args = await getData("", "");
+	const args = await getData(
+		"G:/blog/image/2ed8be3bf60361bf63ef04abc7aff4d80b093ea5576a869bac8eea965f9ebb5b.jpg",
+		"G:\\blog\\cache\\webp/2ed8be3bf60361bf63ef04abc7aff4d80b093ea5576a869bac8eea965f9ebb5b.webp");
+
 	const wasmModule = await metrics();
-	const psnr = wasmModule.GetPSNR(...args);
+	const mse = wasmModule.GetMSE(...args);
+	const psnr = 10 * Math.log10(mse);
 	console.log(psnr);
 }
 
@@ -68,4 +89,5 @@ async function ssimJS() {
 	console.log(`SSIM: ${mssim}, time: ${performance}ms`);
 }
 
-cvPSNR();
+butteraugli();
+/// 3.016244888305664

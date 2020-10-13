@@ -1,0 +1,67 @@
+$border-active-color: rgba(0, 147, 255, 0.4);
+$increment-color: #45c250;
+$decrement-color: #d23e40;
+
+.container {
+	display: inline-flex;
+	border: 1px solid #cfcfcf;
+	background-color: white;
+
+	&:focus-within {
+		border-color: #10dbff;
+		box-shadow: 0 0 0 .2rem $border-active-color;
+	}
+}
+
+.input {
+	display: inline-block;
+	-moz-appearance: textfield;
+	padding: 0.375rem 0.75rem;
+	border: none;
+
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		margin: 0;
+		-webkit-appearance: none;
+	}
+}
+
+.button {
+	position: relative;
+	width: 2.5rem;
+
+	background: none;
+	border: none;
+	border-left: solid 1px #cbcbcb;
+
+	cursor: pointer;
+
+	&::before, &::after {
+		position: absolute;
+		width: 1rem;
+		height: 2px;
+	}
+
+	&::before {
+		content: "";
+		background-color: $decrement-color;
+		transform: translate(-50%, -50%);
+	}
+
+	&.plus::before {
+		content: "";
+		background-color: $increment-color;
+		transform: translate(-50%, -50%);
+	}
+
+	&.plus::after {
+		content: "";
+		background-color: $increment-color;
+		transform: translate(-50%, -50%) rotate(90deg)
+	}
+
+	&:disabled {
+		cursor: default;
+		background-color: rgb(227, 227, 227);
+	}
+}

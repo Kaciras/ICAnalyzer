@@ -1,0 +1,48 @@
+$color: #2183ff;
+$thumb-size: 16px;
+
+.container {
+	position: relative;
+
+	&::before {
+		content: "";
+		display: block;
+		position: absolute;
+		left: 0;
+		top: calc(50% - 2px);
+		pointer-events: none;
+		width: 100%;
+		height: 2px;
+
+		background: linear-gradient($color, $color) 0/var(--value-percent,0) 100% no-repeat #eee
+	}
+}
+
+.thumbRegion {
+	position: absolute;
+	top: 0;
+}
+
+.thumb {
+
+
+	top: 0;
+	left: var(--value-percent, 0);
+	width: $thumb-size;
+	height: $thumb-size;
+	margin-left: $thumb-size / -2;
+	border-radius: 50%;
+	border: 2px solid $color;
+
+	pointer-events: none;
+	background-color: $color;
+}
+
+.active {
+	background-color: #8abeff;
+}
+
+.input {
+	margin: 0;
+	//opacity: 0;
+}

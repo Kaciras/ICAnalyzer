@@ -1,11 +1,11 @@
 import * as Comlink from "comlink";
-import { Options } from "./worker/avif-encoder";
-import { WebPEncodeOptions } from "./worker/webp-encoder";
-import { EncodeWorker } from "./worker/utils";
+import type { AVIFEncodeOptions } from "./worker/avif-encoder";
+import type { WebPEncodeOptions } from "./worker/webp-encoder";
+import type { EncodeWorker } from "./worker/utils";
 import AVIFUrl from "worker-plugin/loader?esModule&name=avif!./worker/avif-encoder";
 import WebPUrl from "worker-plugin/loader?esModule&name=webp!./worker/webp-encoder";
 
-class Encoder<T> {
+export class BatchEncoder<T> {
 
 	private readonly url: string;
 
@@ -14,12 +14,13 @@ class Encoder<T> {
 
 	private index = 0;
 	private workers: Worker[] = [];
-	private results!: ArrayBuffer[];
+	private results!: Uint8Array[];
 
 	constructor(url: string) {
 		this.url = url;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	onProgress(value: number) {
 		// noop by default
 	}
@@ -66,15 +67,17 @@ class Encoder<T> {
 		while (this.index < optionsList.length) {
 			const i = this.index++;
 			this.onProgress(i);
+
+			// @ts-ignore
 			results[i] = await wrapper.encode(optionsList[i]);
 		}
 	}
 }
 
 export function createAVIFEncoder() {
-	return new Encoder<Options>(AVIFUrl);
+	return new BatchEncoder<AVIFEncodeOptions>(AVIFUrl);
 }
 
 export function createWebPEncoder() {
-	return new Encoder<WebPEncodeOptions>(WebPUrl);
+	return new BatchEncoder<WebPEncodeOptions>(WebPUrl);
 }
