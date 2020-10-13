@@ -3,7 +3,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 
-module.exports = function (env) {
+module.exports = function webpackConfig(env) {
 	const isProd = Boolean(env?.production);
 
 	function cssLoaderChain(cssModules) {
@@ -23,7 +23,7 @@ module.exports = function (env) {
 		return [outputLoader, cssLoader, "sass-loader"];
 	}
 
-	return {
+	const configuration = {
 		mode: isProd ? "production" : "development",
 		context: __dirname,
 		performance: false,
@@ -109,10 +109,13 @@ module.exports = function (env) {
 				inject: "head",
 				scriptLoading: "defer",
 			}),
-
-			isProd && new MiniCssExtractPlugin({
-				filename: "[name].[contenthash:5].css",
-			}),
 		],
 	};
+
+	// webpack5 does not support `{ plugins: [isProd && new Plugin()] }` syntax
+	if (isProd) {
+		configuration.plugins.push(new MiniCssExtractPlugin({ filename: "[name].[contenthash:5].css" }));
+	}
+
+	return configuration;
 };
