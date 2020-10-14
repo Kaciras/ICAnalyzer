@@ -1,9 +1,30 @@
 import React, { useEffect, useState } from "react";
-import echarts, { EChartOption, ECharts } from "echarts";
+import echarts, { ECharts } from "echarts";
 
 interface Props {
-	options: EChartOption
+	options: any;
 }
+
+// setChartOptions({
+// 	title: {
+// 		text: "Quality (-q)",
+// 	},
+// 	tooltip: {
+// 		trigger: "axis",
+// 	},
+// 	legend: {
+// 		data: ["Compression Ratio"],
+// 	},
+// 	xAxis: {
+// 		data: encodedFiles.map((_, i) => i),
+// 	},
+// 	yAxis: {},
+// 	series: [{
+// 		name: "Compression Ratio %",
+// 		type: "line",
+// 		data: encodedFiles.map(({ length }) => length / file.size * 100),
+// 	}],
+// });
 
 export default function Chart(props: Props) {
 	const { options } = props;

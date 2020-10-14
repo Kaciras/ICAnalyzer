@@ -1,26 +1,30 @@
-import React, { FormEvent, useRef, useState } from "react";
-import type { EChartOption } from "echarts";
+import React, { FormEvent, useState } from "react";
 import IconButton from "./IconButton";
 import CompressDialog from "./CompressDialog";
 import Chart from "./Chart";
 import style from "./App.scss";
 import RangeInput from "./RangeInput";
+import ImageView from "./ImageView";
+
+interface Result {
+	original: string;
+	width: number;
+	height: number;
+
+	optimizedImages: ImageBitmap[];
+}
+
+const PLACEHOLDER: Result = {
+	original: "",
+	width: 0,
+	height: 0,
+	optimizedImages: [],
+};
 
 export default function App() {
-	const [original, setOriginal] = useState<File>();
-
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [width, setWidth] = useState(0);
-	const [height, setHeight] = useState(0);
-
-	const [results, setResults] = useState<ImageBitmap[]>([]);
-
-	const [optimized, setOptimized] = useState<ImageBitmap>();
-
-	const [index, setIndex] = useState(0);
-	const [chartOptions, setChartOptions] = useState<EChartOption>({});
-
 	const [showDialog, setShowDialog] = useState(false);
+	const [index, setIndex] = useState(0);
+	const [results, setResults] = useState(PLACEHOLDER);
 
 	async function showResult(file: File, encodedFiles: Uint8Array[]) {
 		setShowDialog(false);
@@ -30,31 +34,17 @@ export default function App() {
 			const blob = new Blob([data], { type: "image/webp" });
 			bitmaps.push(await createImageBitmap(blob));
 		}
-		setResults(bitmaps);
 
-		setChartOptions({
-			title: {
-				text: "Quality (-q)",
-			},
-			tooltip: {
-				trigger: "axis",
-			},
-			legend: {
-				data: ["Compression Ratio"],
-			},
-			xAxis: {
-				data: encodedFiles.map((_, i) => i),
-			},
-			yAxis: {},
-			series: [{
-				name: "Compression Ratio %",
-				type: "line",
-				data: encodedFiles.map(({ length }) => length / file.size * 100),
-			}],
+		URL.revokeObjectURL(results.original);
+
+		setResults({
+			original: URL.createObjectURL(file),
+			width: bitmaps[0].width,
+			height: bitmaps[0].height,
+			optimizedImages: bitmaps,
 		});
 
 		setIndex(75);
-		setOptimized(bitmaps[75]);
 	}
 
 	function handleIndexChange(e: FormEvent<HTMLInputElement>) {
@@ -69,9 +59,9 @@ export default function App() {
 		<>
 			<section className={style.main}>
 
-				<canvas ref={canvasRef}/>
+				<ImageView {...results} optimized={results.optimizedImages[index]}/>
 
-				<Chart options={chartOptions}/>
+				<Chart options={results}/>
 
 				<div className={style.buttonGroup}>
 					<IconButton
@@ -81,12 +71,12 @@ export default function App() {
 					/>
 					<IconButton
 						title="Show chart"
-						disabled={!original}
+						disabled={results !== PLACEHOLDER}
 						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
 					/>
 					<IconButton
 						title="Download"
-						disabled={!original}
+						disabled={results !== PLACEHOLDER}
 						onClick={() => setShowDialog(true)}
 						icon={require("bootstrap-icons/icons/download.svg")}
 					/>
