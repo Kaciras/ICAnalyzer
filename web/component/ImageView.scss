@@ -1,4 +1,8 @@
 .container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -13,13 +17,12 @@
 }
 
 .wrapper {
-	width: 100%;
-	height: 100%;
 	background: var(--original);
 	background-size: 100% 100%;
 
-	will-change: transform;
+	will-change: filter,transform;
 	transform: translate(var(--x),var(--y)) scale(var(--scale));
+	filter: brightness(var(--brightness));
 }
 
 .canvas {

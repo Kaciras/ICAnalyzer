@@ -71,12 +71,12 @@ export default function App() {
 					/>
 					<IconButton
 						title="Show chart"
-						disabled={results !== PLACEHOLDER}
+						disabled={results === PLACEHOLDER}
 						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
 					/>
 					<IconButton
 						title="Download"
-						disabled={results !== PLACEHOLDER}
+						disabled={results === PLACEHOLDER}
 						onClick={() => setShowDialog(true)}
 						icon={require("bootstrap-icons/icons/download.svg")}
 					/>

@@ -22,30 +22,32 @@ interface ImageViewCSS extends CSSProperties {
 	"--x": string;
 	"--y": string;
 	"--scale": number;
+	"--brightness": string;
 }
 
 export default function ImageView(props: Props) {
 	const { original, width, height, optimized, heatMap } = props;
 
 	const [type, setType] = useState<ViewType>();
+	const [brightness, setBrightness] = useState(100);
+
 	const [zoom, setZoom] = useState(1);
 	const [move, setMove] = useState({ x: 0, y: 0 });
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	function refreshCanvas() {
-		let canvasImage = optimized;
-
-		if (type === ViewType.HeatMap) {
-			canvasImage = heatMap;
+		if(!optimized) {
+			return; // TODO
 		}
-
-		if (canvasImage) {
-			const ctx = canvasRef.current!.getContext("2d");
-			if (!ctx) {
-				throw new Error("Could not create canvas context");
-			}
-			ctx.drawImage(canvasImage, 0, 0);
+		const ctx = canvasRef.current!.getContext("2d");
+		if (!ctx) {
+			throw new Error("Could not create canvas context");
+		}
+		if (type === ViewType.HeatMap) {
+			ctx.drawImage(heatMap!, 0, 0);
+		} else {
+			ctx.drawImage(optimized!, 0, 0);
 		}
 	}
 
@@ -84,6 +86,7 @@ export default function ImageView(props: Props) {
 		"--scale": zoom,
 		"--x": move.x + "px",
 		"--y": move.y + "px",
+		"--brightness": `${brightness}%`,
 	};
 
 	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
