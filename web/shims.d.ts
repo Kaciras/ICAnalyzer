@@ -14,3 +14,8 @@ declare module "*.scss" {
 	};
 	export default classes;
 }
+
+declare module "*.svg" {
+	const svgXml: string;
+	export default svgXml;
+}

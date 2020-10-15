@@ -1,8 +1,10 @@
 import React, { ChangeEvent, Dispatch, FormEvent, useState } from "react";
 import clsx from "clsx";
-import Styles from "./CompressDialog.scss";
+import Styles from "./ConfigPanel.scss";
 import { WebPOptionsTemplate } from "../options";
-import { WebPEncodeOptions } from "../worker/webp-encoder";
+import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
+import RadioInput from "./RadioInput";
+import imageIcon from "bootstrap-icons/icons/image.svg";
 
 interface OptionsInstance {
 	[key: string]: {
@@ -23,7 +25,20 @@ function SelectFilePanel(props: SFProps) {
 
 	return (
 		<form className={Styles.form}>
-			<input type="file" accept="image/*" onChange={handleChange}/>
+			<label className={Styles.uploadFile} tabIndex={0}>
+				<img alt="Upload a file" src={imageIcon}/>
+				<input
+					className={Styles.fileInput}
+					name="file"
+					type="file"
+					accept="image/*"
+					onChange={handleChange}
+				/>
+			</label>
+			<label>
+				<span>Or image url</span>
+				<input className="text-box" name="url" onChange={handleChange}/>
+			</label>
 		</form>
 	);
 }
@@ -62,7 +77,7 @@ function OptionsPanel(props: OProps) {
 
 		fields.push(
 			<div key={name}>
-				<input type="radio" name="vars" onChange={radioChange}/>
+				<RadioInput checked={true} name="vars"/>
 				{element}
 			</div>);
 	}
@@ -122,9 +137,9 @@ export default function ConfigPanel(props: Props) {
 
 	// TODO: stub options
 	function start() {
-		const optionsList = new Array<WebPEncodeOptions>(101);
+		const optionsList = new Array<EncodeOptions>(101);
 		for (let i = 0; i < 101; i++) {
-			optionsList[i] = { quality: i };
+			optionsList[i] = { ...defaultOptions, quality: i };
 		}
 		props.onStart(file!, optionsList);
 	}
@@ -147,35 +162,42 @@ export default function ConfigPanel(props: Props) {
 	let panel;
 
 	switch (index) {
-	case 0:
-		panel = <SelectFilePanel setFile={setFile}/>;
-		break;
-	case 1:
-		panel = <OptionsPanel
-			vars={vars}
-			options={options}
-			onVarsChange={setVars}
-		/>;
-		break;
-	case 2:
-		panel = <MetricsPanel/>;
-		break;
-	default:
-		throw new Error();
+		case 0:
+			panel = <SelectFilePanel setFile={setFile}/>;
+			break;
+		case 1:
+			panel = <OptionsPanel
+				vars={vars}
+				options={options}
+				onVarsChange={setVars}
+			/>;
+			break;
+		case 2:
+			panel = <MetricsPanel/>;
+			break;
+		default:
+			throw new Error();
 	}
 
 	return (
-		<div className={Styles.dimmer}>
-			<div className={Styles.dialog}>
-				<header>
-					{tabs}
-				</header>
-				{panel}
-				<div className={Styles.footer}>
-					<button onClick={props.onClose}>Cancel</button>
-					<button disabled={!file} onClick={start}>Start</button>
-				</div>
+		<>
+			<div className={Styles.header}>{tabs}</div>
+			{panel}
+			<div className={Styles.footer}>
+				<button
+					className={clsx(Styles.button, Styles.minor)}
+					onClick={props.onClose}
+				>
+					Cancel
+				</button>
+				<button
+					className={clsx(Styles.button, Styles.primary)}
+					disabled={!file}
+					onClick={start}
+				>
+					Start
+				</button>
 			</div>
-		</div>
+		</>
 	);
 }

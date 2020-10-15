@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Styles from "./CompressDialog.scss";
-import { BatchEncoder, createWebPEncoder } from "../encoding";
+import { BatchEncoder, createWorkers } from "../encoding";
 import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
 
@@ -33,7 +33,7 @@ export default function CompressDialog(props: Props) {
 	}
 
 	function encode(image: ImageData, optionsList: any[]) {
-		const encoder = createWebPEncoder();
+		const encoder = createWorkers();
 
 		setEncoder(encoder);
 		setMax(optionsList.length);

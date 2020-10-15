@@ -5,3 +5,35 @@ body {
 section {
 	display: flex;
 }
+
+.text-box {
+	padding: 5px;
+	min-width: 0; // For Chrome
+
+	outline: none;
+	border: solid 1px #dce2e6;
+	border-radius: 4px;
+
+	color: inherit;
+	background: transparent;
+
+	transition: box-shadow .2s;
+
+	&:hover {
+		outline: 0;
+		border-color: #209cee;
+	}
+
+	&:focus-within {
+		outline: 0;
+		border-color: #209cee;
+		box-shadow: 0 0 0 .2rem #a8e8ff;
+	}
+
+	&[disabled] {
+		cursor: default;
+		border-color: #e1e6e6;
+		background-color: #f5f5f5;
+		box-shadow: none;
+	}
+}
