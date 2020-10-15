@@ -12,7 +12,12 @@
 		"esModuleInterop": true,
 		"removeComments": true,
 		"sourceMap": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+
+		"baseUrl": ".",
+		"paths": {
+			"squoosh/*": ["deps/squoosh/*"]
+		}
 	},
 	"exclude": [
 		"deps",

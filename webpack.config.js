@@ -1,4 +1,4 @@
-const path = require("path");
+const {join} = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
@@ -38,6 +38,9 @@ module.exports = function webpackConfig(env) {
 		},
 		resolve: {
 			extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
+			alias: {
+				squoosh: join(__dirname, "deps/squoosh"),
+			},
 			fallback: {
 				path: false,
 				fs: false,
@@ -73,7 +76,7 @@ module.exports = function webpackConfig(env) {
 					oneOf: [
 						{
 							test: /\.(scss|sass)$/,
-							include: path.join(__dirname, "web", "component"),
+							include: join(__dirname, "web", "component"),
 							use: cssLoaderChain(true),
 						},
 						{

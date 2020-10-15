@@ -1,9 +1,6 @@
 import * as Comlink from "comlink";
-import type { AVIFEncodeOptions } from "./worker/avif-encoder";
-import type { WebPEncodeOptions } from "./worker/webp-encoder";
-import type { EncodeWorker } from "./worker/utils";
-import AVIFUrl from "worker-plugin/loader?esModule&name=avif!./worker/avif-encoder";
-import WebPUrl from "worker-plugin/loader?esModule&name=webp!./worker/webp-encoder";
+import WorkerUrl from "worker-plugin/loader?esModule&name=avif!./worker";
+import type { WorkerApi } from "./worker";
 
 export class BatchEncoder<T> {
 
@@ -47,8 +44,8 @@ export class BatchEncoder<T> {
 
 		for (let i = 0; i < threadCount; i++) {
 			const worker = new Worker(this.url);
-			const wrapper = Comlink.wrap<EncodeWorker<T>>(worker);
-			await wrapper.initialize(this.image);
+			const wrapper = Comlink.wrap<WorkerApi>(worker);
+			await wrapper.setImageToEncode(this.image);
 
 			this.workers.push(worker);
 			tasks.push(this.poll(wrapper));
@@ -61,23 +58,50 @@ export class BatchEncoder<T> {
 		this.workers.forEach(worker => worker.terminate());
 	}
 
-	private async poll(wrapper: Comlink.Remote<EncodeWorker<T>>) {
+	private async poll(wrapper: Comlink.Remote<WorkerApi>) {
 		const { results, optionsList } = this;
 
 		while (this.index < optionsList.length) {
 			const i = this.index++;
 			this.onProgress(i);
 
-			// @ts-ignore
-			results[i] = await wrapper.encode(optionsList[i]);
+			// TODO
+			results[i] = await wrapper.webpEncode(optionsList[i]);
 		}
 	}
 }
 
-export function createAVIFEncoder() {
-	return new BatchEncoder<AVIFEncodeOptions>(AVIFUrl);
+export function createWorkers() {
+	return new BatchEncoder(WorkerUrl);
 }
 
-export function createWebPEncoder() {
-	return new BatchEncoder<WebPEncodeOptions>(WebPUrl);
+async function decodeImage(blob: Blob) {
+	const bitmap = await createImageBitmap(blob);
+
+	const canvas = document.createElement("canvas");
+	const { width, height } = bitmap;
+	canvas.width = width;
+	canvas.height = height;
+
+	const ctx = canvas.getContext("2d")!;
+	ctx.drawImage(bitmap, 0, 0);
+	return ctx.getImageData(0, 0, width, height);
 }
+
+function decodeAVIFNative(buffer: ArrayBuffer) {
+	return decodeImage(new Blob([buffer], { type: "image/avif" }));
+}
+
+async function decodeAVIFWorker(buffer: ArrayBuffer) {
+	const worker = Comlink.wrap<WorkerApi>(new Worker(WorkerUrl));
+	return worker.avifDecode(buffer);
+}
+
+// let decodeAVIF = async (buffer: ArrayBuffer) => {
+// 	if (await detectAVIFSupport()) {
+// 		decodeAVIF = decodeAVIFNative;
+// 	} else {
+// 		decodeAVIF = decodeAVIFWorker;
+// 	}
+// 	return decodeAVIF(buffer);
+// };
