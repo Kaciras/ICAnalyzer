@@ -1,46 +1,16 @@
-import React, { ChangeEvent, Dispatch, FormEvent, useState } from "react";
+import React, { Dispatch, FormEvent, useState } from "react";
 import clsx from "clsx";
 import Styles from "./ConfigPanel.scss";
 import { WebPOptionsTemplate } from "../options";
 import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
 import RadioInput from "./RadioInput";
-import imageIcon from "bootstrap-icons/icons/image.svg";
+import SelectFilePanel from "./SelectFilePanel";
 
 interface OptionsInstance {
 	[key: string]: {
 		fixed?: any;
 		variable?: any;
 	}
-}
-
-interface SFProps {
-	setFile: Dispatch<File>
-}
-
-function SelectFilePanel(props: SFProps) {
-
-	function handleChange(event: ChangeEvent<HTMLInputElement>) {
-		props.setFile(event.currentTarget.files![0]);
-	}
-
-	return (
-		<form className={Styles.form}>
-			<label className={Styles.uploadFile} tabIndex={0}>
-				<img alt="Upload a file" src={imageIcon}/>
-				<input
-					className={Styles.fileInput}
-					name="file"
-					type="file"
-					accept="image/*"
-					onChange={handleChange}
-				/>
-			</label>
-			<label>
-				<span>Or image url</span>
-				<input className="text-box" name="url" onChange={handleChange}/>
-			</label>
-		</form>
-	);
 }
 
 interface OProps {

@@ -25,44 +25,6 @@
 	}
 }
 
-.form {
-	display: flex;
-	flex-direction: column;
-	padding: 15px;
-	flex: 1;
-	overflow: auto;
-}
-
-.uploadFile {
-	position: relative;
-	flex: 1;
-	cursor: pointer;
-
-	&::before {
-		content: "";
-		position: absolute;
-		top: 20px;
-		left: 20px;
-		right: 20px;
-		bottom: 20px;
-
-		border: dashed 5px #ccc;
-		transition: .2s;
-	}
-
-	&:focus-within, &:hover {
-		outline: none;
-
-		&::before {
-			border-color: #76b3ff;
-		}
-	}
-}
-
-.fileInput {
-	display: none;
-}
-
 .footer {
 	display: flex;
 	justify-content: flex-end;
