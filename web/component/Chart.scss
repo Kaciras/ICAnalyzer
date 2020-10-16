@@ -1,0 +1,14 @@
+.container{
+	position: absolute;
+	left: 0;
+	bottom: 50px;
+	background: rgba(0, 0, 0, .7);
+
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+.chart {
+	width: 500px;
+	height: 400px;
+}

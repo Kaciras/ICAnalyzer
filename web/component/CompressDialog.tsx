@@ -5,7 +5,7 @@ import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
 
 interface Props {
-	onChange: (file: File, encodedFiles: Uint8Array[]) => void;
+	onChange: (file: File, encodedFiles: ArrayBuffer[], metrics: number[]) => void;
 	onClose: () => void;
 }
 
@@ -29,7 +29,8 @@ export default function CompressDialog(props: Props) {
 		ctx.drawImage(bitmap, 0, 0);
 		const canvasData = ctx.getImageData(0, 0, width, height);
 
-		props.onChange(file, await encode(canvasData, optionsList));
+		const [encoded, metrics] = await encode(canvasData, optionsList);
+		props.onChange(file, encoded, metrics);
 	}
 
 	function encode(image: ImageData, optionsList: any[]) {

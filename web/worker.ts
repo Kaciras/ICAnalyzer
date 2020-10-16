@@ -1,6 +1,7 @@
 import * as Comlink from "comlink";
 import type * as WebP from "squoosh/src/codecs/webp/encoder-meta";
 import type * as AVIF from "squoosh/src/codecs/avif/encoder-meta";
+import * as Similarity from "../lib/similarity";
 
 let data: ImageData;
 
@@ -15,6 +16,15 @@ const workerApi = {
 
 	setImageToEncode(image: ImageData) {
 		data = image;
+	},
+
+	calcPSNR(image: ImageData) {
+		return Similarity.getPSNR({
+			dataA: new Uint8Array(data.data),
+			dataB: new Uint8Array(image.data),
+			width: data.width,
+			height: data.height,
+		});
 	},
 
 	async webpEncode(options: WebP.EncodeOptions) {

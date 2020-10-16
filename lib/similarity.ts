@@ -1,4 +1,5 @@
-import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "../dist/metrics";
+import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "../out/metrics";
+import wasmUrl from "../out/metrics.wasm";
 import ssim from "ssim.js";
 
 const DEFAULT_OPTIONS: ButteraugliOptions = {
@@ -40,7 +41,11 @@ export async function butteraugli(twoImages: TwoImages, options?: Partial<Butter
 
 export async function getPSNR(twoImages: TwoImages) {
 	if (!wasmModule) {
-		wasmModule = await metrics();
+		wasmModule = await metrics({
+			locateFile(url: string, scriptDirectory: string): string {
+				return wasmUrl;
+			},
+		});
 	}
 	checkImages(twoImages);
 	const mse = wasmModule.GetMSE(twoImages) as number;

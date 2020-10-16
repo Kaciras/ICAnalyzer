@@ -77,7 +77,7 @@ export default function ImageView(props: Props) {
 		// ctrlKey is true when pinch-zooming on a trackpad.
 		const divisor = ctrlKey ? 100 : 300;
 		const scaleDiff = 1 - deltaY / divisor;
-		setZoom(zoom + scaleDiff);
+		setZoom(zoom * scaleDiff);
 	}
 
 	const wrapperCss: ImageViewCSS = {

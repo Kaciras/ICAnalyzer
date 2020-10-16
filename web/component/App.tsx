@@ -12,6 +12,7 @@ interface Result {
 	height: number;
 
 	optimizedImages: ImageBitmap[];
+	metrics: number[];
 }
 
 const PLACEHOLDER: Result = {
@@ -19,14 +20,16 @@ const PLACEHOLDER: Result = {
 	width: 0,
 	height: 0,
 	optimizedImages: [],
+	metrics: [],
 };
 
 export default function App() {
 	const [showDialog, setShowDialog] = useState(false);
+	const [showChart, setShowChart] = useState(false);
 	const [index, setIndex] = useState(0);
 	const [results, setResults] = useState(PLACEHOLDER);
 
-	async function showResult(file: File, encodedFiles: Uint8Array[]) {
+	async function showResult(file: File, encodedFiles: ArrayBuffer[], metrics: number[]) {
 		setShowDialog(false);
 
 		const bitmaps: ImageBitmap[] = [];
@@ -42,6 +45,7 @@ export default function App() {
 			width: bitmaps[0].width,
 			height: bitmaps[0].height,
 			optimizedImages: bitmaps,
+			metrics,
 		});
 
 		setIndex(75);
@@ -55,17 +59,23 @@ export default function App() {
 		// chart.dispatchAction({ type: "showTip", x: i, y: 0,position: ["50%", "50%"] });
 	}
 
+	function downloadImage() {
+		const image = results.optimizedImages[index];
+		const x = URL.createObjectURL(image);
+		window.open(x, "__blank");
+	}
+
 	return (
 		<>
 			<section className={style.main}>
 
 				<ImageView {...results} optimized={results.optimizedImages[index]}/>
 
-				<Chart options={results}/>
+				{ showChart && <Chart options={results}/> }
 
 				<div className={style.buttonGroup}>
 					<IconButton
-						title="Select file"
+						title="Select an image"
 						onClick={() => setShowDialog(true)}
 						icon={require("bootstrap-icons/icons/cloud-upload.svg")}
 					/>
@@ -73,11 +83,12 @@ export default function App() {
 						title="Show chart"
 						disabled={results === PLACEHOLDER}
 						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
+						onClick={() => setShowChart(!showChart)}
 					/>
 					<IconButton
-						title="Download"
+						title="Download compressed image"
 						disabled={results === PLACEHOLDER}
-						onClick={() => setShowDialog(true)}
+						onClick={downloadImage}
 						icon={require("bootstrap-icons/icons/download.svg")}
 					/>
 				</div>

@@ -1,6 +1,32 @@
 import * as Comlink from "comlink";
-import WorkerUrl from "worker-plugin/loader?esModule&name=avif!./worker";
+import WorkerUrl from "worker-plugin/loader?esModule&name=worker!./worker";
 import type { WorkerApi } from "./worker";
+
+type WorkerFactory = () => Worker;
+
+class WorkerPool<T> {
+
+	private readonly newWorker: WorkerFactory;
+
+	private readonly workers: Worker[];
+	private readonly wrappers: Comlink.Remote<T>[];
+
+	constructor(newWorker: WorkerFactory, workerCount = 4) {
+		this.newWorker = newWorker;
+		this.workers = new Array(workerCount);
+		this.wrappers = new Array(workerCount);
+
+		for (let i = 0; i < workerCount; i++) {
+			const worker = newWorker();
+			this.workers[i] = worker;
+			this.wrappers[i] = Comlink.wrap(worker);
+		}
+	}
+
+	require() {
+
+	}
+}
 
 export class BatchEncoder<T> {
 
@@ -11,7 +37,9 @@ export class BatchEncoder<T> {
 
 	private index = 0;
 	private workers: Worker[] = [];
-	private results!: Uint8Array[];
+
+	private encoded!: ArrayBuffer[];
+	private metrics!: number[];
 
 	constructor(url: string) {
 		this.url = url;
@@ -39,7 +67,9 @@ export class BatchEncoder<T> {
 		const length = this.optionsList.length;
 		threadCount = Math.min(threadCount, length);
 
-		this.results = new Array<Uint8Array>(length);
+		this.encoded = new Array<ArrayBuffer>(length);
+		this.metrics = new Array<number>(length);
+
 		const tasks = new Array(threadCount);
 
 		for (let i = 0; i < threadCount; i++) {
@@ -51,7 +81,7 @@ export class BatchEncoder<T> {
 			tasks.push(this.poll(wrapper));
 		}
 
-		return Promise.all(tasks).then(() => this.results);
+		return Promise.all(tasks).then(() => [this.encoded, this.metrics]);
 	}
 
 	stop() {
@@ -59,14 +89,16 @@ export class BatchEncoder<T> {
 	}
 
 	private async poll(wrapper: Comlink.Remote<WorkerApi>) {
-		const { results, optionsList } = this;
+		const { encoded, metrics, optionsList } = this;
 
 		while (this.index < optionsList.length) {
 			const i = this.index++;
 			this.onProgress(i);
 
-			// TODO
-			results[i] = await wrapper.webpEncode(optionsList[i]);
+			const buffer = await wrapper.webpEncode(optionsList[i]);
+			encoded[i] = buffer;
+			const pixels = await decodeImage(new Blob([buffer], { type: "image/webp" }));
+			metrics[i] = await wrapper.calcPSNR(pixels);
 		}
 	}
 }
