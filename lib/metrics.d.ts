@@ -1,4 +1,4 @@
-declare module "*/dist/metrics" {
+declare module "*/out/metrics" {
 
 	export interface TwoImages {
 		dataA: Uint8Array;
@@ -15,12 +15,12 @@ declare module "*/dist/metrics" {
 
 	export type ButteraugliResult = [number, ArrayBuffer];
 
-	export interface MetricsModule {
+	export interface MetricsModule  {
 
 		GetMSE(twoImages: TwoImages): number;
 
 		GetButteraugli(twoImages: TwoImages, options: ButteraugliOptions): ButteraugliResult;
 	}
 
-	export default function (): Promise<MetricsModule>;
+	export default function (overrides?: Partial<EmscriptenModule>): Promise<MetricsModule>;
 }

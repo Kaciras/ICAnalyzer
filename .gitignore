@@ -33,3 +33,4 @@ htmlcov/
 # Others
 data/
 encoder/
+out/
