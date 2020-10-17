@@ -110,6 +110,7 @@ module.exports = function webpackConfig(env) {
 		devtool: isProd ? "source-map" : "inline-source-map",
 		devServer: {
 			compress: true,
+			hot: true,
 			stats: "minimal",
 			clientLogLevel: "none",
 		},
