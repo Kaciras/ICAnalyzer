@@ -1,4 +1,4 @@
-const {join} = require("path");
+const { join } = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
@@ -24,7 +24,83 @@ module.exports = function webpackConfig(env) {
 		return [outputLoader, cssLoader, "sass-loader"];
 	}
 
-	const configuration = {
+	const loaders =  [
+		{
+			test: /\.tsx?$/,
+			use: {
+				loader: "ts-loader",
+				options: {
+					compilerOptions: {
+						module: "ESNext",
+					},
+					transpileOnly: true,
+				},
+			},
+		},
+		{
+			test: /\.wasm$/,
+			type: "javascript/auto",
+			loader: "file-loader",
+			options: {
+				name: "[name].[hash:5].[ext]",
+			},
+		},
+		{
+			test: /\.svg$/,
+			type: "asset/source",
+		},
+		{
+			oneOf: [
+				{
+					test: /\.(scss|sass)$/,
+					include: join(__dirname, "web", "component"),
+					use: cssLoaderChain(true),
+				},
+				{
+					test: /\.(scss|sass)$/,
+					use: cssLoaderChain(false),
+				},
+			],
+		},
+	];
+
+	const plugins = [
+
+		// Remove width & height attributes for inline SVG
+		new ImageMinimizerPlugin({
+			minimizerOptions: {
+				plugins: [
+					[
+						"svgo",
+						{
+							plugins: [
+								{ removeViewBox: false },
+								{ removeDimensions: true },
+							],
+						},
+					],
+				],
+			},
+		}),
+
+		// Replace with webpack5 native worker support?
+		new WorkerPlugin({
+			globalObject: "self",
+		}),
+
+		new HtmlPlugin({
+			filename: "index.html",
+			template: "web/index.html",
+			inject: "head",
+			scriptLoading: "defer",
+		}),
+
+		isProd && new MiniCssExtractPlugin({
+			filename: "[name].[contenthash:5].css",
+		}),
+	];
+
+	return {
 		mode: isProd ? "production" : "development",
 		context: __dirname,
 		performance: false,
@@ -60,83 +136,8 @@ module.exports = function webpackConfig(env) {
 			},
 		},
 		module: {
-			rules: [
-				{
-					test: /\.tsx?$/,
-					use: {
-						loader: "ts-loader",
-						options: {
-							compilerOptions: {
-								module: "ESNext",
-							},
-							transpileOnly: true,
-						},
-					},
-				},
-				{
-					oneOf: [
-						{
-							test: /\.(scss|sass)$/,
-							include: join(__dirname, "web", "component"),
-							use: cssLoaderChain(true),
-						},
-						{
-							test: /\.(scss|sass)$/,
-							use: cssLoaderChain(false),
-						},
-					],
-				},
-				{
-					test: /\.wasm$/,
-					type: "javascript/auto",
-					loader: "file-loader",
-					options: {
-						name: "[name].[hash:5].[ext]",
-					},
-				},
-				{
-					test: /\.svg$/,
-					type: "asset/source",
-				},
-			],
+			rules: loaders,
 		},
-		plugins: [
-
-			// Remove width & height attributes for inline SVG
-			new ImageMinimizerPlugin({
-				minimizerOptions: {
-					plugins: [
-						[
-							"svgo",
-							{
-								plugins: [
-									{ removeViewBox: false },
-									{ removeDimensions: true },
-								],
-							},
-						],
-					],
-				},
-			}),
-
-			// Replace with webpack5 native worker support ?
-			new WorkerPlugin({
-				globalObject: "self",
-			}),
-
-			new HtmlPlugin({
-				filename: "index.html",
-				template: "web/index.html",
-				inject: "head",
-				scriptLoading: "defer",
-			}),
-		],
+		plugins: plugins.filter(Boolean),
 	};
-
-	// webpack5 does not support `{ plugins: [isProd && new Plugin()] }` syntax
-	if (isProd) {
-		configuration.plugins.push(new MiniCssExtractPlugin({ filename: "[name].[contenthash:5].css" }));
-	}
-
-	return configuration;
 };
