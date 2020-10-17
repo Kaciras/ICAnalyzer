@@ -6,17 +6,22 @@
 	color: #999999;
 	border: none;
 	background: transparent;
-}
-
-.iconButton.active {
-	color: #80ff80;
+	transition: .15s;
 }
 
 .iconButton:not([disabled]) {
 	color: inherit;
 	cursor: pointer;
 
-	&:hover {
+	&:hover, &:focus {
+		background: rgba(255, 255, 255, .2);
+	}
+
+	&:active {
 		background: rgba(255, 255, 255, .15);
 	}
+}
+
+.iconButton.active {
+	color: #80ff66;
 }

@@ -82,6 +82,7 @@ export default function App() {
 					<IconButton
 						title="Show chart"
 						disabled={results === PLACEHOLDER}
+						active={showChart}
 						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
 						onClick={() => setShowChart(!showChart)}
 					/>
