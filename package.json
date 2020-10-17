@@ -25,6 +25,7 @@
 		"ssim.js": "^3.5.0"
 	},
 	"devDependencies": {
+		"@svgr/webpack": "^5.4.0",
 		"@types/echarts": "^4.8.1",
 		"@types/emscripten": "^1.39.4",
 		"@types/jest": "^26.0.14",
@@ -40,7 +41,6 @@
 		"eslint-plugin-react-hooks": "^4.1.2",
 		"file-loader": "^6.1.1",
 		"html-webpack-plugin": "^4.5.0",
-		"image-minimizer-webpack-plugin": "^1.0.0",
 		"imagemin-svgo": "^8.0.0",
 		"jest": "^26.5.3",
 		"mini-css-extract-plugin": "^1.0.0",

@@ -1,5 +1,5 @@
 import React, { ChangeEvent, Dispatch } from "react";
-import imageIcon from "bootstrap-icons/icons/image.svg";
+import ImageIcon from "bootstrap-icons/icons/image.svg";
 import Styles from "./SelectFilePanel.scss";
 
 interface SFProps {
@@ -15,10 +15,9 @@ export default function SelectFilePanel(props: SFProps) {
 	return (
 		<form className={Styles.form}>
 			<label className={Styles.uploadFile} tabIndex={0}>
-				<div
-					className={Styles.icon}
-					dangerouslySetInnerHTML={{__html: imageIcon}}
-				/>
+				<div className={Styles.icon}>
+					<ImageIcon/>
+				</div>
 				<div className={Styles.text}>
 					Drag & drop
 				</div>

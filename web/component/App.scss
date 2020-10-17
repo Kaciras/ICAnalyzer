@@ -19,7 +19,7 @@
 
 	border-top-right-radius: 4px;
 	overflow: hidden;
-	background: rgba(0, 0, 0, .7);
+	background: rgba(0, 0, 0, .75);
 }
 
 .variableGroup {
@@ -32,5 +32,9 @@
 
 	border-top-left-radius: 4px;
 	overflow: hidden;
-	background: rgba(0, 0, 0, .7);
+	background: rgba(0, 0, 0, .75);
+}
+
+.iconButton {
+	font-size: 30px;
 }

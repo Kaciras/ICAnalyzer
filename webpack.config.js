@@ -2,7 +2,6 @@ const { join } = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
-const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
 
 module.exports = function webpackConfig(env) {
 	const isProd = Boolean(env?.production);
@@ -47,7 +46,7 @@ module.exports = function webpackConfig(env) {
 		},
 		{
 			test: /\.svg$/,
-			type: "asset/source",
+			use: "@svgr/webpack",
 		},
 		{
 			oneOf: [
@@ -65,23 +64,6 @@ module.exports = function webpackConfig(env) {
 	];
 
 	const plugins = [
-
-		// Remove width & height attributes for inline SVG
-		new ImageMinimizerPlugin({
-			minimizerOptions: {
-				plugins: [
-					[
-						"svgo",
-						{
-							plugins: [
-								{ removeViewBox: false },
-								{ removeDimensions: true },
-							],
-						},
-					],
-				],
-			},
-		}),
 
 		// Replace with webpack5 native worker support?
 		new WorkerPlugin({

@@ -5,6 +5,9 @@ import Chart from "./Chart";
 import style from "./App.scss";
 import RangeInput from "./RangeInput";
 import ImageView from "./ImageView";
+import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
+import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
+import DownloadIcon from "bootstrap-icons/icons/download.svg";
 
 interface Result {
 	original: string;
@@ -71,27 +74,33 @@ export default function App() {
 
 				<ImageView {...results} optimized={results.optimizedImages[index]}/>
 
-				{ showChart && <Chart options={results}/> }
+				{showChart && <Chart options={results}/>}
 
 				<div className={style.buttonGroup}>
 					<IconButton
 						title="Select an image"
+						className={style.iconButton}
 						onClick={() => setShowDialog(true)}
-						icon={require("bootstrap-icons/icons/cloud-upload.svg")}
-					/>
+					>
+						<UploadIcon/>
+					</IconButton>
 					<IconButton
 						title="Show chart"
+						className={style.iconButton}
 						disabled={results === PLACEHOLDER}
 						active={showChart}
-						icon={require("bootstrap-icons/icons/bar-chart-line.svg")}
 						onClick={() => setShowChart(!showChart)}
-					/>
+					>
+						<ChartIcon/>
+					</IconButton>
 					<IconButton
 						title="Download compressed image"
+						className={style.iconButton}
 						disabled={results === PLACEHOLDER}
 						onClick={downloadImage}
-						icon={require("bootstrap-icons/icons/download.svg")}
-					/>
+					>
+						<DownloadIcon/>
+					</IconButton>
 				</div>
 
 				<form className={style.variableGroup}>
