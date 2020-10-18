@@ -20,6 +20,8 @@ jobs:
         with:
           submodules: true
 
+      - run: sudo chmod -R 777 test/fixtures
+
       - name: Debug
         run: ls -la test/fixtures
 
