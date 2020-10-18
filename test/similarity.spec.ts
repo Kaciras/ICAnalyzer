@@ -1,12 +1,14 @@
-import { butteraugli, getPSNR, getSSIM } from "../lib/similarity";
+import { butteraugli, getPSNR, getSSIM, initWasmModule } from "../lib/similarity";
 import { readImage } from "./test-helper";
+
+beforeAll(() => initWasmModule());
 
 it("should check image data have same length", () => {
 	const dataA = Buffer.alloc(900);
 	const dataB = Buffer.alloc(1200);
 	const ti = { dataA, dataB, width: 30, height: 10 };
 
-	return expect(butteraugli(ti)).rejects.toThrow();
+	return expect(() => butteraugli(ti)).toThrow();
 });
 
 it("should check image is RGB", () => {
@@ -14,7 +16,7 @@ it("should check image is RGB", () => {
 	const dataB = Buffer.alloc(1200);
 	const ti = { dataA, dataB, width: 30, height: 20 };
 
-	return expect(butteraugli(ti)).rejects.toThrow();
+	expect(() => butteraugli(ti)).toThrow();
 });
 
 it("should get butteraugli source & heatMap", async () => {
