@@ -7,6 +7,8 @@ jobs:
 
     steps:
       - uses: mymindstorm/setup-emsdk@v7
+        with:
+          submodules: true
 
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -16,9 +18,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - run: git submodule update --init --recursive
       - run: npm install
-      - run: npm run compile
+      - run: mkdir out && npm run compile
 
       - name: Test
         run: npm run test
