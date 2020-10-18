@@ -16,7 +16,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
+          lfs: true
           submodules: true
+
+      - name: Debug
+        run: ls -la test/fixtures
 
       - run: npm ci
       - run: mkdir out && npm run compile
