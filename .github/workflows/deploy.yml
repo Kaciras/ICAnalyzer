@@ -1,0 +1,28 @@
+name: Deploy
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: mymindstorm/setup-emsdk@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - run: npm install
+      - run: npm run compile
+
+      - name: Test
+        run: npm run test
+        env:
+          CI: true
+
+      - name: Build webpack bundle
+        run: npm run build
