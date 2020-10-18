@@ -1,6 +1,6 @@
 {
-	"name": "image-codec-analyzer",
-	"description": "Analyze the effect of image optimization tools",
+	"name": "ic-analyze",
+	"description": "Analyze the effect of image convertors",
 	"author": "Kaciras <Kaciras@protonmail.com>",
 	"version": "1.0.0",
 	"license": "MIT",
@@ -13,7 +13,6 @@
 		"build": "webpack --env production"
 	},
 	"dependencies": {
-		"@saschazar/wasm-webp": "^2.0.0",
 		"bootstrap-icons": "^1.0.0",
 		"clsx": "^1.1.1",
 		"comlink": "^4.3.0",
