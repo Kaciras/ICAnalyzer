@@ -6,10 +6,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: mymindstorm/setup-emsdk@v7
-        with:
-          actions-cache-folder: "emsdk-cache"
-
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
@@ -20,13 +16,7 @@ jobs:
         with:
           submodules: true
 
-      - run: sudo chmod -R 777 test/fixtures
-
-      - name: Debug
-        run: ls -la test/fixtures
-
       - run: npm ci
-      - run: mkdir out && npm run compile
 
       - name: Test
         run: npm run test
