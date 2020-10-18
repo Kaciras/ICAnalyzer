@@ -2,7 +2,7 @@ import * as Comlink from "comlink";
 import type * as WebP from "squoosh/src/codecs/webp/encoder-meta";
 import type * as AVIF from "squoosh/src/codecs/avif/encoder-meta";
 import * as Similarity from "../lib/similarity";
-import wasmUrl from "../out/metrics.wasm";
+import wasmUrl from "../lib/metrics.wasm";
 
 let data: ImageData;
 

@@ -29,8 +29,3 @@ htmlcov/
 
 # VS Code related files
 .vscode
-
-# Others
-data/
-encoder/
-out/

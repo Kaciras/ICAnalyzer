@@ -1,4 +1,4 @@
-import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "../out/metrics";
+import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "./metrics";
 import ssim from "ssim.js";
 
 const DEFAULT_OPTIONS: ButteraugliOptions = {
