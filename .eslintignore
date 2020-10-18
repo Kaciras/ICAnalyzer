@@ -1,0 +1,9 @@
+node_modules
+
+# Third party files
+deps
+
+# Generated files
+dist
+test/**/*.js
+lib/**/*.js
