@@ -1,5 +1,4 @@
 import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "../out/metrics";
-import wasmUrl from "../out/metrics.wasm";
 import ssim from "ssim.js";
 
 const DEFAULT_OPTIONS: ButteraugliOptions = {
@@ -8,7 +7,16 @@ const DEFAULT_OPTIONS: ButteraugliOptions = {
 	badQualitySeek: 0.5,
 };
 
-let wasmModule: MetricsModule;
+let wasmModule: MetricsModule | undefined;
+
+export async function initWasmModule(wasmUrl?: string) {
+	if (wasmModule) {
+		return;
+	}
+	wasmModule = wasmUrl
+		? await metrics({ locateFile: () => wasmUrl })
+		: await metrics();
+}
 
 function checkImages(twoImages: TwoImages) {
 	const { dataA, dataB, width, height } = twoImages;
@@ -22,33 +30,30 @@ function checkImages(twoImages: TwoImages) {
 	}
 }
 
-export async function butteraugli(twoImages: TwoImages, options?: Partial<ButteraugliOptions>) {
+export function butteraugli(twoImages: TwoImages, options?: Partial<ButteraugliOptions>) {
 	if (!wasmModule) {
-		wasmModule = await metrics();
+		throw new Error("Wasm module not loaded");
 	}
 
 	const merged = { ...DEFAULT_OPTIONS, ...options };
 
-	if (merged.goodQualitySeek < 0 || merged.goodQualitySeek >= 2) {
-		throw new Error("goodQualitySeek must between 0, 2");
-	}
 	if (merged.badQualitySeek < 0 || merged.badQualitySeek >= 2) {
 		throw new Error("badQualitySeek must between 0, 2");
 	}
+	if (merged.goodQualitySeek < 0 || merged.goodQualitySeek >= 2) {
+		throw new Error("goodQualitySeek must between 0, 2");
+	}
+
 	checkImages(twoImages);
 	return wasmModule.GetButteraugli(twoImages, merged);
 }
 
-export async function getPSNR(twoImages: TwoImages) {
+export function getPSNR(twoImages: TwoImages) {
 	if (!wasmModule) {
-		wasmModule = await metrics({
-			locateFile(url: string, scriptDirectory: string): string {
-				return wasmUrl;
-			},
-		});
+		throw new Error("Wasm module not loaded");
 	}
 	checkImages(twoImages);
-	const mse = wasmModule.GetMSE(twoImages) as number;
+	const mse = wasmModule.GetMSE(twoImages);
 	return 10 * Math.log10(255 * 255 / mse);
 }
 

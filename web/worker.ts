@@ -2,6 +2,7 @@ import * as Comlink from "comlink";
 import type * as WebP from "squoosh/src/codecs/webp/encoder-meta";
 import type * as AVIF from "squoosh/src/codecs/avif/encoder-meta";
 import * as Similarity from "../lib/similarity";
+import wasmUrl from "../out/metrics.wasm";
 
 let data: ImageData;
 
@@ -18,12 +19,13 @@ const workerApi = {
 		data = image;
 	},
 
-	calcPSNR(image: ImageData) {
+	async calcPSNR(image: ImageData) {
+		await Similarity.initWasmModule(wasmUrl);
 		return Similarity.getPSNR({
-			dataA: new Uint8Array(data.data),
-			dataB: new Uint8Array(image.data),
 			width: data.width,
 			height: data.height,
+			dataA: new Uint8Array(data.data),
+			dataB: new Uint8Array(image.data),
 		});
 	},
 
@@ -31,8 +33,8 @@ const workerApi = {
 
 	},
 
-	calcButteraugli(image: ImageData){
-
+	async calcButteraugli(image: ImageData){
+		await Similarity.initWasmModule(wasmUrl);
 	},
 
 	async webpEncode(options: WebP.EncodeOptions) {
