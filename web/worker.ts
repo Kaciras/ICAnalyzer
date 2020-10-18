@@ -27,6 +27,14 @@ const workerApi = {
 		});
 	},
 
+	calcSSIM(image: ImageData){
+
+	},
+
+	calcButteraugli(image: ImageData){
+
+	},
+
 	async webpEncode(options: WebP.EncodeOptions) {
 		return (await import("squoosh/src/codecs/webp/encoder")).encode(data, options);
 	},

@@ -1,6 +1,8 @@
 import * as Comlink from "comlink";
-import WorkerUrl from "worker-plugin/loader?esModule&name=worker!./worker";
+import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
 import type { WorkerApi } from "./worker";
+import { detectAVIFSupport, detectWebPSupport } from "./utils";
+import { ButteraugliOptions } from "*/out/metrics";
 
 type WorkerFactory = () => Worker;
 
@@ -28,12 +30,19 @@ class WorkerPool<T> {
 	}
 }
 
+export interface MeasureOptions {
+	psnr: boolean;
+	ssim: boolean;
+	butteraugli: false | ButteraugliOptions;
+}
+
 export class BatchEncoder<T> {
 
 	private readonly url: string;
 
 	private image?: ImageData;
 	private optionsList!: T[];
+	private measure!: MeasureOptions;
 
 	private index = 0;
 	private workers: Worker[] = [];
@@ -50,9 +59,10 @@ export class BatchEncoder<T> {
 		// noop by default
 	}
 
-	encode(image: ImageData, optionsList: T[]) {
+	encode(image: ImageData, optionsList: T[], measure: MeasureOptions) {
 		this.image = image;
 		this.optionsList = optionsList;
+		this.measure = measure;
 		return this;
 	}
 
@@ -89,7 +99,7 @@ export class BatchEncoder<T> {
 	}
 
 	private async poll(wrapper: Comlink.Remote<WorkerApi>) {
-		const { encoded, metrics, optionsList } = this;
+		const { encoded, metrics, optionsList, measure } = this;
 
 		while (this.index < optionsList.length) {
 			const i = this.index++;
@@ -97,8 +107,15 @@ export class BatchEncoder<T> {
 
 			const buffer = await wrapper.webpEncode(optionsList[i]);
 			encoded[i] = buffer;
-			const pixels = await decodeImage(new Blob([buffer], { type: "image/webp" }));
-			metrics[i] = await wrapper.calcPSNR(pixels);
+
+			if (measure) {
+				// const pixels = await decodeImage(new Blob([buffer], { type: "image/webp" }));
+				const pixels = await wrapper.webpDecode(buffer);
+
+				if (measure.psnr) {
+					metrics[i] = await wrapper.calcPSNR(pixels);
+				}
+			}
 		}
 	}
 }
@@ -120,6 +137,31 @@ async function decodeImage(blob: Blob) {
 	return ctx.getImageData(0, 0, width, height);
 }
 
+type featureDetector = () => Promise<boolean>;
+type DecodeFunction = (buffer: ArrayBuffer) => Promise<ImageData>;
+
+function decodeFn(
+	checkFn: featureDetector,
+	native: DecodeFunction,
+	polyfill: DecodeFunction,
+) {
+	let bestDecodeFn;
+
+	return async function choose(buffer: ArrayBuffer) {
+		if (await checkFn()) {
+			bestDecodeFn = native;
+		} else {
+			bestDecodeFn = polyfill;
+		}
+		return await bestDecodeFn(buffer);
+	};
+}
+
+export const decodeWebP = decodeFn(
+	detectWebPSupport,
+	decodeAVIFNative,
+	decodeAVIFWorker);
+
 function decodeAVIFNative(buffer: ArrayBuffer) {
 	return decodeImage(new Blob([buffer], { type: "image/avif" }));
 }
@@ -129,11 +171,13 @@ async function decodeAVIFWorker(buffer: ArrayBuffer) {
 	return worker.avifDecode(buffer);
 }
 
-// let decodeAVIF = async (buffer: ArrayBuffer) => {
-// 	if (await detectAVIFSupport()) {
-// 		decodeAVIF = decodeAVIFNative;
-// 	} else {
-// 		decodeAVIF = decodeAVIFWorker;
-// 	}
-// 	return decodeAVIF(buffer);
-// };
+let decodeAVIF: (buffer: ArrayBuffer) => Promise<ImageData>;
+
+decodeAVIF = async (buffer) => {
+	if (await detectAVIFSupport()) {
+		decodeAVIF = decodeAVIFNative;
+	} else {
+		decodeAVIF = decodeAVIFWorker;
+	}
+	return await decodeAVIF(buffer);
+};

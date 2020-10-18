@@ -1,5 +1,5 @@
 import { OptionTemplate } from "./index";
-import { NumberRangeTemplate } from "../component/OptionTemplate";
+import { EnumTemplate, NumberRangeTemplate } from "../component/OptionTemplate";
 
 export const AVIFOptionsTemplate: OptionTemplate[] = [
 	{
@@ -32,6 +32,6 @@ export const AVIFOptionsTemplate: OptionTemplate[] = [
 	{
 		label: "subsample",
 		name: "subsample",
-		type: new NumberRangeTemplate(0, 8, 6),
+		type: new EnumTemplate(0, 8, 6),
 	},
 ];

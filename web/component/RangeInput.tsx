@@ -57,8 +57,6 @@ export default function RangeInput(props: Props) {
 		<span
 			className={Styles.container}
 			style={cssVariables}
-			onMouseDown={mouseMove}
-			onTouchStart={touchMove}
 		>
 			<input
 				type="range"

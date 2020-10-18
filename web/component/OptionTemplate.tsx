@@ -74,6 +74,30 @@ export class BooleanTemplate {
 
 }
 
-export class EnumTemplate {
+export class EnumTemplate implements OptionType<any, any> {
 
+	private readonly names: string[];
+	private readonly defaultValue: string;
+
+	constructor(names: string[], defaultValue: string) {
+		this.names = names;
+		this.defaultValue = defaultValue;
+	}
+
+	createFixedInput(name: string, value: any): React.ReactElement {
+		return null;
+	}
+
+	createFixedState() {
+		return this.defaultValue;
+	}
+
+	createVariableInput(name: string, value: any): React.ReactElement {
+		return null;
+	}
+
+	createVariableState(): any {
+		return this.names;
+	}
 }
+

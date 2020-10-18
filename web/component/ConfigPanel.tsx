@@ -1,59 +1,12 @@
-import React, { Dispatch, FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import clsx from "clsx";
 import Styles from "./ConfigPanel.scss";
 import { WebPOptionsTemplate } from "../options";
 import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
-import RadioInput from "./RadioInput";
 import SelectFilePanel from "./SelectFilePanel";
-
-interface OptionsInstance {
-	[key: string]: {
-		fixed?: any;
-		variable?: any;
-	}
-}
-
-interface OProps {
-	vars: string[];
-	onVarsChange: Dispatch<string[]>;
-	options: any;
-}
-
-function OptionsPanel(props: OProps) {
-	const { vars, options, onVarsChange } = props;
-
-	const fields: React.ReactElement[] = [];
-
-	for (const template of WebPOptionsTemplate) {
-		const { name, type } = template;
-		const option = options[name] ||= {};
-		let element;
-
-		if (vars.includes(name)) {
-			if (!("variable" in option)) {
-				option.variable = type.createVariableState();
-			}
-			element = type.createVariableInput(name, option.variable);
-		} else {
-			if (!("fixed" in option)) {
-				option.fixed = type.createFixedState();
-			}
-			element = type.createFixedInput(name, option.fixed);
-		}
-
-		const radioChange = (e: FormEvent<HTMLInputElement>) => {
-			if (e.currentTarget.checked) onVarsChange([name]);
-		};
-
-		fields.push(
-			<div key={name}>
-				<RadioInput checked={true} name="vars"/>
-				{element}
-			</div>);
-	}
-
-	return <form className={Styles.form}>{fields}</form>;
-}
+import { MeasureOptions } from "../encoding";
+import CheckBoxInput from "./CheckBoxInput";
+import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
 
 interface Metrics {
 	SSIM: boolean;
@@ -62,28 +15,34 @@ interface Metrics {
 }
 
 interface MProps {
-
+	yAxis: string[];
+	options: MeasureOptions;
 }
 
-function MetricsPanel() {
+function MetricsPanel(props: MProps) {
+	const { ssim, psnr, butteraugli } = props.options;
+
+	let bOptions;
+	if (butteraugli) {
+		bOptions = (
+			<fieldset>
+
+			</fieldset>
+		);
+	}
+
 	return (
 		<form className={Styles.form}>
 			<label>
 				<span>Use pervious Y axis</span>
-				<select></select>
+				<select>
+					<option>(None)</option>
+				</select>
 			</label>
-			<label>
-				<input type="checkbox"/>
-				<span>Calculate SSIM</span>
-			</label>
-			<label>
-				<input type="checkbox"/>
-				<span>Calculate PSNR</span>
-			</label>
-			<label>
-				<input type="checkbox"/>
-				<span>Calculate Butteraugli</span>
-			</label>
+			<CheckBoxInput checked={ssim}>Calculate SSIM</CheckBoxInput>
+			<CheckBoxInput checked={psnr}>Calculate PSNR</CheckBoxInput>
+			<CheckBoxInput checked={!!butteraugli}>Calculate Butteraugli</CheckBoxInput>
+			{bOptions}
 		</form>
 	);
 }
@@ -101,6 +60,12 @@ export default function ConfigPanel(props: Props) {
 
 	const [options, setOptions] = useState<OptionsInstance>({});
 
+	const [measure, setMeasure] = useState<MeasureOptions>({
+		psnr: true,
+		ssim: false,
+		butteraugli: false,
+	});
+
 	function loadFile(event: FormEvent<HTMLInputElement>) {
 		setFile(event.currentTarget.files![0]);
 	}
@@ -116,17 +81,13 @@ export default function ConfigPanel(props: Props) {
 
 	const [index, setIndex] = useState(0);
 
-	const panels = [
-		{ name: "Select File", component: SelectFilePanel },
-		{ name: "Options", component: OptionsPanel },
-		{ name: "Metrics", component: MetricsPanel },
-	];
+	const panels = ["Select File", "Options","Metrics"];
 
 	const tabs = [];
 	for (let i = 0; i < panels.length; i++) {
-		const panel = panels[i];
+		const name = panels[i];
 		const clazz = i === index ? clsx(Styles.tab, Styles.active) : Styles.tab;
-		tabs.push(<div key={i} className={clazz} onClick={() => setIndex(i)}>{panel.name}</div>);
+		tabs.push(<div key={i} className={clazz} onClick={() => setIndex(i)}>{name}</div>);
 	}
 
 	let panel;
@@ -143,7 +104,7 @@ export default function ConfigPanel(props: Props) {
 			/>;
 			break;
 		case 2:
-			panel = <MetricsPanel/>;
+			panel = <MetricsPanel yAxis={[]} options={measure}/>;
 			break;
 		default:
 			throw new Error();
@@ -158,7 +119,7 @@ export default function ConfigPanel(props: Props) {
 					className={clsx(Styles.button, Styles.minor)}
 					onClick={props.onClose}
 				>
-					Cancel
+					威威威威阿斯顿
 				</button>
 				<button
 					className={clsx(Styles.button, Styles.primary)}

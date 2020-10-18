@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Styles from "./CompressDialog.scss";
-import { BatchEncoder, createWorkers } from "../encoding";
+import { BatchEncoder, createWorkers, MeasureOptions } from "../encoding";
 import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
 
@@ -15,7 +15,7 @@ export default function CompressDialog(props: Props) {
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
-	async function handleStart(file: File, optionsList: any[]) {
+	async function handleStart(file: File, optionsList: any[], measure: MeasureOptions) {
 		if (!file) {
 			throw new Error("File is null");
 		}
@@ -29,11 +29,11 @@ export default function CompressDialog(props: Props) {
 		ctx.drawImage(bitmap, 0, 0);
 		const canvasData = ctx.getImageData(0, 0, width, height);
 
-		const [encoded, metrics] = await encode(canvasData, optionsList);
+		const [encoded, metrics] = await encode(canvasData, optionsList, measure);
 		props.onChange(file, encoded, metrics);
 	}
 
-	function encode(image: ImageData, optionsList: any[]) {
+	function encode(image: ImageData, optionsList: any[], measure: MeasureOptions) {
 		const encoder = createWorkers();
 
 		setEncoder(encoder);
@@ -41,7 +41,7 @@ export default function CompressDialog(props: Props) {
 		setProgress(0);
 
 		encoder.onProgress = setProgress;
-		return encoder.encode(image, optionsList).start();
+		return encoder.encode(image, optionsList, measure).start();
 	}
 
 	function stop() {

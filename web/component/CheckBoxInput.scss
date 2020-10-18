@@ -1,0 +1,36 @@
+$color-checked: #069AF9;
+$size: 20px;
+
+.container {
+	display: inline-block;
+	margin-right: 1em;
+	cursor: pointer;
+}
+
+.input {
+	opacity: 0;
+}
+
+.mark {
+	display: inline-block;
+	position: relative;
+	height: $size;
+	width: $size;
+	vertical-align: top;
+
+	color: transparent;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+
+	&.checked {
+		color: white;
+		border-color: $color-checked;
+		background: $color-checked;
+	}
+}
+
+.label {
+	display: inline-block;
+	padding-left: .5rem;
+	line-height: $size;
+}

@@ -13,7 +13,7 @@ export default function RadioInput(props: Props) {
 	const { name, children, checked, disabled } = props;
 
 	return (
-		<label className={clsx(Styles.container, { [Styles.checked]: checked })}>
+		<label className={Styles.container}>
 			<input
 				type="radio"
 				className={Styles.input}
