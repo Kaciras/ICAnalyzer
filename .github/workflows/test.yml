@@ -1,9 +1,5 @@
-name: Deploy
-
-on:
-  push:
-    branches:
-      - master
+name: Test
+on: push
 
 jobs:
   deploy:
@@ -25,10 +21,7 @@ jobs:
       - name: Build webpack bundle
         run: npm run build
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CLEAN: true
-          BRANCH: gh-pages
-          FOLDER: dist
+      - name: Test
+        run: npm run test
+        env:
+          CI: true
