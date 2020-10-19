@@ -10,10 +10,13 @@
 }
 
 .inputs {
+	composes: controls from global;
+
 	position: absolute;
 	top: 0;
 	right: 0;
 	z-index: 1000;
+	border-bottom-left-radius: 4px;
 }
 
 .wrapper {

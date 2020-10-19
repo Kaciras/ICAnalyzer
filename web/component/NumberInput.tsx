@@ -17,7 +17,7 @@ interface Props {
 function useLimitedValue(
 	init = 0,
 	min: number = Number.NEGATIVE_INFINITY,
-	max: number = Number.NEGATIVE_INFINITY,
+	max: number = Number.POSITIVE_INFINITY,
 	precision = 0,
 ): [number, (v: number) => number] {
 

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Styles from "./CompressDialog.scss";
-import { BatchEncoder, createWorkers, MeasureOptions } from "../encoding";
+import { BatchEncoder, ConvertOutput, createWorkers, MeasureOptions } from "../encoding";
 import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
 
 interface Props {
-	onChange: (file: File, encodedFiles: ArrayBuffer[], metrics: number[]) => void;
+	onChange: (file: File, results: ConvertOutput[]) => void;
 	onClose: () => void;
 }
 
@@ -29,8 +29,7 @@ export default function CompressDialog(props: Props) {
 		ctx.drawImage(bitmap, 0, 0);
 		const canvasData = ctx.getImageData(0, 0, width, height);
 
-		const [encoded, metrics] = await encode(canvasData, optionsList, measure);
-		props.onChange(file, encoded, metrics);
+		props.onChange(file, await encode(canvasData, optionsList, measure));
 	}
 
 	function encode(image: ImageData, optionsList: any[], measure: MeasureOptions) {

@@ -8,19 +8,13 @@ import { MeasureOptions } from "../encoding";
 import CheckBoxInput from "./CheckBoxInput";
 import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
 
-interface Metrics {
-	SSIM: boolean;
-	PSNR: boolean;
-	butteraugli: boolean;
-}
-
 interface MProps {
 	yAxis: string[];
 	options: MeasureOptions;
 }
 
 function MetricsPanel(props: MProps) {
-	const { ssim, psnr, butteraugli } = props.options;
+	const { SSIM, PSNR, butteraugli } = props.options;
 
 	let bOptions;
 	if (butteraugli) {
@@ -39,8 +33,8 @@ function MetricsPanel(props: MProps) {
 					<option>(None)</option>
 				</select>
 			</label>
-			<CheckBoxInput checked={ssim}>Calculate SSIM</CheckBoxInput>
-			<CheckBoxInput checked={psnr}>Calculate PSNR</CheckBoxInput>
+			<CheckBoxInput checked={SSIM}>Calculate SSIM</CheckBoxInput>
+			<CheckBoxInput checked={PSNR}>Calculate PSNR</CheckBoxInput>
 			<CheckBoxInput checked={!!butteraugli}>Calculate Butteraugli</CheckBoxInput>
 			{bOptions}
 		</form>
@@ -48,7 +42,7 @@ function MetricsPanel(props: MProps) {
 }
 
 interface Props {
-	onStart: (file: File, optionsList: any[]) => void;
+	onStart: (file: File, optionsList: any[], measure: MeasureOptions) => void;
 	onClose: () => void;
 }
 
@@ -61,8 +55,8 @@ export default function ConfigPanel(props: Props) {
 	const [options, setOptions] = useState<OptionsInstance>({});
 
 	const [measure, setMeasure] = useState<MeasureOptions>({
-		psnr: true,
-		ssim: false,
+		SSIM: false,
+		PSNR: true,
 		butteraugli: false,
 	});
 
@@ -76,7 +70,7 @@ export default function ConfigPanel(props: Props) {
 		for (let i = 0; i < 101; i++) {
 			optionsList[i] = { ...defaultOptions, quality: i };
 		}
-		props.onStart(file!, optionsList);
+		props.onStart(file!, optionsList, measure);
 	}
 
 	const [index, setIndex] = useState(0);

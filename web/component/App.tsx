@@ -8,22 +8,20 @@ import ImageView from "./ImageView";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
+import { ConvertOutput } from "../encoding";
 
 interface Result {
 	original: string;
 	width: number;
 	height: number;
-
-	optimizedImages: ImageBitmap[];
-	metrics: number[];
+	outputs: ConvertOutput[];
 }
 
 const PLACEHOLDER: Result = {
 	original: "",
 	width: 0,
 	height: 0,
-	optimizedImages: [],
-	metrics: [],
+	outputs: [],
 };
 
 export default function App() {
@@ -31,24 +29,18 @@ export default function App() {
 	const [showChart, setShowChart] = useState(false);
 	const [index, setIndex] = useState(0);
 	const [results, setResults] = useState(PLACEHOLDER);
+	const [downloadUrl, setDownloadUrl] = useState("");
 
-	async function showResult(file: File, encodedFiles: ArrayBuffer[], metrics: number[]) {
+	async function showResult(file: File, outputs: ConvertOutput[]) {
 		setShowDialog(false);
-
-		const bitmaps: ImageBitmap[] = [];
-		for (const data of encodedFiles) {
-			const blob = new Blob([data], { type: "image/webp" });
-			bitmaps.push(await createImageBitmap(blob));
-		}
 
 		URL.revokeObjectURL(results.original);
 
 		setResults({
+			outputs,
 			original: URL.createObjectURL(file),
-			width: bitmaps[0].width,
-			height: bitmaps[0].height,
-			optimizedImages: bitmaps,
-			metrics,
+			width: outputs[0].bitmap.width,
+			height: outputs[0].bitmap.height,
 		});
 
 		setIndex(75);
@@ -63,16 +55,23 @@ export default function App() {
 	}
 
 	function downloadImage() {
-		const image = results.optimizedImages[index];
-		const x = URL.createObjectURL(image);
-		window.open(x, "__blank");
+		const { buffer } = results.outputs[index];
+		const url = URL.createObjectURL(new Blob([buffer], { type: "image/webp" }));
+
+		URL.revokeObjectURL(downloadUrl);
+		setDownloadUrl(url);
+
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = "filename.webp";
+		a.click();
 	}
 
 	return (
 		<>
 			<section className={style.main}>
 
-				<ImageView {...results} optimized={results.optimizedImages[index]}/>
+				<ImageView {...results} optimized={results.outputs[index]}/>
 
 				{showChart && <Chart options={results}/>}
 

@@ -1,13 +1,28 @@
 import * as Comlink from "comlink";
 import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
 import type { WorkerApi } from "./worker";
-import { detectAVIFSupport, detectWebPSupport } from "./utils";
+import { detectWebPSupport } from "./utils";
 import { ButteraugliOptions } from "../lib/metrics";
 
 export interface MeasureOptions {
-	psnr: boolean;
-	ssim: boolean;
+	PSNR: boolean;
+	SSIM: boolean;
 	butteraugli: false | ButteraugliOptions;
+}
+
+interface Metrics {
+	SSIM?: number;
+	PSNR?: number;
+	butteraugli?: {
+		source: number;
+		heatMap: ImageBitmap;
+	};
+}
+
+export interface ConvertOutput {
+	buffer: ArrayBuffer;
+	metrics: Metrics;
+	bitmap: ImageBitmap;
 }
 
 export class BatchEncoder<T> {
@@ -21,8 +36,7 @@ export class BatchEncoder<T> {
 	private index = 0;
 	private workers: Worker[] = [];
 
-	private encoded!: ArrayBuffer[];
-	private metrics!: number[];
+	private results!: ConvertOutput[];
 
 	constructor(url: string) {
 		this.url = url;
@@ -51,8 +65,7 @@ export class BatchEncoder<T> {
 		const length = this.optionsList.length;
 		threadCount = Math.min(threadCount, length);
 
-		this.encoded = new Array<ArrayBuffer>(length);
-		this.metrics = new Array<number>(length);
+		this.results = new Array<ConvertOutput>(length);
 
 		const tasks = new Array(threadCount);
 
@@ -65,7 +78,7 @@ export class BatchEncoder<T> {
 			tasks.push(this.poll(wrapper));
 		}
 
-		return Promise.all(tasks).then(() => [this.encoded, this.metrics]);
+		return Promise.all(tasks).then(() => this.results);
 	}
 
 	stop() {
@@ -73,23 +86,30 @@ export class BatchEncoder<T> {
 	}
 
 	private async poll(wrapper: Comlink.Remote<WorkerApi>) {
-		const { encoded, metrics, optionsList, measure } = this;
+		const { results, optionsList, measure } = this;
 
 		while (this.index < optionsList.length) {
 			const i = this.index++;
 			this.onProgress(i);
 
 			const buffer = await wrapper.webpEncode(optionsList[i]);
-			encoded[i] = buffer;
+			const data = await wrapper.webpDecode(buffer);
+			const bitmap = await createImageBitmap(data);
 
-			if (measure) {
-				// const pixels = await decodeImage(new Blob([buffer], { type: "image/webp" }));
-				const pixels = await wrapper.webpDecode(buffer);
-
-				if (measure.psnr) {
-					metrics[i] = await wrapper.calcPSNR(pixels);
-				}
+			const metrics: Metrics = {};
+			if (measure.PSNR) {
+				metrics.PSNR = await wrapper.calcPSNR(data);
 			}
+			if (measure.SSIM) {
+				metrics.SSIM = await wrapper.calcSSIM(data);
+			}
+			if (measure.butteraugli) {
+				const [source, raw] = await wrapper.calcButteraugli(data);
+				const heatMap = await createImageBitmap({ data: new Uint8ClampedArray(raw), width: bitmap.width, height: bitmap.height });
+				metrics.butteraugli = { source, heatMap };
+			}
+
+			results[i] = { buffer, bitmap, metrics };
 		}
 	}
 }
@@ -97,6 +117,8 @@ export class BatchEncoder<T> {
 export function createWorkers() {
 	return new BatchEncoder(WorkerUrl);
 }
+
+type DecodeResult = [ImageData, ImageBitmap];
 
 async function decodeImage(blob: Blob) {
 	const bitmap = await createImageBitmap(blob);
@@ -108,11 +130,13 @@ async function decodeImage(blob: Blob) {
 
 	const ctx = canvas.getContext("2d")!;
 	ctx.drawImage(bitmap, 0, 0);
-	return ctx.getImageData(0, 0, width, height);
+	const imageData = ctx.getImageData(0, 0, width, height);
+
+	return [imageData, bitmap] as DecodeResult;
 }
 
 type featureDetector = () => Promise<boolean>;
-type DecodeFunction = (buffer: ArrayBuffer) => Promise<ImageData>;
+type DecodeFunction = (buffer: ArrayBuffer) => Promise<DecodeResult>;
 
 function decodeFn(
 	checkFn: featureDetector,
@@ -142,16 +166,9 @@ function decodeAVIFNative(buffer: ArrayBuffer) {
 
 async function decodeAVIFWorker(buffer: ArrayBuffer) {
 	const worker = Comlink.wrap<WorkerApi>(new Worker(WorkerUrl));
-	return worker.avifDecode(buffer);
+	const imageData = await worker.avifDecode(buffer);
+	const bitmap = await createImageBitmap(imageData);
+	return [imageData, bitmap] as DecodeResult;
 }
 
 let decodeAVIF: (buffer: ArrayBuffer) => Promise<ImageData>;
-
-decodeAVIF = async (buffer) => {
-	if (await detectAVIFSupport()) {
-		decodeAVIF = decodeAVIFNative;
-	} else {
-		decodeAVIF = decodeAVIFWorker;
-	}
-	return await decodeAVIF(buffer);
-};

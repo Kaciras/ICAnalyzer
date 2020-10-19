@@ -29,12 +29,24 @@ const workerApi = {
 		});
 	},
 
-	calcSSIM(image: ImageData){
-
+	async calcSSIM(image: ImageData) {
+		await Similarity.initWasmModule(wasmUrl);
+		return Similarity.getPSNR({
+			width: data.width,
+			height: data.height,
+			dataA: new Uint8Array(data.data),
+			dataB: new Uint8Array(image.data),
+		});
 	},
 
 	async calcButteraugli(image: ImageData){
 		await Similarity.initWasmModule(wasmUrl);
+		return Similarity.butteraugli({
+			width: data.width,
+			height: data.height,
+			dataA: new Uint8Array(data.data),
+			dataB: new Uint8Array(image.data),
+		});
 	},
 
 	async webpEncode(options: WebP.EncodeOptions) {

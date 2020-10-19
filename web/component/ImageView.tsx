@@ -1,13 +1,14 @@
 import React, { CSSProperties, ReactNode, useEffect, useRef, useState, WheelEvent } from "react";
+import IconButton from "./IconButton";
+import NumberInput from "./NumberInput";
 import Styles from "./ImageView.scss";
+import { ConvertOutput } from "../encoding";
 
 interface Props {
 	original: string;
 	width: number;
 	height: number;
-
-	heatMap?: ImageBitmap;
-	optimized?: ImageBitmap;
+	optimized?: ConvertOutput;
 }
 
 export enum ViewType {
@@ -64,9 +65,9 @@ function watchTouchMove(baseEvent: TouchEvent, handler: PointerMoveHandler) {
 }
 
 export default function ImageView(props: Props) {
-	const { original, width, height, optimized, heatMap } = props;
+	const { original, width, height, optimized } = props;
 
-	const [type, setType] = useState<ViewType>();
+	const [type, setType] = useState(ViewType.Compressed);
 	const [brightness, setBrightness] = useState(100);
 
 	const [zoom, setZoom] = useState(1);
@@ -78,27 +79,29 @@ export default function ImageView(props: Props) {
 		if (!optimized) {
 			return; // TODO
 		}
+		const { metrics, bitmap } = optimized;
 		const ctx = canvasRef.current!.getContext("2d");
 		if (!ctx) {
 			throw new Error("Could not create canvas context");
 		}
 		if (type === ViewType.HeatMap) {
-			ctx.drawImage(heatMap!, 0, 0);
+			ctx.drawImage(metrics.butteraugli!.heatMap, 0, 0);
 		} else {
-			ctx.drawImage(optimized!, 0, 0);
+			ctx.drawImage(bitmap!, 0, 0);
 		}
 	}
 
-	useEffect(refreshCanvas, [type, original, optimized, heatMap]);
+	useEffect(refreshCanvas, [type, original, optimized]);
 
 	interface ImageViewTabProps {
 		target: ViewType;
+		disabled?: boolean;
 		children: ReactNode;
 	}
 
 	function ImageViewTab(props: ImageViewTabProps) {
-		const { children, target } = props;
-		return <button data-actived={type === target} onClick={() => setType(target)}>{children}</button>;
+		const { children, target, disabled } = props;
+		return <IconButton disabled={disabled} active={type === target} onClick={() => setType(target)}>{children}</IconButton>;
 	}
 
 	function handleWheel(event: WheelEvent) {
@@ -114,8 +117,7 @@ export default function ImageView(props: Props) {
 
 		// ctrlKey is true when pinch-zooming on a trackpad.
 		const divisor = ctrlKey ? 100 : 300;
-		const scaleDiff = 1 - deltaY / divisor;
-		setZoom(zoom * scaleDiff);
+		setZoom(zoom * (1 - deltaY / divisor));
 	}
 
 	function offsetUpdater() {
@@ -129,33 +131,60 @@ export default function ImageView(props: Props) {
 		};
 	}
 
+	let brightnessInput = null;
+	let brightnessVal = 100;
+
+	if (type === ViewType.AbsDiff) {
+		brightnessVal = brightness;
+		brightnessInput = (
+			<label>
+				Brightness:
+				<NumberInput
+					value={brightness}
+					min={100}
+					step={50}
+					onChange={setBrightness}
+				/>
+			</label>
+		);
+	}
+
 	const wrapperCss: ImageViewCSS = {
 		width, height,
 		"--original": `url("${original}")`,
 		"--scale": zoom,
 		"--x": offset.x + "px",
 		"--y": offset.y + "px",
-		"--brightness": `${brightness}%`,
+		"--brightness": `${brightnessVal}%`,
 	};
 
 	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
+	const butteraugliAvaliable = !optimized?.metrics.butteraugli;
 
 	return (
 		<section
 			className={Styles.container}
 			onWheel={handleWheel}
-			onMouseDown={e => watchMouseMove(e.nativeEvent, offsetUpdater())}
-			onTouchStart={e => watchTouchMove(e.nativeEvent, offsetUpdater())}
 		>
 			<aside className={Styles.inputs}>
-				<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
-				<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
-				<ImageViewTab target={ViewType.AbsDiff}>AbsDiff</ImageViewTab>
-				<ImageViewTab target={ViewType.HeatMap}>HeatMap</ImageViewTab>
+				<div>
+					<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
+					<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
+					<ImageViewTab target={ViewType.AbsDiff}>AbsDiff</ImageViewTab>
+					<ImageViewTab
+						disabled={butteraugliAvaliable}
+						target={ViewType.HeatMap}
+					>
+						HeatMap
+					</ImageViewTab>
+				</div>
+				{brightnessInput}
 			</aside>
 			<div
 				className={Styles.wrapper}
 				style={wrapperCss}
+				onMouseDown={e => watchMouseMove(e.nativeEvent, offsetUpdater())}
+				onTouchStart={e => watchTouchMove(e.nativeEvent, offsetUpdater())}
 			>
 				<canvas
 					className={Styles.canvas}
