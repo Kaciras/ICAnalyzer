@@ -22,13 +22,13 @@ it("should check image is RGB", () => {
 it("should get butteraugli source & heatMap", async () => {
 	const { data, info } = await readImage("image.jpg");
 	const dataB = (await readImage("image.webp")).data;
-	const expectdHeatMap = (await readImage("heatMap.png")).data;
+	const correctHeatMap = (await readImage("heatMap.png")).data;
 
 	const { width, height } = info;
 	const [source, heatMap] = await butteraugli({ dataA: data, dataB, width, height });
 
 	expect(source).toBeCloseTo(3.297, 2);
-	expect(Buffer.from(heatMap)).toStrictEqual(expectdHeatMap);
+	expect(Buffer.from(heatMap)).toStrictEqual(correctHeatMap);
 });
 
 it("should get PSNR", async () => {

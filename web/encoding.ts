@@ -2,33 +2,7 @@ import * as Comlink from "comlink";
 import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
 import type { WorkerApi } from "./worker";
 import { detectAVIFSupport, detectWebPSupport } from "./utils";
-import { ButteraugliOptions } from "*/out/metrics";
-
-type WorkerFactory = () => Worker;
-
-class WorkerPool<T> {
-
-	private readonly newWorker: WorkerFactory;
-
-	private readonly workers: Worker[];
-	private readonly wrappers: Comlink.Remote<T>[];
-
-	constructor(newWorker: WorkerFactory, workerCount = 4) {
-		this.newWorker = newWorker;
-		this.workers = new Array(workerCount);
-		this.wrappers = new Array(workerCount);
-
-		for (let i = 0; i < workerCount; i++) {
-			const worker = newWorker();
-			this.workers[i] = worker;
-			this.wrappers[i] = Comlink.wrap(worker);
-		}
-	}
-
-	require() {
-
-	}
-}
+import { ButteraugliOptions } from "../lib/metrics";
 
 export interface MeasureOptions {
 	psnr: boolean;
