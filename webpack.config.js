@@ -38,11 +38,7 @@ module.exports = function webpackConfig(env) {
 		},
 		{
 			test: /\.wasm$/,
-			type: "javascript/auto",
-			loader: "file-loader",
-			options: {
-				name: "[name].[hash:5].[ext]",
-			},
+			type: "asset/resource",
 		},
 		{
 			test: /\.svg$/,
@@ -88,6 +84,9 @@ module.exports = function webpackConfig(env) {
 		performance: false,
 		entry: {
 			index: "./web/index",
+		},
+		output: {
+			assetModuleFilename: "[name].[hash:5][ext][query]",
 		},
 		devtool: isProd ? "source-map" : "inline-source-map",
 		devServer: {
