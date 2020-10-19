@@ -1,4 +1,9 @@
 /**
+ * No effect function with a clear name.
+ */
+export const NOOP = () => {};
+
+/**
  * Detect if browser support display AVIF image.
  *
  * @return true if supported, otherwise false.
