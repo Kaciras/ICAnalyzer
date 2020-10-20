@@ -25,6 +25,8 @@ jobs:
       - name: Build webpack bundle
         run: npm run build
 
+      - name: echo "ic-analyze.kaciras.com" > dist/CNAME
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
