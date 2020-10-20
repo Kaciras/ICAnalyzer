@@ -10,8 +10,9 @@ export default function ProgressPanel(props: ProgressPanelProps) {
 	const { value, max, onCancel } = props;
 	return (
 		<>
+			<span>{value}/{max}</span>
 			<progress id="progress" value={value} max={max}/>
-			<button onChange={onCancel}>Cancel</button>
+			<button onClick={onCancel}>Cancel</button>
 		</>
 	);
 }

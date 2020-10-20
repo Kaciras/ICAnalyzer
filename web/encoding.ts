@@ -1,8 +1,9 @@
 import * as Comlink from "comlink";
 import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
 import type { WorkerApi } from "./worker";
-import { detectWebPSupport } from "./utils";
+import { detectAVIFSupport, detectWebPSupport } from "./utils";
 import { ButteraugliOptions } from "../lib/metrics";
+import { blobToImg, drawableToImageData } from "squoosh/src/lib/util";
 
 export interface MeasureOptions {
 	PSNR: boolean;
@@ -93,8 +94,9 @@ export class BatchEncoder<T> {
 			this.onProgress(i);
 
 			const buffer = await wrapper.webpEncode(optionsList[i]);
-			const data = await wrapper.webpDecode(buffer);
-			const bitmap = await createImageBitmap(data);
+			// const data = await wrapper.webpDecode(buffer);
+			// const bitmap = await createImageBitmap(data);
+			const [data, bitmap] = await decodeWebP(buffer);
 
 			const metrics: Metrics = {};
 			if (measure.PSNR) {
@@ -105,7 +107,11 @@ export class BatchEncoder<T> {
 			}
 			if (measure.butteraugli) {
 				const [source, raw] = await wrapper.calcButteraugli(data);
-				const heatMap = await createImageBitmap({ data: new Uint8ClampedArray(raw), width: bitmap.width, height: bitmap.height });
+				const heatMap = await createImageBitmap({
+					width: bitmap.width,
+					height: bitmap.height,
+					data: new Uint8ClampedArray(raw),
+				});
 				metrics.butteraugli = { source, heatMap };
 			}
 
@@ -120,7 +126,7 @@ export function createWorkers() {
 
 type DecodeResult = [ImageData, ImageBitmap];
 
-async function decodeImage(blob: Blob) {
+export async function decodeImage(blob: Blob) {
 	const bitmap = await createImageBitmap(blob);
 
 	const canvas = document.createElement("canvas");
@@ -155,11 +161,6 @@ function decodeFn(
 	};
 }
 
-export const decodeWebP = decodeFn(
-	detectWebPSupport,
-	decodeAVIFNative,
-	decodeAVIFWorker);
-
 function decodeAVIFNative(buffer: ArrayBuffer) {
 	return decodeImage(new Blob([buffer], { type: "image/avif" }));
 }
@@ -171,4 +172,42 @@ async function decodeAVIFWorker(buffer: ArrayBuffer) {
 	return [imageData, bitmap] as DecodeResult;
 }
 
-let decodeAVIF: (buffer: ArrayBuffer) => Promise<ImageData>;
+function decodeWebPNative(buffer: ArrayBuffer) {
+	return decodeImage(new Blob([buffer], { type: "image/webp" }));
+}
+
+async function decodeWebPWorker(buffer: ArrayBuffer) {
+	const worker = Comlink.wrap<WorkerApi>(new Worker(WorkerUrl));
+	const imageData = await worker.webpDecode(buffer);
+	const bitmap = await createImageBitmap(imageData);
+	return [imageData, bitmap] as DecodeResult;
+}
+
+export const decodeWebP = decodeFn(detectWebPSupport, decodeWebPNative, decodeWebPWorker);
+export const decodeAVIF = decodeFn(detectAVIFSupport, decodeAVIFNative, decodeAVIFWorker);
+
+function ensureSVGSize(svgXml: string) {
+	const parser = new DOMParser();
+	const document = parser.parseFromString(svgXml, "image/svg+xml");
+	const svg = document.documentElement;
+
+	if (svg.getAttribute("width") && svg.getAttribute("height")) {
+		return svgXml;
+	}
+
+	const viewBox = svg.getAttribute("viewBox");
+	if (viewBox === null) {
+		throw Error("SVG must have width/height or viewBox");
+	}
+	const [, , width, height] = viewBox.split(/\s+/);
+	svg.setAttribute("width", width);
+	svg.setAttribute("height", height);
+
+	return new XMLSerializer().serializeToString(document);
+}
+
+export function svgToImageData(svgXml: string) {
+	svgXml = ensureSVGSize(svgXml);
+	const blob = new Blob([svgXml], { type: "image/svg+xml" });
+	return blobToImg(blob).then(drawableToImageData);
+}

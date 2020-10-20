@@ -5,7 +5,7 @@ import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encoding";
 
 interface Props {
-	original: string;
+	original?: File;
 	width: number;
 	height: number;
 	optimized?: ConvertOutput;
@@ -69,6 +69,7 @@ export default function ImageView(props: Props) {
 
 	const [type, setType] = useState(ViewType.Compressed);
 	const [brightness, setBrightness] = useState(100);
+	const [originalUrl, setOriginalUrl] = useState("");
 
 	const [zoom, setZoom] = useState(1);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -77,7 +78,7 @@ export default function ImageView(props: Props) {
 
 	function refreshCanvas() {
 		if (!optimized) {
-			return; // TODO
+			return;
 		}
 		const { metrics, bitmap } = optimized;
 		const ctx = canvasRef.current!.getContext("2d");
@@ -91,7 +92,17 @@ export default function ImageView(props: Props) {
 		}
 	}
 
-	useEffect(refreshCanvas, [type, original, optimized]);
+	function refreshBackground() {
+		if(!original) {
+			return;
+		}
+		const url = URL.createObjectURL(original);
+		setOriginalUrl(url);
+		return () => URL.revokeObjectURL(url);
+	}
+
+	useEffect(refreshBackground, [original]);
+	useEffect(refreshCanvas, [type, optimized]);
 
 	interface ImageViewTabProps {
 		target: ViewType;
@@ -101,7 +112,15 @@ export default function ImageView(props: Props) {
 
 	function ImageViewTab(props: ImageViewTabProps) {
 		const { children, target, disabled } = props;
-		return <IconButton disabled={disabled} active={type === target} onClick={() => setType(target)}>{children}</IconButton>;
+		return (
+			<IconButton
+				active={type === target}
+				disabled={disabled}
+				onClick={() => setType(target)}
+			>
+				{children}
+			</IconButton>
+		);
 	}
 
 	function handleWheel(event: WheelEvent) {
@@ -151,7 +170,7 @@ export default function ImageView(props: Props) {
 
 	const wrapperCss: ImageViewCSS = {
 		width, height,
-		"--original": `url("${original}")`,
+		"--original": `url("${originalUrl}")`,
 		"--scale": zoom,
 		"--x": offset.x + "px",
 		"--y": offset.y + "px",
@@ -170,7 +189,7 @@ export default function ImageView(props: Props) {
 				<div>
 					<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
 					<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
-					<ImageViewTab target={ViewType.AbsDiff}>AbsDiff</ImageViewTab>
+					<ImageViewTab target={ViewType.AbsDiff}>Difference</ImageViewTab>
 					<ImageViewTab
 						disabled={butteraugliAvaliable}
 						target={ViewType.HeatMap}

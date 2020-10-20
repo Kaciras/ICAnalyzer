@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import Styles from "./CompressDialog.scss";
-import { BatchEncoder, ConvertOutput, createWorkers, MeasureOptions } from "../encoding";
+import {
+	BatchEncoder,
+	ConvertOutput,
+	createWorkers,
+	decodeAVIF,
+	decodeImage,
+	decodeWebP,
+	MeasureOptions,
+	svgToImageData,
+} from "../encoding";
 import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
 
@@ -20,16 +29,22 @@ export default function CompressDialog(props: Props) {
 			throw new Error("File is null");
 		}
 
-		const canvas = document.createElement("canvas");
-		const bitmap = await createImageBitmap(file);
-		const { width, height } = bitmap;
-		canvas.width = width;
-		canvas.height = height;
-		const ctx = canvas.getContext("2d")!;
-		ctx.drawImage(bitmap, 0, 0);
-		const canvasData = ctx.getImageData(0, 0, width, height);
+		let image: ImageData;
+		switch (file.type) {
+			case "image/svg+xml":
+				image = await svgToImageData(await file.text());
+				break;
+			case "image/webp":
+				[image] = await decodeWebP(await file.arrayBuffer());
+				break;
+			case "image/avif":
+				[image] = await decodeAVIF(await file.arrayBuffer());
+				break;
+			default:
+				[image] = await decodeImage(file);
+		}
 
-		props.onChange(file, await encode(canvasData, optionsList, measure));
+		props.onChange(file, await encode(image, optionsList, measure));
 	}
 
 	function encode(image: ImageData, optionsList: any[], measure: MeasureOptions) {

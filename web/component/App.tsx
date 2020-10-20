@@ -11,14 +11,15 @@ import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import { ConvertOutput } from "../encoding";
 
 interface Result {
-	original: string;
+	original?: File;
 	width: number;
 	height: number;
+
 	outputs: ConvertOutput[];
 }
 
 const PLACEHOLDER: Result = {
-	original: "",
+	original: undefined,
 	width: 0,
 	height: 0,
 	outputs: [],
@@ -31,19 +32,15 @@ export default function App() {
 	const [results, setResults] = useState(PLACEHOLDER);
 	const [downloadUrl, setDownloadUrl] = useState("");
 
-	async function showResult(file: File, outputs: ConvertOutput[]) {
-		setShowDialog(false);
-
-		URL.revokeObjectURL(results.original);
-
+	async function showResult(original: File, outputs: ConvertOutput[]) {
 		setResults({
 			outputs,
-			original: URL.createObjectURL(file),
+			original,
 			width: outputs[0].bitmap.width,
 			height: outputs[0].bitmap.height,
 		});
-
 		setIndex(75);
+		setShowDialog(false);
 	}
 
 	function handleIndexChange(e: FormEvent<HTMLInputElement>) {
@@ -63,7 +60,7 @@ export default function App() {
 
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = "filename.webp";
+		a.download = results.original!.name.split(".").pop()!;
 		a.click();
 	}
 

@@ -47,7 +47,7 @@ interface Props {
 }
 
 export default function ConfigPanel(props: Props) {
-	const [file, setFile] = useState<File>();
+	const [file, setFile] = useState<File | string>();
 
 	const [vars, setVars] = useState<string[]>(() => WebPOptionsTemplate
 		.filter(t => t.defaultVariable).map(t => t.name));
@@ -65,17 +65,24 @@ export default function ConfigPanel(props: Props) {
 	}
 
 	// TODO: stub options
-	function start() {
+	async function start() {
 		const optionsList = new Array<EncodeOptions>(101);
 		for (let i = 0; i < 101; i++) {
 			optionsList[i] = { ...defaultOptions, quality: i };
 		}
-		props.onStart(file!, optionsList, measure);
+		if (typeof file === "string") {
+			const blob = await (await fetch(file)).blob();
+			const name = new URL(file).pathname.split("/").pop()!;
+			const f = new File([blob], name);
+			props.onStart(f, optionsList, measure);
+		} else {
+			props.onStart(file!, optionsList, measure);
+		}
 	}
 
 	const [index, setIndex] = useState(0);
 
-	const panels = ["Select File", "Options","Metrics"];
+	const panels = ["Select File", "Options", "Metrics"];
 
 	const tabs = [];
 	for (let i = 0; i < panels.length; i++) {
