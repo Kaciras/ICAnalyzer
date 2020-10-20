@@ -4,12 +4,13 @@
 	left: 0;
 	width: 100vw;
 	height: 100vh;
+	z-index: 1000;
 
 	display: flex;
 	justify-content: center;
 	align-items: center;
 
-	background-color: rgba(0, 0, 0, .2);
+	background-color: rgba(0, 0, 0, .3);
 	backdrop-filter: blur(4px); // not working
 }
 
@@ -18,7 +19,7 @@
 	flex-direction: column;
 
 	width: 640px;
-	height: 500px;
+	height: 520px;
 
 	border-radius: 4px;
 	background-color: white;

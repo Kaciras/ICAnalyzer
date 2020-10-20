@@ -24,7 +24,7 @@ export default function CompressDialog(props: Props) {
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
-	async function handleStart(file: File, optionsList: any[], measure: MeasureOptions) {
+	async function handleStart(file: File, optionsList: any[], measure: MeasureOptions, workerCount: number) {
 		if (!file) {
 			throw new Error("File is null");
 		}
@@ -44,10 +44,6 @@ export default function CompressDialog(props: Props) {
 				[image] = await decodeImage(file);
 		}
 
-		props.onChange(file, await encode(image, optionsList, measure));
-	}
-
-	function encode(image: ImageData, optionsList: any[], measure: MeasureOptions) {
 		const encoder = createWorkers();
 
 		setEncoder(encoder);
@@ -55,7 +51,9 @@ export default function CompressDialog(props: Props) {
 		setProgress(0);
 
 		encoder.onProgress = setProgress;
-		return encoder.encode(image, optionsList, measure).start();
+		const outputs = await encoder.encode(image, optionsList, measure).start(workerCount);
+
+		props.onChange(file, outputs);
 	}
 
 	function stop() {

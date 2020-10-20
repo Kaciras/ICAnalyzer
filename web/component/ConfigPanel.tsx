@@ -7,13 +7,16 @@ import SelectFilePanel from "./SelectFilePanel";
 import { MeasureOptions } from "../encoding";
 import CheckBoxInput from "./CheckBoxInput";
 import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
+import NumberInput from "./NumberInput";
 
 interface MProps {
+	workerCount: number;
 	yAxis: string[];
 	options: MeasureOptions;
 }
 
 function MetricsPanel(props: MProps) {
+	const { workerCount, yAxis } = props;
 	const { SSIM, PSNR, butteraugli } = props.options;
 
 	let bOptions;
@@ -27,6 +30,10 @@ function MetricsPanel(props: MProps) {
 
 	return (
 		<form className={Styles.form}>
+			<label>
+				Worker count:
+				<NumberInput min={1} value={workerCount}/>
+			</label>
 			<label>
 				<span>Use pervious Y axis</span>
 				<select>
@@ -42,7 +49,7 @@ function MetricsPanel(props: MProps) {
 }
 
 interface Props {
-	onStart: (file: File, optionsList: any[], measure: MeasureOptions) => void;
+	onStart: (file: File, optionsList: any[], measure: MeasureOptions, workerCount: number) => void;
 	onClose: () => void;
 }
 
@@ -54,6 +61,7 @@ export default function ConfigPanel(props: Props) {
 
 	const [options, setOptions] = useState<OptionsInstance>({});
 
+	const [workerCount, setWorkerCount] = useState(4);
 	const [measure, setMeasure] = useState<MeasureOptions>({
 		SSIM: false,
 		PSNR: true,
@@ -74,9 +82,9 @@ export default function ConfigPanel(props: Props) {
 			const blob = await (await fetch(file)).blob();
 			const name = new URL(file).pathname.split("/").pop()!;
 			const f = new File([blob], name);
-			props.onStart(f, optionsList, measure);
+			props.onStart(f, optionsList, measure, workerCount);
 		} else {
-			props.onStart(file!, optionsList, measure);
+			props.onStart(file!, optionsList, measure, workerCount);
 		}
 	}
 
@@ -105,7 +113,11 @@ export default function ConfigPanel(props: Props) {
 			/>;
 			break;
 		case 2:
-			panel = <MetricsPanel yAxis={[]} options={measure}/>;
+			panel = <MetricsPanel
+				workerCount={workerCount}
+				yAxis={[]}
+				options={measure}
+			/>;
 			break;
 		default:
 			throw new Error();

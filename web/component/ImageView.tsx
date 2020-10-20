@@ -178,10 +178,10 @@ export default function ImageView(props: Props) {
 	};
 
 	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
-	const butteraugliAvaliable = !optimized?.metrics.butteraugli;
+	const butteraugliAvailable = !optimized?.metrics.butteraugli;
 
 	return (
-		<section
+		<div
 			className={Styles.container}
 			onWheel={handleWheel}
 		>
@@ -190,19 +190,14 @@ export default function ImageView(props: Props) {
 					<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
 					<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
 					<ImageViewTab target={ViewType.AbsDiff}>Difference</ImageViewTab>
-					<ImageViewTab
-						disabled={butteraugliAvaliable}
-						target={ViewType.HeatMap}
-					>
-						HeatMap
-					</ImageViewTab>
+					<ImageViewTab disabled={butteraugliAvailable} target={ViewType.HeatMap}>HeatMap</ImageViewTab>
 				</div>
 				{brightnessInput}
 			</aside>
 			<div
 				className={Styles.wrapper}
 				style={wrapperCss}
-				onMouseDown={e => watchMouseMove(e.nativeEvent, offsetUpdater())}
+				onMouseDown={e => e.button === 0 && watchMouseMove(e.nativeEvent, offsetUpdater())}
 				onTouchStart={e => watchTouchMove(e.nativeEvent, offsetUpdater())}
 			>
 				<canvas
@@ -214,6 +209,6 @@ export default function ImageView(props: Props) {
 					hidden={type === ViewType.Original}
 				/>
 			</div>
-		</section>
+		</div>
 	);
 }
