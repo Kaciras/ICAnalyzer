@@ -93,9 +93,12 @@ export default function ImageView(props: Props) {
 	}
 
 	function refreshBackground() {
-		if(!original) {
+		if (!original) {
 			return;
 		}
+		setZoom(1);
+		setOffset({ x: 0, y: 0 });
+
 		const url = URL.createObjectURL(original);
 		setOriginalUrl(url);
 		return () => URL.revokeObjectURL(url);
