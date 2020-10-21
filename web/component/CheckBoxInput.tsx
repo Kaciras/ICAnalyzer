@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactNode } from "react";
+import React, { ChangeEvent, Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import CheckIcon from "bootstrap-icons/icons/check2.svg";
 import { NOOP } from "../utils";
@@ -8,7 +8,7 @@ interface Props {
 	checked: boolean;
 	name?: string;
 	disabled?: boolean;
-	onChange?: Dispatch<boolean>;
+	onChange?: Dispatch<ChangeEvent<HTMLInputElement>>;
 	children?: ReactNode;
 }
 
@@ -21,7 +21,7 @@ export default function CheckBoxInput(props: Props) {
 				className={Styles.input}
 				name={name}
 				disabled={disabled}
-				onChange={e => onChange(e.currentTarget.checked)}
+				onChange={onChange}
 			/>
 			<span
 				className={clsx(Styles.mark, { [Styles.checked]: checked })}

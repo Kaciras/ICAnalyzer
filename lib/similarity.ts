@@ -1,7 +1,7 @@
 import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "./metrics";
 import ssim from "ssim.js";
 
-const DEFAULT_OPTIONS: ButteraugliOptions = {
+export const defaultButteraugliOptions: ButteraugliOptions = {
 	hfAsymmetry: 1.0,
 	goodQualitySeek: 1.5,
 	badQualitySeek: 0.5,
@@ -35,7 +35,7 @@ export function butteraugli(twoImages: TwoImages, options?: Partial<ButteraugliO
 		throw new Error("Wasm module not loaded");
 	}
 
-	const merged = { ...DEFAULT_OPTIONS, ...options };
+	const merged = { ...defaultButteraugliOptions, ...options };
 
 	if (merged.badQualitySeek < 0 || merged.badQualitySeek >= 2) {
 		throw new Error("badQualitySeek must between 0, 2");

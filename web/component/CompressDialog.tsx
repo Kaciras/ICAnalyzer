@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import Styles from "./CompressDialog.scss";
-import {
-	BatchEncoder,
-	ConvertOutput,
-	createWorkers,
-	decodeAVIF,
-	decodeImage,
-	decodeWebP,
-	MeasureOptions,
-	svgToImageData,
-} from "../encoding";
+import { BatchEncoder, ConvertOutput, createWorkers, decode, MeasureOptions, } from "../encoding";
 import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
+
+interface EncodingEvent {
+	file: File;
+	workerCount: number;
+	encoder: string;
+	optionsList: any[];
+	measure: MeasureOptions;
+}
 
 interface Props {
 	onChange: (file: File, results: ConvertOutput[]) => void;
@@ -29,28 +28,14 @@ export default function CompressDialog(props: Props) {
 			throw new Error("File is null");
 		}
 
-		let image: ImageData;
-		switch (file.type) {
-			case "image/svg+xml":
-				image = await svgToImageData(await file.text());
-				break;
-			case "image/webp":
-				[image] = await decodeWebP(await file.arrayBuffer());
-				break;
-			case "image/avif":
-				[image] = await decodeAVIF(await file.arrayBuffer());
-				break;
-			default:
-				[image] = await decodeImage(file);
-		}
-
 		const encoder = createWorkers();
+		encoder.onProgress = setProgress;
 
 		setEncoder(encoder);
 		setMax(optionsList.length);
 		setProgress(0);
 
-		encoder.onProgress = setProgress;
+		const [image] = await decode(file);
 		const outputs = await encoder.encode(image, optionsList, measure).start(workerCount);
 
 		props.onChange(file, outputs);

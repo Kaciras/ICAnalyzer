@@ -44,7 +44,7 @@ function useLimitedValue(
 export default function NumberInput(props: Props) {
 	const [localValue, setLocalValue] = useLimitedValue(props.value, props.min, props.max, 0.5);
 
-	const value = typeof props.value === "undefined" ? props.value : localValue;
+	const value = typeof props.value === "undefined" ? localValue : props.value;
 
 	function setValue(newValue: number) {
 		newValue = setLocalValue(newValue);

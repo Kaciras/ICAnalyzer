@@ -1,49 +1,74 @@
-import React, { FormEvent, useState } from "react";
+import React, { ChangeEvent, Dispatch, useState } from "react";
 import clsx from "clsx";
-import Styles from "./ConfigPanel.scss";
-import { WebPOptionsTemplate } from "../options";
 import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
-import SelectFilePanel from "./SelectFilePanel";
+import { WebPOptionsTemplate } from "../options";
+import { defaultButteraugliOptions } from "../../lib/similarity";
 import { MeasureOptions } from "../encoding";
-import CheckBoxInput from "./CheckBoxInput";
-import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
 import NumberInput from "./NumberInput";
+import CheckBoxInput from "./CheckBoxInput";
+import Styles from "./ConfigPanel.scss";
+import SelectFilePanel from "./SelectFilePanel";
+import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
 
 interface MProps {
 	workerCount: number;
-	yAxis: string[];
 	options: MeasureOptions;
+	onWorkerCountChange: Dispatch<number>;
+	onMeasureChange: Dispatch<MeasureOptions>;
 }
 
 function MetricsPanel(props: MProps) {
-	const { workerCount, yAxis } = props;
+	const { workerCount, onWorkerCountChange, onMeasureChange } = props;
 	const { SSIM, PSNR, butteraugli } = props.options;
 
-	let bOptions;
-	if (butteraugli) {
-		bOptions = (
-			<fieldset>
+	const [butteraugliVal, setButteraugliVal] = useState(defaultButteraugliOptions);
+	let butteraugliOptions;
 
+	if (butteraugli) {
+		const { badQualitySeek, goodQualitySeek, hfAsymmetry } = butteraugli;
+		butteraugliOptions = (
+			<fieldset>
+				<NumberInput min={0} step={0.1} value={hfAsymmetry}/>
+				<NumberInput min={0} max={2} step={0.1} value={badQualitySeek}/>
+				<NumberInput min={0} max={2} step={0.1} value={goodQualitySeek}/>
 			</fieldset>
 		);
 	}
 
+	function handleChange(event: ChangeEvent<HTMLInputElement>) {
+		const { name, checked } = event.currentTarget;
+		const newValue = name !== "butteraugli" ? checked : checked && butteraugliVal;
+		onMeasureChange({ ...props.options, [name]: newValue });
+	}
+
 	return (
-		<form className={Styles.form}>
+		<form className={Styles.fieldset}>
 			<label>
 				Worker count:
-				<NumberInput min={1} value={workerCount}/>
+				<NumberInput min={1} step={1} value={workerCount} onChange={onWorkerCountChange}/>
 			</label>
-			<label>
-				<span>Use pervious Y axis</span>
-				<select>
-					<option>(None)</option>
-				</select>
-			</label>
-			<CheckBoxInput checked={SSIM}>Calculate SSIM</CheckBoxInput>
-			<CheckBoxInput checked={PSNR}>Calculate PSNR</CheckBoxInput>
-			<CheckBoxInput checked={!!butteraugli}>Calculate Butteraugli</CheckBoxInput>
-			{bOptions}
+			<CheckBoxInput
+				checked={SSIM}
+				name="SSIM"
+				onChange={handleChange}
+			>
+				Calculate SSIM
+			</CheckBoxInput>
+			<CheckBoxInput
+				checked={PSNR}
+				name="PSNR"
+				onChange={handleChange}
+			>
+				Calculate PSNR
+			</CheckBoxInput>
+			<CheckBoxInput
+				checked={!!butteraugli}
+				name="butteraugli"
+				onChange={handleChange}
+			>
+				Calculate Butteraugli
+			</CheckBoxInput>
+			{butteraugliOptions}
 		</form>
 	);
 }
@@ -58,7 +83,6 @@ export default function ConfigPanel(props: Props) {
 
 	const [vars, setVars] = useState<string[]>(() => WebPOptionsTemplate
 		.filter(t => t.defaultVariable).map(t => t.name));
-
 	const [options, setOptions] = useState<OptionsInstance>({});
 
 	const [workerCount, setWorkerCount] = useState(4);
@@ -67,10 +91,6 @@ export default function ConfigPanel(props: Props) {
 		PSNR: true,
 		butteraugli: false,
 	});
-
-	function loadFile(event: FormEvent<HTMLInputElement>) {
-		setFile(event.currentTarget.files![0]);
-	}
 
 	// TODO: stub options
 	async function start() {
@@ -103,7 +123,7 @@ export default function ConfigPanel(props: Props) {
 
 	switch (index) {
 		case 0:
-			panel = <SelectFilePanel setFile={setFile}/>;
+			panel = <SelectFilePanel onFileChange={setFile}/>;
 			break;
 		case 1:
 			panel = <OptionsPanel
@@ -115,8 +135,9 @@ export default function ConfigPanel(props: Props) {
 		case 2:
 			panel = <MetricsPanel
 				workerCount={workerCount}
-				yAxis={[]}
 				options={measure}
+				onWorkerCountChange={setWorkerCount}
+				onMeasureChange={setMeasure}
 			/>;
 			break;
 		default:

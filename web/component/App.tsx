@@ -66,7 +66,7 @@ function DownloadButton(props: DownloadButtonProps) {
 }
 
 export default function App() {
-	const [showDialog, setShowDialog] = useState(false);
+	const [showDialog, setShowDialog] = useState(true);
 	const [showChart, setShowChart] = useState(false);
 	const [index, setIndex] = useState(0);
 	const [results, setResults] = useState(PLACEHOLDER);

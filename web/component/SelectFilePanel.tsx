@@ -2,18 +2,18 @@ import React, { ChangeEvent, Dispatch } from "react";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
 import Styles from "./SelectFilePanel.scss";
 
-interface SFProps {
-	setFile: Dispatch<File | string>
+interface Props {
+	onFileChange: Dispatch<File | string>
 }
 
-export default function SelectFilePanel(props: SFProps) {
+export default function SelectFilePanel(props: Props) {
 
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-		props.setFile(event.currentTarget.files![0]);
+		props.onFileChange(event.currentTarget.files![0]);
 	}
 
 	function handleUrlChange(event: ChangeEvent<HTMLInputElement>) {
-		props.setFile(event.currentTarget.value);
+		props.onFileChange(event.currentTarget.value);
 	}
 
 	return (

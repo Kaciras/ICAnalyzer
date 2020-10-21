@@ -5,6 +5,8 @@ import { detectAVIFSupport, detectWebPSupport } from "./utils";
 import { ButteraugliOptions } from "../lib/metrics";
 import { blobToImg, drawableToImageData } from "squoosh/src/lib/util";
 
+type Drawable = ImageBitmap | HTMLImageElement;
+
 export interface MeasureOptions {
 	PSNR: boolean;
 	SSIM: boolean;
@@ -16,14 +18,14 @@ interface Metrics {
 	PSNR?: number;
 	butteraugli?: {
 		source: number;
-		heatMap: ImageBitmap;
+		heatMap: Drawable;
 	};
 }
 
 export interface ConvertOutput {
 	buffer: ArrayBuffer;
 	metrics: Metrics;
-	bitmap: ImageBitmap;
+	bitmap: Drawable;
 }
 
 export class BatchEncoder<T> {
@@ -107,11 +109,25 @@ export class BatchEncoder<T> {
 			}
 			if (measure.butteraugli) {
 				const [source, raw] = await wrapper.calcButteraugli(data);
-				const heatMap = await createImageBitmap({
-					width: bitmap.width,
-					height: bitmap.height,
-					data: new Uint8ClampedArray(raw),
-				});
+
+				const ctx = document.createElement("canvas").getContext("2d")!;
+				const d = ctx.createImageData(bitmap.width, bitmap.height);
+
+				if (raw.byteLength / d.width / d.height === 4) {
+					d.data.set(new Uint8ClampedArray(raw));
+				} else {
+					const pixies = raw.byteLength / 3;
+					const rgb = new Uint8ClampedArray(raw);
+					const rgba = new Uint32Array(pixies);
+
+					for (let j = 0; j < pixies; j++) {
+						const k = j * 3;
+						rgba[j] = (rgb[k] << 24) + (rgb[k + 1] << 16) + (rgb[k + 2] << 8) + 255;
+					}
+					d.data.set(new Uint8ClampedArray(rgba.buffer));
+				}
+
+				const heatMap = await createImageBitmap(d);
 				metrics.butteraugli = { source, heatMap };
 			}
 
@@ -124,10 +140,14 @@ export function createWorkers() {
 	return new BatchEncoder(WorkerUrl);
 }
 
-type DecodeResult = [ImageData, ImageBitmap];
+// =========================================================================
+
+type DecodeResult = [ImageData, Drawable];
 
 export async function decodeImage(blob: Blob) {
-	const bitmap = await createImageBitmap(blob);
+	const bitmap = "createImageBitmap" in self
+		? await createImageBitmap(blob)
+		: await blobToImg(blob);
 
 	const canvas = document.createElement("canvas");
 	const { width, height } = bitmap;
@@ -206,8 +226,22 @@ function ensureSVGSize(svgXml: string) {
 	return new XMLSerializer().serializeToString(document);
 }
 
-export function svgToImageData(svgXml: string) {
+export async function svgToImageData(svgXml: string): Promise<DecodeResult> {
 	svgXml = ensureSVGSize(svgXml);
 	const blob = new Blob([svgXml], { type: "image/svg+xml" });
-	return blobToImg(blob).then(drawableToImageData);
+	const drawable = await blobToImg(blob);
+	return [await drawableToImageData(drawable), drawable];
+}
+
+export function decode(blob: Blob) {
+	switch (blob.type) {
+		case "image/svg+xml":
+			return blob.text().then(svgToImageData);
+		case "image/webp":
+			return blob.arrayBuffer().then(decodeWebP);
+		case "image/avif":
+			return blob.arrayBuffer().then(decodeAVIF);
+		default:
+			return decodeImage(blob);
+	}
 }
