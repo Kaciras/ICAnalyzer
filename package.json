@@ -21,9 +21,8 @@
 		"comlink": "^4.3.0",
 		"echarts": "^4.9.0",
 		"gpu.js": "^2.10.4",
-		"react": "^16.14.0",
-		"react-dom": "^16.14.0",
-		"react-use": "^15.3.4",
+		"react": "^17.0.0",
+		"react-dom": "^17.0.0",
 		"ssim.js": "^3.5.0"
 	},
 	"devDependencies": {
