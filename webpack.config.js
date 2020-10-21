@@ -2,6 +2,7 @@ const { join } = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = function webpackConfig(env) {
 	const isProd = Boolean(env?.production);
@@ -73,6 +74,11 @@ module.exports = function webpackConfig(env) {
 			scriptLoading: "defer",
 		}),
 
+		isProd && new BundleAnalyzerPlugin({
+			openAnalyzer: false,
+			analyzerMode: "static",
+		}),
+
 		isProd && new MiniCssExtractPlugin({
 			filename: "[name].[contenthash:5].css",
 		}),
@@ -99,6 +105,7 @@ module.exports = function webpackConfig(env) {
 			extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
 			alias: {
 				squoosh: join(__dirname, "deps/squoosh"),
+				echarts: "echarts/index.common",
 			},
 			fallback: {
 				path: false,
