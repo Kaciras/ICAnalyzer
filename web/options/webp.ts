@@ -1,19 +1,17 @@
-import { OptionTemplate, WorkerEncoder } from "./index";
+import { Remote } from "comlink";
 import { NumberRangeTemplate } from "../component/OptionTemplate";
+import { WorkerApi } from "../worker";
+import { OptionTemplate } from "./index";
 
-export const name= "WebP";
+export const name = "WebP";
 export const mimeType = "image/webp";
 export const extension = "webp";
 
-export class WebPEncoder extends WorkerEncoder {
-
-	async encode(options: any) {
-		const buffer = await this.remote.webpEncode(options);
-
-	}
+export function encode(options: any, worker: Remote<WorkerApi>) {
+	return worker.webpEncode(options);
 }
 
-export const WebPOptionsTemplate: OptionTemplate[] = [
+export const optionTemplate: OptionTemplate[] = [
 	{
 		label: "Quality (-q)",
 		name: "quality",

@@ -1,31 +1,10 @@
 import * as Comlink from "comlink";
 import { Remote } from "comlink";
 import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
-import type { WorkerApi } from "./worker";
 import { ButteraugliOptions } from "../lib/metrics";
-import { Drawable } from "./decode";
-import { Encoder, EncoderFactory } from "./options";
-
-type WorkerFn<T> = (remote: Remote<WorkerApi>) => T;
-
-class WorkerPool {
-
-	private readonly workers: Worker[] = [];
-	private readonly remotes: Remote<WorkerApi>[] = [];
-
-	private readonly count: number;
-
-	constructor(count: number) {
-		const worker = new Worker(WorkerUrl);
-		this.count = count;
-		this.workers.push(worker);
-		this.remotes.push(Comlink.wrap<WorkerApi>(worker));
-	}
-
-	require<T>(func: WorkerFn<T>) {
-
-	}
-}
+import type { WorkerApi } from "./worker";
+import { ImageEncoder } from "./options";
+import { decode, Drawable } from "./decode";
 
 export interface MeasureOptions {
 	PSNR: boolean;
@@ -50,54 +29,48 @@ export interface ConvertOutput {
 
 export class BatchEncoder<T> {
 
-	private readonly createEncoder: EncoderFactory;
+	private readonly count: number;
+	private readonly encoder: ImageEncoder;
 
-	private image?: ImageData;
+	private image!: ImageData;
 	private optionsList!: T[];
 	private measureOptions!: MeasureOptions;
 
-	private encoders: Encoder[] = [];
-	private index = 0;
+	private workers: Worker[] = [];
 
+	private index = 0;
 	private results!: ConvertOutput[];
 
-	constructor(createEncoder: EncoderFactory) {
-		this.createEncoder = createEncoder;
+	constructor(workerCount: number, encoder: ImageEncoder) {
+		if (workerCount < 1) {
+			throw new Error("Thread count must be at least 1");
+		}
+		this.count = workerCount;
+		this.encoder = encoder;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	onProgress(value: number) {
-		// noop by default
-	}
+	onProgress(value: number) {}
 
-	encode(image: ImageData, optionsList: T[], measure: MeasureOptions) {
+	async encode(image: ImageData, optionsList: T[], measure: MeasureOptions) {
 		this.image = image;
 		this.optionsList = optionsList;
 		this.measureOptions = measure;
-		return this;
-	}
 
-	async start(threadCount = 4) {
-		if (!this.image) {
-			throw new Error("You should call encode() before start.");
-		}
-		if (threadCount < 1) {
-			throw new Error("Thread count must be at least 1");
-		}
-
-		const length = this.optionsList.length;
-		threadCount = Math.min(threadCount, length);
+		const length = optionsList.length;
 
 		this.results = new Array<ConvertOutput>(length);
+		const tasks = new Array(this.workers.length);
 
-		const tasks = new Array(threadCount);
+		this.workers = [];
 
-		for (let i = 0; i < threadCount; i++) {
-			const encoder = this.createEncoder();
-			await encoder.setImage(this.image);
+		for (let i = 0; i < this.count; i++) {
+			const worker = new Worker(WorkerUrl);
+			const remote = Comlink.wrap<WorkerApi>(worker);
+			await remote.setImageToEncode(image);
 
-			this.encoders.push(encoder);
-			tasks.push(this.poll(encoder));
+			this.workers.push(worker);
+			tasks.push(this.poll(remote));
 		}
 
 		return Promise.all(tasks).then(() => this.results);
@@ -107,20 +80,23 @@ export class BatchEncoder<T> {
 		this.workers.forEach(worker => worker.terminate());
 	}
 
-	private async poll(encoder: Encoder) {
-		const { results, optionsList } = this;
+	private async poll(remote: Remote<WorkerApi>) {
+		const { results, optionsList, encoder } = this;
 
 		while (this.index < optionsList.length) {
 			const i = this.index++;
 			this.onProgress(i);
 
-			const { buffer, data, bitmap } = await encoder.encode(optionsList[i]);
-			const metrics = await this.measure(wrapper, data);
+			const buffer = await encoder.encode(optionsList[i], remote);
+			const blob = new Blob([buffer], { type: encoder.mimeType });
+			const [data, bitmap] = await decode(blob);
+
+			const metrics = await this.measure(remote, data);
 			results[i] = { buffer, bitmap, metrics };
 		}
 	}
 
-	async measure(wrapper: Comlink.Remote<WorkerApi>, data: ImageData) {
+	async measure(wrapper: Remote<WorkerApi>, data: ImageData) {
 		const { SSIM, PSNR, butteraugli } = this.measureOptions;
 		const metrics: Metrics = {};
 
@@ -158,8 +134,4 @@ function padAlpha(input: ArrayBuffer) {
 		rgba[j] = (rgb[k] << 24) + (rgb[k + 1] << 16) + (rgb[k + 2] << 8) + 255;
 	}
 	return rgba.buffer;
-}
-
-export function createWorkers() {
-	return new BatchEncoder(WorkerUrl);
 }

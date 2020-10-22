@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import Styles from "./CompressDialog.scss";
-import { BatchEncoder, ConvertOutput, createWorkers, MeasureOptions } from "../encoding";
-import ProgressPanel from "./ProgressPanel";
-import ConfigPanel from "./ConfigPanel";
 import { decode } from "../decode";
+import { BatchEncoder, ConvertOutput, MeasureOptions } from "../encoding";
+import Styles from "./CompressDialog.scss";
+import ConfigPanel from "./ConfigPanel";
+import ProgressPanel from "./ProgressPanel";
+import * as WebP from "../options/webp";
 
 interface EncodingEvent {
 	file: File;
@@ -29,7 +30,7 @@ export default function CompressDialog(props: Props) {
 			throw new Error("File is null");
 		}
 
-		const encoder = createWorkers();
+		const encoder = new BatchEncoder(workerCount, WebP);
 		encoder.onProgress = setProgress;
 
 		setEncoder(encoder);
@@ -37,7 +38,7 @@ export default function CompressDialog(props: Props) {
 		setProgress(0);
 
 		const [image] = await decode(file);
-		const outputs = await encoder.encode(image, optionsList, measure).start(workerCount);
+		const outputs = await encoder.encode(image, optionsList, measure);
 
 		props.onChange(file, outputs);
 	}

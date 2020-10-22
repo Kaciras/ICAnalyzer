@@ -29,7 +29,7 @@ export async function decodeImage(blob: Blob) {
 type featureDetector = () => Promise<boolean>;
 type DecodeFunction = (buffer: ArrayBuffer) => Promise<DecodeResult>;
 
-function decodeFn(
+function autoSelect(
 	checkFn: featureDetector,
 	native: DecodeFunction,
 	polyfill: DecodeFunction,
@@ -74,8 +74,8 @@ async function decodeWebPWorker(buffer: ArrayBuffer, worker?: Remote<WorkerApi>)
 	return [imageData, bitmap] as DecodeResult;
 }
 
-export const decodeWebP = decodeFn(detectWebPSupport, decodeWebPNative, decodeWebPWorker);
-export const decodeAVIF = decodeFn(detectAVIFSupport, decodeAVIFNative, decodeAVIFWorker);
+export const decodeWebP = autoSelect(detectWebPSupport, decodeWebPNative, decodeWebPWorker);
+export const decodeAVIF = autoSelect(detectAVIFSupport, decodeAVIFNative, decodeAVIFWorker);
 
 function ensureSVGSize(svgXml: string) {
 	const parser = new DOMParser();

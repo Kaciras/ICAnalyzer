@@ -1,6 +1,7 @@
-import { OptionTemplate } from "./index";
+import { Remote } from "comlink";
 import { EnumTemplate, NumberRangeTemplate } from "../component/OptionTemplate";
-import { WebpOptions } from "sharp";
+import { WorkerApi } from "../worker";
+import { OptionTemplate } from "./index";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";
@@ -12,6 +13,10 @@ export const Subsampling = {
 	YUV422: 2,
 	YUV444: 3,
 };
+
+export function encode(options: any, worker: Remote<WorkerApi>) {
+	return worker.avifEncode(options);
+}
 
 export const optionTemplate: OptionTemplate[] = [
 	{
@@ -47,7 +52,3 @@ export const optionTemplate: OptionTemplate[] = [
 		type: new EnumTemplate(Subsampling, "YUV420"),
 	},
 ];
-
-export function encode(data: ImageData, option2: WebpOptions): Promise<ArrayBuffer> {
-	throw Error();
-}
