@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Styles from "./CompressDialog.scss";
-import { BatchEncoder, ConvertOutput, createWorkers, decode, MeasureOptions, } from "../encoding";
+import { BatchEncoder, ConvertOutput, createWorkers, MeasureOptions } from "../encoding";
 import ProgressPanel from "./ProgressPanel";
 import ConfigPanel from "./ConfigPanel";
+import { decode } from "../decode";
 
 interface EncodingEvent {
 	file: File;

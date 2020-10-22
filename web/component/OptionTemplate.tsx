@@ -74,13 +74,13 @@ export class BooleanTemplate {
 
 }
 
-export class EnumTemplate implements OptionType<any, any> {
+export class EnumTemplate<T> implements OptionType<any, any> {
 
-	private readonly names: string[];
-	private readonly defaultValue: string;
+	private readonly enumObject: T;
+	private readonly defaultValue: keyof T;
 
-	constructor(names: string[], defaultValue: string) {
-		this.names = names;
+	constructor(enumObject: T, defaultValue: keyof T) {
+		this.enumObject = enumObject;
 		this.defaultValue = defaultValue;
 	}
 

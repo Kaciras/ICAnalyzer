@@ -6,13 +6,6 @@ import wasmUrl from "../lib/metrics.wasm";
 
 let data: ImageData;
 
-export enum Subsample {
-	YUV400 = 0,
-	YUV420 = 1,
-	YUV422 = 2,
-	YUV444 = 3,
-}
-
 const workerApi = {
 
 	setImageToEncode(image: ImageData) {

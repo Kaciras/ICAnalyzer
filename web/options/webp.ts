@@ -1,5 +1,17 @@
-import { OptionTemplate } from "./index";
+import { OptionTemplate, WorkerEncoder } from "./index";
 import { NumberRangeTemplate } from "../component/OptionTemplate";
+
+export const name= "WebP";
+export const mimeType = "image/webp";
+export const extension = "webp";
+
+export class WebPEncoder extends WorkerEncoder {
+
+	async encode(options: any) {
+		const buffer = await this.remote.webpEncode(options);
+
+	}
+}
 
 export const WebPOptionsTemplate: OptionTemplate[] = [
 	{

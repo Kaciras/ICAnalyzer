@@ -1,7 +1,19 @@
 import { OptionTemplate } from "./index";
 import { EnumTemplate, NumberRangeTemplate } from "../component/OptionTemplate";
+import { WebpOptions } from "sharp";
 
-export const AVIFOptionsTemplate: OptionTemplate[] = [
+export const name = "AVIF";
+export const mimeType = "image/avif";
+export const extension = "avif";
+
+export const Subsampling = {
+	YUV400: 0,
+	YUV420: 1,
+	YUV422: 2,
+	YUV444: 3,
+};
+
+export const optionTemplate: OptionTemplate[] = [
 	{
 		label: "minQuantizer",
 		name: "minQuantizer",
@@ -32,6 +44,10 @@ export const AVIFOptionsTemplate: OptionTemplate[] = [
 	{
 		label: "subsample",
 		name: "subsample",
-		type: new EnumTemplate(0, 8, 6),
+		type: new EnumTemplate(Subsampling, "YUV420"),
 	},
 ];
+
+export function encode(data: ImageData, option2: WebpOptions): Promise<ArrayBuffer> {
+	throw Error();
+}
