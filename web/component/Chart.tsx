@@ -29,12 +29,15 @@ export default function Chart(props: Props) {
 
 			},
 			legend: {
-				data: ["Compression Ratio %", "PSNR (db)"],
+				data: ["Compression Ratio %", "Encode Time (ms)", "PSNR (db)"],
 			},
 			xAxis: {
 				data: outputs.map((_, i) => i),
 			},
 			yAxis: [
+				{
+					type: "value",
+				},
 				{
 					type: "value",
 				},
@@ -51,10 +54,16 @@ export default function Chart(props: Props) {
 					yAxisIndex: 0,
 				},
 				{
+					name: "Encode Time (ms)",
+					type: "line",
+					data: outputs.map(v => v.time),
+					yAxisIndex: 1,
+				},
+				{
 					name: "PSNR (db)",
 					type: "line",
 					data: outputs.map(v => v.metrics.PSNR),
-					yAxisIndex: 1,
+					yAxisIndex: 2,
 				},
 			],
 		};

@@ -22,9 +22,10 @@ interface Metrics {
 }
 
 export interface ConvertOutput {
+	time: number;
 	buffer: ArrayBuffer;
-	metrics: Metrics;
 	bitmap: Drawable;
+	metrics: Metrics;
 }
 
 export class BatchEncoder<T> {
@@ -87,12 +88,12 @@ export class BatchEncoder<T> {
 			const i = this.index++;
 			this.onProgress(i);
 
-			const buffer = await encoder.encode(optionsList[i], remote);
+			const { buffer, time } = await encoder.encode(optionsList[i], remote);
 			const blob = new Blob([buffer], { type: encoder.mimeType });
 			const [data, bitmap] = await decode(blob);
 
 			const metrics = await this.measure(remote, data);
-			results[i] = { buffer, bitmap, metrics };
+			results[i] = { time, buffer, bitmap, metrics };
 		}
 	}
 

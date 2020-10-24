@@ -6,6 +6,13 @@ import wasmUrl from "../lib/metrics.wasm";
 
 let data: ImageData;
 
+async function timed(func: () => Promise<ArrayBuffer>) {
+	const start = performance.now();
+	const buffer = await func();
+	const end = performance.now();
+	return { buffer, time: end - start };
+}
+
 const workerApi = {
 
 	setImageToEncode(image: ImageData) {
@@ -32,7 +39,7 @@ const workerApi = {
 		});
 	},
 
-	async calcButteraugli(image: ImageData){
+	async calcButteraugli(image: ImageData) {
 		await Similarity.initWasmModule(wasmUrl);
 		return Similarity.butteraugli({
 			width: data.width,
@@ -43,7 +50,8 @@ const workerApi = {
 	},
 
 	async webpEncode(options: WebP.EncodeOptions) {
-		return (await import("squoosh/src/codecs/webp/encoder")).encode(data, options);
+		const module = await import("squoosh/src/codecs/webp/encoder");
+		return timed(() => module.encode(data, options));
 	},
 
 	async webpDecode(data: ArrayBuffer) {
@@ -51,7 +59,8 @@ const workerApi = {
 	},
 
 	async avifEncode(options: AVIF.EncodeOptions) {
-		return (await import("squoosh/src/codecs/avif/encoder")).encode(data, options);
+		const module = await import("squoosh/src/codecs/avif/encoder");
+		return timed(() => module.encode(data, options));
 	},
 
 	async avifDecode(data: ArrayBuffer): Promise<ImageData> {
