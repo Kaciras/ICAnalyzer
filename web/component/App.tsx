@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
@@ -82,14 +82,6 @@ export default function App() {
 		setShowDialog(false);
 	}
 
-	function handleIndexChange(e: FormEvent<HTMLInputElement>) {
-		const i = e.currentTarget.valueAsNumber;
-		setIndex(i);
-		// setOptimized(results[i]);
-		// canvasRef.current!.getContext("2d")!.drawImage(results[i], 0, 0);
-		// chart.dispatchAction({ type: "showTip", x: i, y: 0,position: ["50%", "50%"] });
-	}
-
 	// Show chart on result change, but skip the first.
 	useEffect(() => setShowChart(results !== PLACEHOLDER), [results]);
 
@@ -97,7 +89,7 @@ export default function App() {
 		<>
 			<ImageView {...results} optimized={results.outputs[index]}/>
 
-			{showChart && <Chart {...results}/>}
+			{showChart && <Chart {...results} index={index}/>}
 
 			<div className={style.buttonGroup}>
 				<IconButton
@@ -127,13 +119,16 @@ export default function App() {
 
 			<div className={style.variableGroup}>
 				<label>
-					<p>Quality (-q) {index}</p>
+					<p>
+						Quality (-q)
+						<span className={style.optionValue}>{index}</span>
+					</p>
 					<RangeInput
 						value={index}
 						min={0}
 						step={1}
 						max={100}
-						onChange={handleIndexChange}
+						onChange={e => setIndex(e.currentTarget.valueAsNumber)}
 					/>
 				</label>
 			</div>
