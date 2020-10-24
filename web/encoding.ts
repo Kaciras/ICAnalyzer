@@ -1,6 +1,5 @@
 import * as Comlink from "comlink";
 import { Remote } from "comlink";
-import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
 import { ButteraugliOptions } from "../lib/metrics";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./options";
@@ -66,7 +65,8 @@ export class BatchEncoder<T> {
 		this.workers = [];
 
 		for (let i = 0; i < this.count; i++) {
-			const worker = new Worker(WorkerUrl);
+			// @ts-ignore ts-loader converts files into ES module.
+			const worker = new Worker(new URL("./worker", import.meta.url));
 			const remote = Comlink.wrap<WorkerApi>(worker);
 			await remote.setImageToEncode(image);
 

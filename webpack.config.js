@@ -1,6 +1,5 @@
 const { join } = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WorkerPlugin = require("worker-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
@@ -61,12 +60,6 @@ module.exports = function webpackConfig(env) {
 	];
 
 	const plugins = [
-
-		// Replace with webpack5 native worker support?
-		new WorkerPlugin({
-			globalObject: "self",
-		}),
-
 		new HtmlPlugin({
 			filename: "index.html",
 			template: "web/index.html",
