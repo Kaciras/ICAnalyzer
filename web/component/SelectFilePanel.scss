@@ -1,47 +1,41 @@
 .form {
 	display: flex;
 	flex-direction: column;
-	padding: 15px;
+	padding: 20px;
 	flex: 1;
 	overflow: auto;
 }
 
 .uploadFile {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
 	position: relative;
 	flex: 1;
 	cursor: pointer;
 
-	&::before {
-		content: "";
-		position: absolute;
-		top: 20px;
-		left: 20px;
-		right: 20px;
-		bottom: 20px;
+	border: dashed 5px #ccc;
+	transition: .2s;
 
-		border: dashed 5px #ccc;
-		transition: .2s;
-	}
-
-	&:focus-within, &:hover {
+	&.dragging, &:focus-within, &:hover {
 		outline: none;
+		border-color: #76b3ff;
 
-		&::before {
-			border-color: #76b3ff;
+		& .icon {
+			color: #da76ff;
 		}
 
-		& > .icon {
-			color: #bf76ff;
-		}
-
-		& > .text {
-			color: #3377ff;
+		& .text {
+			color: #4d89ff;
 		}
 	}
 }
 
 .icon {
-	font-size: 100px;
+	font-size: 4em;
+	padding: 20px;
 	color: #ccc;
 	transition: .2s;
 }
@@ -49,8 +43,15 @@
 .text {
 	color: #ccc;
 	font-size: 48px;
+	transition: .2s;
 }
 
 .fileInput {
 	display: none;
+}
+
+.textInput {
+	composes: text-box from global;
+	width: 100%;
+	box-sizing: border-box;
 }
