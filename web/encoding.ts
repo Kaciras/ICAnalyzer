@@ -1,5 +1,4 @@
 import * as Comlink from "comlink";
-import { Remote } from "comlink";
 import { ButteraugliOptions } from "../lib/metrics";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./options";
@@ -65,7 +64,7 @@ export class BatchEncoder<T> {
 		this.workers = [];
 
 		for (let i = 0; i < this.count; i++) {
-			// @ts-ignore ts-loader converts files into ES module.
+			// @ts-ignore ts-loader will convert files to ES module.
 			const worker = new Worker(new URL("./worker", import.meta.url));
 			const remote = Comlink.wrap<WorkerApi>(worker);
 			await remote.setImageToEncode(image);
@@ -81,7 +80,7 @@ export class BatchEncoder<T> {
 		this.workers.forEach(worker => worker.terminate());
 	}
 
-	private async poll(remote: Remote<WorkerApi>) {
+	private async poll(remote: Comlink.Remote<WorkerApi>) {
 		const { results, optionsList, encoder } = this;
 
 		while (this.index < optionsList.length) {
@@ -97,7 +96,7 @@ export class BatchEncoder<T> {
 		}
 	}
 
-	async measure(wrapper: Remote<WorkerApi>, data: ImageData) {
+	async measure(wrapper: Comlink.Remote<WorkerApi>, data: ImageData) {
 		const { SSIM, PSNR, butteraugli } = this.measureOptions;
 		const metrics: Metrics = {};
 

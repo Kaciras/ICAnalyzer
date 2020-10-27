@@ -3,6 +3,11 @@ declare module "worker-plugin/loader*" {
 	export default url;
 }
 
+declare module "*.wasm" {
+	const url: string;
+	export default url;
+}
+
 declare module "*.scss" {
 	const classes: {
 		readonly [key: string]: string;
