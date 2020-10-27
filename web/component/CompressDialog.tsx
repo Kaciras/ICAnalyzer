@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { decode } from "../decode";
 import { BatchEncoder, ConvertOutput, MeasureOptions } from "../encoding";
 import Styles from "./CompressDialog.scss";
@@ -89,9 +90,21 @@ export default function CompressDialog(props: Props) {
 		/>;
 	}
 
-	return (
+	function handleKeyUp(event: KeyboardEvent) {
+		if (event.key === "Escape") {
+			props.onClose();
+		}
+	}
+
+	useEffect(() => {
+		window.addEventListener("keyup", handleKeyUp);
+		return () => window.removeEventListener("keyup", handleKeyUp);
+	}, []);
+
+	return createPortal(
 		<div className={Styles.dimmer}>
 			<div className={Styles.dialog}>{panel}</div>
-		</div>
+		</div>,
+		document.body,
 	);
 }
