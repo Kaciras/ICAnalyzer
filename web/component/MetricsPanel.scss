@@ -1,0 +1,25 @@
+
+.fieldset {
+	border: none;
+	flex: 1;
+	overflow: auto;
+	padding: 20px;
+}
+
+.field {
+	display: inline-block;
+	width: 10em;
+	margin: 10px;
+}
+
+.label {
+	display: inline-block;
+	font-size: .875em;
+	font-weight: 600;
+	color: #444;
+	margin-bottom: 6px;
+}
+
+.value {
+	width: 100%;
+}

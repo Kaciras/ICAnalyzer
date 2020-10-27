@@ -2,23 +2,48 @@ import React, { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
 import Styles from "./SelectFilePanel.scss";
+import MyButton from "./MyButton";
+
+async function getFileFromUrl(url: string) {
+	const blob = await (await fetch(url)).blob();
+	const name = new URL(url).pathname.split("/").pop()!;
+	return new File([blob], name);
+}
 
 interface Props {
-	onFileChange: Dispatch<File | string>
+	onCancel: () => void;
+	onFileChange: Dispatch<File>;
 }
 
 export default function SelectFilePanel(props: Props) {
+	const { onCancel, onFileChange } = props;
+
+	const [downloading, setDownloading] = useState(false);
+	const [error, setError] = useState("");
+
 	const enterCount = useRef(0);
 	const [dragging, setDragging] = useState(false);
 
+	const textBox = useRef<HTMLInputElement>(null);
+
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-		props.onFileChange(event.currentTarget.files![0]);
+		onFileChange(event.currentTarget.files![0]);
 	}
 
-	function handleUrlChange(event: ChangeEvent<HTMLInputElement>) {
-		props.onFileChange(event.currentTarget.value);
+	async function downloadUrl() {
+		const url = textBox.current!.value;
+		setDownloading(true);
+		try {
+			onFileChange(await getFileFromUrl(url));
+		} catch (e) {
+			setError(e.message);
+		} finally {
+			setDownloading(false);
+		}
 	}
 
+	// dragenter & dragleave can be triggered on crossing children element boundary,
+	//
 	function handleDrag(isEnter: boolean) {
 		if (isEnter) {
 			enterCount.current++;
@@ -68,13 +93,20 @@ export default function SelectFilePanel(props: Props) {
 				/>
 			</label>
 			<label>
-				<p>Or image url:</p>
+				<span className={Styles.urlLabel}>
+					Or image url
+				</span>
 				<input
 					className={Styles.textInput}
 					name="url"
-					onChange={handleUrlChange}
+					ref={textBox}
 				/>
 			</label>
+			<div className={Styles.error}>{error}</div>
+			<div className="dialog-buttons">
+				<MyButton onClick={onCancel}>Cancel</MyButton>
+				<MyButton onClick={downloadUrl}>Download Url</MyButton>
+			</div>
 		</form>
 	);
 }

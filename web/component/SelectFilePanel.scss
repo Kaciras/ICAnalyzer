@@ -50,8 +50,18 @@
 	display: none;
 }
 
+.urlLabel {
+	display: block;
+	margin: 20px 0 6px 0;
+}
+
 .textInput {
 	composes: text-box from global;
 	width: 100%;
 	box-sizing: border-box;
 }
+
+.error {
+	color: #ff1e1e;
+}
+

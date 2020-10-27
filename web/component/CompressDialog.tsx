@@ -5,6 +5,7 @@ import Styles from "./CompressDialog.scss";
 import ConfigPanel from "./ConfigPanel";
 import ProgressPanel from "./ProgressPanel";
 import * as WebP from "../options/webp";
+import SelectFilePanel from "./SelectFilePanel";
 
 interface EncodingEvent {
 	file: File;
@@ -20,12 +21,29 @@ interface Props {
 }
 
 export default function CompressDialog(props: Props) {
-	const [encoder, setEncoder] = useState<BatchEncoder<unknown>>();
+	const [file, setFile] = useState<File>();
+	const [image, setImage] = useState<ImageData>();
+	const [selectFile, setSelectFile] = useState(true);
 
+	const [encoder, setEncoder] = useState<BatchEncoder<unknown>>();
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
-	async function handleStart(file: File, optionsList: any[], measure: MeasureOptions, workerCount: number) {
+	function cancelSelectFile() {
+		if (!file) {
+			props.onClose();
+		}
+		setSelectFile(false);
+	}
+
+	async function handleFileChange(newFile: File) {
+		const [image] = await decode(newFile);
+		setFile(newFile);
+		setImage(image);
+		setSelectFile(false);
+	}
+
+	async function handleStart(optionsList: any[], measure: MeasureOptions, workerCount: number) {
 		if (!file) {
 			throw new Error("File is null");
 		}
@@ -51,16 +69,29 @@ export default function CompressDialog(props: Props) {
 	let panel;
 
 	if (encoder) {
-		panel = <ProgressPanel value={progress} max={max} onCancel={stop}/>;
+		panel = <ProgressPanel
+			value={progress}
+			max={max}
+			onCancel={stop}
+		/>;
+	} else if (selectFile) {
+		panel = <SelectFilePanel
+			onCancel={cancelSelectFile}
+			onFileChange={handleFileChange}
+		/>;
 	} else {
-		panel = <ConfigPanel onStart={handleStart} onClose={props.onClose}/>;
+		panel = <ConfigPanel
+			image={image!}
+			file={file!}
+			onSelectFile={() => setSelectFile(true)}
+			onClose={props.onClose}
+			onStart={handleStart}
+		/>;
 	}
 
 	return (
 		<div className={Styles.dimmer}>
-			<div className={Styles.dialog}>
-				{panel}
-			</div>
+			<div className={Styles.dialog}>{panel}</div>
 		</div>
 	);
 }

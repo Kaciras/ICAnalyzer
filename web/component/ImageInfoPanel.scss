@@ -1,0 +1,17 @@
+.canvas {
+	display: block;
+	max-width: 100%;
+	max-height: 220px;
+	margin: 0 auto;
+}
+
+.attributes {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-gap: 10px;
+
+	& > dd {
+		margin: 0;
+		word-break: break-word;
+	}
+}
