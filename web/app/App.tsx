@@ -2,11 +2,10 @@ import React, { ReactNode, useEffect, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
-import IconButton from "./IconButton";
+import { IconButton, RangeInput } from "../ui";
 import CompressDialog from "./CompressDialog";
 import Chart from "./Chart";
 import style from "./App.scss";
-import RangeInput from "./RangeInput";
 import ImageView from "./ImageView";
 import { ConvertOutput } from "../encoding";
 

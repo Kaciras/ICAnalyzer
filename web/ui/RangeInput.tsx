@@ -1,5 +1,4 @@
-import React, { CSSProperties, FormEvent, useState } from "react";
-import clsx from "clsx";
+import React, { CSSProperties, FormEvent } from "react";
 import Styles from "./RangeInput.scss";
 
 interface Props {
@@ -18,37 +17,6 @@ interface RangeInputCSS extends CSSProperties {
 }
 
 export default function RangeInput(props: Props) {
-	const [dragging, setDragging] = useState(false);
-
-	function mouseMove() {
-		setDragging(true);
-
-		function moveEnd(event: Event) {
-			event.preventDefault();
-			setDragging(false);
-			document.removeEventListener("mouseup", moveEnd);
-		}
-
-		document.addEventListener("mouseup", moveEnd);
-	}
-
-	function touchMove() {
-		setDragging(true);
-
-		function moveEnd(event: Event) {
-			event.preventDefault();
-			setDragging(false);
-			document.removeEventListener("touchend", moveEnd);
-		}
-
-		document.addEventListener("touchend", moveEnd);
-	}
-
-	const classes = clsx(
-		Styles.thumb,
-		{ [Styles.active]: dragging },
-	);
-
 	const cssVariables: RangeInputCSS = {
 		"--value-percent": `${props.value ?? 0}%`,
 	};
@@ -69,7 +37,7 @@ export default function RangeInput(props: Props) {
 			/>
 
 			<span className={Styles.thumbRegion}>
-				<span className={classes}/>
+				<span className={Styles.thumb}/>
 			</span>
 		</span>
 	);

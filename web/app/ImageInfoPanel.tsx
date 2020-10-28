@@ -10,7 +10,7 @@ export default function ImageInfoPanel(props: Props) {
 	const { file } = props;
 	const { width, height, data } = props.image;
 
-	const compRatio = (file.size / data.byteLength * 100).toFixed(2);
+	const ratio = (file.size / data.byteLength * 100).toFixed(2);
 
 	function draw(el: HTMLCanvasElement | null) {
 		if (!el) {
@@ -37,7 +37,7 @@ export default function ImageInfoPanel(props: Props) {
 				<dd>{data.byteLength}</dd>
 
 				<dt>File size:</dt>
-				<dd>{file.size} ({compRatio}%)</dd>
+				<dd>{file.size} ({ratio}%)</dd>
 			</dl>
 		</>
 	);

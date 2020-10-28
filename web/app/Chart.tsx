@@ -67,6 +67,15 @@ export default function Chart(props: Props) {
 			series,
 		};
 
+		const { SSIM, PSNR, butteraugli } = outputs[0].metrics;
+		if (SSIM) {
+			series.push({
+				name: "SSIM",
+				type,
+				data: outputs.map(v => v.metrics.SSIM),
+				yAxisIndex: 2,
+			});
+		}
 
 		chart?.setOption(option);
 	}
@@ -75,12 +84,11 @@ export default function Chart(props: Props) {
 		if (!el) {
 			return;
 		}
-		let newChart = chart;
-		if (!newChart) {
-			newChart = echarts.init(el, "dark", { renderer: "svg" });
+		if (!chart) {
+			const newChart = echarts.init(el, "dark", { renderer: "svg" });
 			setChart(newChart);
+			refreshEcharts(newChart);
 		}
-		refreshEcharts(newChart);
 	}
 
 	// useEffect(() => chart && refreshEcharts(chart), [outputs]);

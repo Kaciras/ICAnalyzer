@@ -3,11 +3,13 @@ $size: 20px;
 
 .container {
 	display: inline-block;
+	position: relative;
 	margin-right: 1em;
 	cursor: pointer;
 }
 
 .input {
+	position: absolute;
 	opacity: 0;
 }
 

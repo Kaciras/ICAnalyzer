@@ -1,8 +1,8 @@
 import React, { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
+import { MyButton } from "../ui";
 import Styles from "./SelectFilePanel.scss";
-import MyButton from "./MyButton";
 
 async function getFileFromUrl(url: string) {
 	const blob = await (await fetch(url)).blob();
@@ -32,6 +32,9 @@ export default function SelectFilePanel(props: Props) {
 
 	async function downloadUrl() {
 		const url = textBox.current!.value;
+		if (!url) {
+			return;
+		}
 		setDownloading(true);
 		try {
 			onFileChange(await getFileFromUrl(url));

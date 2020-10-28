@@ -1,0 +1,63 @@
+$stripeWidth: 32px;
+
+.button {
+	padding: 8px 16px;
+	border-radius: 4px;
+
+	color: white;
+	background: #0776df;
+
+	border: 0;
+	align-items: center;
+	cursor: pointer;
+	font-size: 1rem;
+	letter-spacing: .5px;
+
+	transition: .15s;
+
+	&:hover {
+		background: #0069cc;
+	}
+
+	&:focus {
+		outline: none;
+		box-shadow: 0 0 0 4px rgba(0, 105, 204, .4);
+	}
+
+	&:disabled {
+		cursor: default;
+		color: #555;
+		background: #ddd;
+	}
+}
+
+.busy {
+	background-image: linear-gradient(-45deg,
+			var(--background-highlight) 25%,
+			transparent 25%,
+			transparent 50%,
+			var(--background-highlight) 50%,
+			var(--background-highlight) 75%,
+			transparent 75%);
+
+	animation: busy linear .4s infinite;
+}
+
+@keyframes busy {
+	from {
+		background-position: 0;
+	}
+	to {
+		background-position: -$stripeWidth;
+	}
+}
+
+:global(.primary) {
+	--color: #0776df;
+	--color-light: #0069cc;
+}
+
+:global(.second) {
+	--color: #e10199;
+	--color-light: #ff45c3;
+}

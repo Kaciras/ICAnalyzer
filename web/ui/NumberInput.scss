@@ -4,11 +4,10 @@ $decrement-color: #d23e40;
 
 .container {
 	--text-color: currentColor;
-	--border-color: #ccc;
+	--border-color: #d0d5d9;
 
 	display: inline-flex;
 	border: 1px solid var(--border-color);
-	width: 180px;
 
 	&:focus-within {
 		border-color: #10dbff;
@@ -16,9 +15,9 @@ $decrement-color: #d23e40;
 	}
 }
 
-
 .input {
 	display: inline-block;
+	flex: 1;
 	-moz-appearance: textfield;
 	min-width: 0;
 	padding: 5px;

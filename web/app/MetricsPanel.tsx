@@ -2,8 +2,7 @@ import { MeasureOptions } from "../encoding";
 import React, { ChangeEvent, Dispatch, useState } from "react";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import Styles from "./MetricsPanel.scss";
-import NumberInput from "./NumberInput";
-import CheckBoxInput from "./CheckBoxInput";
+import { CheckBoxInput, NumberInput } from "../ui";
 
 interface MProps {
 	workerCount: number;

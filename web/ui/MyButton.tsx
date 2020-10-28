@@ -7,6 +7,7 @@ interface Props {
 	className?: string;
 	disabled?: boolean;
 	color?: string;
+	busy?: boolean;
 	onClick?: MouseEventHandler;
 	children?: ReactNode;
 }
@@ -16,9 +17,14 @@ function avoidMouseFocus(event: MouseEvent<HTMLElement>) {
 }
 
 export default function MyButton(props: Props) {
-	const { className, children, title, disabled, color, onClick } = props;
+	const { className, children, title, disabled, color, busy, onClick } = props;
 
-	const classes = clsx(Styles.button, className, color);
+	const classes = clsx(
+		Styles.button,
+		className,
+		color,
+		{ [Styles.busy]: busy },
+	);
 
 	return (
 		<button

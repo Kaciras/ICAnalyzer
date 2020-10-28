@@ -5,7 +5,7 @@ import { WebPOptionsTemplate } from "../options";
 import { MeasureOptions } from "../encoding";
 import Styles from "./ConfigPanel.scss";
 import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
-import MyButton from "./MyButton";
+import { MyButton } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel from "./MetricsPanel";
 

@@ -1,6 +1,5 @@
 import React, { CSSProperties, ReactNode, useEffect, useRef, useState, WheelEvent } from "react";
-import IconButton from "./IconButton";
-import NumberInput from "./NumberInput";
+import { IconButton, NumberInput } from "../ui";
 import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encoding";
 

@@ -9,6 +9,8 @@ interface Props {
 	step?: number;
 	precision?: number;
 
+	name?: string;
+	className?: string;
 	disabled?: boolean;
 
 	onChange?(value: number): void;
@@ -42,39 +44,41 @@ function useLimitedValue(
 }
 
 export default function NumberInput(props: Props) {
-	const [localValue, setLocalValue] = useLimitedValue(props.value, props.min, props.max, 0.5);
+	const { disabled, onChange, value, min, max, step, name, className } = props;
+	const [localValue, setLocalValue] = useLimitedValue(value, min, max, 0.5);
 
-	const value = typeof props.value === "undefined" ? localValue : props.value;
+	const valueT = typeof value === "undefined" ? localValue : value;
 
 	function setValue(newValue: number) {
 		newValue = setLocalValue(newValue);
-		if (props.onChange) {
-			props.onChange(newValue);
+		if (onChange) {
+			onChange(newValue);
 		}
 	}
 
 	return (
-		<div className={Style.container}>
+		<div className={clsx(Style.container, className)}>
 			<input
 				type="number"
 				className={Style.input}
-				disabled={props.disabled}
+				disabled={disabled}
+				name={name}
 				value={value}
-				onChange={(e) => setValue(e.target.valueAsNumber)}
+				onChange={setValue}
 			/>
 			<button
 				type="button"
 				className={clsx(Style.button, Style.plus)}
 				tabIndex={-1}
-				disabled={props.disabled}
-				onClick={() => setValue(value + (props.step || 1))}
+				disabled={disabled}
+				onClick={() => setValue(valueT + (step || 1))}
 			/>
 			<button
 				type="button"
 				className={Style.button}
 				tabIndex={-1}
-				disabled={props.disabled}
-				onClick={() => setValue(value - (props.step || 1))}
+				disabled={disabled}
+				onClick={() => setValue(valueT - (step || 1))}
 			/>
 		</div>
 	);
