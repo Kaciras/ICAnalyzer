@@ -1,5 +1,5 @@
 import { Remote } from "comlink";
-import { EnumTemplate, NumberRangeTemplate } from "../component/OptionTemplate";
+import { EnumTemplate, NumberRangeTemplate } from "../app/OptionTemplate";
 import { WorkerApi } from "../worker";
 import { OptionTemplate } from "./index";
 

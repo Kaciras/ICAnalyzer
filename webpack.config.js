@@ -48,7 +48,10 @@ module.exports = function webpackConfig(env) {
 			oneOf: [
 				{
 					test: /\.(scss|sass)$/,
-					include: join(__dirname, "web", "component"),
+					include: [
+						join(__dirname, "web", "app"),
+						join(__dirname, "web", "ui"),
+					],
 					use: cssLoaderChain(true),
 				},
 				{
