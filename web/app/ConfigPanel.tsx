@@ -86,7 +86,7 @@ export default function ConfigPanel(props: Props) {
 			{panel}
 			<div className="dialog-buttons">
 				<MyButton onClick={onSelectFile}>Select file</MyButton>
-				<MyButton onClick={onClose}>Cancel</MyButton>
+				<MyButton color="second" onClick={onClose}>Cancel</MyButton>
 				<MyButton disabled={!file} onClick={start}>Start</MyButton>
 			</div>
 		</>

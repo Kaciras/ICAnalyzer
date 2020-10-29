@@ -3,6 +3,7 @@ import React, { ChangeEvent, Dispatch, useState } from "react";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import Styles from "./MetricsPanel.scss";
 import { CheckBoxInput, NumberInput } from "../ui";
+import clsx from "clsx";
 
 interface MProps {
 	workerCount: number;
@@ -71,10 +72,17 @@ export default function MetricsPanel(props: MProps) {
 	}
 
 	return (
-		<form className={Styles.fieldset}>
+		<form className={clsx("dialog-content", Styles.form)}>
 			<label>
-				Worker count:
-				<NumberInput min={1} step={1} value={workerCount} onChange={onWorkerCountChange}/>
+				<span className={Styles.inlineLabel}>
+					Worker count:
+				</span>
+				<NumberInput
+					value={workerCount}
+					min={1}
+					step={1}
+					onChange={onWorkerCountChange}
+				/>
 			</label>
 			<CheckBoxInput
 				checked={SSIM}

@@ -7,8 +7,12 @@ body {
 	margin: 0;
 }
 
-section {
-	display: flex;
+fieldset {
+	border: none;
+}
+
+.subfields {
+	padding: 0 0 0 40px;
 }
 
 #root {
@@ -17,11 +21,11 @@ section {
 }
 
 .text-box {
-	padding: 5px;
+	padding: 6px;
 	min-width: 0; // For Chrome
 
 	outline: none;
-	border: solid 1px #dce2e6;
+	border: solid 1px #d0d5d9;
 	border-radius: 4px;
 
 	color: inherit;
@@ -52,4 +56,20 @@ section {
 	overflow: hidden;
 	color: white;
 	background: rgba(0, 0, 0, .75);
+}
+
+.dialog-content {
+	padding: 20px;
+	flex: 1;
+	overflow: auto;
+}
+
+.dialog-buttons {
+	display: flex;
+	justify-content: flex-end;
+	padding: 0 20px 20px;
+
+	& > :not(:first-child) {
+		margin-left: 10px;
+	}
 }

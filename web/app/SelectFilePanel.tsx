@@ -87,49 +87,51 @@ export default function SelectFilePanel(props: Props) {
 	}
 
 	return (
-		<form className={Styles.form}>
-			<label
-				className={clsx(Styles.uploadFile, { [Styles.dragging]: boundary.isInArea })}
-				tabIndex={0}
-				onDragEnter={boundary.enter}
-				onDragOver={e => e.preventDefault()}
-				onDrop={handleDrop}
-				onDragLeave={boundary.leave}
-			>
-				<div>
-					<span className={Styles.icon}>
-						<ImageIcon/>
+		<>
+			<form className={Styles.form}>
+				<label
+					className={clsx(Styles.uploadFile, { [Styles.dragging]: boundary.isInArea })}
+					tabIndex={0}
+					onDragEnter={boundary.enter}
+					onDragOver={e => e.preventDefault()}
+					onDrop={handleDrop}
+					onDragLeave={boundary.leave}
+				>
+					<div>
+						<span className={Styles.icon}>
+							<ImageIcon/>
+						</span>
+						<span className={Styles.text}>
+							Drag & drop
+						</span>
+					</div>
+					<div className={Styles.text}>
+						Or select an image
+					</div>
+					<input
+						className={Styles.fileInput}
+						name="file"
+						type="file"
+						accept="image/*"
+						onChange={handleFileChange}
+					/>
+				</label>
+				<label>
+					<span className={Styles.urlLabel}>
+						Or image url
 					</span>
-					<span className={Styles.text}>
-						Drag & drop
-					</span>
-				</div>
-				<div className={Styles.text}>
-					Or select an image
-				</div>
-				<input
-					className={Styles.fileInput}
-					name="file"
-					type="file"
-					accept="image/*"
-					onChange={handleFileChange}
-				/>
-			</label>
-			<label>
-				<span className={Styles.urlLabel}>
-					Or image url
-				</span>
-				<input
-					className={Styles.textInput}
-					name="url"
-					ref={textBox}
-				/>
-			</label>
-			<div className={Styles.error}>{error}</div>
+					<input
+						className={Styles.textInput}
+						name="url"
+						ref={textBox}
+					/>
+				</label>
+				<div className={Styles.error}>{error}</div>
+			</form>
 			<div className="dialog-buttons">
 				<MyButton color="second" onClick={onCancel}>Cancel</MyButton>
 				<MyButton busy={downloading} onClick={downloadUrl}>Download Url</MyButton>
 			</div>
-		</form>
+		</>
 	);
 }

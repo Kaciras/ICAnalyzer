@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import React, { useState } from "react";
 import { decode } from "../decode";
 import { BatchEncoder, ConvertOutput, MeasureOptions } from "../encoding";
-import Styles from "./CompressDialog.scss";
 import ConfigPanel from "./ConfigPanel";
 import ProgressPanel from "./ProgressPanel";
 import * as WebP from "../options/webp";
 import SelectFilePanel from "./SelectFilePanel";
+import { Dialog } from "../ui";
 
 interface EncodingEvent {
 	file: File;
@@ -70,16 +69,9 @@ export default function CompressDialog(props: Props) {
 	let panel;
 
 	if (encoder) {
-		panel = <ProgressPanel
-			value={progress}
-			max={max}
-			onCancel={stop}
-		/>;
+		panel = <ProgressPanel value={progress} max={max} onCancel={stop}/>;
 	} else if (selectFile) {
-		panel = <SelectFilePanel
-			onCancel={cancelSelectFile}
-			onFileChange={handleFileChange}
-		/>;
+		panel = <SelectFilePanel onCancel={cancelSelectFile} onFileChange={handleFileChange}/>;
 	} else {
 		panel = <ConfigPanel
 			image={image!}
@@ -90,21 +82,5 @@ export default function CompressDialog(props: Props) {
 		/>;
 	}
 
-	function handleKeyUp(event: KeyboardEvent) {
-		if (event.key === "Escape") {
-			props.onClose();
-		}
-	}
-
-	useEffect(() => {
-		window.addEventListener("keyup", handleKeyUp);
-		return () => window.removeEventListener("keyup", handleKeyUp);
-	}, []);
-
-	return createPortal(
-		<div className={Styles.dimmer}>
-			<div className={Styles.dialog}>{panel}</div>
-		</div>,
-		document.body,
-	);
+	return <Dialog onClose={props.onClose}>{panel}</Dialog>;
 }

@@ -21,8 +21,13 @@ export default function ImageInfoPanel(props: Props) {
 	}
 
 	return (
-		<>
-			<canvas className={Styles.canvas} ref={draw} width={width} height={height}/>
+		<div className="dialog-content">
+			<canvas
+				className={Styles.canvas}
+				ref={draw}
+				width={width}
+				height={height}
+			/>
 			<dl className={Styles.attributes}>
 				<dt>File name:</dt>
 				<dd>{file.name}</dd>
@@ -39,6 +44,6 @@ export default function ImageInfoPanel(props: Props) {
 				<dt>File size:</dt>
 				<dd>{file.size} ({ratio}%)</dd>
 			</dl>
-		</>
+		</div>
 	);
 }

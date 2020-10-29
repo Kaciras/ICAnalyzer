@@ -1,15 +1,19 @@
-
-.fieldset {
-	border: none;
-	flex: 1;
-	overflow: auto;
-	padding: 20px;
+// Safari does not support flex-gap, use grid instead
+.form {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-gap: 10px;
+	align-content: start;
 }
 
 .field {
 	display: inline-block;
 	width: 10em;
-	margin: 10px;
+	margin-right: 10px;
+}
+
+.inlineLabel {
+	margin-right: 5px;
 }
 
 .label {
