@@ -205,7 +205,3 @@ double GetMSE(TwoImages images) {
 
 	return sum / length;
 }
-
-double GetSSIM(TwoImages images) {
-	return 0.0;
-}
