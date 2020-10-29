@@ -1,6 +1,7 @@
 import React, { ChangeEvent, Dispatch, ReactNode } from "react";
 import clsx from "clsx";
-import CheckIcon from "bootstrap-icons/icons/check2.svg";
+import CheckIcon from "../assets/check_box.svg";
+import CheckIconActive from "../assets/check_box-checked.svg";
 import { NOOP } from "../utils";
 import Styles from "./CheckBoxInput.scss";
 
@@ -26,7 +27,7 @@ export default function CheckBoxInput(props: Props) {
 			<span
 				className={clsx(Styles.mark, { [Styles.checked]: checked })}
 			>
-				<CheckIcon/>
+				{checked ? <CheckIconActive/> : <CheckIcon/>}
 			</span>
 			<span className={Styles.label}>{children}</span>
 		</label>

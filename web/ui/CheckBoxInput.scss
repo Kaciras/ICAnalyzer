@@ -1,38 +1,36 @@
 $color-checked: #069AF9;
-$size: 20px;
+
+$size: 24px;
 
 .container {
 	display: inline-block;
 	position: relative;
-	margin-right: 1em;
 	cursor: pointer;
+
+	&:focus-within {
+		outline: dotted 2px;
+	}
 }
 
 .input {
 	position: absolute;
 	opacity: 0;
+	cursor: inherit;
 }
 
 .mark {
 	display: inline-block;
-	position: relative;
 	height: $size;
-	width: $size;
-	vertical-align: top;
-
-	color: transparent;
-	border: 1px solid #ccc;
-	border-radius: 3px;
+	font-size: $size;
+	color: #bbb;
+	vertical-align: middle;
 
 	&.checked {
-		color: white;
-		border-color: $color-checked;
-		background: $color-checked;
+		color: $color-checked;
 	}
 }
 
 .label {
 	display: inline-block;
-	padding-left: .5rem;
-	line-height: $size;
+	vertical-align: middle;
 }
