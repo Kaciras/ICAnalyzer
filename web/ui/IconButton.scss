@@ -1,12 +1,15 @@
 .iconButton {
+	display: inline-block;
 	padding: 10px;
 	font-size: initial;
-	color: #999999;
+	color: #999;
 	border: none;
 	background: transparent;
 	transition: .15s;
+	box-sizing: border-box;
 }
 
+// <a> does not support :enabled
 .iconButton:not([disabled]) {
 	color: inherit;
 	cursor: pointer;

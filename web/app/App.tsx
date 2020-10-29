@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
+import GitHubIcon from "../assets/github-logo.svg";
 import { IconButton, RangeInput } from "../ui";
 import CompressDialog from "./CompressDialog";
 import Chart from "./Chart";
@@ -91,6 +92,13 @@ export default function App() {
 			{showChart && <Chart {...results} index={index}/>}
 
 			<div className={style.buttonGroup}>
+				<IconButton
+					title="Fork me from GitHub"
+					href="https://github.com/Kaciras/ICAnalyze"
+					className={style.iconButton}
+				>
+					<GitHubIcon/>
+				</IconButton>
 				<IconButton
 					title="Select an image"
 					className={style.iconButton}

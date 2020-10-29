@@ -1,5 +1,6 @@
-import React, { MouseEvent, MouseEventHandler, ReactNode } from "react";
+import React, { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
+import { avoidMouseFocus } from "./common";
 import Styles from "./IconButton.scss";
 
 interface Props {
@@ -7,16 +8,13 @@ interface Props {
 	className?: string;
 	disabled?: boolean;
 	active?: boolean;
+	href?: string;
 	onClick?: MouseEventHandler;
 	children?: ReactNode;
 }
 
-function avoidMouseFocus(event: MouseEvent<HTMLElement>) {
-	event.currentTarget.blur();
-}
-
 export default function IconButton(props: Props) {
-	const { className, children, title, disabled, active, onClick } = props;
+	const { className, children, title, href, disabled, active, onClick } = props;
 
 	const classes = clsx(
 		Styles.iconButton,
@@ -24,16 +22,19 @@ export default function IconButton(props: Props) {
 		{ [Styles.active]: active },
 	);
 
+	const ButtonTag = href ? "a" : "button";
+
 	return (
-		<button
+		<ButtonTag
 			className={classes}
 			title={title}
 			disabled={disabled}
+			href={href}
 			type="button"
 			onClick={onClick}
 			onMouseUp={avoidMouseFocus}
 		>
 			{children}
-		</button>
+		</ButtonTag>
 	);
 }
