@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { MyButton } from "../ui";
 import Styles from "./ProgressPanel.scss";
+import { debounce } from "../utils";
 
-const formatter = new Intl.RelativeTimeFormat("en");
+const formatter = new Intl.RelativeTimeFormat("en", { maximumFractionDigits: 1});
 
 interface ProgressPanelProps {
 	max: number;
 	value: number;
 	onCancel: () => void;
+}
+
+function calcTime(start: number, value: number, max: number) {
+	const duration = performance.now() - start;
+	return (max - value) / value * duration;
 }
 
 export default function ProgressPanel(props: ProgressPanelProps) {

@@ -34,3 +34,39 @@ export function detectWebPSupport() {
 		image.onerror = () => resolve(false);
 	});
 }
+
+const SIZE_UNITS = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+
+/**
+ * Convert bytes to a human readable string.
+ *
+ * @param value The number to format.
+ * @param fraction
+ */
+export function bytes(value: number, fraction = 1024) {
+	const size = Math.abs(value);
+
+	if (size == 0) {
+		return `${value.toFixed(2)} B`;
+	}
+
+	const i = ~~(Math.log2(size) / Math.log2(fraction));
+	const v = value / (fraction ** i);
+	return `${v.toFixed(2)} ${SIZE_UNITS[i]}B`;
+}
+
+type Fn<T, A extends any[], R> = (this: T, ...args: A) => R;
+
+export function debounce<T, A extends any[], R>(wait: number, func: Fn<T, A, R>) {
+	let disallow = false;
+	let result: R;
+
+	return function (this: T, ...args: A) {
+		if (disallow) {
+			return result;
+		}
+		disallow = true;
+		setTimeout(() => disallow = false, wait);
+		return result = func.apply(this, args);
+	};
+}

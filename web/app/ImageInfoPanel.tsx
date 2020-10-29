@@ -1,4 +1,5 @@
 import React from "react";
+import { bytes } from "../utils";
 import Styles from "./ImageInfoPanel.scss";
 
 interface Props {
@@ -39,10 +40,10 @@ export default function ImageInfoPanel(props: Props) {
 				<dd>{width} x {height}</dd>
 
 				<dt>Raw size:</dt>
-				<dd>{data.byteLength}</dd>
+				<dd>{bytes(data.byteLength)}</dd>
 
 				<dt>File size:</dt>
-				<dd>{file.size} ({ratio}%)</dd>
+				<dd>{bytes(file.size)} ({ratio}%)</dd>
 			</dl>
 		</div>
 	);
