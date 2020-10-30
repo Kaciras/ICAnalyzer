@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import echarts, { EChartOption, ECharts } from "echarts";
+import { InputImage } from "./App";
 import Styles from "./Chart.scss";
 import { ConvertOutput } from "../encoding";
 
 interface Props {
-	original?: File;
+	original?: InputImage;
 	index: number;
 	outputs: ConvertOutput[];
 }
@@ -19,7 +20,7 @@ export default function Chart(props: Props) {
 			{
 				name: "Compression Ratio %",
 				type,
-				data: outputs.map(v => v.buffer.byteLength / original!.size),
+				data: outputs.map(v => v.buffer.byteLength / original!.file.size),
 				yAxisIndex: 0,
 			},
 			{

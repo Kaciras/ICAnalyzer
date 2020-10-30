@@ -9,45 +9,50 @@ import Chart from "./Chart";
 import style from "./App.scss";
 import ImageView from "./ImageView";
 import { ConvertOutput } from "../encoding";
+import { ImageEncoder } from "../options";
+
+export interface InputImage {
+	file: File;
+	data: ImageData;
+}
 
 interface Result {
-	original?: File;
-	width: number;
-	height: number;
-
+	encoder?: ImageEncoder;
+	original?: InputImage;
 	outputs: ConvertOutput[];
 }
 
 const PLACEHOLDER: Result = {
+	encoder: undefined,
 	original: undefined,
-	width: 0,
-	height: 0,
 	outputs: [],
 };
 
 interface DownloadButtonProps {
 	title?: string;
 	buffer?: ArrayBuffer;
+	encoder?: ImageEncoder;
 	filename?: string;
 	children: ReactNode;
 }
 
 function DownloadButton(props: DownloadButtonProps) {
 	const { title, buffer, filename, children } = props;
+	const { mimeType, extension } = props.encoder || {};
 
 	const [url, setUrl] = useState("");
 	useEffect(() => () => URL.revokeObjectURL(url), []);
 
 	function downloadImage() {
-		const blob = new Blob([buffer!], { type: "image/webp" });
+		const blob = new Blob([buffer!], { type: mimeType });
 
 		URL.revokeObjectURL(url);
 		const newUrl = URL.createObjectURL(blob);
 		setUrl(newUrl);
 
 		const a = document.createElement("a");
-		a.href = url;
-		a.download = filename!.split(".").pop()!;
+		a.href = newUrl;
+		a.download = filename!.replace(/.[^.]*$/, `.${extension}`);
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
@@ -71,13 +76,8 @@ export default function App() {
 	const [index, setIndex] = useState(0);
 	const [results, setResults] = useState(PLACEHOLDER);
 
-	async function showResult(original: File, outputs: ConvertOutput[]) {
-		setResults({
-			outputs,
-			original,
-			width: outputs[0].bitmap.width,
-			height: outputs[0].bitmap.height,
-		});
+	async function showResult(original: InputImage, encoder: ImageEncoder, outputs: ConvertOutput[]) {
+		setResults({ outputs, encoder, original });
 		setIndex(75);
 		setShowDialog(false);
 	}
@@ -117,7 +117,8 @@ export default function App() {
 				</IconButton>
 				<DownloadButton
 					title="Download compressed image"
-					filename={results.original?.name}
+					filename={results.original?.file.name}
+					encoder={results.encoder}
 					buffer={results.outputs[index]?.buffer}
 				>
 					<DownloadIcon/>

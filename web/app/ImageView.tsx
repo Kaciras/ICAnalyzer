@@ -1,12 +1,11 @@
-import React, { CSSProperties, ReactNode, useEffect, useRef, useState, WheelEvent } from "react";
+import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput } from "../ui";
+import { InputImage } from "./App";
 import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encoding";
 
 interface Props {
-	original?: File;
-	width: number;
-	height: number;
+	original?: InputImage;
 	optimized?: ConvertOutput;
 }
 
@@ -18,7 +17,6 @@ export enum ViewType {
 }
 
 interface ImageViewCSS extends CSSProperties {
-	"--original": string;
 	"--x": string;
 	"--y": string;
 	"--scale": number;
@@ -64,30 +62,31 @@ function watchTouchMove(baseEvent: TouchEvent, handler: PointerMoveHandler) {
 }
 
 export default function ImageView(props: Props) {
-	const { original, width, height, optimized } = props;
+	const { original, optimized } = props;
+	const { width = 0, height = 0 } = original?.data || {};
 
 	const [type, setType] = useState(ViewType.Compressed);
 	const [brightness, setBrightness] = useState(100);
-	const [originalUrl, setOriginalUrl] = useState("");
 
 	const [zoom, setZoom] = useState(1);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const backCanvas = useRef<HTMLCanvasElement>(null);
+	const topCanvas = useRef<HTMLCanvasElement>(null);
 
 	function refreshCanvas() {
 		if (!optimized) {
 			return;
 		}
-		const { metrics, bitmap } = optimized;
-		const ctx = canvasRef.current!.getContext("2d");
+		const { metrics, data } = optimized;
+		const ctx = topCanvas.current!.getContext("2d");
 		if (!ctx) {
 			throw new Error("Could not create canvas context");
 		}
 		if (type === ViewType.HeatMap) {
-			ctx.drawImage(metrics.butteraugli!.heatMap, 0, 0);
+			ctx.putImageData(metrics.butteraugli!.heatMap, 0, 0);
 		} else {
-			ctx.drawImage(bitmap!, 0, 0);
+			ctx.putImageData(data!, 0, 0);
 		}
 	}
 
@@ -98,9 +97,8 @@ export default function ImageView(props: Props) {
 		setZoom(1);
 		setOffset({ x: 0, y: 0 });
 
-		const url = URL.createObjectURL(original);
-		setOriginalUrl(url);
-		return () => URL.revokeObjectURL(url);
+		const ctx = backCanvas.current!.getContext("2d")!;
+		ctx.putImageData(original.data!, 0, 0);
 	}
 
 	useEffect(refreshBackground, [original]);
@@ -125,7 +123,7 @@ export default function ImageView(props: Props) {
 		);
 	}
 
-	function handleWheel(event: WheelEvent) {
+	function handleWheel(event: React.WheelEvent) {
 		const { ctrlKey, deltaMode } = event;
 		let { deltaY } = event;
 
@@ -172,7 +170,6 @@ export default function ImageView(props: Props) {
 
 	const wrapperCss: ImageViewCSS = {
 		width, height,
-		"--original": `url("${originalUrl}")`,
 		"--scale": zoom,
 		"--x": offset.x + "px",
 		"--y": offset.y + "px",
@@ -183,10 +180,7 @@ export default function ImageView(props: Props) {
 	const butteraugliAvailable = !optimized?.metrics.butteraugli;
 
 	return (
-		<div
-			className={Styles.container}
-			onWheel={handleWheel}
-		>
+		<div className={Styles.container}>
 			<aside className={Styles.inputs}>
 				<div>
 					<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
@@ -197,19 +191,27 @@ export default function ImageView(props: Props) {
 				{brightnessInput}
 			</aside>
 			<div
-				className={Styles.wrapper}
-				style={wrapperCss}
+				className={Styles.imageView}
+				onWheel={handleWheel}
 				onMouseDown={e => e.button === 0 && watchMouseMove(e.nativeEvent, offsetUpdater())}
 				onTouchStart={e => watchTouchMove(e.nativeEvent, offsetUpdater())}
 			>
-				<canvas
-					className={Styles.canvas}
-					style={{ mixBlendMode: blend }}
-					ref={canvasRef}
-					width={width}
-					height={height}
-					hidden={type === ViewType.Original}
-				/>
+				<div className={Styles.wrapper} style={wrapperCss}>
+					<canvas
+						className={Styles.canvas}
+						ref={backCanvas}
+						width={width}
+						height={height}
+					/>
+					<canvas
+						className={Styles.canvas}
+						style={{ mixBlendMode: blend }}
+						ref={topCanvas}
+						width={width}
+						height={height}
+						hidden={type === ViewType.Original}
+					/>
+				</div>
 			</div>
 		</div>
 	);

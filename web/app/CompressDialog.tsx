@@ -6,6 +6,8 @@ import ProgressPanel from "./ProgressPanel";
 import * as WebP from "../options/webp";
 import SelectFilePanel from "./SelectFilePanel";
 import { Dialog } from "../ui";
+import { InputImage } from "./App";
+import { ImageEncoder } from "../options";
 
 interface EncodingEvent {
 	file: File;
@@ -16,7 +18,7 @@ interface EncodingEvent {
 }
 
 interface Props {
-	onChange: (file: File, results: ConvertOutput[]) => void;
+	onChange: (file: InputImage, encoder: ImageEncoder, results: ConvertOutput[]) => void;
 	onClose: () => void;
 }
 
@@ -25,7 +27,7 @@ export default function CompressDialog(props: Props) {
 	const [image, setImage] = useState<ImageData>();
 	const [selectFile, setSelectFile] = useState(true);
 
-	const [encoder, setEncoder] = useState<BatchEncoder<unknown>>();
+	const [encoder, setEncoder] = useState<BatchEncoder<unknown>>({} as any);
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
@@ -37,7 +39,7 @@ export default function CompressDialog(props: Props) {
 	}
 
 	async function handleFileChange(newFile: File) {
-		const [image] = await decode(newFile);
+		const image = await decode(newFile);
 		setFile(newFile);
 		setImage(image);
 		setSelectFile(false);
@@ -55,10 +57,10 @@ export default function CompressDialog(props: Props) {
 		setMax(optionsList.length);
 		setProgress(0);
 
-		const [image] = await decode(file);
-		const outputs = await encoder.encode(image, optionsList, measure);
+		const data = await decode(file);
+		const outputs = await encoder.encode(data, optionsList, measure);
 
-		props.onChange(file, outputs);
+		props.onChange({ file, data }, WebP, outputs);
 	}
 
 	function stop() {

@@ -1,13 +1,9 @@
 import * as Comlink from "comlink";
 import { Remote } from "comlink";
 import { blobToImg, drawableToImageData } from "squoosh/src/lib/util";
-import WorkerUrl from "worker-plugin/loader?esModule&name=encoding!./worker";
 import { WorkerApi } from "./worker";
 import { detectAVIFSupport, detectWebPSupport } from "./utils";
-
-export type Drawable = ImageBitmap | HTMLImageElement;
-
-export type DecodeResult = [ImageData, Drawable];
+import { newWorker } from "./encoding";
 
 export async function decodeImage(blob: Blob) {
 	const bitmap = "createImageBitmap" in self
@@ -21,13 +17,12 @@ export async function decodeImage(blob: Blob) {
 
 	const ctx = canvas.getContext("2d")!;
 	ctx.drawImage(bitmap, 0, 0);
-	const imageData = ctx.getImageData(0, 0, width, height);
-
-	return [imageData, bitmap] as DecodeResult;
+	return ctx.getImageData(0, 0, width, height);
 }
 
 type featureDetector = () => Promise<boolean>;
-type DecodeFunction = (buffer: ArrayBuffer) => Promise<DecodeResult>;
+
+type DecodeFunction = (buffer: ArrayBuffer) => Promise<ImageData>;
 
 function autoSelect(
 	checkFn: featureDetector,
@@ -55,10 +50,9 @@ function decodeAVIFNative(buffer: ArrayBuffer) {
 }
 
 async function decodeAVIFWorker(buffer: ArrayBuffer) {
-	const worker = Comlink.wrap<WorkerApi>(new Worker(WorkerUrl));
-	const imageData = await worker.avifDecode(buffer);
-	const bitmap = await createImageBitmap(imageData);
-	return [imageData, bitmap] as DecodeResult;
+	const worker = newWorker();
+	const remote = Comlink.wrap<WorkerApi>(worker);
+	return remote.avifDecode(buffer);
 }
 
 function decodeWebPNative(buffer: ArrayBuffer) {
@@ -67,11 +61,9 @@ function decodeWebPNative(buffer: ArrayBuffer) {
 
 async function decodeWebPWorker(buffer: ArrayBuffer, worker?: Remote<WorkerApi>) {
 	if (!worker) {
-		worker = Comlink.wrap<WorkerApi>(new Worker(WorkerUrl));
+		worker = Comlink.wrap<WorkerApi>(newWorker());
 	}
-	const imageData = await worker.webpDecode(buffer);
-	const bitmap = await createImageBitmap(imageData);
-	return [imageData, bitmap] as DecodeResult;
+	return worker.webpDecode(buffer);
 }
 
 export const decodeWebP = autoSelect(detectWebPSupport, decodeWebPNative, decodeWebPWorker);
@@ -97,11 +89,10 @@ function ensureSVGSize(svgXml: string) {
 	return new XMLSerializer().serializeToString(document);
 }
 
-export async function svgToImageData(svgXml: string): Promise<DecodeResult> {
+export async function svgToImageData(svgXml: string) {
 	svgXml = ensureSVGSize(svgXml);
 	const blob = new Blob([svgXml], { type: "image/svg+xml" });
-	const drawable = await blobToImg(blob);
-	return [await drawableToImageData(drawable), drawable];
+	return drawableToImageData(await blobToImg(blob));
 }
 
 export function decode(blob: Blob) {
