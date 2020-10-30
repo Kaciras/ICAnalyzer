@@ -27,11 +27,11 @@ EMSCRIPTEN_BINDINGS(my_module) {
 		.field("height", &TwoImages::height);
 
 	value_object<ButteraugliOptions>("ButteraugliOptions")
+		.field("ensureAlpha", &ButteraugliOptions::ensureAlpha)
 		.field("hfAsymmetry", &ButteraugliOptions::hfAsymmetry)
 		.field("goodQualitySeek", &ButteraugliOptions::goodQualitySeek)
 		.field("badQualitySeek", &ButteraugliOptions::badQualitySeek);
 
 	function("GetButteraugli", &GetButteraugli);
 	function("GetMSE", &GetMSE);
-	function("GetSSIM", &GetSSIM);
 }

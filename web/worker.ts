@@ -2,6 +2,7 @@ import * as Comlink from "comlink";
 import type * as WebP from "squoosh/src/codecs/webp/encoder-meta";
 import type * as AVIF from "squoosh/src/codecs/avif/encoder-meta";
 import * as Similarity from "../lib/similarity";
+import { ButteraugliOptions } from "../lib/similarity";
 import wasmUrl from "../lib/metrics.wasm";
 
 let data: ImageData;
@@ -39,14 +40,14 @@ const workerApi = {
 		});
 	},
 
-	async calcButteraugli(image: ImageData) {
+	async calcButteraugli(image: ImageData, options: ButteraugliOptions) {
 		await Similarity.initWasmModule(wasmUrl);
 		return Similarity.butteraugli({
 			width: data.width,
 			height: data.height,
 			dataA: new Uint8Array(data.data),
 			dataB: new Uint8Array(image.data),
-		});
+		}, options);
 	},
 
 	async webpEncode(options: WebP.EncodeOptions) {

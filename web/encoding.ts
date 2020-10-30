@@ -112,35 +112,15 @@ export class BatchEncoder<T> {
 			metrics.SSIM = await wrapper.calcSSIM(data);
 		}
 		if (butteraugli) {
-			const [source, raw] = await wrapper.calcButteraugli(data);
+			const [source, raw] = await wrapper.calcButteraugli(data, { ensureAlpha: true });
 
 			const ctx = document.createElement("canvas").getContext("2d")!;
 			const heatMap = ctx.createImageData(data.width, data.height);
-
-			if (raw.byteLength / heatMap.width / heatMap.height === 4) {
-				heatMap.data.set(new Uint8ClampedArray(raw));
-			} else {
-				heatMap.data.set(padAlpha(raw));
-			}
+			heatMap.data.set(new Uint8ClampedArray(raw));
 
 			metrics.butteraugli = { source, heatMap };
 		}
 
 		return metrics;
 	}
-}
-
-// If you want to use Uint32Array, remember that the endianness of each system might be different.
-function padAlpha(input: ArrayBuffer) {
-	const length = input.byteLength / 3 * 4;
-	const rgb = new Uint8Array(input);
-	const rgba = new Uint8Array(length);
-
-	for (let j = 0, k = 0; j < length; j += 4, k += 3) {
-		rgba[j] = rgb[k];
-		rgba[j + 1] = rgb[k + 1];
-		rgba[j + 2] = rgb[k + 2];
-		rgba[j + 3] = 255;
-	}
-	return rgba;
 }

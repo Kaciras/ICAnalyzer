@@ -5,10 +5,11 @@ export interface TwoImages {
 	height: number;
 }
 
-export interface ButteraugliOptions {
+export interface FullButteraugliOptions {
 	hfAsymmetry: number;
 	goodQualitySeek: number;
 	badQualitySeek: number;
+	ensureAlpha: boolean;
 }
 
 export type ButteraugliResult = [number, ArrayBuffer];
@@ -17,7 +18,7 @@ export interface MetricsModule {
 
 	GetMSE(twoImages: TwoImages): number;
 
-	GetButteraugli(twoImages: TwoImages, options: ButteraugliOptions): ButteraugliResult;
+	GetButteraugli(twoImages: TwoImages, options: FullButteraugliOptions): ButteraugliResult;
 }
 
 export default function (overrides?: Partial<EmscriptenModule>): Promise<MetricsModule>;

@@ -102,17 +102,35 @@ static void ScoreToRgb(double score, double good_threshold, double bad_threshold
 }
 
 void CreateHeatMapImage(
-	const ImageF& distmap, double good_threshold,
-	double bad_threshold, size_t xsize, size_t ysize,
+	const ImageF& distmap,
+	double good_threshold,
+	double bad_threshold,
+	size_t xsize,
+	size_t ysize,
+	bool ensureAlpha,
 	vector<uint8_t>* heatmap)
 {
-	heatmap->resize(3 * xsize * ysize);
-	for (size_t y = 0; y < ysize; ++y) {
-		for (size_t x = 0; x < xsize; ++x) {
-			int px = xsize * y + x;
-			double d = distmap.Row(y)[x];
-			uint8_t* rgb = &(*heatmap)[3 * px];
-			ScoreToRgb(d, good_threshold, bad_threshold, rgb);
+	if (ensureAlpha) {
+		heatmap->resize(4 * xsize * ysize);
+		for (size_t y = 0; y < ysize; ++y) {
+			for (size_t x = 0; x < xsize; ++x) {
+				int px = xsize * y + x;
+				double d = distmap.Row(y)[x];
+				uint8_t* rgb = &(*heatmap)[4 * px];
+				ScoreToRgb(d, good_threshold, bad_threshold, rgb);
+				rgb[3] = 255;
+			}
+		}
+	}
+	else {
+		heatmap->resize(3 * xsize * ysize);
+		for (size_t y = 0; y < ysize; ++y) {
+			for (size_t x = 0; x < xsize; ++x) {
+				int px = xsize * y + x;
+				double d = distmap.Row(y)[x];
+				uint8_t* rgb = &(*heatmap)[3 * px];
+				ScoreToRgb(d, good_threshold, bad_threshold, rgb);
+			}
 		}
 	}
 }
@@ -186,7 +204,7 @@ void Butteraugli(TwoImages images, ButteraugliOptions options, double& diff_valu
 
 	const double good_quality = ButteraugliFuzzyInverse(options.goodQualitySeek);
 	const double bad_quality = ButteraugliFuzzyInverse(options.badQualitySeek);
-	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, width, height, &heatMap);
+	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, width, height, options.ensureAlpha, &heatMap);
 }
 
 double GetMSE(TwoImages images) {

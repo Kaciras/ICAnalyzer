@@ -1,10 +1,13 @@
-import metrics, { ButteraugliOptions, MetricsModule, TwoImages } from "./metrics";
+import metrics, { FullButteraugliOptions, MetricsModule, TwoImages } from "./metrics";
 import ssim from "ssim.js";
 
-export const defaultButteraugliOptions: ButteraugliOptions = {
+export type ButteraugliOptions = Partial<FullButteraugliOptions>;
+
+export const defaultButteraugliOptions: FullButteraugliOptions = {
 	hfAsymmetry: 1.0,
 	goodQualitySeek: 1.5,
 	badQualitySeek: 0.5,
+	ensureAlpha: false,
 };
 
 let wasmModule: MetricsModule | undefined;
@@ -30,7 +33,7 @@ function checkImages(twoImages: TwoImages) {
 	}
 }
 
-export function butteraugli(twoImages: TwoImages, options?: Partial<ButteraugliOptions>) {
+export function butteraugli(twoImages: TwoImages, options?: ButteraugliOptions) {
 	if (!wasmModule) {
 		throw new Error("Wasm module not loaded");
 	}
