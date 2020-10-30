@@ -3,7 +3,6 @@ import React, { ChangeEvent, Dispatch, useState } from "react";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import Styles from "./MetricsPanel.scss";
 import { CheckBoxInput, NumberInput } from "../ui";
-import clsx from "clsx";
 
 interface MProps {
 	workerCount: number;
@@ -72,7 +71,7 @@ export default function MetricsPanel(props: MProps) {
 	}
 
 	return (
-		<form className={clsx("dialog-content", Styles.form)}>
+		<form className={Styles.form}>
 			<label>
 				<span className={Styles.inlineLabel}>
 					Worker count:

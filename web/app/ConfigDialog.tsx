@@ -3,9 +3,9 @@ import clsx from "clsx";
 import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
 import { WebPOptionsTemplate } from "../options";
 import { MeasureOptions } from "../encoding";
-import Styles from "./ConfigPanel.scss";
-import OptionsPanel, { OptionsInstance } from "./OptionsPanel";
-import { MyButton } from "../ui";
+import Styles from "./ConfigDialog.scss";
+import OptionsDialog, { OptionsInstance } from "./OptionsPanel";
+import { Dialog, MyButton } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel from "./MetricsPanel";
 
@@ -17,7 +17,7 @@ interface Props {
 	onSelectFile: () => void;
 }
 
-export default function ConfigPanel(props: Props) {
+export default function ConfigDialog(props: Props) {
 	const { file, image, onStart, onClose, onSelectFile } = props;
 
 	const [vars, setVars] = useState<string[]>(() => WebPOptionsTemplate
@@ -62,7 +62,7 @@ export default function ConfigPanel(props: Props) {
 			/>;
 			break;
 		case 1:
-			panel = <OptionsPanel
+			panel = <OptionsDialog
 				vars={vars}
 				options={options}
 				onVarsChange={setVars}
@@ -81,14 +81,14 @@ export default function ConfigPanel(props: Props) {
 	}
 
 	return (
-		<>
+		<Dialog className={Styles.dialog} onClose={onClose}>
 			<div className={Styles.header}>{tabs}</div>
 			{panel}
-			<div className="dialog-buttons">
+			<div className="dialog-actions">
 				<MyButton onClick={onSelectFile}>Select file</MyButton>
 				<MyButton color="second" onClick={onClose}>Cancel</MyButton>
 				<MyButton disabled={!file} onClick={start}>Start</MyButton>
 			</div>
-		</>
+		</Dialog>
 	);
 }

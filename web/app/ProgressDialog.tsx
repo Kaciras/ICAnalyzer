@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { MyButton } from "../ui";
-import Styles from "./ProgressPanel.scss";
+import { Dialog, MyButton } from "../ui";
+import Styles from "./ProgressDialog.scss";
 import { debounce } from "../utils";
 
 const formatter = new Intl.RelativeTimeFormat("en");
@@ -16,7 +16,7 @@ function calcTime(start: number, value: number, max: number) {
 	return (max - value) / value * duration;
 }
 
-export default function ProgressPanel(props: ProgressPanelProps) {
+export default function ProgressDialog(props: ProgressPanelProps) {
 	const { value, max, onCancel } = props;
 
 	const [start] = useState(() => performance.now());
@@ -28,10 +28,10 @@ export default function ProgressPanel(props: ProgressPanelProps) {
 		: formatter.format(~~(ms / 1000), "seconds");
 
 	return (
-		<>
-			<h1>Encoding...</h1>
+		<Dialog>
 			<div className={Styles.content}>
-				<div className={Styles.textProgress}>
+				<h1>Encoding...</h1>
+				<div className={Styles.text}>
 					<span>{value}/{max}</span>
 					<span>Remaining: {remaining}</span>
 				</div>
@@ -40,15 +40,10 @@ export default function ProgressPanel(props: ProgressPanelProps) {
 					max={max}
 					className={Styles.progress}
 				/>
-				<div className={Styles.buttons}>
-					<MyButton
-						color="second"
-						onClick={onCancel}
-					>
-						Cancel
-					</MyButton>
-				</div>
 			</div>
-		</>
+			<div className={Styles.buttons}>
+				<MyButton color="second" onClick={onCancel}> Cancel </MyButton>
+			</div>
+		</Dialog>
 	);
 }

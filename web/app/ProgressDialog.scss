@@ -1,0 +1,19 @@
+.content {
+	composes: dialog-content from global;
+	text-align: center;
+}
+
+.text {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 14px;
+}
+
+.progress {
+	width: 640px;
+}
+
+.buttons {
+	composes: dialog-actions from global;
+	justify-content: center;
+}

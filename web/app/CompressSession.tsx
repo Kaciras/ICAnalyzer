@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { decode } from "../decode";
 import { BatchEncoder, ConvertOutput, MeasureOptions } from "../encoding";
-import ConfigPanel from "./ConfigPanel";
-import ProgressPanel from "./ProgressPanel";
+import ConfigDialog from "./ConfigDialog";
+import ProgressDialog from "./ProgressDialog";
 import * as WebP from "../options/webp";
-import SelectFilePanel from "./SelectFilePanel";
-import { Dialog } from "../ui";
+import SelectFileDialog from "./SelectFileDialog";
 import { InputImage } from "./App";
 import { ImageEncoder } from "../options";
 
@@ -22,12 +21,12 @@ interface Props {
 	onClose: () => void;
 }
 
-export default function CompressDialog(props: Props) {
+export default function CompressSession(props: Props) {
 	const [file, setFile] = useState<File>();
 	const [image, setImage] = useState<ImageData>();
 	const [selectFile, setSelectFile] = useState(true);
 
-	const [encoder, setEncoder] = useState<BatchEncoder<unknown>>({} as any);
+	const [encoder, setEncoder] = useState<BatchEncoder<unknown> | null>({} as any);
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
@@ -64,18 +63,16 @@ export default function CompressDialog(props: Props) {
 	}
 
 	function stop() {
-		setEncoder(undefined);
 		encoder!.stop();
+		setEncoder(null);
 	}
 
-	let panel;
-
 	if (encoder) {
-		panel = <ProgressPanel value={progress} max={max} onCancel={stop}/>;
+		return <ProgressDialog value={progress} max={max} onCancel={stop}/>;
 	} else if (selectFile) {
-		panel = <SelectFilePanel onCancel={cancelSelectFile} onFileChange={handleFileChange}/>;
+		return <SelectFileDialog onCancel={cancelSelectFile} onFileChange={handleFileChange}/>;
 	} else {
-		panel = <ConfigPanel
+		return <ConfigDialog
 			image={image!}
 			file={file!}
 			onSelectFile={() => setSelectFile(true)}
@@ -83,6 +80,4 @@ export default function CompressDialog(props: Props) {
 			onStart={handleStart}
 		/>;
 	}
-
-	return <Dialog onClose={props.onClose}>{panel}</Dialog>;
 }

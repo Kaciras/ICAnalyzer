@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
-import { MyButton } from "../ui";
-import Styles from "./SelectFilePanel.scss";
+import { Dialog, MyButton } from "../ui";
+import Styles from "./SelectFileDialog.scss";
 import { decode } from "../decode";
 
 async function getFileFromUrl(url: string) {
@@ -39,7 +39,7 @@ interface Props {
 	onFileChange: (file: File, image: ImageData) => void;
 }
 
-export default function SelectFilePanel(props: Props) {
+export default function SelectFileDialog(props: Props) {
 	const { onCancel, onFileChange } = props;
 
 	const boundary = useBoundaryCounter();
@@ -49,7 +49,7 @@ export default function SelectFilePanel(props: Props) {
 
 	function accept(file: File) {
 		decode(file)
-			.then(image => onFileChange(file, image[0]))
+			.then(image => onFileChange(file, image))
 			.catch(() => setError("Can not decode file as image"));
 	}
 
@@ -87,7 +87,7 @@ export default function SelectFilePanel(props: Props) {
 	}
 
 	return (
-		<>
+		<Dialog onClose={onCancel}>
 			<form className={Styles.form}>
 				<label
 					className={clsx(Styles.uploadFile, { [Styles.dragging]: boundary.isInArea })}
@@ -128,10 +128,10 @@ export default function SelectFilePanel(props: Props) {
 				</label>
 				<div className={Styles.error}>{error}</div>
 			</form>
-			<div className="dialog-buttons">
-				<MyButton color="second" onClick={onCancel}>Cancel</MyButton>
+			<div className="dialog-actions">
+				<MyButton color="second" onClick={onCancel}>Back</MyButton>
 				<MyButton busy={downloading} onClick={downloadUrl}>Download Url</MyButton>
 			</div>
-		</>
+		</Dialog>
 	);
 }

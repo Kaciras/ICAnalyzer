@@ -1,3 +1,10 @@
+.dialog {
+	display: flex;
+	flex-direction: column;
+	width: 640px;
+	height: 540px;
+}
+
 .header {
 	display: flex;
 }

@@ -1,7 +1,5 @@
 .form {
 	composes: dialog-content from global;
-	display: flex;
-	flex-direction: column;
 }
 
 .uploadFile {
@@ -9,6 +7,9 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+
+	width: 640px;
+	height: 360px;
 
 	position: relative;
 	flex: 1;

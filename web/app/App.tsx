@@ -4,7 +4,7 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import GitHubIcon from "../assets/github-logo.svg";
 import { IconButton, RangeInput } from "../ui";
-import CompressDialog from "./CompressDialog";
+import CompressSession from "./CompressSession";
 import Chart from "./Chart";
 import style from "./App.scss";
 import ImageView from "./ImageView";
@@ -141,7 +141,7 @@ export default function App() {
 				</label>
 			</div>
 
-			{showDialog && <CompressDialog onClose={() => setShowDialog(false)} onChange={showResult}/>}
+			{showDialog && <CompressSession onClose={() => setShowDialog(false)} onChange={showResult}/>}
 		</>
 	);
 }

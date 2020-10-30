@@ -14,13 +14,11 @@
 	backdrop-filter: blur(4px); // not working
 }
 
+.hide {
+	display: none;
+}
+
 .dialog {
-	display: flex;
-	flex-direction: column;
-
-	width: 640px;
-	height: 520px;
-
 	border-radius: 4px;
 	background-color: white;
 	overflow: hidden;

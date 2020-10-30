@@ -1,7 +1,6 @@
 import React, { ChangeEvent, Dispatch } from "react";
 import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../options";
 import { RadioInput } from "../ui";
-import Styles from "./ConfigPanel.scss";
 
 type OptionsState = Record<string, any>;
 
@@ -81,7 +80,7 @@ export default function OptionsPanel(props: Props) {
 				<option>12.5</option>
 				<option>6.25</option>
 			</select>
-			<fieldset className={Styles.form}>{fields}</fieldset>
+			<fieldset>{fields}</fieldset>
 		</form>
 	);
 }
