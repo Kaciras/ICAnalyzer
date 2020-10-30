@@ -1,4 +1,4 @@
-$border-active-color: rgba(0, 147, 255, 0.4);
+$border-active-color: rgba(0, 170, 255, .5);
 $increment-color: #45c250;
 $decrement-color: #d23e40;
 
@@ -10,8 +10,8 @@ $decrement-color: #d23e40;
 	border: 1px solid var(--border-color);
 
 	&:focus-within {
-		border-color: #10dbff;
-		box-shadow: 0 0 0 .2rem $border-active-color;
+		border-color: $border-active-color;
+		box-shadow: 0 0 0 3px $border-active-color;
 	}
 }
 
@@ -21,7 +21,7 @@ $decrement-color: #d23e40;
 	-moz-appearance: textfield;
 	min-width: 0;
 	padding: 5px;
-	border: none;
+	border: 0;
 	background: transparent;
 
 	color: var(--text-color);
@@ -41,6 +41,7 @@ $decrement-color: #d23e40;
 	background: none;
 	border: none;
 	border-left: solid 1px #cbcbcb;
+	outline: 0;
 
 	cursor: pointer;
 

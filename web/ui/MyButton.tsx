@@ -1,6 +1,7 @@
-import React, { MouseEvent, MouseEventHandler, ReactNode } from "react";
+import React, { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
 import Styles from "./MyButton.scss";
+import { avoidMouseFocus } from "./common";
 
 interface Props {
 	title?: string;
@@ -10,10 +11,6 @@ interface Props {
 	busy?: boolean;
 	onClick?: MouseEventHandler;
 	children?: ReactNode;
-}
-
-function avoidMouseFocus(event: MouseEvent<HTMLElement>) {
-	event.currentTarget.blur();
 }
 
 export default function MyButton(props: Props) {

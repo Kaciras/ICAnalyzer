@@ -4,8 +4,12 @@ $stripeWidth: 32px;
 	padding: 8px 16px;
 	border-radius: 4px;
 
+	--color: #0776df;
+	--color-light: #2596ff;
+	--color-outline: rgba(0, 105, 204, .4);
+
 	color: white;
-	background: #0776df;
+	background-color: var(--color);
 
 	border: 0;
 	align-items: center;
@@ -16,28 +20,39 @@ $stripeWidth: 32px;
 	transition: .15s;
 
 	&:hover {
-		background: #0069cc;
+		background-color: var(--color-light);
 	}
 
 	&:focus {
 		outline: none;
-		box-shadow: 0 0 0 4px rgba(0, 105, 204, .4);
+		box-shadow: 0 0 0 4px var(--color-outline);
 	}
 
 	&:disabled {
 		cursor: default;
 		color: #555;
-		background: #ddd;
+		background-color: #ddd;
 	}
 }
 
+:global(.second) {
+	--color: #e10199;
+	--color-light: #f525af;
+	--color-outline: rgba(242, 0, 166, .4);
+}
+
 .busy {
+	&, &:hover {
+		background-color: var(--color);
+		background-size: $stripeWidth $stripeWidth;
+	}
+
 	background-image: linear-gradient(-45deg,
-			var(--background-highlight) 25%,
+			var(--color-light) 25%,
 			transparent 25%,
 			transparent 50%,
-			var(--background-highlight) 50%,
-			var(--background-highlight) 75%,
+			var(--color-light) 50%,
+			var(--color-light) 75%,
 			transparent 75%);
 
 	animation: busy linear .4s infinite;
@@ -50,14 +65,4 @@ $stripeWidth: 32px;
 	to {
 		background-position: -$stripeWidth;
 	}
-}
-
-:global(.primary) {
-	--color: #0776df;
-	--color-light: #0069cc;
-}
-
-:global(.second) {
-	--color: #e10199;
-	--color-light: #ff45c3;
 }
