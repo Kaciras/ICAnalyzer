@@ -2,7 +2,7 @@ import * as Comlink from "comlink";
 import { ButteraugliOptions } from "../lib/metrics";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./options";
-import { decode, Drawable } from "./decode";
+import { decode } from "./decode";
 
 export interface MeasureOptions {
 	PSNR: boolean;
@@ -15,15 +15,20 @@ interface Metrics {
 	PSNR?: number;
 	butteraugli?: {
 		source: number;
-		heatMap: Drawable;
+		heatMap: ImageData;
 	};
 }
 
 export interface ConvertOutput {
 	time: number;
 	buffer: ArrayBuffer;
-	bitmap: Drawable;
+	data: ImageData;
 	metrics: Metrics;
+}
+
+export function newWorker() {
+	// @ts-ignore ts-loader will convert files to ES module.
+	return new Worker(new URL("./worker", import.meta.url));
 }
 
 export class BatchEncoder<T> {
@@ -64,8 +69,7 @@ export class BatchEncoder<T> {
 		this.workers = [];
 
 		for (let i = 0; i < this.count; i++) {
-			// @ts-ignore ts-loader will convert files to ES module.
-			const worker = new Worker(new URL("./worker", import.meta.url));
+			const worker = newWorker();
 			const remote = Comlink.wrap<WorkerApi>(worker);
 			await remote.setImageToEncode(image);
 
@@ -89,10 +93,11 @@ export class BatchEncoder<T> {
 
 			const { buffer, time } = await encoder.encode(optionsList[i], remote);
 			const blob = new Blob([buffer], { type: encoder.mimeType });
-			const [data, bitmap] = await decode(blob);
+			const data = await decode(blob);
 
 			const metrics = await this.measure(remote, data);
-			results[i] = { time, buffer, bitmap, metrics };
+
+			results[i] = { time, buffer, data, metrics };
 		}
 	}
 
@@ -110,28 +115,32 @@ export class BatchEncoder<T> {
 			const [source, raw] = await wrapper.calcButteraugli(data);
 
 			const ctx = document.createElement("canvas").getContext("2d")!;
-			const d = ctx.createImageData(data.width, data.height);
+			const heatMap = ctx.createImageData(data.width, data.height);
 
-			if (raw.byteLength / d.width / d.height === 4) {
-				d.data.set(new Uint8ClampedArray(raw));
+			if (raw.byteLength / heatMap.width / heatMap.height === 4) {
+				heatMap.data.set(new Uint8ClampedArray(raw));
 			} else {
-				d.data.set(new Uint8ClampedArray(padAlpha(raw)));
+				heatMap.data.set(padAlpha(raw));
 			}
 
-			metrics.butteraugli = { source, heatMap: await createImageBitmap(d) };
+			metrics.butteraugli = { source, heatMap };
 		}
 
 		return metrics;
 	}
 }
 
+// If you want to use Uint32Array, remember that the endianness of each system might be different.
 function padAlpha(input: ArrayBuffer) {
-	const length = input.byteLength / 3;
+	const length = input.byteLength / 3 * 4;
 	const rgb = new Uint8Array(input);
-	const rgba = new Uint32Array(length);
+	const rgba = new Uint8Array(length);
 
-	for (let j = 0, k = 0; j < length; j++, k += 3) {
-		rgba[j] = (rgb[k] << 24) + (rgb[k + 1] << 16) + (rgb[k + 2] << 8) + 255;
+	for (let j = 0, k = 0; j < length; j += 4, k += 3) {
+		rgba[j] = rgb[k];
+		rgba[j + 1] = rgb[k + 1];
+		rgba[j + 2] = rgb[k + 2];
+		rgba[j + 3] = 255;
 	}
-	return rgba.buffer;
+	return rgba;
 }
