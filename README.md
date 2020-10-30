@@ -2,9 +2,18 @@
 
 Image Convertors Analyzer is an online tool 
 
-[butteraugli](https://github.com/google/butteraugli)
+- Support image similarity metrics: SSIM, PSNR, and [butteraugli](https://github.com/google/butteraugli) 
+
+🔗 [ic-analyze.kaciras.com](https://ic-analyze.kaciras.com/) 
 
 # Build
+
+Clone the repo and submodules:
+
+```shell script
+git clone https://github.com/Kaciras/ICAnalyze.git
+git submodule update --init --recursive --depth=1
+```
 
 Start development server with hot reloading:
 
