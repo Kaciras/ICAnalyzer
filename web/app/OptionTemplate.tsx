@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactElement } from "react";
-import { CheckBoxInput, NumberInput, RadioInput } from "../ui";
+import { CheckBox, NumberInput, RadioInput } from "../ui";
 
 // 互斥mode
 
@@ -92,7 +92,7 @@ export class BooleanTemplate implements OptionType<boolean, void> {
 	}
 
 	ValueField(name: string, value: boolean) {
-		return <CheckBoxInput checked={value}/>;
+		return <CheckBox checked={value}/>;
 	}
 
 	newVariable() {
@@ -142,7 +142,7 @@ export class EnumTemplate<T extends EnumObject> implements OptionType<any, EnumV
 
 	VariableField(name: string, value: EnumVariableState): React.ReactElement {
 		const items = Object.entries(value).map(e => {
-			return <CheckBoxInput key={name} name={name} checked={e[1]}>{e[0]}</CheckBoxInput>;
+			return <CheckBox key={name} name={name} checked={e[1]}>{e[0]}</CheckBox>;
 		});
 		return <div>{items}</div>;
 	}

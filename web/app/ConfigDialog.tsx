@@ -5,7 +5,7 @@ import { WebPOptionsTemplate } from "../options";
 import { MeasureOptions } from "../encoding";
 import Styles from "./ConfigDialog.scss";
 import OptionsDialog, { OptionsInstance } from "./OptionsPanel";
-import { Dialog, MyButton } from "../ui";
+import { Dialog, Button } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel from "./MetricsPanel";
 
@@ -17,6 +17,13 @@ interface Props {
 	onSelectFile: () => void;
 }
 
+/**
+ * Get available logic processor count.
+ */
+function cpuCount() {
+	return navigator.hardwareConcurrency || 4;
+}
+
 export default function ConfigDialog(props: Props) {
 	const { file, image, onStart, onClose, onSelectFile } = props;
 
@@ -25,8 +32,9 @@ export default function ConfigDialog(props: Props) {
 
 	const [options, setOptions] = useState<OptionsInstance>({});
 
-	const [workerCount, setWorkerCount] = useState(4);
+	const [workerCount, setWorkerCount] = useState(cpuCount);
 	const [measure, setMeasure] = useState<MeasureOptions>({
+		time: false,
 		SSIM: false,
 		PSNR: true,
 		butteraugli: false,
@@ -85,9 +93,9 @@ export default function ConfigDialog(props: Props) {
 			<div className={Styles.header}>{tabs}</div>
 			{panel}
 			<div className="dialog-actions">
-				<MyButton onClick={onSelectFile}>Select file</MyButton>
-				<MyButton color="second" onClick={onClose}>Cancel</MyButton>
-				<MyButton disabled={!file} onClick={start}>Start</MyButton>
+				<Button onClick={onSelectFile}>Select file</Button>
+				<Button color="second" onClick={onClose}>Cancel</Button>
+				<Button disabled={!file} onClick={start}>Start</Button>
 			</div>
 		</Dialog>
 	);

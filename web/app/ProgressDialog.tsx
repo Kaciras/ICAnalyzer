@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Dialog, MyButton } from "../ui";
+import { Dialog, Button } from "../ui";
 import Styles from "./ProgressDialog.scss";
 import { debounce } from "../utils";
 
@@ -33,7 +33,7 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 				<h1>Encoding...</h1>
 				<div className={Styles.text}>
 					<span>{value}/{max}</span>
-					<span>Remaining: {remaining}</span>
+					<span>{remaining}</span>
 				</div>
 				<progress
 					value={value}
@@ -42,7 +42,7 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 				/>
 			</div>
 			<div className={Styles.buttons}>
-				<MyButton color="second" onClick={onCancel}> Cancel </MyButton>
+				<Button color="second" onClick={onCancel}> Cancel </Button>
 			</div>
 		</Dialog>
 	);

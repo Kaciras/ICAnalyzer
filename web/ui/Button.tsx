@@ -1,6 +1,6 @@
 import React, { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
-import Styles from "./MyButton.scss";
+import Styles from "./Button.scss";
 import { avoidMouseFocus } from "./common";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 	children?: ReactNode;
 }
 
-export default function MyButton(props: Props) {
+export default function Button(props: Props) {
 	const { className, children, title, disabled, color, busy, onClick } = props;
 
 	const classes = clsx(

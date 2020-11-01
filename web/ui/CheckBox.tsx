@@ -3,7 +3,7 @@ import clsx from "clsx";
 import CheckIcon from "../assets/check_box.svg";
 import CheckIconActive from "../assets/check_box-checked.svg";
 import { NOOP } from "../utils";
-import Styles from "./CheckBoxInput.scss";
+import Styles from "./CheckBox.scss";
 
 interface Props {
 	checked: boolean;
@@ -13,7 +13,7 @@ interface Props {
 	children?: ReactNode;
 }
 
-export default function CheckBoxInput(props: Props) {
+export default function CheckBox(props: Props) {
 	const { name, children, checked, disabled, onChange = NOOP } = props;
 	return (
 		<label className={Styles.container}>

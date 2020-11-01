@@ -1,4 +1,4 @@
-$border-active-color: rgba(0, 170, 255, .5);
+$border-active-color: rgba(0, 191, 255, .5);
 $increment-color: #45c250;
 $decrement-color: #d23e40;
 
@@ -8,6 +8,8 @@ $decrement-color: #d23e40;
 
 	display: inline-flex;
 	border: 1px solid var(--border-color);
+	width: 140px;
+	border-radius: 3px;
 
 	&:focus-within {
 		border-color: $border-active-color;

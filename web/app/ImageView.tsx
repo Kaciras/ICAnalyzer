@@ -181,7 +181,7 @@ export default function ImageView(props: Props) {
 
 	return (
 		<div className={Styles.container}>
-			<aside className={Styles.inputs}>
+			<div className={Styles.inputs}>
 				<div>
 					<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
 					<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
@@ -189,7 +189,10 @@ export default function ImageView(props: Props) {
 					<ImageViewTab disabled={butteraugliAvailable} target={ViewType.HeatMap}>HeatMap</ImageViewTab>
 				</div>
 				{brightnessInput}
-			</aside>
+			</div>
+			<div className={Styles.controls}>
+
+			</div>
 			<div
 				className={Styles.imageView}
 				onWheel={handleWheel}

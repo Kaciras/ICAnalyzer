@@ -1,13 +1,19 @@
 import * as Comlink from "comlink";
-import { ButteraugliOptions } from "../lib/metrics";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./options";
 import { decode } from "./decode";
 
+export interface ButteraugliConfig {
+	hfAsymmetry: number;
+	goodQualitySeek: number;
+	badQualitySeek: number;
+}
+
 export interface MeasureOptions {
+	time: boolean;
 	PSNR: boolean;
 	SSIM: boolean;
-	butteraugli: false | ButteraugliOptions;
+	butteraugli: false | ButteraugliConfig;
 }
 
 interface Metrics {
@@ -31,7 +37,7 @@ export function newWorker() {
 	return new Worker(new URL("./worker", import.meta.url));
 }
 
-export class BatchEncoder<T> {
+export class BatchEncoder<T = unknown> {
 
 	private readonly count: number;
 	private readonly encoder: ImageEncoder;
@@ -112,7 +118,8 @@ export class BatchEncoder<T> {
 			metrics.SSIM = await wrapper.calcSSIM(data);
 		}
 		if (butteraugli) {
-			const [source, raw] = await wrapper.calcButteraugli(data, { ensureAlpha: true });
+			const options = { ...butteraugli, ensureAlpha: true };
+			const [source, raw] = await wrapper.calcButteraugli(data, options);
 
 			const ctx = document.createElement("canvas").getContext("2d")!;
 			const heatMap = ctx.createImageData(data.width, data.height);

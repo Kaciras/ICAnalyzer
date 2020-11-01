@@ -1,8 +1,8 @@
-import { MeasureOptions } from "../encoding";
-import React, { ChangeEvent, Dispatch, useState } from "react";
+import { ButteraugliConfig, MeasureOptions } from "../encoding";
+import React, { ChangeEvent, Dispatch, useRef, useState } from "react";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import Styles from "./MetricsPanel.scss";
-import { CheckBoxInput, NumberInput } from "../ui";
+import { CheckBox, NumberInput } from "../ui";
 
 interface MProps {
 	workerCount: number;
@@ -11,57 +11,50 @@ interface MProps {
 	onMeasureChange: Dispatch<MeasureOptions>;
 }
 
+interface ButteraugliProps {
+	options: ButteraugliConfig;
+	onChange: Dispatch<ButteraugliConfig>;
+}
+
+function ButteraugliFields(props: ButteraugliProps) {
+	const { options, onChange } = props;
+
+	function handleChange(event: ChangeEvent<HTMLInputElement>) {
+		const { name, valueAsNumber } = event.currentTarget;
+		onChange({ ...options, [name]: valueAsNumber });
+	}
+
+	const inputs = Object.entries(options).map(([name, value]) => (
+		<label
+			className={Styles.field}
+			key={name}
+		>
+			<span className={Styles.label}>
+				{name}
+			</span>
+			<NumberInput
+				className={Styles.value}
+				name={name}
+				min={0}
+				step={0.1}
+				value={value}
+				onChange={handleChange}
+			/>
+		</label>
+	));
+
+	return <fieldset className="subfields">{inputs}</fieldset>;
+}
+
 export default function MetricsPanel(props: MProps) {
 	const { workerCount, onWorkerCountChange, onMeasureChange } = props;
-	const { SSIM, PSNR, butteraugli } = props.options;
+	const { time, SSIM, PSNR, butteraugli } = props.options;
 
-	const [butteraugliVal, setButteraugliVal] = useState(defaultButteraugliOptions);
-	let butteraugliOptions;
+	const [butteraugliVal, setButteraugliVal] = useState<ButteraugliConfig>(defaultButteraugliOptions);
 
+	let butteraugliFields = null;
 	if (butteraugli) {
-		const { badQualitySeek, goodQualitySeek, hfAsymmetry } = butteraugli;
-		butteraugliOptions = (
-			<fieldset className="subfields">
-				<label className={Styles.field}>
-					<span className={Styles.label}>
-						hfAsymmetry
-					</span>
-					<NumberInput
-						className={Styles.value}
-						name="hfAsymmetry"
-						min={0}
-						step={0.1}
-						value={hfAsymmetry}
-					/>
-				</label>
-				<label className={Styles.field}>
-					<span className={Styles.label}>
-						badQualitySeek
-					</span>
-					<NumberInput
-						className={Styles.value}
-						name="badQualitySeek"
-						min={0}
-						max={2}
-						step={0.1}
-						value={badQualitySeek}
-					/>
-				</label>
-				<label className={Styles.field}>
-					<span className={Styles.label}>
-						goodQualitySeek
-					</span>
-					<NumberInput
-						className={Styles.value}
-						name="goodQualitySeek"
-						min={0}
-						max={2}
-						step={0.1}
-						value={goodQualitySeek}
-					/>
-				</label>
-			</fieldset>
-		);
+		butteraugliFields = <ButteraugliFields options={butteraugliVal} onChange={setButteraugliVal}/>;
 	}
 
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -80,31 +73,31 @@ export default function MetricsPanel(props: MProps) {
 					value={workerCount}
 					min={1}
 					step={1}
-					onChange={onWorkerCountChange}
+					onChange={e => onWorkerCountChange(e.target.valueAsNumber)}
 				/>
 			</label>
-			<CheckBoxInput
+			<CheckBox
 				checked={SSIM}
 				name="SSIM"
 				onChange={handleChange}
 			>
 				Calculate SSIM
-			</CheckBoxInput>
-			<CheckBoxInput
+			</CheckBox>
+			<CheckBox
 				checked={PSNR}
 				name="PSNR"
 				onChange={handleChange}
 			>
 				Calculate PSNR
-			</CheckBoxInput>
-			<CheckBoxInput
+			</CheckBox>
+			<CheckBox
 				checked={!!butteraugli}
 				name="butteraugli"
 				onChange={handleChange}
 			>
 				Calculate Butteraugli
-			</CheckBoxInput>
-			{butteraugliOptions}
+			</CheckBox>
+			{butteraugliFields}
 		</form>
 	);
 }

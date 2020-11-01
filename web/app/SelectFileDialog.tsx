@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
-import { Dialog, MyButton } from "../ui";
+import { Dialog, Button } from "../ui";
 import Styles from "./SelectFileDialog.scss";
 import { decode } from "../decode";
 
@@ -129,8 +129,8 @@ export default function SelectFileDialog(props: Props) {
 				<div className={Styles.error}>{error}</div>
 			</form>
 			<div className="dialog-actions">
-				<MyButton color="second" onClick={onCancel}>Back</MyButton>
-				<MyButton busy={downloading} onClick={downloadUrl}>Download Url</MyButton>
+				<Button color="second" onClick={onCancel}>Back</Button>
+				<Button busy={downloading} onClick={downloadUrl}>Download Url</Button>
 			</div>
 		</Dialog>
 	);

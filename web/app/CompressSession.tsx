@@ -26,7 +26,7 @@ export default function CompressSession(props: Props) {
 	const [image, setImage] = useState<ImageData>();
 	const [selectFile, setSelectFile] = useState(true);
 
-	const [encoder, setEncoder] = useState<BatchEncoder<unknown> | null>({} as any);
+	const [encoder, setEncoder] = useState<BatchEncoder | null>(null);
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
@@ -50,11 +50,12 @@ export default function CompressSession(props: Props) {
 		}
 
 		const encoder = new BatchEncoder(workerCount, WebP);
-		encoder.onProgress = setProgress;
-
 		setEncoder(encoder);
-		setMax(optionsList.length);
-		setProgress(0);
+
+		encoder.onProgress = (value, max) => {
+			setMax(max);
+			setProgress(value);
+		};
 
 		const data = await decode(file);
 		const outputs = await encoder.encode(data, optionsList, measure);
