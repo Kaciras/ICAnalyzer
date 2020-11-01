@@ -1,84 +1,62 @@
 import React, { useEffect, useState } from "react";
-import echarts, { EChartOption, ECharts } from "echarts";
+import echarts, { ECharts } from "echarts";
 import { InputImage } from "./App";
 import Styles from "./Chart.scss";
 import { ConvertOutput } from "../encoding";
+import Series = echarts.EChartOption.Series;
+import YAxis = echarts.EChartOption.YAxis;
 
-interface Props {
+export interface ChartProps {
 	original?: InputImage;
 	index: number;
 	outputs: ConvertOutput[];
 }
 
-export default function Chart(props: Props) {
+export default function Chart(props: ChartProps) {
 	const { original, outputs, index } = props;
 	const [chart, setChart] = useState<ECharts>();
 
 	function refreshEcharts(chart: ECharts) {
-		const type = "line";
-		const series = [
-			{
-				name: "Compression Ratio %",
-				type,
-				data: outputs.map(v => v.buffer.byteLength / original!.file.size),
-				yAxisIndex: 0,
-			},
-			{
-				name: "Encode Time (ms)",
-				type,
-				data: outputs.map(v => v.time),
-				yAxisIndex: 1,
-			},
-			{
-				name: "PSNR (db)",
-				type,
-				data: outputs.map(v => v.metrics.PSNR),
-				yAxisIndex: 2,
-			},
-		];
-		const option: EChartOption = {
-			// title: {
-			// 	text: "Quality (-q)",
-			// },
+		const type = "line"; // TODO
+
+		const legends: string[] = [];
+		const yAxis: YAxis[] = [];
+		const series: Series[] = [];
+
+		let index = 0;
+
+		function tryAddSeries(name: string, func: (output: ConvertOutput) => number | undefined) {
+			if (func(outputs[0]) === undefined) {
+				return;
+			}
+			const data = outputs.map(func);
+			legends.push(name);
+			yAxis.push({ type: "value" });
+			series.push({ name, type, data, yAxisIndex: index++ });
+		}
+
+		tryAddSeries("Compression Ratio %", v => v.buffer.byteLength / original!.file.size * 100);
+		tryAddSeries("Encode Time (ms)", v => v.time);
+		tryAddSeries("SSIM", v => v.metrics.SSIM);
+		tryAddSeries("PSNR (db)", v => v.metrics.PSNR);
+		tryAddSeries("Butteraugli Source", v => v.metrics.butteraugli?.source);
+
+		chart?.setOption({
 			tooltip: {
 				trigger: "axis",
 				showContent: false,
 				triggerOn: "none",
 			},
 			legend: {
-				data: ["Compression Ratio %", "Encode Time (ms)", "PSNR (db)"],
+				data: legends,
 			},
 			xAxis: {
-
 				data: outputs.map((_, i) => i),
 			},
-			yAxis: [
-				{
-					type: "value",
-				},
-				{
-					type: "value",
-				},
-				{
-					type: "value",
-					offset: 40,
-				},
-			],
-			backgroundColor: "transparent",
+			yAxis,
 			series,
-		};
-
-		const { SSIM, PSNR, butteraugli } = outputs[0].metrics;
-		if (SSIM) {
-			series.push({
-				name: "SSIM",
-				type,
-				data: outputs.map(v => v.metrics.SSIM),
-				yAxisIndex: 2,
-			});
-		}
-
-		chart?.setOption(option);
+			backgroundColor: "transparent",
+		});
 	}
 
 	function initEcharts(el: HTMLDivElement | null) {
@@ -101,9 +79,9 @@ export default function Chart(props: Props) {
 			legend: {
 				formatter: (name) => {
 					const itemValue = series.filter((item: any) => item.name === name);
-					return `${name}: ${itemValue[0].data[index]}`;
+					return `${name}: ${itemValue[0].data[index].toFixed(2)}`;
 				},
-				data: ["Compression Ratio %", "Encode Time (ms)", "PSNR (db)"],
+				data: chart?.getOption().legend?.data,
 			},
 		});
 	});

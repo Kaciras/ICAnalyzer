@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
@@ -16,14 +16,14 @@ export interface InputImage {
 	data: ImageData;
 }
 
-interface Result {
-	encoder?: ImageEncoder;
+export interface Result {
 	original?: InputImage;
+	codec?: ImageEncoder;
 	outputs: ConvertOutput[];
 }
 
 const PLACEHOLDER: Result = {
-	encoder: undefined,
+	codec: undefined,
 	original: undefined,
 	outputs: [],
 };
@@ -71,25 +71,31 @@ function DownloadButton(props: DownloadButtonProps) {
 }
 
 export default function App() {
-	const [showDialog, setShowDialog] = useState(true);
-	const [showChart, setShowChart] = useState(false);
-	const [index, setIndex] = useState(0);
 	const [results, setResults] = useState(PLACEHOLDER);
 
-	async function showResult(original: InputImage, encoder: ImageEncoder, outputs: ConvertOutput[]) {
-		setResults({ outputs, encoder, original });
+	const [showChart, setShowChart] = useState(false);
+	const [showDialog, setShowDialog] = useState(true);
+	const [index, setIndex] = useState(0);
+	const [series, setSeries] = useState<ConvertOutput[]>([]);
+
+	async function showResult(result: Result) {
+		setResults(result);
+		setSeries(result.outputs);
 		setIndex(75);
+		setShowChart(true);
 		setShowDialog(false);
 	}
 
-	// Show chart on result change, but skip the first.
-	useEffect(() => setShowChart(results !== PLACEHOLDER), [results]);
+	function handleVariableChange(event: ChangeEvent<HTMLInputElement>) {
+		// setSeries(results.outputs);
+		setIndex(event.currentTarget.valueAsNumber);
+	}
 
 	return (
 		<>
 			<ImageView {...results} optimized={results.outputs[index]}/>
 
-			{showChart && <Chart {...results} index={index}/>}
+			{showChart && <Chart original={results.original} outputs={series} index={index}/>}
 
 			<div className={style.buttonGroup}>
 				<IconButton
@@ -118,7 +124,7 @@ export default function App() {
 				<DownloadButton
 					title="Download compressed image"
 					filename={results.original?.file.name}
-					encoder={results.encoder}
+					encoder={results.codec}
 					buffer={results.outputs[index]?.buffer}
 				>
 					<DownloadIcon/>
@@ -136,7 +142,7 @@ export default function App() {
 						min={0}
 						step={1}
 						max={100}
-						onChange={e => setIndex(e.currentTarget.valueAsNumber)}
+						onChange={handleVariableChange}
 					/>
 				</label>
 			</div>

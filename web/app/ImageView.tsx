@@ -162,7 +162,7 @@ export default function ImageView(props: Props) {
 					value={brightness}
 					min={100}
 					step={50}
-					onChange={setBrightness}
+					onValueChange={setBrightness}
 				/>
 			</label>
 		);

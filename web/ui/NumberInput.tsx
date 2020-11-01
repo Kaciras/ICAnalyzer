@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ChangeEventHandler, useState } from "react";
+import React, { ChangeEvent, ChangeEventHandler, Dispatch, useState } from "react";
 import clsx from "clsx";
 import Style from "./NumberInput.scss";
 
@@ -14,6 +14,7 @@ interface Props {
 	disabled?: boolean;
 
 	onChange?: ChangeEventHandler<HTMLInputElement>;
+	onValueChange?: Dispatch<number>;
 }
 
 function useLimitedValue(
@@ -44,16 +45,20 @@ function useLimitedValue(
 }
 
 export default function NumberInput(props: Props) {
-	const { disabled, onChange, value, min, max, step, name, className } = props;
+	const { name, className, value, min, max, step, disabled, onChange, onValueChange } = props;
 	const [localValue, setLocalValue] = useLimitedValue(value, min, max, 0.5);
 
 	const valueT = typeof value === "undefined" ? localValue : value;
 
 	function setValue(event: ChangeEvent<HTMLInputElement>) {
+		const value = event.target.valueAsNumber;
 		if (onChange) {
 			onChange(event);
 		}
-		setLocalValue(event.target.valueAsNumber);
+		if (onValueChange) {
+			onValueChange(value);
+		}
+		setLocalValue(value);
 	}
 
 	return (
