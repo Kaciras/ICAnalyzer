@@ -1,11 +1,9 @@
 import React, { ChangeEvent, Dispatch, ReactNode } from "react";
 import clsx from "clsx";
-import CheckIcon from "../assets/check_box.svg";
-import CheckIconActive from "../assets/check_box-checked.svg";
 import { NOOP } from "../utils";
-import Styles from "./CheckBox.scss";
+import Styles from "./CheckBoxBase.scss";
 
-interface Props {
+export interface CheckBoxProps {
 	checked: boolean;
 	name?: string;
 	disabled?: boolean;
@@ -13,8 +11,13 @@ interface Props {
 	children?: ReactNode;
 }
 
-export default function CheckBox(props: Props) {
-	const { name, children, checked, disabled, onChange = NOOP } = props;
+interface InternalProps extends CheckBoxProps {
+	Icon: string;
+	IconChecked: string;
+}
+
+export default function CheckBoxBase(props: InternalProps) {
+	const { Icon, IconChecked, name, children, checked, disabled, onChange = NOOP } = props;
 	return (
 		<label className={Styles.container}>
 			<input
@@ -27,7 +30,7 @@ export default function CheckBox(props: Props) {
 			<span
 				className={clsx(Styles.mark, { [Styles.checked]: checked })}
 			>
-				{checked ? <CheckIconActive/> : <CheckIcon/>}
+				{checked ? <IconChecked/> : <Icon/>}
 			</span>
 			<span className={Styles.label}>{children}</span>
 		</label>

@@ -1,6 +1,18 @@
+import CheckIcon from "../assets/check_box.svg";
+import CheckIconActive from "../assets/check_box-checked.svg";
+import RadioIcon from "../assets/radio-button.svg";
+import RadioIconActive from "../assets/radio-box_checked.svg";
+import CheckBoxBase, { CheckBoxProps } from "./CheckBoxBase";
+
+export function CheckBox(props: CheckBoxProps) {
+	return CheckBoxBase({ ...props, Icon: CheckIcon, IconChecked: CheckIconActive });
+}
+
+export function RadioBox(props: CheckBoxProps) {
+	return CheckBoxBase({ ...props, Icon: RadioIcon, IconChecked: RadioIconActive });
+}
+
 export { default as IconButton } from "./IconButton";
-export { default as CheckBox } from "./CheckBox";
-export { default as RadioInput } from "./RadioInput";
 export { default as RangeInput } from "./RangeInput";
 export { default as Button } from "./Button";
 export { default as NumberInput } from "./NumberInput";
