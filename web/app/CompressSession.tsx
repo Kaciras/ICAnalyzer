@@ -49,7 +49,14 @@ export default function CompressSession(props: Props) {
 		}
 
 		const encoding = WebP;
-		const encoder = new BatchEncoder(workerCount, encoding);
+		const image = await decode(file);
+
+		const encoder = new BatchEncoder(workerCount, {
+			encoder: encoding,
+			image,
+			optionsList,
+			measure,
+		});
 		setEncoder(encoder);
 
 		encoder.onProgress = (value, max) => {
@@ -57,14 +64,15 @@ export default function CompressSession(props: Props) {
 			setProgress(value);
 		};
 
-		const data = await decode(file);
-		const outputs = await encoder.encode(data, optionsList, measure);
+		const outputs = await encoder.encode();
+		encoder.terminate();
+		setEncoder(null);
 
-		props.onChange({ original: { file, data }, codec: encoding, outputs });
+		props.onChange({ original: { file, data: image }, codec: encoding, outputs });
 	}
 
 	function stop() {
-		encoder!.stop();
+		encoder!.terminate();
 		setEncoder(null);
 	}
 
