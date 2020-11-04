@@ -1,7 +1,7 @@
 import CheckIcon from "../assets/check_box.svg";
 import CheckIconActive from "../assets/check_box-checked.svg";
-import RadioIcon from "../assets/radio-button.svg";
-import RadioIconActive from "../assets/radio-box_checked.svg";
+import RadioIcon from "../assets/radio_box.svg";
+import RadioIconActive from "../assets/radio_box-checked.svg";
 import CheckBoxBase, { CheckBoxProps } from "./CheckBoxBase";
 
 export function CheckBox(props: CheckBoxProps) {
