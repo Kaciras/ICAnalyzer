@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import echarts, { ECharts } from "echarts";
 import { InputImage } from "./App";
 import Styles from "./Chart.scss";
-import { ConvertOutput } from "../encoding";
+import { ConvertOutput } from "../encode";
 import Series = echarts.EChartOption.Series;
 import YAxis = echarts.EChartOption.YAxis;
 

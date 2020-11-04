@@ -1,10 +1,10 @@
 import React, { Dispatch, useState } from "react";
 import { decode } from "../decode";
-import { BatchEncoder, MeasureOptions } from "../encoding";
+import { BatchEncoder, MeasureOptions } from "../encode";
 import { Result } from "./App";
 import ConfigDialog from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
-import * as WebP from "../options/webp";
+import * as WebP from "../codecs/webp";
 import SelectFileDialog from "./SelectFileDialog";
 
 interface EncodingEvent {
@@ -16,6 +16,7 @@ interface EncodingEvent {
 }
 
 interface Props {
+	open: boolean;
 	onChange: Dispatch<Result>;
 	onClose: () => void;
 }
@@ -76,7 +77,9 @@ export default function CompressSession(props: Props) {
 		setEncoder(null);
 	}
 
-	if (encoder) {
+	if (!props.open) {
+		return null;
+	} else if (encoder) {
 		return <ProgressDialog value={progress} max={max} onCancel={stop}/>;
 	} else if (selectFile) {
 		return <SelectFileDialog onCancel={cancelSelectFile} onFileChange={handleFileChange}/>;

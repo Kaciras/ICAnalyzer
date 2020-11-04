@@ -1,6 +1,6 @@
-import { OptionType } from "../app/OptionTemplate";
 import { Remote } from "comlink";
 import { WorkerApi } from "../worker";
+import { OptionType } from "../app/OptionTemplate";
 import * as WebP from "./webp";
 import * as AVIF from "./avif";
 

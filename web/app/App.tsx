@@ -8,8 +8,9 @@ import CompressSession from "./CompressSession";
 import Chart from "./Chart";
 import style from "./App.scss";
 import ImageView from "./ImageView";
-import { ConvertOutput } from "../encoding";
-import { ImageEncoder } from "../options";
+import { ConvertOutput } from "../encode";
+import { ImageEncoder } from "../codecs";
+import * as WebP from "../codecs/webp";
 
 export interface InputImage {
 	file: File;

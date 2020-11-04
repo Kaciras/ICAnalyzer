@@ -1,4 +1,4 @@
-import { ButteraugliConfig, MeasureOptions } from "../encoding";
+import { ButteraugliConfig, MeasureOptions } from "../encode";
 import React, { ChangeEvent, Dispatch, useRef, useState } from "react";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import Styles from "./MetricsPanel.scss";

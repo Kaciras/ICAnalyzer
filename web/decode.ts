@@ -3,7 +3,7 @@ import { Remote } from "comlink";
 import { blobToImg, drawableToImageData } from "squoosh/src/lib/util";
 import { WorkerApi } from "./worker";
 import { detectAVIFSupport, detectWebPSupport } from "./utils";
-import { newWorker } from "./encoding";
+import { newWorker } from "./encode";
 
 export async function decodeImage(blob: Blob) {
 	const bitmap = "createImageBitmap" in self

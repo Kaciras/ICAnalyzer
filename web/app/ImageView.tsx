@@ -2,7 +2,7 @@ import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from "re
 import { IconButton, NumberInput } from "../ui";
 import { InputImage } from "./App";
 import Styles from "./ImageView.scss";
-import { ConvertOutput } from "../encoding";
+import { ConvertOutput } from "../encode";
 
 interface Props {
 	original?: InputImage;

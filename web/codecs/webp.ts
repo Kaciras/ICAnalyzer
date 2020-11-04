@@ -2,6 +2,7 @@ import { Remote } from "comlink";
 import { BooleanTemplate, EnumTemplate, NumberRangeTemplate } from "../app/OptionTemplate";
 import { WorkerApi } from "../worker";
 import { OptionTemplate } from "./index";
+import { EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -43,12 +44,26 @@ const WebPPreset = {
 	text: {
 		sns_strength: 0,
 		filter_strength: 0,
-		preprocessing: ~2,
 		segments: 2,
+		preprocessing: ~2,
 	},
 };
 
+class WebPMode extends EnumTemplate<string> {
+
+	generate(name: string, options: EncodeOptions, value: any): any[] {
+		if (value.lossless) {
+			options.lossless = 1;
+		}
+	}
+}
+
 export const optionTemplate: OptionTemplate[] = [
+	{
+		label: "Mode",
+		name: "mode",
+		// type:
+	},
 	{
 		label: "Quality (-q)",
 		name: "quality",

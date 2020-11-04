@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
-import { WebPOptionsTemplate } from "../options";
-import { MeasureOptions } from "../encoding";
+import { WebPOptionsTemplate } from "../codecs";
+import { MeasureOptions } from "../encode";
 import Styles from "./ConfigDialog.scss";
 import OptionsDialog, { OptionsInstance } from "./OptionsPanel";
 import { Dialog, Button } from "../ui";
