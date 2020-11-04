@@ -47,39 +47,50 @@ export function newWorker() {
 
 export class BatchEncoder {
 
+	readonly progressMax: number;
+
 	private readonly request: EncodeRequest;
 	private readonly pool: WorkerPool<WorkerApi>;
 
 	private progress = 0;
-	private progressMax = 0;
 
 	constructor(workerCount: number, request: EncodeRequest) {
 		if (workerCount < 1) {
 			throw new Error("Thread count must be at least 1");
 		}
-		this.request = request;
+		const concurrency = Math.min(workerCount, request.optionsList.length);
 
-		const concurrency = Math.min(workerCount, this.request.optionsList.length);
+		this.request = request;
 		this.pool = new WorkerPool(newWorker, concurrency);
+		this.progressMax = this.getProgressMax();
+	}
+
+	private getProgressMax() {
+		const { optionsList, measure } = this.request;
+
+		let calculations = 1;
+		if (measure.butteraugli) calculations++;
+		if (measure.SSIM) calculations++;
+		if (measure.PSNR) calculations++;
+
+		const value = optionsList.length * calculations;
+		return measure.time ? value + this.pool.count : value;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	onProgress(value: number, max: number) {}
+	onProgress(value: number) {}
 
 	private increaseProgress() {
-		this.onProgress(this.progress++, this.progressMax);
+		this.onProgress(this.progress++);
 	}
 
 	async encode() {
 		const { image, encoder, optionsList, measure } = this.request;
-		this.progressMax = optionsList.length;
 
 		await this.pool.runOnEach(remote => remote.setImageToEncode(image));
 
 		// Warmup workers to avoid disturbance of initialize time
 		if (measure.time) {
-			this.progressMax += this.pool.count;
-
 			await this.pool.runOnEach(async remote => {
 				await encoder.encode(optionsList[0], remote);
 				this.increaseProgress();
@@ -99,9 +110,9 @@ export class BatchEncoder {
 		const { buffer, time } = await encoder.encode(options, remote);
 		const blob = new Blob([buffer], { type: encoder.mimeType });
 		const data = await decode(blob);
-		const metrics = await this.measure(remote, data);
-
 		this.increaseProgress();
+
+		const metrics = await this.measure(remote, data);
 		return { time, buffer, data, metrics };
 	}
 
@@ -111,13 +122,17 @@ export class BatchEncoder {
 
 		if (PSNR) {
 			metrics.PSNR = await wrapper.calcPSNR(data);
+			this.increaseProgress();
 		}
 		if (SSIM) {
 			metrics.SSIM = await wrapper.calcSSIM(data);
+			this.increaseProgress();
 		}
 		if (butteraugli) {
 			const options = { ...butteraugli, ensureAlpha: true };
 			const [source, raw] = await wrapper.calcButteraugli(data, options);
+			this.increaseProgress();
+
 			const heatMap = rgbaToImage(raw, data.width, data.height);
 			metrics.butteraugli = { source, heatMap };
 		}

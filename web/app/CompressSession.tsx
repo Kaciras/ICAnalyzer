@@ -59,11 +59,8 @@ export default function CompressSession(props: Props) {
 			measure,
 		});
 		setEncoder(encoder);
-
-		encoder.onProgress = (value, max) => {
-			setMax(max);
-			setProgress(value);
-		};
+		setMax(encoder.progressMax);
+		encoder.onProgress = setProgress;
 
 		const outputs = await encoder.encode();
 		encoder.terminate();
