@@ -1,6 +1,10 @@
 .iconButton {
 	display: inline-block;
 	padding: 10px;
+
+	// Avoid +1px height for <a> on chrome
+	line-height: 1;
+
 	font-size: initial;
 	color: #999;
 	border: none;
@@ -20,6 +24,10 @@
 
 	&:active {
 		background: rgba(255, 255, 255, .15);
+	}
+
+	&:focus {
+		outline: 1px white dotted;
 	}
 }
 
