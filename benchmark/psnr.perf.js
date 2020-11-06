@@ -1,17 +1,18 @@
 const { performance } = require("perf_hooks");
-const { getPSNR } = require("../lib/similarity.js");
+const { initWasmModule, getPSNR } = require("../lib/similarity.js");
 const { readImage } = require("../test/test-helper.js");
 
-async function jsGetPSNR(twoImages) {
-	const { dataA, dataB } = twoImages;
+async function jsGetPSNR(image0, image1) {
+	const dataA = image0.data;
+	const dataB = image1.data;
 	const { length } = dataA;
 
-	let sum = 0;
+	let sse = 0;
 	for (let i = 0; i < length; i++) {
 		const e = dataA[i] - dataB[i];
-		sum += e * e;
+		sse += e * e;
 	}
-	return 10 * Math.log10(255 * 255 / sum * length);
+	return 10 * Math.log10(255 * 255 / sse * length);
 }
 
 async function benchmark(name, func) {
@@ -29,14 +30,12 @@ async function benchmark(name, func) {
 }
 
 async function run() {
-	const { data, info } = await readImage("image.jpg", 4);
-	const dataB = (await readImage("image.webp", 4)).data;
-	const { width, height } = info;
+	const image0 = await readImage("image.jpg");
+	const image1 = await readImage("image.webp");
+	await initWasmModule();
 
-	const images = { dataA: data, dataB, width, height };
-
-	await benchmark("js", () => jsGetPSNR(images));
-	await benchmark("wasm", () => getPSNR(images));
+	await benchmark("js", () => jsGetPSNR(image0, image1));
+	await benchmark("wasm", () => getPSNR(image0, image1));
 }
 
 run().catch(e => console.error(e));

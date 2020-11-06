@@ -10,8 +10,13 @@ export async function readImage(name: string, scale = 1.0) {
 
 	if (scale !== 1) {
 		const { width, height } = await image.metadata();
-		image.resize({ width: width! * scale, height: height! * scale});
+		image.resize({ width: width! * scale, height: height! * scale });
 	}
 
-	return image.raw().toBuffer({ resolveWithObject: true });
+	const { data, info } = await image
+		.raw()
+		.toBuffer({ resolveWithObject: true });
+
+	const returnValue = { data, width: info.width, height: info.height };
+	return returnValue as unknown as ImageData;
 }
