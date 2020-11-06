@@ -45,6 +45,10 @@ module.exports = function webpackConfig(env) {
 			use: "@svgr/webpack",
 		},
 		{
+			test: /\.(?:jpg|png|gif)$/,
+			type: "asset/resource",
+		},
+		{
 			oneOf: [
 				{
 					test: /\.(scss|sass)$/,

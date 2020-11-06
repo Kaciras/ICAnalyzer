@@ -8,6 +8,21 @@ declare module "*.wasm" {
 	export default url;
 }
 
+declare module "*.jpg" {
+	const url: string;
+	export default url;
+}
+
+declare module "*.png" {
+	const url: string;
+	export default url;
+}
+
+declare module "*.gif" {
+	const url: string;
+	export default url;
+}
+
 declare module "*.scss" {
 	const classes: {
 		readonly [key: string]: string;

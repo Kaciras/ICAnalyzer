@@ -1,15 +1,11 @@
-.form {
-	composes: dialog-content from global;
-}
-
 .uploadFile {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 
-	width: 640px;
-	height: 360px;
+	width: 600px;
+	height: 320px;
 
 	position: relative;
 	flex: 1;
@@ -54,14 +50,15 @@
 	margin: 20px 0 6px 0;
 }
 
-.textInput {
-	composes: text-box from global;
-	width: 100%;
-	box-sizing: border-box;
+.demo {
+	display: grid;
+	width: 600px;
+	grid-gap: 10px;
+	grid-template-columns: repeat(3, 1fr);
 }
 
 .error {
-	margin-top: 6px;
-	height: 1em;
+	margin-right: auto;
 	color: #ff1e1e;
 }
+

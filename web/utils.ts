@@ -71,3 +71,18 @@ export function debounce<T, A extends any[], R>(wait: number, func: Fn<T, A, R>)
 		return result = func.apply(this, args);
 	};
 }
+
+export async function getFileFromUrl(url: string, signal?: AbortSignal) {
+	const response = await fetch(url, { signal });
+	const blob = await response.blob();
+
+	// Firefox doesn't like content types like 'image/png; charset=UTF-8', which Webpack's dev
+	// server returns. https://bugzilla.mozilla.org/show_bug.cgi?id=1497925.
+	const type = /[^;]*/.exec(blob.type)![0];
+	const name = new URL(url).pathname.split("/").pop() || "image";
+
+	const timeHeader = response.headers.get("last-modified");
+	const lastModified = timeHeader ? new Date(timeHeader).getTime() : undefined;
+
+	return new File([blob], name, { type, lastModified });
+}
