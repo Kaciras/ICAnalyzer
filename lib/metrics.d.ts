@@ -1,6 +1,6 @@
 export interface TwoImages {
-	dataA: Uint8Array;
-	dataB: Uint8Array;
+	dataA: ArrayBufferView;
+	dataB: ArrayBufferView;
 	width: number;
 	height: number;
 }
@@ -14,7 +14,7 @@ export interface FullButteraugliOptions {
 
 export type ButteraugliResult = [number, ArrayBuffer];
 
-export interface MetricsModule {
+export interface MetricsModule extends EmscriptenModule {
 
 	GetMSE(twoImages: TwoImages): number;
 

@@ -2,7 +2,7 @@ import * as Comlink from "comlink";
 import type * as WebP from "squoosh/src/codecs/webp/encoder-meta";
 import type * as AVIF from "squoosh/src/codecs/avif/encoder-meta";
 import * as Similarity from "../lib/similarity";
-import { ButteraugliOptions } from "../lib/similarity";
+import { ButteraugliOptions, SSIMOptions } from "../lib/similarity";
 import wasmUrl from "../lib/metrics.wasm";
 
 let data: ImageData;
@@ -20,34 +20,19 @@ const workerApi = {
 		data = image;
 	},
 
+	async calcSSIM(image: ImageData, options?: SSIMOptions) {
+		await Similarity.initWasmModule(wasmUrl);
+		return Similarity.getSSIM(data, image, options);
+	},
+
 	async calcPSNR(image: ImageData) {
 		await Similarity.initWasmModule(wasmUrl);
-		return Similarity.getPSNR({
-			width: data.width,
-			height: data.height,
-			dataA: new Uint8Array(data.data),
-			dataB: new Uint8Array(image.data),
-		});
+		return Similarity.getPSNR(data, image);
 	},
 
-	async calcSSIM(image: ImageData) {
+	async calcButteraugli(image: ImageData, options?: ButteraugliOptions) {
 		await Similarity.initWasmModule(wasmUrl);
-		return Similarity.getPSNR({
-			width: data.width,
-			height: data.height,
-			dataA: new Uint8Array(data.data),
-			dataB: new Uint8Array(image.data),
-		});
-	},
-
-	async calcButteraugli(image: ImageData, options: ButteraugliOptions) {
-		await Similarity.initWasmModule(wasmUrl);
-		return Similarity.butteraugli({
-			width: data.width,
-			height: data.height,
-			dataA: new Uint8Array(data.data),
-			dataB: new Uint8Array(image.data),
-		}, options);
+		return Similarity.butteraugli(data, image, options);
 	},
 
 	async webpEncode(options: WebP.EncodeOptions) {

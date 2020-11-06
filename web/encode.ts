@@ -3,6 +3,7 @@ import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
 import { WorkerPool } from "./WorkerPool";
+import { SSIMOptions } from "../lib/similarity";
 
 export interface ButteraugliConfig {
 	hfAsymmetry: number;
@@ -13,7 +14,7 @@ export interface ButteraugliConfig {
 export interface MeasureOptions {
 	time: boolean;
 	PSNR: boolean;
-	SSIM: boolean;
+	SSIM: false | SSIMOptions;
 	butteraugli: false | ButteraugliConfig;
 }
 
@@ -125,7 +126,7 @@ export class BatchEncoder {
 			this.increaseProgress();
 		}
 		if (SSIM) {
-			metrics.SSIM = await wrapper.calcSSIM(data);
+			metrics.SSIM = await wrapper.calcSSIM(data, SSIM);
 			this.increaseProgress();
 		}
 		if (butteraugli) {
