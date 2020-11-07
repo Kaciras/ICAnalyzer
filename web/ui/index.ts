@@ -5,11 +5,11 @@ import RadioIconActive from "../assets/radio_box-checked.svg";
 import CheckBoxBase, { CheckBoxProps } from "./CheckBoxBase";
 
 export function CheckBox(props: CheckBoxProps) {
-	return CheckBoxBase({ ...props, Icon: CheckIcon, IconChecked: CheckIconActive });
+	return CheckBoxBase({ ...props, type: "checkbox", Icon: CheckIcon, IconChecked: CheckIconActive });
 }
 
 export function RadioBox(props: CheckBoxProps) {
-	return CheckBoxBase({ ...props, Icon: RadioIcon, IconChecked: RadioIconActive });
+	return CheckBoxBase({ ...props, type: "radio", Icon: RadioIcon, IconChecked: RadioIconActive });
 }
 
 export { default as IconButton } from "./IconButton";

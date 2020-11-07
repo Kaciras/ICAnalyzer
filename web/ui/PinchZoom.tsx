@@ -84,6 +84,7 @@ export default function PinchZoom(props: PinchZoomProps) {
 
 	return (
 		<div
+			style={{ touchAction: "none" }}
 			className={className}
 			onWheel={handleWheel}
 			onMouseDown={e => e.button === 0 && watchMouseMove(e.nativeEvent, offsetUpdater())}

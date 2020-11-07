@@ -4,7 +4,7 @@ import { NOOP } from "../utils";
 import Styles from "./CheckBoxBase.scss";
 
 export interface CheckBoxProps {
-	checked: boolean;
+	checked?: boolean;
 	name?: string;
 	disabled?: boolean;
 	onChange?: Dispatch<ChangeEvent<HTMLInputElement>>;
@@ -12,16 +12,17 @@ export interface CheckBoxProps {
 }
 
 interface InternalProps extends CheckBoxProps {
+	type: string;
 	Icon: string;
 	IconChecked: string;
 }
 
 export default function CheckBoxBase(props: InternalProps) {
-	const { Icon, IconChecked, name, children, checked, disabled, onChange = NOOP } = props;
+	const { type, Icon, IconChecked, name, children, checked, disabled, onChange = NOOP } = props;
 	return (
 		<label className={Styles.container}>
 			<input
-				type="checkbox"
+				type={type}
 				className={Styles.input}
 				name={name}
 				disabled={disabled}
