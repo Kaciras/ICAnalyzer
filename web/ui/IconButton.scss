@@ -1,22 +1,15 @@
 .iconButton {
 	display: inline-block;
 	padding: 10px;
+	color: #999;
 
 	// Avoid +1px height for <a> on chrome
 	line-height: 1;
-
-	font-size: initial;
-	color: #999;
-	border: none;
-	background: transparent;
-	transition: .15s;
-	box-sizing: border-box;
 }
 
 // <a> does not support :enabled
 .iconButton:not([disabled]) {
 	color: inherit;
-	cursor: pointer;
 
 	&:hover, &:focus {
 		background: rgba(255, 255, 255, .2);

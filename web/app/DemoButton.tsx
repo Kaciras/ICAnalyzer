@@ -26,7 +26,7 @@ export default function DemoButton(props: DemoButtonProps) {
 	}
 
 	return (
-		<div key={url} className={Styles.card} onClick={handleClick}>
+		<button key={url} className={Styles.card} onClick={handleClick}>
 			<img
 				src={icon}
 				alt="icon"
@@ -34,6 +34,6 @@ export default function DemoButton(props: DemoButtonProps) {
 			/>
 			{loading && <div className={Styles.loading}/>}
 			<span className={Styles.demoDescription}>{description}</span>
-		</div>
+		</button>
 	);
 }

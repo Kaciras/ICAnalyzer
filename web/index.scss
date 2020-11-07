@@ -15,6 +15,17 @@ fieldset {
 	border: none;
 }
 
+button {
+	font-size: initial;
+	border: none;
+	background: transparent;
+	transition: .15s;
+
+	&:enabled {
+		cursor: pointer;
+	}
+}
+
 .subfields {
 	padding: 0 0 0 40px;
 }

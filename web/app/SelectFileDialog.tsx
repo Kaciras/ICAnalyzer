@@ -112,7 +112,7 @@ export default function SelectFileDialog(props: Props) {
 
 	return (
 		<Dialog onClose={onCancel}>
-			<form className="dialog-content">
+			<div className="dialog-content">
 				<label
 					className={clsx(Styles.uploadFile, { [Styles.dragging]: boundary.isInArea })}
 					tabIndex={0}
@@ -140,13 +140,11 @@ export default function SelectFileDialog(props: Props) {
 						onChange={handleFileChange}
 					/>
 				</label>
-				<div>
-					<span className={Styles.urlLabel}>
-						Or try one of these:
-					</span>
-					<div className={Styles.demo}>{demoButtons}</div>
-				</div>
-			</form>
+				<span className={Styles.demoLabel}>
+					Or try one of these:
+				</span>
+				<div className={Styles.demo}>{demoButtons}</div>
+			</div>
 			<div className="dialog-actions">
 				<span className={Styles.error}>{error}</span>
 				<Button color="second" onClick={onCancel}>Back</Button>
