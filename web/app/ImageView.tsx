@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput } from "../ui";
 import { InputImage } from "./App";
 import Styles from "./ImageView.scss";
@@ -61,6 +61,17 @@ function watchTouchMove(baseEvent: TouchEvent, handler: PointerMoveHandler) {
 	document.addEventListener("touchend", handleEnd);
 }
 
+function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>) {
+	if (canvas.current === null) {
+		throw new Error("Canvas is null");
+	}
+	const ctx = canvas.current.getContext("2d");
+	if (!ctx) {
+		throw new Error("Canvas not initialized");
+	}
+	ctx.putImageData(data, 0, 0);
+}
+
 export default function ImageView(props: Props) {
 	const { original, optimized } = props;
 	const { width = 0, height = 0 } = original?.data || {};
@@ -74,35 +85,29 @@ export default function ImageView(props: Props) {
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
-	function refreshCanvas() {
+	function refreshBackCanvas() {
+		if (!original) {
+			return;
+		}
+		setOffset({ x: 0, y: 0 });
+		setZoom(1);
+		drawDataToCanvas(original.data, backCanvas);
+	}
+
+	function refreshTopCanvas() {
 		if (!optimized) {
 			return;
 		}
 		const { metrics, data } = optimized;
-		const ctx = topCanvas.current!.getContext("2d");
-		if (!ctx) {
-			throw new Error("Could not create canvas context");
-		}
-		if (type === ViewType.HeatMap) {
-			ctx.putImageData(metrics.butteraugli!.heatMap, 0, 0);
-		} else {
-			ctx.putImageData(data!, 0, 0);
-		}
+
+		const image = type === ViewType.HeatMap
+			? metrics.butteraugli!.heatMap : data;
+
+		drawDataToCanvas(image, topCanvas);
 	}
 
-	function refreshBackground() {
-		if (!original) {
-			return;
-		}
-		setZoom(1);
-		setOffset({ x: 0, y: 0 });
-
-		const ctx = backCanvas.current!.getContext("2d")!;
-		ctx.putImageData(original.data!, 0, 0);
-	}
-
-	useEffect(refreshBackground, [original]);
-	useEffect(refreshCanvas, [type, optimized]);
+	useEffect(refreshBackCanvas, [original]);
+	useEffect(refreshTopCanvas, [type, optimized]);
 
 	interface ImageViewTabProps {
 		target: ViewType;
@@ -208,10 +213,10 @@ export default function ImageView(props: Props) {
 					/>
 					<canvas
 						className={Styles.canvas}
-						style={{ mixBlendMode: blend }}
 						ref={topCanvas}
 						width={width}
 						height={height}
+						style={{ mixBlendMode: blend }}
 						hidden={type === ViewType.Original}
 					/>
 				</div>
