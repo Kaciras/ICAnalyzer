@@ -1,10 +1,11 @@
 import React, { CSSProperties, ReactNode, RefObject, useEffect, useRef, useState } from "react";
-import { IconButton, NumberInput } from "../ui";
+import { IconButton, NumberInput, PinchZoom } from "../ui";
 import { InputImage } from "./App";
 import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encode";
+import { PinchZoomState } from "../ui/PinchZoom";
 
-interface Props {
+interface ImageViewProps {
 	original?: InputImage;
 	optimized?: ConvertOutput;
 }
@@ -23,44 +24,6 @@ interface ImageViewCSS extends CSSProperties {
 	"--brightness": string;
 }
 
-type PointerMoveHandler = (dx: number, dy: number) => void;
-
-function watchMouseMove(baseEvent: MouseEvent, handler: PointerMoveHandler) {
-	const basePageX = baseEvent.pageX;
-	const basePageY = baseEvent.pageY;
-
-	function handleMove(event: MouseEvent) {
-		handler(event.pageX - basePageX, event.pageY - basePageY);
-	}
-
-	function handleEnd(event: Event) {
-		event.preventDefault();
-		document.removeEventListener("mousemove", handleMove);
-		document.removeEventListener("mouseup", handleEnd);
-	}
-
-	document.addEventListener("mousemove", handleMove);
-	document.addEventListener("mouseup", handleEnd);
-}
-
-function watchTouchMove(baseEvent: TouchEvent, handler: PointerMoveHandler) {
-	const basePointer = baseEvent.touches[0];
-
-	function handleMove(event: TouchEvent) {
-		const touch = event.touches[0];
-		handler(touch.pageX - basePointer.pageX, touch.pageY - basePointer.pageY);
-	}
-
-	function handleEnd(event: Event) {
-		event.preventDefault();
-		document.removeEventListener("touchmove", handleMove);
-		document.removeEventListener("touchend", handleEnd);
-	}
-
-	document.addEventListener("touchmove", handleMove);
-	document.addEventListener("touchend", handleEnd);
-}
-
 function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>) {
 	if (canvas.current === null) {
 		throw new Error("Canvas is null");
@@ -72,15 +35,14 @@ function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>)
 	ctx.putImageData(data, 0, 0);
 }
 
-export default function ImageView(props: Props) {
+export default function ImageView(props: ImageViewProps) {
 	const { original, optimized } = props;
 	const { width = 0, height = 0 } = original?.data || {};
 
 	const [type, setType] = useState(ViewType.Compressed);
 	const [brightness, setBrightness] = useState(100);
 
-	const [zoom, setZoom] = useState(1);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	const [pinchZoom, setPinchZoom] = useState<PinchZoomState>({ x: 0, y: 0, scale: 1 });
 
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
@@ -89,8 +51,7 @@ export default function ImageView(props: Props) {
 		if (!original) {
 			return;
 		}
-		setOffset({ x: 0, y: 0 });
-		setZoom(1);
+		setPinchZoom({ x: 0, y: 0, scale: 1 });
 		drawDataToCanvas(original.data, backCanvas);
 	}
 
@@ -128,33 +89,6 @@ export default function ImageView(props: Props) {
 		);
 	}
 
-	function handleWheel(event: React.WheelEvent) {
-		const { ctrlKey, deltaMode } = event;
-		let { deltaY } = event;
-
-		event.preventDefault();
-
-		// 1 is "lines", 0 is "pixels"
-		if (deltaMode === 1) {
-			deltaY *= 15; // Firefox uses "lines" for some types of mouse
-		}
-
-		// ctrlKey is true when pinch-zooming on a trackpad.
-		const divisor = ctrlKey ? 100 : 300;
-		setZoom(zoom * (1 - deltaY / divisor));
-	}
-
-	function offsetUpdater() {
-		const baseX = offset.x;
-		const baseY = offset.y;
-
-		return (dx: number, dy: number) => {
-			const x = baseX + dx;
-			const y = baseY + dy;
-			setOffset({ x, y });
-		};
-	}
-
 	let brightnessInput = null;
 	let brightnessVal = 100;
 
@@ -175,9 +109,9 @@ export default function ImageView(props: Props) {
 
 	const wrapperCss: ImageViewCSS = {
 		width, height,
-		"--scale": zoom,
-		"--x": offset.x + "px",
-		"--y": offset.y + "px",
+		"--scale": pinchZoom.scale,
+		"--x": pinchZoom.x + "px",
+		"--y": pinchZoom.y + "px",
 		"--brightness": `${brightnessVal}%`,
 	};
 
@@ -198,11 +132,10 @@ export default function ImageView(props: Props) {
 			<div className={Styles.controls}>
 
 			</div>
-			<div
+			<PinchZoom
 				className={Styles.imageView}
-				onWheel={handleWheel}
-				onMouseDown={e => e.button === 0 && watchMouseMove(e.nativeEvent, offsetUpdater())}
-				onTouchStart={e => watchTouchMove(e.nativeEvent, offsetUpdater())}
+				state={pinchZoom}
+				onChange={setPinchZoom}
 			>
 				<div className={Styles.wrapper} style={wrapperCss}>
 					<canvas
@@ -220,7 +153,7 @@ export default function ImageView(props: Props) {
 						hidden={type === ViewType.Original}
 					/>
 				</div>
-			</div>
+			</PinchZoom>
 		</div>
 	);
 }
