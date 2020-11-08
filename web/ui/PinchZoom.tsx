@@ -55,31 +55,46 @@ export default function PinchZoom(props: PinchZoomProps) {
 	const { state, className, children, onChange } = props;
 
 	function handleWheel(event: React.WheelEvent) {
-		const { ctrlKey, deltaMode } = event;
+		const { ctrlKey, deltaMode, clientX, clientY } = event;
 		let { deltaY } = event;
 
 		event.preventDefault();
 
 		// 1 is "lines", 0 is "pixels"
 		if (deltaMode === 1) {
-			deltaY *= 15; // Firefox uses "lines" for some types of mouse
+			deltaY *= 15;
 		}
 
 		// ctrlKey is true when pinch-zooming on a trackpad.
 		const divisor = ctrlKey ? 100 : 300;
 		const scaleDiff = 1 - deltaY / divisor;
-		onChange({ ...state, scale: state.scale * scaleDiff });
+
+		const rect = event.currentTarget.firstElementChild!.getBoundingClientRect();
+		const dx = ((rect.left + rect.width / 2) - clientX) * (scaleDiff - 1);
+		const dy = ((rect.top + rect.height / 2) - clientY) * (scaleDiff - 1);
+
+		onChange({
+			x: state.x + dx,
+			y: state.y + dy,
+			scale: state.scale * scaleDiff,
+		});
 	}
 
-	function offsetUpdater() {
-		const baseX = state.x;
-		const baseY = state.y;
+	function updateOffset(dx: number, dy: number) {
+		const x = state.x + dx;
+		const y = state.y + dy;
+		onChange({ scale: state.scale, x, y });
+	}
 
-		return (dx: number, dy: number) => {
-			const x = baseX + dx;
-			const y = baseY + dy;
-			onChange({ ...state, x, y });
-		};
+	function handleMouseDown(e: React.MouseEvent) {
+		if (e.button !== 0) {
+			return;
+		}
+		watchMouseMove(e.nativeEvent, updateOffset);
+	}
+
+	function handleTouchStart(e: React.TouchEvent) {
+		watchTouchMove(e.nativeEvent, updateOffset);
 	}
 
 	return (
@@ -87,8 +102,8 @@ export default function PinchZoom(props: PinchZoomProps) {
 			style={{ touchAction: "none" }}
 			className={className}
 			onWheel={handleWheel}
-			onMouseDown={e => e.button === 0 && watchMouseMove(e.nativeEvent, offsetUpdater())}
-			onTouchStart={e => watchTouchMove(e.nativeEvent, offsetUpdater())}
+			onTouchStart={handleTouchStart}
+			onMouseDown={handleMouseDown}
 		>
 			{children}
 		</div>
