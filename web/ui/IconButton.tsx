@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { avoidMouseFocus } from "./common";
 import Styles from "./IconButton.scss";
 
-interface Props {
+export interface IconButtonProps {
 	title?: string;
 	className?: string;
 	disabled?: boolean;
@@ -13,7 +13,7 @@ interface Props {
 	children?: ReactNode;
 }
 
-export default function IconButton(props: Props) {
+export default function IconButton(props: IconButtonProps) {
 	const { className, children, title, href, disabled, active, onClick } = props;
 
 	const classes = clsx(

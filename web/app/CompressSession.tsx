@@ -22,10 +22,11 @@ export default function CompressSession(props: Props) {
 	const [progress, setProgress] = useState(0);
 
 	function cancelSelectFile() {
-		if (!file) {
+		if (file) {
+			setSelectFile(false);
+		} else {
 			props.onClose();
 		}
-		setSelectFile(false);
 	}
 
 	async function handleFileChange(newFile: File) {

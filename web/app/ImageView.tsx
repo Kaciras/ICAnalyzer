@@ -1,9 +1,10 @@
-import React, { CSSProperties, ReactNode, RefObject, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput, PinchZoom } from "../ui";
+import { PinchZoomState } from "../ui/PinchZoom";
+import { IconButtonProps } from "../ui/IconButton";
 import { InputImage } from "./App";
 import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encode";
-import { PinchZoomState } from "../ui/PinchZoom";
 
 interface ImageViewProps {
 	original?: InputImage;
@@ -70,18 +71,17 @@ export default function ImageView(props: ImageViewProps) {
 	useEffect(refreshBackCanvas, [original]);
 	useEffect(refreshTopCanvas, [type, optimized]);
 
-	interface ImageViewTabProps {
+	interface ImageViewTabProps extends IconButtonProps {
 		target: ViewType;
-		disabled?: boolean;
-		children: ReactNode;
 	}
 
 	function ImageViewTab(props: ImageViewTabProps) {
-		const { children, target, disabled } = props;
+		const { children, target, disabled, title } = props;
 		return (
 			<IconButton
 				active={type === target}
 				disabled={disabled}
+				title={title}
 				onClick={() => setType(target)}
 			>
 				{children}
@@ -116,16 +116,36 @@ export default function ImageView(props: ImageViewProps) {
 	};
 
 	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
-	const butteraugliAvailable = !optimized?.metrics.butteraugli;
+
+	const noHeatMap = !optimized?.metrics.butteraugli;
+	const heatMapTitle = noHeatMap ? "You should enable butteraugli to see this" : undefined;
 
 	return (
 		<div className={Styles.container}>
 			<div className={Styles.inputs}>
 				<div>
-					<ImageViewTab target={ViewType.Original}>Original</ImageViewTab>
-					<ImageViewTab target={ViewType.Compressed}>Compressed</ImageViewTab>
-					<ImageViewTab target={ViewType.AbsDiff}>Difference</ImageViewTab>
-					<ImageViewTab disabled={butteraugliAvailable} target={ViewType.HeatMap}>HeatMap</ImageViewTab>
+					<ImageViewTab
+						target={ViewType.Original}
+					>
+						Original
+					</ImageViewTab>
+					<ImageViewTab
+						target={ViewType.Compressed}
+					>
+						Compressed
+					</ImageViewTab>
+					<ImageViewTab
+						target={ViewType.AbsDiff}
+					>
+						Difference
+					</ImageViewTab>
+					<ImageViewTab
+						disabled={noHeatMap}
+						title={heatMapTitle}
+						target={ViewType.HeatMap}
+					>
+						HeatMap
+					</ImageViewTab>
 				</div>
 				{brightnessInput}
 			</div>
