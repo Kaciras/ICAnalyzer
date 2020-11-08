@@ -18,9 +18,9 @@ export interface MeasureOptions {
 	butteraugli: false | ButteraugliConfig;
 }
 
-export interface EncodeRequest {
+export interface AnalyzeConfig {
 	encoder: ImageEncoder;
-	image: ImageData;
+	threads: number;
 	optionsList: any[];
 	measure: MeasureOptions;
 }
@@ -50,24 +50,28 @@ export class BatchEncoder {
 
 	readonly progressMax: number;
 
-	private readonly request: EncodeRequest;
+	private readonly image: ImageData;
+	private readonly config: AnalyzeConfig;
+
 	private readonly pool: WorkerPool<WorkerApi>;
 
 	private progress = 0;
 
-	constructor(workerCount: number, request: EncodeRequest) {
-		if (workerCount < 1) {
+	constructor(image: ImageData, config: AnalyzeConfig) {
+		const { threads, optionsList } = config;
+		if (threads < 1) {
 			throw new Error("Thread count must be at least 1");
 		}
-		const concurrency = Math.min(workerCount, request.optionsList.length);
+		const concurrency = Math.min(threads, optionsList.length);
 
-		this.request = request;
+		this.image = image;
+		this.config = config;
 		this.pool = new WorkerPool(newWorker, concurrency);
 		this.progressMax = this.getProgressMax();
 	}
 
 	private getProgressMax() {
-		const { optionsList, measure } = this.request;
+		const { optionsList, measure } = this.config;
 
 		let calculations = 1;
 		if (measure.butteraugli) calculations++;
@@ -86,7 +90,8 @@ export class BatchEncoder {
 	}
 
 	async encode() {
-		const { image, encoder, optionsList, measure } = this.request;
+		const { encoder, optionsList, measure } = this.config;
+		const { image } = this;
 
 		await this.pool.runOnEach(remote => remote.setImageToEncode(image));
 
@@ -106,7 +111,7 @@ export class BatchEncoder {
 	}
 
 	private async poll(remote: Remote<WorkerApi>, options: any) {
-		const { encoder } = this.request;
+		const { encoder } = this.config;
 
 		const { buffer, time } = await encoder.encode(options, remote);
 		const blob = new Blob([buffer], { type: encoder.mimeType });
@@ -118,7 +123,7 @@ export class BatchEncoder {
 	}
 
 	async measure(wrapper: Remote<WorkerApi>, data: ImageData) {
-		const { SSIM, PSNR, butteraugli } = this.request.measure;
+		const { SSIM, PSNR, butteraugli } = this.config.measure;
 		const metrics: Metrics = {};
 
 		if (PSNR) {

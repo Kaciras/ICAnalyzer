@@ -1,19 +1,10 @@
 import React, { Dispatch, useState } from "react";
 import { decode } from "../decode";
-import { BatchEncoder, MeasureOptions } from "../encode";
+import { AnalyzeConfig, BatchEncoder } from "../encode";
 import { Result } from "./App";
+import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
-import * as WebP from "../codecs/webp";
-import SelectFileDialog from "./SelectFileDialog";
-
-interface EncodingEvent {
-	file: File;
-	workerCount: number;
-	encoder: string;
-	optionsList: any[];
-	measure: MeasureOptions;
-}
 
 interface Props {
 	open: boolean;
@@ -44,29 +35,23 @@ export default function CompressSession(props: Props) {
 		setSelectFile(false);
 	}
 
-	async function handleStart(optionsList: any[], measure: MeasureOptions, workerCount: number) {
+	async function handleStart(config: AnalyzeConfig) {
 		if (!file) {
 			throw new Error("File is null");
 		}
-
-		const encoding = WebP;
 		const image = await decode(file);
+		const encoder = new BatchEncoder(image, config);
 
-		const encoder = new BatchEncoder(workerCount, {
-			encoder: encoding,
-			image,
-			optionsList,
-			measure,
-		});
-		setEncoder(encoder);
 		setMax(encoder.progressMax);
+		setProgress(0);
 		encoder.onProgress = setProgress;
 
+		setEncoder(encoder);
 		const outputs = await encoder.encode();
 		encoder.terminate();
 		setEncoder(null);
 
-		props.onChange({ original: { file, data: image }, codec: encoding, outputs });
+		props.onChange({ original: { file, data: image }, codec: config.encoder, outputs });
 	}
 
 	function stop() {
