@@ -1,11 +1,10 @@
-import * as Comlink from "comlink";
-import { Remote } from "comlink";
+import { wrap } from "comlink";
 import { blobToImg, drawableToImageData } from "squoosh/src/lib/util";
 import { WorkerApi } from "./worker";
 import { detectAVIFSupport, detectWebPSupport } from "./utils";
 import { newWorker } from "./encode";
 
-export async function decodeImage(blob: Blob) {
+export async function decodeImageNative(blob: Blob) {
 	const bitmap = "createImageBitmap" in self
 		? await createImageBitmap(blob)
 		: await blobToImg(blob);
@@ -15,14 +14,17 @@ export async function decodeImage(blob: Blob) {
 	canvas.width = width;
 	canvas.height = height;
 
-	const ctx = canvas.getContext("2d")!;
+	const ctx = canvas.getContext("2d");
+	if (!ctx) {
+		throw new Error("Canvas not initialized");
+	}
 	ctx.drawImage(bitmap, 0, 0);
 	return ctx.getImageData(0, 0, width, height);
 }
 
 type featureDetector = () => Promise<boolean>;
 
-type DecodeFunction = (buffer: ArrayBuffer) => Promise<ImageData>;
+type DecodeFunction = (blob: Blob) => Promise<ImageData>;
 
 function autoSelect(
 	checkFn: featureDetector,
@@ -31,13 +33,13 @@ function autoSelect(
 ): DecodeFunction {
 	let bestDecodeFn: DecodeFunction;
 
-	async function choose(buffer: ArrayBuffer) {
+	async function choose(blob: Blob) {
 		if (await checkFn()) {
 			bestDecodeFn = native;
 		} else {
 			bestDecodeFn = polyfill;
 		}
-		return await bestDecodeFn(buffer);
+		return await bestDecodeFn(blob);
 	}
 
 	bestDecodeFn = choose;
@@ -45,29 +47,22 @@ function autoSelect(
 	return buffer => bestDecodeFn(buffer);
 }
 
-function decodeAVIFNative(buffer: ArrayBuffer) {
-	return decodeImage(new Blob([buffer], { type: "image/avif" }));
-}
-
-async function decodeAVIFWorker(buffer: ArrayBuffer) {
+function decodeAVIFWorker(blob: Blob) {
 	const worker = newWorker();
-	const remote = Comlink.wrap<WorkerApi>(worker);
-	return remote.avifDecode(buffer);
+	return blob.arrayBuffer()
+		.then(buf => wrap<WorkerApi>(worker).avifDecode(buf))
+		.finally(() => worker.terminate());
 }
 
-function decodeWebPNative(buffer: ArrayBuffer) {
-	return decodeImage(new Blob([buffer], { type: "image/webp" }));
+function decodeWebPWorker(blob: Blob) {
+	const worker = newWorker();
+	return blob.arrayBuffer()
+		.then(buf => wrap<WorkerApi>(worker).webpDecode(buf))
+		.finally(() => worker.terminate());
 }
 
-async function decodeWebPWorker(buffer: ArrayBuffer, worker?: Remote<WorkerApi>) {
-	if (!worker) {
-		worker = Comlink.wrap<WorkerApi>(newWorker());
-	}
-	return worker.webpDecode(buffer);
-}
-
-export const decodeWebP = autoSelect(detectWebPSupport, decodeWebPNative, decodeWebPWorker);
-export const decodeAVIF = autoSelect(detectAVIFSupport, decodeAVIFNative, decodeAVIFWorker);
+export const decodeWebP = autoSelect(detectWebPSupport, decodeImageNative, decodeWebPWorker);
+export const decodeAVIF = autoSelect(detectAVIFSupport, decodeImageNative, decodeAVIFWorker);
 
 function ensureSVGSize(svgXml: string) {
 	const parser = new DOMParser();
@@ -100,10 +95,10 @@ export function decode(blob: Blob) {
 		case "image/svg+xml":
 			return blob.text().then(svgToImageData);
 		case "image/webp":
-			return blob.arrayBuffer().then(decodeWebP);
+			return decodeWebP(blob);
 		case "image/avif":
-			return blob.arrayBuffer().then(decodeAVIF);
+			return decodeAVIF(blob);
 		default:
-			return decodeImage(blob);
+			return decodeImageNative(blob);
 	}
 }
