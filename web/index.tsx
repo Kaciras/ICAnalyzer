@@ -8,7 +8,7 @@ import App from "./app/App";
 function detectBrowserSupport() {
 	try {
 		new File([], "");
-	} catch (_) {
+	} catch {
 		return false;
 	}
 	if (!CSS.supports("mix-blend-mode: difference")) {

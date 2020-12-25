@@ -8,18 +8,18 @@ Image Convertors Analyzer is an online tool
 
 # Build
 
-Clone the repo and submodules:
+Clone the repo and install dependencies:
 
 ```shell script
 git clone https://github.com/Kaciras/ICAnalyze.git
+cd ICAnalyze
 git submodule update --init --recursive --depth=1
+npm install
 ```
 
 Start development server with hot reloading:
 
 ```shell script
-npm install
-npm run compile
 npm run dev
 ```
 
