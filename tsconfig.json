@@ -4,7 +4,7 @@
 		"lib": ["ESNext", "DOM", "WebWorker"],
 		"module": "CommonJS",
 		"moduleResolution": "Node",
-		"jsx": "react",
+		"jsx": "react-jsx",
 
 		"newLine": "LF",
 		"strict": true,
@@ -14,9 +14,8 @@
 		"sourceMap": true,
 		"experimentalDecorators": true,
 
-		"baseUrl": ".",
 		"paths": {
-			"squoosh/*": ["deps/squoosh/*"]
+			"squoosh/*": ["./deps/squoosh/*"]
 		}
 	},
 	"exclude": [
