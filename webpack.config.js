@@ -23,7 +23,7 @@ module.exports = function webpackConfig(env) {
 		return [outputLoader, cssLoader, "sass-loader"];
 	}
 
-	const loaders =  [
+	const loaders = [
 		{
 			test: /\.tsx?$/,
 			use: {
@@ -42,7 +42,20 @@ module.exports = function webpackConfig(env) {
 		},
 		{
 			test: /\.svg$/,
-			use: "@svgr/webpack",
+			use: {
+				loader: "@svgr/webpack",
+				options: {
+					svgoConfig: {
+						plugins: [
+							{ removeViewBox: false },
+						],
+					},
+					svgProps: {
+						width: "1em",
+						height: "1em",
+					},
+				},
+			},
 		},
 		{
 			test: /\.(?:jpg|png|gif)$/,
