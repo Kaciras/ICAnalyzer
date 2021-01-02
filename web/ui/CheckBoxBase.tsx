@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, ReactNode } from "react";
+import React, { ChangeEvent, ComponentType, Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { NOOP } from "../utils";
 import Styles from "./CheckBoxBase.scss";
@@ -13,8 +13,8 @@ export interface CheckBoxProps {
 
 interface InternalProps extends CheckBoxProps {
 	type: string;
-	Icon: string;
-	IconChecked: string;
+	Icon: ComponentType<any>;
+	IconChecked: ComponentType<any>;
 }
 
 export default function CheckBoxBase(props: InternalProps) {

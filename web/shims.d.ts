@@ -31,6 +31,9 @@ declare module "*.scss" {
 }
 
 declare module "*.svg" {
-	const svgXml: string;
-	export default svgXml;
+	import { ComponentType, SVGProps } from "react";
+
+	const SVGComponent: ComponentType<SVGProps<SVGSVGElement>>;
+
+	export default SVGComponent;
 }
