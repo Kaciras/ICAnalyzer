@@ -18,3 +18,4 @@ export { default as Button } from "./Button";
 export { default as NumberInput } from "./NumberInput";
 export { default as Dialog } from "./Dialog";
 export { default as PinchZoom } from "./PinchZoom";
+export { default as SelectBox } from "./SelectBox";

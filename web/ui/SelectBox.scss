@@ -1,0 +1,30 @@
+.container {
+	position: relative;
+
+	--color: white;
+	--background: #333
+}
+
+.select {
+	appearance: none;
+
+	width: 100%;
+	padding: 10px 35px 10px 10px;
+	border: none;
+	border-radius: 4px;
+
+	color: var(--color);
+	font: inherit;
+	background: var(--background);
+}
+
+.icon {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	width: 16px;
+
+	fill: var(--color);
+	transform: translateY(-50%);
+	pointer-events: none;
+}
