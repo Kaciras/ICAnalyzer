@@ -17,49 +17,38 @@ const double* NewSrgbToLinearTable() {
 	return table;
 }
 
-void FromSrgbToLinear(const vector<Image8>& rgb, vector<ImageF>& linear, int background) {
-	const size_t xsize = rgb[0].xsize();
-	const size_t ysize = rgb[0].ysize();
+double ToLiner(uint8_t value, uint8_t alpha, int background) {
 	static const double* const kSrgbToLinearTable = NewSrgbToLinearTable();
 
-	if (rgb.size() == 3) {  // RGB
-		for (int c = 0; c < 3; c++) {
-			linear.push_back(ImageF(xsize, ysize));
-			for (int y = 0; y < ysize; ++y) {
-				const uint8_t* const BUTTERAUGLI_RESTRICT row_rgb = rgb[c].Row(y);
-				float* const BUTTERAUGLI_RESTRICT row_linear = linear[c].Row(y);
-
-				for (size_t x = 0; x < xsize; x++) {
-					const int value = row_rgb[x];
-					row_linear[x] = kSrgbToLinearTable[value];
-				}
-			}
-		}
+	if (alpha == 0) {
+		value = background;
+	} else if (alpha != 255) {
+		const int fg_weight = alpha;
+		const int bg_weight = 255 - fg_weight;
+		value = (value * fg_weight + background * bg_weight + 127) / 255;
 	}
-	else {  // RGBA
-		for (int c = 0; c < 3; c++) {
-			linear.push_back(ImageF(xsize, ysize));
-			for (int y = 0; y < ysize; ++y) {
-				const uint8_t* const BUTTERAUGLI_RESTRICT row_rgb = rgb[c].Row(y);
-				float* const BUTTERAUGLI_RESTRICT row_linear = linear[c].Row(y);
-				const uint8_t* const BUTTERAUGLI_RESTRICT row_alpha = rgb[3].Row(y);
+	return kSrgbToLinearTable[value];
+}
 
-				for (size_t x = 0; x < xsize; x++) {
-					int value;
-					if (row_alpha[x] == 255) {
-						value = row_rgb[x];
-					}
-					else if (row_alpha[x] == 0) {
-						value = background;
-					}
-					else {
-						const int fg_weight = row_alpha[x];
-						const int bg_weight = 255 - fg_weight;
-						value = (row_rgb[x] * fg_weight + background * bg_weight + 127) / 255;
-					}
-					row_linear[x] = kSrgbToLinearTable[value];
-				}
-			}
+void FromSrgbToLinear(const char* data, size_t xsize, size_t ysize, vector<ImageF>& linear, int background) {
+	const uint8_t* rgb = reinterpret_cast<const uint8_t*>(data);
+
+	linear.push_back(ImageF(xsize, ysize));
+	linear.push_back(ImageF(xsize, ysize));
+	linear.push_back(ImageF(xsize, ysize));
+
+	for (size_t y = 0; y < ysize; ++y) {
+		float* const BUTTERAUGLI_RESTRICT row_r = linear[0].Row(y);
+		float* const BUTTERAUGLI_RESTRICT row_g = linear[1].Row(y);
+		float* const BUTTERAUGLI_RESTRICT row_b = linear[2].Row(y);
+
+		for (size_t x = 0; x < xsize; ++x) {
+			auto p = rgb + (y * xsize + x) * 4;
+			auto alpha = p[3];
+
+			row_r[x] = ToLiner(p[0], alpha, background);
+			row_g[x] = ToLiner(p[1], alpha, background);
+			row_b[x] = ToLiner(p[2], alpha, background);
 		}
 	}
 }
@@ -135,46 +124,10 @@ void CreateHeatMapImage(
 	}
 }
 
-void ConvertImage(string data, size_t xsize, size_t ysize, vector<Image8>& rgb) {
-	auto channels = data.length() / xsize / ysize;
-	auto rowLenth = xsize * channels;
-	const uint8_t* BUTTERAUGLI_RESTRICT buffer = reinterpret_cast<const uint8_t*>(data.data());
-	rgb = CreatePlanes<uint8_t>(xsize, ysize, channels);
-
-	if (channels == 3) {
-		for (int y = 0; y < ysize; y++) {
-			uint8_t* const BUTTERAUGLI_RESTRICT r = rgb[0].Row(y);
-			uint8_t* const BUTTERAUGLI_RESTRICT g = rgb[1].Row(y);
-			uint8_t* const BUTTERAUGLI_RESTRICT b = rgb[2].Row(y);
-
-			for (int x = 0; x < xsize; x++, buffer += 3) {
-				r[x] = buffer[0];
-				g[x] = buffer[1];
-				b[x] = buffer[2];
-			}
-		}
-	}
-	else {
-		for (int y = 0; y < ysize; y++) {
-			uint8_t* const BUTTERAUGLI_RESTRICT r = rgb[0].Row(y);
-			uint8_t* const BUTTERAUGLI_RESTRICT g = rgb[1].Row(y);
-			uint8_t* const BUTTERAUGLI_RESTRICT b = rgb[2].Row(y);
-			uint8_t* const BUTTERAUGLI_RESTRICT a = rgb[3].Row(y);
-
-			for (int x = 0; x < xsize; x++, buffer += 4) {
-				r[x] = buffer[0];
-				g[x] = buffer[1];
-				b[x] = buffer[2];
-				a[x] = buffer[3];
-			}
-		}
-	}
-}
-
-double Calc(vector<Image8>& rgb1, vector<Image8>& rgb2, int background, float hfAsymmetry, ImageF& diffMap) {
+double Calc(string rgb1, string rgb2, size_t xsyze, size_t ysize, int background, float hfAsymmetry, ImageF& diffMap) {
 	vector<ImageF> linear1, linear2;
-	FromSrgbToLinear(rgb1, linear1, background);
-	FromSrgbToLinear(rgb2, linear2, background);
+	FromSrgbToLinear(rgb1.data(), xsyze, ysize, linear1, background);
+	FromSrgbToLinear(rgb2.data(), xsyze, ysize, linear2, background);
 
 	ButteraugliDiffmap(linear1, linear2, hfAsymmetry, diffMap);
 	return ButteraugliScoreFromDiffmap(diffMap);
@@ -185,16 +138,12 @@ void Butteraugli(TwoImages images, ButteraugliOptions options, double& diff_valu
 	const auto width = images.width;
 	const auto height = images.height;
 
-	vector<Image8> rgb1, rgb2;
-	ConvertImage(images.dataA, width, height, rgb1);
-	ConvertImage(images.dataB, width, height, rgb2);
-
 	ImageF diff_map, diff_map_on_white;
-	diff_value = Calc(rgb1, rgb2, 0, options.hfAsymmetry, diff_map);
+	diff_value = Calc(images.dataA, images.dataB, width, height, 0, options.hfAsymmetry, diff_map);
 
 	ImageF* diff_map_ptr = &diff_map;
 	if (length / width / height == 4) {
-		double diff_value_on_white = Calc(rgb1, rgb2, 255, options.hfAsymmetry, diff_map_on_white);
+		double diff_value_on_white = Calc(images.dataA, images.dataB, width, height, 255, options.hfAsymmetry, diff_map_on_white);
 
 		if (diff_value_on_white > diff_value) {
 			diff_value = diff_value_on_white;
