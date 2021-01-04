@@ -1,8 +1,10 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../worker";
 import { OptionType } from "../app/OptionTemplate";
-import * as WebP from "./webp";
-import * as AVIF from "./avif";
+import * as WebP from "./webp/client";
+import * as AVIF from "./avif/client";
+import { Dispatch, ReactNode } from "react";
+import { ConvertOutput } from "../encode";
 
 export const WebPOptionsTemplate = WebP.optionTemplate;
 
@@ -14,8 +16,9 @@ export interface OptionTemplate {
 	when?: (vals: any, vars: any) => boolean;
 }
 
-export function createOptionsList(template: OptionTemplate[]) {
-
+interface EncodingContext {
+	OptionsForm(): ReactNode;
+	Controls(onChange: Dispatch<ConvertOutput[]>): ReactNode;
 }
 
 interface EncodeResult {

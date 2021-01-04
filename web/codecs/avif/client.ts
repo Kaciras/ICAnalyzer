@@ -1,7 +1,8 @@
 import { Remote } from "comlink";
-import { EnumTemplate, NumberRangeTemplate } from "../app/OptionTemplate";
-import { WorkerApi } from "../worker";
-import { OptionTemplate } from "./index";
+import { WorkerApi } from "../../worker";
+import { OptionTemplate } from "../index";
+import { NumberRangeTemplate } from "../../app/OptionTemplate";
+import { EnumTemplate } from "../../form/EnumField";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";

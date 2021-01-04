@@ -124,6 +124,7 @@ module.exports = function webpackConfig(env) {
 				path: false,
 				fs: false,
 				crypto: false,
+				worker_threads: false, // required by wasm-feature-detect
 			},
 		},
 		cache: {

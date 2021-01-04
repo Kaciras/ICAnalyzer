@@ -1,9 +1,11 @@
 import * as Comlink from "comlink";
-import type * as WebP from "squoosh/src/codecs/webp/encoder-meta";
-import type * as AVIF from "squoosh/src/codecs/avif/encoder-meta";
 import * as Similarity from "../lib/similarity";
 import { ButteraugliOptions, SSIMOptions } from "../lib/similarity";
 import wasmUrl from "../lib/metrics.wasm";
+import * as WebPEncoder from "./codecs/webp/encoder";
+import * as WebPDecoder from "./codecs/webp/decoder";
+import * as AVIFEncoder from "./codecs/avif/encoder";
+import * as AVIFDecoder from "./codecs/avif/decoder";
 
 let data: ImageData;
 
@@ -35,22 +37,20 @@ const workerApi = {
 		return Similarity.butteraugli(data, image, options);
 	},
 
-	async webpEncode(options: WebP.EncodeOptions) {
-		const module = await import("squoosh/src/codecs/webp/encoder");
-		return timed(() => module.encode(data, options));
+	async webpEncode(options: WebPEncoder.EncodeOptions) {
+		return timed(() => WebPEncoder.encode(data, options));
 	},
 
 	async webpDecode(data: ArrayBuffer) {
-		return (await import("squoosh/src/codecs/webp/decoder")).decode(data);
+		return WebPDecoder.decode(data);
 	},
 
-	async avifEncode(options: AVIF.EncodeOptions) {
-		const module = await import("squoosh/src/codecs/avif/encoder");
-		return timed(() => module.encode(data, options));
+	async avifEncode(options: AVIFEncoder.EncodeOptions) {
+		return timed(() => AVIFEncoder.encode(data, options));
 	},
 
 	async avifDecode(data: ArrayBuffer): Promise<ImageData> {
-		return (await import("squoosh/src/codecs/avif/decoder")).decode(data);
+		return AVIFDecoder.decode(data);
 	},
 };
 

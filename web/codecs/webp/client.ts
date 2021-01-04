@@ -1,8 +1,10 @@
 import { Remote } from "comlink";
-import { BooleanTemplate, EnumTemplate, NumberRangeTemplate } from "../app/OptionTemplate";
-import { WorkerApi } from "../worker";
-import { OptionTemplate } from "./index";
-import { EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
+import { WorkerApi } from "../../worker";
+import { OptionTemplate } from "../index";
+import { EncodeOptions } from "./encoder";
+import { NumberRangeTemplate } from "../../app/OptionTemplate";
+import { BooleanTemplate } from "../../form/BooleanField";
+import { EnumTemplate } from "../../form/EnumField";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -59,11 +61,11 @@ class WebPMode extends EnumTemplate<string> {
 }
 
 export const optionTemplate: OptionTemplate[] = [
-	{
-		label: "Mode",
-		name: "mode",
-		// type:
-	},
+	// {
+	// 	label: "Mode",
+	// 	name: "mode",
+	// 	type:
+	// },
 	{
 		label: "Quality (-q)",
 		name: "quality",
