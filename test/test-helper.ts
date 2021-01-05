@@ -14,6 +14,7 @@ export async function readImage(name: string, scale = 1.0) {
 	}
 
 	const { data, info } = await image
+		.ensureAlpha()
 		.raw()
 		.toBuffer({ resolveWithObject: true });
 

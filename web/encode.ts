@@ -135,8 +135,7 @@ export class BatchEncoder {
 			this.increaseProgress();
 		}
 		if (butteraugli) {
-			const options = { ...butteraugli, ensureAlpha: true };
-			const [source, raw] = await wrapper.calcButteraugli(data, options);
+			const [source, raw] = await wrapper.calcButteraugli(data, butteraugli);
 			this.increaseProgress();
 
 			const heatMap = rgbaToImage(raw, data.width, data.height);

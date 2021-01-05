@@ -9,7 +9,6 @@ export interface FullButteraugliOptions {
 	hfAsymmetry: number;
 	goodQualitySeek: number;
 	badQualitySeek: number;
-	ensureAlpha: boolean;
 }
 
 export type ButteraugliResult = [number, ArrayBuffer];

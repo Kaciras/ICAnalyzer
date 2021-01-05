@@ -30,29 +30,6 @@ double ToLiner(uint8_t value, uint8_t alpha, int background) {
 	return kSrgbToLinearTable[value];
 }
 
-void FromSrgbToLinear(const char* data, size_t xsize, size_t ysize, vector<ImageF>& linear, int background) {
-	const uint8_t* rgb = reinterpret_cast<const uint8_t*>(data);
-
-	linear.push_back(ImageF(xsize, ysize));
-	linear.push_back(ImageF(xsize, ysize));
-	linear.push_back(ImageF(xsize, ysize));
-
-	for (size_t y = 0; y < ysize; ++y) {
-		float* const BUTTERAUGLI_RESTRICT row_r = linear[0].Row(y);
-		float* const BUTTERAUGLI_RESTRICT row_g = linear[1].Row(y);
-		float* const BUTTERAUGLI_RESTRICT row_b = linear[2].Row(y);
-
-		for (size_t x = 0; x < xsize; ++x) {
-			auto p = rgb + (y * xsize + x) * 4;
-			auto alpha = p[3];
-
-			row_r[x] = ToLiner(p[0], alpha, background);
-			row_g[x] = ToLiner(p[1], alpha, background);
-			row_b[x] = ToLiner(p[2], alpha, background);
-		}
-	}
-}
-
 static void ScoreToRgb(double score, double good_threshold, double bad_threshold, uint8_t rgb[3]) {
 	double heatmap[12][3] = {
 	  { 0, 0, 0 },
@@ -94,44 +71,71 @@ void CreateHeatMapImage(
 	const ImageF& distmap,
 	double good_threshold,
 	double bad_threshold,
-	size_t xsize,
-	size_t ysize,
-	bool ensureAlpha,
 	vector<uint8_t>* heatmap)
 {
-	if (ensureAlpha) {
-		heatmap->resize(4 * xsize * ysize);
-		for (size_t y = 0; y < ysize; ++y) {
-			for (size_t x = 0; x < xsize; ++x) {
-				int px = xsize * y + x;
-				double d = distmap.Row(y)[x];
-				uint8_t* rgb = &(*heatmap)[4 * px];
-				ScoreToRgb(d, good_threshold, bad_threshold, rgb);
-				rgb[3] = 255;
-			}
-		}
-	}
-	else {
-		heatmap->resize(3 * xsize * ysize);
-		for (size_t y = 0; y < ysize; ++y) {
-			for (size_t x = 0; x < xsize; ++x) {
-				int px = xsize * y + x;
-				double d = distmap.Row(y)[x];
-				uint8_t* rgb = &(*heatmap)[3 * px];
-				ScoreToRgb(d, good_threshold, bad_threshold, rgb);
-			}
+	size_t width = distmap.xsize();
+	size_t height = distmap.ysize();
+
+	heatmap->resize(4 * width * height);
+	for (size_t y = 0; y < height; ++y) {
+		for (size_t x = 0; x < width; ++x) {
+			int px = width * y + x;
+			double d = distmap.Row(y)[x];
+			uint8_t* rgb = &(*heatmap)[4 * px];
+			ScoreToRgb(d, good_threshold, bad_threshold, rgb);
+			rgb[3] = 255;
 		}
 	}
 }
 
-double Calc(string rgb1, string rgb2, size_t xsyze, size_t ysize, int background, float hfAsymmetry, ImageF& diffMap) {
-	vector<ImageF> linear1, linear2;
-	FromSrgbToLinear(rgb1.data(), xsyze, ysize, linear1, background);
-	FromSrgbToLinear(rgb2.data(), xsyze, ysize, linear2, background);
+class ButteraugliDiff {
 
-	ButteraugliDiffmap(linear1, linear2, hfAsymmetry, diffMap);
-	return ButteraugliScoreFromDiffmap(diffMap);
-}
+	vector<ImageF> reference;
+	size_t width;
+	size_t height;
+	int background;
+
+	void FromSrgbToLinear(const char* data, vector<ImageF>& linear) {
+		const uint8_t* rgb = reinterpret_cast<const uint8_t*>(data);
+
+		linear.push_back(ImageF(width, height));
+		linear.push_back(ImageF(width, height));
+		linear.push_back(ImageF(width, height));
+
+		for (size_t y = 0; y < height; ++y) {
+			float* const BUTTERAUGLI_RESTRICT row_r = linear[0].Row(y);
+			float* const BUTTERAUGLI_RESTRICT row_g = linear[1].Row(y);
+			float* const BUTTERAUGLI_RESTRICT row_b = linear[2].Row(y);
+
+			for (size_t x = 0; x < width; ++x) {
+				auto p = rgb + (y * width + x) * 4;
+				auto alpha = p[3];
+
+				row_r[x] = ToLiner(p[0], alpha, background);
+				row_g[x] = ToLiner(p[1], alpha, background);
+				row_b[x] = ToLiner(p[2], alpha, background);
+			}
+		}
+	}
+
+public:
+
+	ButteraugliDiff(string image, size_t width, size_t height, int background) {
+		this->width = width;
+		this->height = height;
+		this->background = background;
+		FromSrgbToLinear(image.data(), reference);
+	}
+
+	double Compare(string image, float hfAsymmetry, ImageF& diffMap) {
+		vector<ImageF> linear;
+		FromSrgbToLinear(image.data(), linear);
+
+		ButteraugliDiffmap(reference, linear, hfAsymmetry, diffMap);
+		return ButteraugliScoreFromDiffmap(diffMap);
+	}
+};
+
 
 void Butteraugli(TwoImages images, ButteraugliOptions options, double& diff_value, vector<uint8_t>& heatMap) {
 	const auto length = images.dataA.length();
@@ -139,21 +143,22 @@ void Butteraugli(TwoImages images, ButteraugliOptions options, double& diff_valu
 	const auto height = images.height;
 
 	ImageF diff_map, diff_map_on_white;
-	diff_value = Calc(images.dataA, images.dataB, width, height, 0, options.hfAsymmetry, diff_map);
+
+	ButteraugliDiff diff = ButteraugliDiff(images.dataA, width, height, 0);
+	diff_value = diff.Compare(images.dataB, options.hfAsymmetry, diff_map);
+
+	diff = ButteraugliDiff(images.dataA, width, height, 255);
+	auto diff_value_on_white = diff.Compare(images.dataB, options.hfAsymmetry, diff_map_on_white);
 
 	ImageF* diff_map_ptr = &diff_map;
-	if (length / width / height == 4) {
-		double diff_value_on_white = Calc(images.dataA, images.dataB, width, height, 255, options.hfAsymmetry, diff_map_on_white);
-
-		if (diff_value_on_white > diff_value) {
-			diff_value = diff_value_on_white;
-			diff_map_ptr = &diff_map_on_white;
-		}
+	if (diff_value_on_white > diff_value) {
+		diff_value = diff_value_on_white;
+		diff_map_ptr = &diff_map_on_white;
 	}
 
 	const double good_quality = ButteraugliFuzzyInverse(options.goodQualitySeek);
 	const double bad_quality = ButteraugliFuzzyInverse(options.badQualitySeek);
-	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, width, height, options.ensureAlpha, &heatMap);
+	CreateHeatMapImage(*diff_map_ptr, good_quality, bad_quality, &heatMap);
 }
 
 double GetMSE(TwoImages images) {

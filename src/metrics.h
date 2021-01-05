@@ -16,7 +16,6 @@ struct ButteraugliOptions {
 	float hfAsymmetry;
 	double goodQualitySeek;
 	double badQualitySeek;
-	bool ensureAlpha;
 };
 
 void Butteraugli(
