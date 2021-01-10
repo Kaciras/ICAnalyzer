@@ -1,5 +1,5 @@
 import { join } from "path";
-import sharp from "sharp";
+import sharp, { Raw } from "sharp";
 
 export function fixturePath(name: string) {
 	return join(__dirname, "fixtures", name);
@@ -20,4 +20,10 @@ export async function readImage(name: string, scale = 1.0) {
 
 	const returnValue = { data, width: info.width, height: info.height };
 	return returnValue as unknown as ImageData;
+}
+
+export function saveImage(file: string, buffer: ArrayBuffer, width: number, height: number) {
+	const channels = buffer.byteLength / width / height;
+	const raw = { width, height, channels } as Raw;
+	return sharp(Buffer.from(buffer), { raw }).png().toFile(file);
 }

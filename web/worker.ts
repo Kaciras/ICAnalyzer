@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import * as Similarity from "../lib/similarity";
-import { ButteraugliOptions, SSIMOptions } from "../lib/similarity";
+import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../lib/similarity";
 import wasmUrl from "../lib/metrics.wasm";
 import * as WebPEncoder from "./codecs/webp/encoder";
 import * as WebPDecoder from "./codecs/webp/decoder";
@@ -8,6 +8,7 @@ import * as AVIFEncoder from "./codecs/avif/encoder";
 import * as AVIFDecoder from "./codecs/avif/decoder";
 
 let data: ImageData;
+let butteraugli: Butteraugli;
 
 async function timed(func: () => Promise<ArrayBuffer>) {
 	const start = performance.now();
@@ -34,7 +35,10 @@ const workerApi = {
 
 	async calcButteraugli(image: ImageData, options?: ButteraugliOptions) {
 		await Similarity.initWasmModule(wasmUrl);
-		return Similarity.butteraugli(data, image, options);
+		if (!butteraugli) {
+			butteraugli = new Butteraugli(data);
+		}
+		return butteraugli.diff(image, options);
 	},
 
 	async webpEncode(options: WebPEncoder.EncodeOptions) {

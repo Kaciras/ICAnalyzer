@@ -1,6 +1,5 @@
-import sharp from "sharp";
-import { butteraugli, getPSNR, getSSIM, initWasmModule } from "../lib/similarity";
-import { fixturePath, readImage } from "./test-helper";
+import { Butteraugli, getPSNR, getSSIM, initWasmModule } from "../lib/similarity";
+import { readImage } from "./test-helper";
 
 let image0: ImageData;
 let image1: ImageData;
@@ -22,7 +21,10 @@ it("should check image data have same length", () => {
 		width: 30,
 		height: 10,
 	};
-	return expect(() => butteraugli(dataA, dataB)).toThrow();
+
+	const comparator = new Butteraugli(dataA);
+	expect(() => comparator.diff(dataB)).toThrow();
+	comparator.close();
 });
 
 it("should check image is RGB", () => {
@@ -36,37 +38,30 @@ it("should check image is RGB", () => {
 		width: 30,
 		height: 20,
 	};
-	return expect(() => butteraugli(dataA, dataB)).toThrow();
+
+	const comparator = new Butteraugli(dataA);
+	expect(() => comparator.diff(dataB)).toThrow();
+	comparator.close();
 });
 
 it("should get butteraugli source & heatMap", async () => {
 	const correctHeatMap = (await readImage("heatMap.png")).data;
+	const comparator = new Butteraugli(image0);
 
-	const [source, heatMap] = await butteraugli(image0, image1);
+	const [source, heatMap] = comparator.diff(image1);
+	comparator.close();
 
 	expect(source).toBeCloseTo(3.297, 2);
-	expect(heatMap.byteLength).toBe(image0.width * image0.height * 3);
-	expect(Buffer.from(heatMap)).toStrictEqual(correctHeatMap);
-});
-
-it("should support return RGBA in HeatMap", async () => {
-	const correctHeatMap = await sharp(fixturePath("heatMap.png"))
-		.ensureAlpha()
-		.raw()
-		.toBuffer();
-
-	const [, heatMap] = await butteraugli(image0, image1, { ensureAlpha: true });
-
 	expect(heatMap.byteLength).toBe(image0.width * image0.height * 4);
 	expect(Buffer.from(heatMap)).toStrictEqual(correctHeatMap);
 });
 
-it("should get PSNR", async () => {
-	const psnr = await getPSNR(image0, image1);
-	expect(psnr).toBeCloseTo(35.778, 2);
+it("should get PSNR", () => {
+	const psnr = getPSNR(image0, image1);
+	expect(psnr).toBeCloseTo(37.031, 2);
 });
 
-it("should get SSIM", async () => {
-	const ssim = await getSSIM(image0, image1);
-	expect(ssim).toBeCloseTo(0.99783, 4);
+it("should get SSIM", () => {
+	const ssim = getSSIM(image0, image1);
+	expect(ssim).toBeCloseTo(0.97137869478362, 8);
 });

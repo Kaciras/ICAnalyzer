@@ -1,4 +1,4 @@
-import metrics, { FullButteraugliOptions, MetricsModule } from "./metrics";
+import metrics, { ButteraugliDiff, FullButteraugliOptions, MetricsModule } from "./diff";
 import ssim, { Options } from "ssim.js";
 
 export type ButteraugliOptions = Partial<FullButteraugliOptions>;
@@ -9,7 +9,6 @@ export const defaultButteraugliOptions: FullButteraugliOptions = {
 	hfAsymmetry: 1.0,
 	goodQualitySeek: 1.5,
 	badQualitySeek: 0.5,
-	ensureAlpha: false,
 };
 
 let loadPromise: Promise<void> | undefined;
@@ -29,9 +28,10 @@ export function initWasmModule(wasmUrl?: string) {
 	return loadPromise = init.then(m => { wasmModule = m; });
 }
 
-function checkImages(image0: ImageData, image1: ImageData) {
+function check(image0: ImageData, image1: ImageData) {
 	const len0 = image0.data.byteLength;
 	const len1 = image1.data.byteLength;
+
 	if (len0 !== len1) {
 		throw new Error(`Image data have different length ${len0} vs. ${len1}`);
 	}
@@ -49,39 +49,55 @@ function checkImages(image0: ImageData, image1: ImageData) {
 	}
 }
 
-function toWasmType(image0: ImageData, image1: ImageData) {
-	return {
-		dataA: image0.data,
-		dataB: image1.data,
-		width: image0.width,
-		height: image0.height,
-	};
-}
+export class Butteraugli {
 
-export function butteraugli(image0: ImageData, image1: ImageData, options?: ButteraugliOptions) {
-	if (!loadPromise) {
-		throw new Error("Wasm module not load");
-	}
-	checkImages(image0, image1);
+	private readonly native: ButteraugliDiff;
+	private readonly reference: ImageData;
 
-	const merged = { ...defaultButteraugliOptions, ...options };
+	constructor(image: ImageData) {
+		this.reference = image;
+		this.native = new wasmModule.ButteraugliDiff(image);
+	}
 
-	if (merged.badQualitySeek < 0 || merged.badQualitySeek >= 2) {
-		throw new Error("badQualitySeek must between 0, 2");
+	close() {
+		this.native.delete();
 	}
-	if (merged.goodQualitySeek < 0 || merged.goodQualitySeek >= 2) {
-		throw new Error("goodQualitySeek must between 0, 2");
+
+	diff(image: ImageData, options?: ButteraugliOptions) {
+		if (!loadPromise) {
+			throw new Error("Wasm module not load");
+		}
+		check(this.reference, image);
+
+		const merged = { ...defaultButteraugliOptions, ...options };
+
+		if (merged.badQualitySeek < 0 || merged.badQualitySeek >= 2) {
+			throw new Error("badQualitySeek must between 0, 2");
+		}
+		if (merged.goodQualitySeek < 0 || merged.goodQualitySeek >= 2) {
+			throw new Error("goodQualitySeek must between 0, 2");
+		}
+
+		return this.native.Diff(image.data, merged);
 	}
-	return wasmModule.GetButteraugli(toWasmType(image0, image1), merged);
 }
 
 export function getPSNR(image0: ImageData, image1: ImageData) {
 	if (!wasmModule) {
 		throw new Error("Wasm module not loaded");
 	}
-	checkImages(image0, image1);
-	const mse = wasmModule.GetMSE(toWasmType(image0, image1));
-	return 10 * Math.log10(255 * 255 / mse);
+	check(image0, image1);
+
+	const dataA = image0.data;
+	const dataB = image1.data;
+	const { length } = dataA;
+
+	let sse = 0;
+	for (let i = 0; i < length; i++) {
+		const e = dataA[i] - dataB[i];
+		sse += e * e;
+	}
+	return 10 * Math.log10(255 * 255 / sse * length);
 }
 
 export function getSSIM(image0: ImageData, image1: ImageData, options?: SSIMOptions) {
