@@ -1,7 +1,7 @@
 import * as Comlink from "comlink";
 import * as Similarity from "../lib/similarity";
 import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../lib/similarity";
-import wasmUrl from "../lib/metrics.wasm";
+import wasmUrl from "../lib/diff.wasm";
 import * as WebPEncoder from "./codecs/webp/encoder";
 import * as WebPDecoder from "./codecs/webp/decoder";
 import * as AVIFEncoder from "./codecs/avif/encoder";

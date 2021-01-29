@@ -1,6 +1,6 @@
 import React, { Dispatch, useState } from "react";
 import { decode } from "../decode";
-import { AnalyzeConfig, BatchEncoder } from "../encode";
+import { AnalyzeConfig, BatchEncodeAnalyzer } from "../encode";
 import { Result } from "./App";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog from "./ConfigDialog";
@@ -17,7 +17,7 @@ export default function CompressSession(props: Props) {
 	const [image, setImage] = useState<ImageData>();
 	const [selectFile, setSelectFile] = useState(true);
 
-	const [encoder, setEncoder] = useState<BatchEncoder | null>(null);
+	const [encoder, setEncoder] = useState<BatchEncodeAnalyzer | null>(null);
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 

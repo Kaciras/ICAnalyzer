@@ -132,7 +132,7 @@ export default function ImageView(props: ImageViewProps) {
 					<ImageViewTab
 						target={ViewType.Compressed}
 					>
-						Compressed
+						Output
 					</ImageViewTab>
 					<ImageViewTab
 						target={ViewType.AbsDiff}

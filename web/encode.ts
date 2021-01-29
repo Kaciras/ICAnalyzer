@@ -42,11 +42,11 @@ export interface ConvertOutput {
 }
 
 export function newWorker() {
-	// @ts-ignore ts-loader will convert files to ES module.
+	// @ts-ignore ts-loader will convert the file to ES module.
 	return new Worker(new URL("./worker", import.meta.url));
 }
 
-export class BatchEncoder {
+export class BatchEncodeAnalyzer {
 
 	readonly progressMax: number;
 
