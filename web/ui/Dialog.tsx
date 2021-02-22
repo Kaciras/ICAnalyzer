@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useLayoutEffect } from "react";
+import { ReactNode, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { NOOP } from "../utils";

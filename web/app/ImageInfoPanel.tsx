@@ -1,4 +1,3 @@
-import React from "react";
 import { bytes } from "../utils";
 import Styles from "./ImageInfoPanel.scss";
 

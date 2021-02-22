@@ -1,4 +1,4 @@
-import React, { SelectHTMLAttributes } from "react";
+import { SelectHTMLAttributes } from "react";
 import Styles from "./SelectBox.scss";
 import CaretDownIcon from "bootstrap-icons/icons/caret-down-fill.svg";
 

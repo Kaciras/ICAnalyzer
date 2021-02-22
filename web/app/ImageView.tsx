@@ -1,4 +1,4 @@
-import React, { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
+import { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput, PinchZoom } from "../ui";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { IconButtonProps } from "../ui/IconButton";

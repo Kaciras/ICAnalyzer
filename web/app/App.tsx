@@ -1,16 +1,17 @@
-import React, { ChangeEvent, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import GitHubIcon from "../assets/github-logo.svg";
-import { IconButton, RangeInput } from "../ui";
+import { IconButton } from "../ui";
 import CompressSession from "./CompressSession";
 import Chart from "./Chart";
 import style from "./App.scss";
 import ImageView from "./ImageView";
 import { ConvertOutput } from "../encode";
 import { ImageEncoder } from "../codecs";
-import * as WebP from "../codecs/webp";
+import ControlPanel from "./ControlPanel";
+import * as WebP from "../codecs/webp/client";
 
 export interface InputImage {
 	file: File;

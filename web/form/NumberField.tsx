@@ -1,7 +1,7 @@
 import { Field, FieldProps } from "./base";
 import style from "../app/App.scss";
 import { RangeInput } from "../ui";
-import React, { Dispatch } from "react";
+import { Dispatch } from "react";
 
 interface NumberVariable {
 	min: number;

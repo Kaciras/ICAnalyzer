@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckBox, RadioBox } from "../ui";
 import { OptionType } from "../app/OptionTemplate";
 

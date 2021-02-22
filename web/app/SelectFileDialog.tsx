@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
 import { Button, Dialog } from "../ui";

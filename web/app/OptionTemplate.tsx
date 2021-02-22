@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactElement } from "react";
+import { Dispatch, ReactElement } from "react";
 import { NumberInput } from "../ui";
 
 export interface OptionType<F, V> {

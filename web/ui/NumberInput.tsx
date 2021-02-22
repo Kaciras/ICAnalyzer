@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ChangeEventHandler, Dispatch, useState } from "react";
+import { ChangeEvent, ChangeEventHandler, Dispatch, useState } from "react";
 import clsx from "clsx";
 import Style from "./NumberInput.scss";
 

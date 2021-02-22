@@ -1,4 +1,4 @@
-import React, { CSSProperties, FormEvent } from "react";
+import { CSSProperties, FormEvent } from "react";
 import Styles from "./RangeInput.scss";
 
 interface Props {

@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, ReactNode } from "react";
+import { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
 import Styles from "./Button.scss";
 import { avoidMouseFocus } from "./common";

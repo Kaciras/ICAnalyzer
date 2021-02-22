@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Styles from "./DemoButton.scss";
 
 interface DemoButtonProps {

@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactNode } from "react";
+import { Dispatch, ReactNode } from "react";
 
 type PointerMoveHandler = (dx: number, dy: number) => void;
 

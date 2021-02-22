@@ -1,4 +1,4 @@
-import React, { Dispatch, useState } from "react";
+import { Dispatch, useState } from "react";
 import { decode } from "../decode";
 import { AnalyzeConfig, BatchEncodeAnalyzer } from "../encode";
 import { Result } from "./App";

@@ -1,5 +1,4 @@
 import { CheckBox } from "../ui";
-import React from "react";
 import { OptionType } from "../app/OptionTemplate";
 
 export class BooleanTemplate implements OptionType<boolean, void> {

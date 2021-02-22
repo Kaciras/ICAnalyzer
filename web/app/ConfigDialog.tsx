@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/webP/shared/meta.ts";
 import { OptionTemplate } from "../codecs";

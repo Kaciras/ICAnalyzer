@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ComponentType, Dispatch, ReactNode } from "react";
+import { ChangeEvent, ComponentType, Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { NOOP } from "../utils";
 import Styles from "./CheckBoxBase.scss";

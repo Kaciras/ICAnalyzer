@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ECharts, init } from "echarts";
 import { InputImage } from "./App";
 import Styles from "./Chart.scss";
