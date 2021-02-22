@@ -17,12 +17,14 @@ jobs:
         with:
           submodules: true
 
-      - run: npm ci
+      - run: npm i -g pnpm
+
+      - run: pnpm i --frozen-lockfile
 
       - name: Build webpack bundle
-        run: npm run build
+        run: pnpm run build
 
       - name: Test
-        run: npm run test
+        run: pnpm run test
         env:
           CI: true
