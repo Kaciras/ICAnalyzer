@@ -1,6 +1,6 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
-import { OptionTemplate } from "../index";
+import { ControlProps, OptionListProps, OptionTemplate } from "../index";
 import { NumberRangeTemplate } from "../../app/OptionTemplate";
 import { EnumTemplate } from "../../form/EnumField";
 
@@ -53,3 +53,16 @@ export const optionTemplate: OptionTemplate[] = [
 		type: new EnumTemplate(Subsampling, "YUV420"),
 	},
 ];
+
+
+export function getDefaultOptions() {
+	return <div/>;
+}
+
+export function OptionsPanel(props: OptionListProps) {
+	return <div/>;
+}
+
+export function Controls(props: ControlProps) {
+	return <div/>;
+}

@@ -1,6 +1,6 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
-import { OptionTemplate } from "../index";
+import { ControlProps, OptionListProps, OptionTemplate } from "../index";
 import { EncodeOptions } from "./encoder";
 import { NumberRangeTemplate } from "../../app/OptionTemplate";
 import { BooleanTemplate } from "../../form/BooleanField";
@@ -14,7 +14,12 @@ export function encode(options: any, worker: Remote<WorkerApi>) {
 	return worker.webpEncode(options);
 }
 
-const WebPImageHint = { DEFAULT: 0, PICTURE: 1, PHOTO: 2, GRAPH: 3 };
+const WebPImageHint = {
+	DEFAULT: 0,
+	PICTURE: 1,
+	PHOTO: 2,
+	GRAPH: 3,
+};
 
 // https://github.com/webmproject/libwebp/blob/83604bf3ac2212a353c53d8c9df35d94fa9ab000/src/enc/config_enc.c#L62
 const WebPPreset = {
@@ -113,3 +118,17 @@ export const optionTemplate: OptionTemplate[] = [
 		type: new EnumTemplate(WebPImageHint, "DEFAULT"),
 	},
 ];
+
+export function getDefaultOptions() {
+	return <div/>;
+}
+
+export function OptionsPanel(props: OptionListProps) {
+	const { options, onChange } = props;
+
+	return <div>test</div>;
+}
+
+export function Controls(props: ControlProps) {
+	return <div/>;
+}

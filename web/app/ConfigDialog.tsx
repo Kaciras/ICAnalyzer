@@ -1,38 +1,35 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { defaultOptions, EncodeOptions } from "squoosh/src/codecs/webp/encoder-meta";
-import { WebPOptionsTemplate } from "../codecs";
-import { MeasureOptions } from "../encode";
-import Styles from "./ConfigDialog.scss";
-import OptionsDialog, { OptionsInstance } from "./OptionsPanel";
-import { Dialog, Button } from "../ui";
+import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/webP/shared/meta.ts";
+import { OptionTemplate } from "../codecs";
+import { AnalyzeConfig, MeasureOptions } from "../encode";
+import * as WebP from "../codecs/webp/client";
+import { Button, Dialog } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel from "./MetricsPanel";
+import Styles from "./ConfigDialog.scss";
+import EncoderPanel from "./EncoderPanel";
+import PreprocessPanel from "./PreprocessPanel";
 
 interface Props {
 	image: ImageData;
 	file: File;
-	onStart: (optionsList: any[], measure: MeasureOptions, workerCount: number) => void;
+	onStart: (config: AnalyzeConfig) => void;
 	onClose: () => void;
 	onSelectFile: () => void;
 }
 
-/**
- * Get available logic processor count.
- */
-function cpuCount() {
-	return navigator.hardwareConcurrency || 4;
+function createInitState(template: OptionTemplate[]) {
+
 }
 
 export default function ConfigDialog(props: Props) {
 	const { file, image, onStart, onClose, onSelectFile } = props;
 
-	const [vars, setVars] = useState<string[]>(() => WebPOptionsTemplate
-		.filter(t => t.defaultVariable).map(t => t.name));
+	const [options, setOptions] = useState<any>({});
 
-	const [options, setOptions] = useState<OptionsInstance>({});
+	const [workerCount, setWorkerCount] = useState(navigator.hardwareConcurrency);
 
-	const [workerCount, setWorkerCount] = useState(cpuCount);
 	const [measure, setMeasure] = useState<MeasureOptions>({
 		time: false,
 		SSIM: false,
@@ -40,18 +37,23 @@ export default function ConfigDialog(props: Props) {
 		butteraugli: false,
 	});
 
-	// TODO: stub options
+	// TODO: WIP
 	async function start() {
 		const optionsList = new Array<EncodeOptions>(101);
 		for (let i = 0; i < 101; i++) {
-			optionsList[i] = { ...defaultOptions, quality: i };
+			optionsList[i] = { ...defaultOptions, quality: i, use_sharp_yuv: 1 };
 		}
-		onStart(optionsList, measure, workerCount);
+		onStart({
+			encoder: WebP,
+			optionsList,
+			measure,
+			threads: workerCount,
+		});
 	}
 
 	const [index, setIndex] = useState(0);
 
-	const panels = ["Select File", "Options", "Metrics"];
+	const panels = ["Information", "Preprocess", "Encoders", "Measure"];
 
 	const tabs = [];
 	for (let i = 0; i < panels.length; i++) {
@@ -70,13 +72,12 @@ export default function ConfigDialog(props: Props) {
 			/>;
 			break;
 		case 1:
-			panel = <OptionsDialog
-				vars={vars}
-				options={options}
-				onVarsChange={setVars}
-			/>;
+			panel = <PreprocessPanel/>;
 			break;
 		case 2:
+			panel = <EncoderPanel onChange={setOptions}/>;
+			break;
+		case 3:
 			panel = <MetricsPanel
 				workerCount={workerCount}
 				options={measure}
