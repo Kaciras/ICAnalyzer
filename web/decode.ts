@@ -1,5 +1,5 @@
 import { wrap } from "comlink";
-import { blobToImg, drawableToImageData } from "squoosh/src/lib/util";
+import { blobToImg, drawableToImageData } from "squoosh/src/client/lazy-app/util";
 import { WorkerApi } from "./worker";
 import { detectAVIFSupport, detectWebPSupport } from "./utils";
 import { newWorker } from "./encode";
