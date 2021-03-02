@@ -1,14 +1,6 @@
 .iconButton {
-	display: inline-block;
+	display: inline-flex;
 	padding: 10px;
-	color: #999;
-
-	// Avoid +1px height for <a> on chrome
-	line-height: 1;
-}
-
-// <a> does not support :enabled
-.iconButton:not([disabled]) {
 	color: inherit;
 
 	&:hover, &:focus {
@@ -21,6 +13,18 @@
 
 	&:focus {
 		outline: 1px white dotted;
+	}
+
+	// Avoid +1px height for <a> on chrome
+	line-height: 1;
+}
+
+// <a> does not support :enabled
+.iconButton[disabled] {
+	color: #999;
+
+	&:hover, &:active {
+		background: none;
 	}
 }
 
