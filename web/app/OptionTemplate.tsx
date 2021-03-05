@@ -1,78 +1,152 @@
-import { Dispatch, ReactElement } from "react";
-import { NumberInput } from "../ui";
+import { ChangeEvent, Dispatch } from "react";
+import { CheckBox, NumberInput, RangeInput } from "../ui";
+import { State } from "../codecs";
 
-export interface OptionType<F, V> {
-
-	newValue(): F;
-
-	ValueField(template: any, value: any, onChange: Dispatch<any>): ReactElement;
-
-	newVariable(): V;
-
-	VariableField(template: any, value: any, onChange: Dispatch<any>): ReactElement;
-
-	generate(name: string, options: any, value: V): Iterable<any>;
+interface StateProps {
+	state: State;
+	onChange: Dispatch<any>;
 }
 
-export class NumberRangeTemplate implements OptionType<any, any> {
+export interface OptionType {
 
-	readonly min: number;
-	readonly max: number;
-	readonly defaultValue: number;
+	ValueField(props: StateProps): JSX.Element;
 
-	constructor(min: number, max: number, defaultValue: number) {
-		this.min = min;
-		this.max = max;
-		this.defaultValue = defaultValue;
-	}
+	OptionField(props: StateProps): JSX.Element;
 
-	newValue() {
-		return this.defaultValue;
-	}
+	generate(state: any, prev: any): Iterable<any>;
+}
 
-	ValueField(name: string, value: number) {
-		const { min, max } = this;
+interface NumberRangeAttrs {
+	min: number;
+	max: number;
+	step: number;
+}
+
+interface Metadata extends NumberRangeAttrs {
+	property: string;
+	label: string;
+	defaultValue: number;
+}
+
+export default function numberRange(data: Metadata): OptionType<any, any> {
+	const { property, label, min, max, step, defaultValue } = data;
+
+	function ValueField(props: StateProps) {
+		const { state, onChange } = props;
+
+		const value = (state.values[property] ?? defaultValue) as number;
+
+		function handleChange(e: ChangeEvent<HTMLInputElement>) {
+			const newVal = e.currentTarget.valueAsNumber;
+			const copy = { ...state };
+			copy.values[property] = newVal;
+			onChange(copy);
+		}
+
 		return (
 			<label>
-				<p>{name}</p>
-				<input type="number" min={min} max={max} value={value}/>
+				<p>{property}</p>
+				<RangeInput
+					value={value}
+					min={min}
+					max={max}
+					step={step}
+					onChange={handleChange}
+				/>
 			</label>
 		);
 	}
 
-	newVariable() {
-		return {
-			min: this.min,
-			max: this.max,
-			step: 1,
-		};
-	}
+	function VariableField(props: StateProps) {
+		const { state, onChange } = props;
 
-	VariableField(name: string, value: any) {
-		const { min, max } = this;
+		const a = (state.variables[property] ?? data) as NumberRangeAttrs;
+		const {
+			min: localMin,
+			max: localMax,
+			step: localStep,
+		} = a;
+
+		function handleChange(e: ChangeEvent<HTMLInputElement>) {
+			const { valueAsNumber, name } = e.currentTarget;
+			(a as any)[name] = valueAsNumber;
+
+			const copy = { ...state };
+			copy.variables[property] = a;
+			onChange(copy);
+		}
+
 		return (
 			<div>
-				<p>{name}</p>
+				<p>{property}</p>
 				<label>
 					<span>from:</span>
-					<NumberInput value={value.min} min={min} max={max}/>
+					<NumberInput
+						name="min"
+						value={localMin}
+						min={min}
+						max={max}
+						step={step}
+						onChange={handleChange}
+					/>
 				</label>
 				<label>
 					<span>to:</span>
-					<input type="number" min={min} max={max} value={value.max}/>
+					<NumberInput
+						name="max"
+						value={localMax}
+						min={min}
+						max={max}
+						step={step}
+						onChange={handleChange}
+					/>
 				</label>
 				<label>
 					<span>step:</span>
-					<input type="number" min={min} max={max} value={value.step}/>
+					<NumberInput
+						name="step"
+						value={localStep}
+						min={min}
+						max={max}
+						step={step}
+						onChange={handleChange}
+					/>
 				</label>
 			</div>
 		);
 	}
 
-	* generate(name: string, options: any, value: any): Iterable<any> {
-		const { min, max, step } = value;
+	function OptionField(props: StateProps) {
+		const { state, onChange } = props;
+
+		const checked = state.varNames.includes(property);
+
+		function handleChange(e: ChangeEvent<HTMLInputElement>) {
+			if (e.currentTarget.checked) {
+				state.varNames.push(property);
+			} else {
+				state.varNames = state.varNames.filter(v => v != property);
+			}
+			onChange({ ...state });
+		}
+
+		return (
+			<div>
+				<div>
+					<p>{property}</p>
+					<CheckBox checked={checked} onChange={handleChange}/>
+				</div>
+				{checked ? VariableField(props) : ValueField(props)}
+			</div>
+		);
+	}
+
+	function* generate(state: State, prev: any) {
+		const { min, max, step } = state.variables[property] as NumberRangeAttrs;
 		for (let i = min; i < max; i += step) {
-			yield { ...options, [name]: i };
+			yield { ...prev, [property]: i };
 		}
 	}
+
+	return { ValueField, OptionField, generate };
 }

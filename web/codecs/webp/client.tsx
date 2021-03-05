@@ -1,18 +1,14 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
-import { ControlProps, OptionListProps, OptionTemplate } from "../index";
+import { ControlProps, OptionListProps, State } from "../index";
 import { EncodeOptions } from "./encoder";
-import { NumberRangeTemplate } from "../../app/OptionTemplate";
-import { BooleanTemplate } from "../../form/BooleanField";
+import numberRange from "../../app/OptionTemplate";
 import { EnumTemplate } from "../../form/EnumField";
+import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
 export const extension = "webp";
-
-export function encode(options: any, worker: Remote<WorkerApi>) {
-	return worker.webpEncode(options);
-}
 
 const WebPImageHint = {
 	DEFAULT: 0,
@@ -65,70 +61,96 @@ class WebPMode extends EnumTemplate<string> {
 	}
 }
 
-export const optionTemplate: OptionTemplate[] = [
-	// {
-	// 	label: "Mode",
-	// 	name: "mode",
-	// 	type:
-	// },
-	{
-		label: "Quality (-q)",
-		name: "quality",
-		type: new NumberRangeTemplate(0, 100, 75),
-		defaultVariable: true,
-	},
-	{
-		label: "Method (-m)",
-		name: "method",
-		type: new NumberRangeTemplate(0, 6, 4),
-	},
-	{
-		label: "Spatial noise shaping (-sns)",
-		name: "sns",
-		type: new NumberRangeTemplate(0, 100, 50),
-	},
-	{
-		label: "Filter strength (-f)",
-		name: "filter_strength",
-		type: new NumberRangeTemplate(0, 100, 60),
-	},
-	{
-		label: "Preset (-preset)",
-		name: "preset",
-		type: new EnumTemplate(WebPPreset, "default"),
-	},
-	{
-		label: "User strong filter (-strong)",
-		name: "filter_type",
-		type: new BooleanTemplate(true),
-	},
-	{
-		label: "Auto adjust filter strength (-af)",
-		name: "autofilter",
-		type: new BooleanTemplate(false),
-	},
-	{
-		label: "Filter sharpness (-sharpness)",
-		name: "filter_sharpness",
-		type: new NumberRangeTemplate(0, 7, 0),
-	},
-	{
-		label: "Hint (-hint)",
-		name: "image_hint",
-		type: new EnumTemplate(WebPImageHint, "DEFAULT"),
-	},
-];
+//
+// export const optionTemplate: OptionTemplate[] = [
+// 	{
+// 		label: "Mode",
+// 		name: "mode",
+// 		type:
+// 	},
+// 	{
+// 		label: "Quality (-q)",
+// 		name: "quality",
+// 		type: new NumberRangeTemplate(0, 100, 75),
+// 		defaultVariable: true,
+// 	},
+// 	{
+// 		label: "Method (-m)",
+// 		name: "method",
+// 		type: new NumberRangeTemplate(0, 6, 4),
+// 	},
+// 	{
+// 		label: "Spatial noise shaping (-sns)",
+// 		name: "sns",
+// 		type: new NumberRangeTemplate(0, 100, 50),
+// 	},
+// 	{
+// 		label: "Filter strength (-f)",
+// 		name: "filter_strength",
+// 		type: new NumberRangeTemplate(0, 100, 60),
+// 	},
+// 	{
+// 		label: "Preset (-preset)",
+// 		name: "preset",
+// 		type: new EnumTemplate(WebPPreset, "default"),
+// 	},
+// 	{
+// 		label: "User strong filter (-strong)",
+// 		name: "filter_type",
+// 		type: new BooleanTemplate(true),
+// 	},
+// 	{
+// 		label: "Auto adjust filter strength (-af)",
+// 		name: "autofilter",
+// 		type: new BooleanTemplate(false),
+// 	},
+// 	{
+// 		label: "Filter sharpness (-sharpness)",
+// 		name: "filter_sharpness",
+// 		type: new NumberRangeTemplate(0, 7, 0),
+// 	},
+// 	{
+// 		label: "Hint (-hint)",
+// 		name: "image_hint",
+// 		type: new EnumTemplate(WebPImageHint, "DEFAULT"),
+// 	},
+// ];
 
-export function getDefaultOptions() {
-	return <div/>;
+export function getDefaultOptions(): State {
+	return {
+		varNames: [],
+		values: defaultOptions,
+		variables: {},
+	};
 }
 
-export function OptionsPanel(props: OptionListProps) {
-	const { options, onChange } = props;
+const Quality = numberRange({
+	property: "quality",
+	label: "Quality (-q)",
+	min: 0,
+	max: 100,
+	step: 1,
+	defaultValue: defaultOptions.quality,
+});
 
-	return <div>test</div>;
+export function OptionsPanel(props: OptionListProps) {
+	const { state = getDefaultOptions(), onChange } = props;
+
+	return <><Quality.OptionField state={state} onChange={onChange}/></>;
 }
 
 export function Controls(props: ControlProps) {
 	return <div/>;
+}
+
+export function getOptionsList(state: any) {
+	const optionsList = new Array<EncodeOptions>(101);
+	for (let i = 0; i < 101; i++) {
+		optionsList[i] = { ...defaultOptions, quality: i, use_sharp_yuv: 1 };
+	}
+	return optionsList;
+}
+
+export function encode(options: any, worker: Remote<WorkerApi>) {
+	return worker.webpEncode(options);
 }
