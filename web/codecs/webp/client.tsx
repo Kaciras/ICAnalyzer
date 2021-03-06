@@ -2,9 +2,9 @@ import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
 import { ControlProps, OptionListProps, State } from "../index";
 import { EncodeOptions } from "./encoder";
-import numberRange from "../../app/OptionTemplate";
 import { EnumTemplate } from "../../form/EnumField";
 import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
+import numberRange from "../../form/NumberField";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -124,31 +124,33 @@ export function getDefaultOptions(): State {
 	};
 }
 
-const Quality = numberRange({
-	property: "quality",
-	label: "Quality (-q)",
-	min: 0,
-	max: 100,
-	step: 1,
-	defaultValue: defaultOptions.quality,
-});
+const template = [
+	numberRange({
+		property: "quality",
+		label: "Quality (-q)",
+		min: 0,
+		max: 100,
+		step: 1,
+		defaultValue: defaultOptions.quality,
+	}),
+];
 
 export function OptionsPanel(props: OptionListProps) {
 	const { state = getDefaultOptions(), onChange } = props;
-
-	return <><Quality.OptionField state={state} onChange={onChange}/></>;
+	const v = template.map(Template => <Template.OptionField state={state} onChange={onChange}/>)
+	return <>{v}</>;
 }
 
 export function Controls(props: ControlProps) {
 	return <div/>;
 }
 
-export function getOptionsList(state: any) {
-	const optionsList = new Array<EncodeOptions>(101);
-	for (let i = 0; i < 101; i++) {
-		optionsList[i] = { ...defaultOptions, quality: i, use_sharp_yuv: 1 };
+export function getOptionsList(state: State) {
+	let result = [{ ... defaultOptions }];
+	for (const t of template) {
+		result = t.generate(state, result[0]);
 	}
-	return optionsList;
+	return result;
 }
 
 export function encode(options: any, worker: Remote<WorkerApi>) {

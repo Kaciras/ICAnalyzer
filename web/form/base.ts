@@ -1,21 +1,16 @@
-import { ReactNode } from "react";
+import { Dispatch } from "react";
+import { State } from "../codecs";
 
-export type OptionsState = Record<string, FieldProps>;
-
-export interface FieldProps {
-	isVariable: boolean;
-	name: string;
+export interface StateProps {
+	state: State;
+	onChange: Dispatch<any>;
 }
 
-export interface FormState {
+export interface OptionType {
 
-}
+	ValueField(props: StateProps): JSX.Element;
 
-export interface Field<T> {
+	OptionField(props: StateProps): JSX.Element;
 
-	createInitState(): T;
-
-	render(props: T): ReactNode;
-
-	generate();
+	generate(state: any, prev: any): any[];
 }
