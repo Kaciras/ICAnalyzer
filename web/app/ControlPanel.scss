@@ -1,0 +1,26 @@
+.variableGroup {
+	composes: controls from global;
+
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 300px;
+	padding: 10px;
+	border-top-left-radius: 4px;
+}
+
+.radioButtonGroup {
+	display: grid;
+	border: solid 1px #ccc;
+	border-top: 0;
+	border-left: 0;
+}
+
+.field {
+
+	border-left: solid 4px transparent;
+
+	&.active {
+		border-left-color: #4d89ff;
+	}
+}

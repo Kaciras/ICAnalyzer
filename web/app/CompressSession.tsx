@@ -1,16 +1,24 @@
 import { Dispatch, useState } from "react";
 import { decode } from "../decode";
-import { AnalyzeConfig, BatchEncodeAnalyzer } from "../encode";
+import { BatchEncodeAnalyzer, ConvertOutput } from "../encode";
 import { Result } from "./App";
 import SelectFileDialog from "./SelectFileDialog";
-import ConfigDialog from "./ConfigDialog";
+import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
+import { ENCODERS, ImageEncoder } from "../codecs";
 
 interface Props {
 	open: boolean;
 	onChange: Dispatch<Result>;
 	onClose: () => void;
 }
+
+type OptKey = string | number;
+
+export type OptionsToResult = Map<OptKey, ConvertOutput>;
+export type EncoderNameToOptions = Map<string, OptionsToResult>;
+export type ImageToEncoderNames = Map<ImageData, EncoderNameToOptions>;
+export type PreprocessToImage = Map<OptKey, ImageToEncoderNames>;
 
 export default function CompressSession(props: Props) {
 	const [file, setFile] = useState<File>();
@@ -40,19 +48,67 @@ export default function CompressSession(props: Props) {
 		if (!file) {
 			throw new Error("File is null");
 		}
-		const image = await decode(file);
-		const encoder = new BatchEncoder(image, config);
+		const { preprocess, encode, threads, measure } = config;
+		const images = [await decode(file)];
 
-		setMax(encoder.progressMax);
+		for (const [name, options] of Object.entries(preprocess)) {
+			// TODO
+		}
+
+		const encoders = ENCODERS.map(enc => enc.name).filter(name => name in encode);
+
+		let outputSizePerImage = 0;
+		const queue: [ImageEncoder, any[]][] = [];
+
+		for (const enc of ENCODERS) {
+			const { name, getOptionsList } = enc;
+			const state = encode[name];
+			if (!state) {
+				continue;
+			}
+			const optList = getOptionsList(state);
+			queue.push([enc, optList]);
+			outputSizePerImage += optList.length;
+		}
+
+		setMax(images.length * outputSizePerImage);
 		setProgress(0);
-		encoder.onProgress = setProgress;
 
-		setEncoder(encoder);
-		const outputs = await encoder.encode();
-		encoder.terminate();
-		setEncoder(null);
+		const iMap: ImageToEncoderNames = new Map();
 
-		props.onChange({ original: { file, data: image }, codec: config.encoder, outputs });
+		for (const image of images) {
+			const eMap: EncoderNameToOptions = new Map();
+			iMap.set(image, eMap);
+
+			for (const [encoder, optionsList] of queue) {
+				const oMap: OptionsToResult = new Map();
+				eMap.set(encoder.name, oMap);
+
+				const worker = new BatchEncodeAnalyzer(image, {
+					encoder,
+					threads,
+					optionsList,
+					measure,
+				});
+
+				setEncoder(worker);
+				const outputs = await worker.encode();
+				worker.terminate();
+				setEncoder(null);
+
+				for (let i = 0; i < optionsList.length; i++) {
+					const k = JSON.stringify(optionsList[i]);
+					oMap.set(k, outputs[i]);
+				}
+			}
+		}
+		// encoder.onProgress = setProgress;
+
+		props.onChange({
+			state: encode,
+			map: iMap,
+			original: { file, data: image! },
+		});
 	}
 
 	function stop() {

@@ -1,15 +1,19 @@
 import { useState } from "react";
 import clsx from "clsx";
-import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/webP/shared/meta.ts";
-import { OptionTemplate } from "../codecs";
-import { AnalyzeConfig, MeasureOptions } from "../encode";
-import * as WebP from "../codecs/webp/client";
+import { MeasureOptions } from "../encode";
 import { Button, Dialog } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel from "./MetricsPanel";
 import Styles from "./ConfigDialog.scss";
-import EncoderPanel from "./EncoderPanel";
-import PreprocessPanel from "./PreprocessPanel";
+import EncoderPanel, { EncodeConfig } from "./EncoderPanel";
+import PreprocessPanel, { PreprocessConfig } from "./PreprocessPanel";
+
+export interface AnalyzeConfig {
+	preprocess: PreprocessConfig;
+	encode: EncodeConfig;
+	threads: number;
+	measure: MeasureOptions;
+}
 
 interface Props {
 	image: ImageData;
@@ -19,14 +23,11 @@ interface Props {
 	onSelectFile: () => void;
 }
 
-function createInitState(template: OptionTemplate[]) {
-
-}
-
 export default function ConfigDialog(props: Props) {
 	const { file, image, onStart, onClose, onSelectFile } = props;
 
-	const [options, setOptions] = useState<any>({});
+	const [encodeConfig, setEncodeConfig] = useState<any>({});
+	const [preprocessConfig, setPreprocessConfig] = useState<any>({});
 
 	const [workerCount, setWorkerCount] = useState(navigator.hardwareConcurrency);
 
@@ -37,18 +38,8 @@ export default function ConfigDialog(props: Props) {
 		butteraugli: false,
 	});
 
-	// TODO: WIP
-	async function start() {
-		const optionsList = new Array<EncodeOptions>(101);
-		for (let i = 0; i < 101; i++) {
-			optionsList[i] = { ...defaultOptions, quality: i, use_sharp_yuv: 1 };
-		}
-		onStart({
-			encoder: WebP,
-			optionsList,
-			measure,
-			threads: workerCount,
-		});
+	function start() {
+		onStart({ encode: encodeConfig, preprocess: {}, measure, threads: workerCount });
 	}
 
 	const [index, setIndex] = useState(0);
@@ -72,10 +63,10 @@ export default function ConfigDialog(props: Props) {
 			/>;
 			break;
 		case 1:
-			panel = <PreprocessPanel/>;
+			panel = <PreprocessPanel onChange={setPreprocessConfig}/>;
 			break;
 		case 2:
-			panel = <EncoderPanel onChange={setOptions}/>;
+			panel = <EncoderPanel value={encodeConfig} onChange={setEncodeConfig}/>;
 			break;
 		case 3:
 			panel = <MetricsPanel
@@ -94,7 +85,7 @@ export default function ConfigDialog(props: Props) {
 			<div className={Styles.header}>{tabs}</div>
 			{panel}
 			<div className="dialog-actions">
-				<Button onClick={onSelectFile}>Select file</Button>
+				<Button onClick={onSelectFile}>Select file...</Button>
 				<Button color="second" onClick={onClose}>Cancel</Button>
 				<Button disabled={!file} onClick={start}>Start</Button>
 			</div>

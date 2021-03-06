@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, Dispatch } from "react";
 import { CheckBox, NumberInput, RangeInput } from "../ui";
 import { State } from "../codecs";
 import { OptionType, StateProps } from "./base";
@@ -13,6 +13,11 @@ interface Metadata extends NumberRangeAttrs {
 	property: string;
 	label: string;
 	defaultValue: number;
+}
+
+interface NumberRangeProps extends NumberRangeAttrs{
+	value: number;
+	onChange: Dispatch<number>;
 }
 
 export default function numberRange(data: Metadata): OptionType {

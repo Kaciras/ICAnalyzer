@@ -1,7 +1,6 @@
 import { Dispatch } from "react";
 import { Remote } from "comlink";
 import { WorkerApi } from "../worker";
-import { ConvertOutput } from "../encode";
 import { OptionType } from "../form/base";
 import * as WebP from "./webp/client";
 
@@ -31,8 +30,8 @@ export interface OptionListProps {
 
 export interface ControlProps {
 	state: State;
-	outputs: ConvertOutput[];
-	onChange: Dispatch<ConvertOutput[]>;
+	onChange: Dispatch<any>;
+	onSeriesChange: Dispatch<any[]>;
 }
 
 export interface ImageEncoder {

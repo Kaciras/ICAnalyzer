@@ -1,8 +1,6 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
 import { ControlProps, OptionListProps, State } from "../index";
-import { EncodeOptions } from "./encoder";
-import { EnumTemplate } from "../../form/EnumField";
 import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 import numberRange from "../../form/NumberField";
 
@@ -52,14 +50,14 @@ const WebPPreset = {
 	},
 };
 
-class WebPMode extends EnumTemplate<string> {
-
-	generate(name: string, options: EncodeOptions, value: any): any[] {
-		if (value.lossless) {
-			options.lossless = 1;
-		}
-	}
-}
+// class WebPMode extends EnumTemplate<string> {
+//
+// 	generate(name: string, options: EncodeOptions, value: any): any[] {
+// 		if (value.lossless) {
+// 			options.lossless = 1;
+// 		}
+// 	}
+// }
 
 //
 // export const optionTemplate: OptionTemplate[] = [
@@ -142,11 +140,12 @@ export function OptionsPanel(props: OptionListProps) {
 }
 
 export function Controls(props: ControlProps) {
+	const { state, onChange, onSeriesChange } = props;
 	return <div/>;
 }
 
 export function getOptionsList(state: State) {
-	let result = [{ ... defaultOptions }];
+	let result = [{ ...defaultOptions }];
 	for (const t of template) {
 		result = t.generate(state, result[0]);
 	}

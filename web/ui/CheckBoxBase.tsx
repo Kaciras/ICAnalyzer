@@ -33,7 +33,7 @@ export default function CheckBoxBase(props: InternalProps) {
 			>
 				{checked ? <IconChecked/> : <Icon/>}
 			</span>
-			<span className={Styles.label}>{children}</span>
+			{ children && <span className={Styles.label}>{children}</span>}
 		</label>
 	);
 }

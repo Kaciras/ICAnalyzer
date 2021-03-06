@@ -6,14 +6,18 @@ import { IconButton } from "../ui";
 import { ENCODERS } from "../codecs";
 import styles from "./EncoderPanel.scss";
 
+export type EncodeConfig = Record<string, any>;
+
 export interface EncoderPanelProps {
-	onChange: Dispatch<any>;
+	value: EncodeConfig;
+	onChange: Dispatch<EncodeConfig>;
 }
 
 export default function EncoderPanel(props: EncoderPanelProps) {
-	const [current, setCurrent] = useState(ENCODERS[0]);
 	const [list, setList] = useState(ENCODERS);
-	const [optionsList, setOptionsList] = useState({});
+	const [stateMap, setStateMap] = useState(props.value);
+
+	const [current, setCurrent] = useState(ENCODERS[0]);
 
 	function showAddList() {
 		// TODO
@@ -54,10 +58,9 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 	});
 
 	function handleOptionChange(value: any) {
-		setOptionsList({
-			...optionsList,
-			[current.name]: value,
-		});
+		const newStateMap = { ...stateMap, [current.name]: value };
+		setStateMap(newStateMap);
+		props.onChange(newStateMap);
 	}
 
 	const { OptionsPanel } = current;
@@ -75,7 +78,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 				</IconButton>
 			</div>
 			<OptionsPanel
-				options={optionsList[current.name]}
+				state={stateMap[current.name]}
 				onChange={handleOptionChange}
 			/>
 		</div>

@@ -4,7 +4,7 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import GitHubIcon from "../assets/github-logo.svg";
 import { IconButton } from "../ui";
-import CompressSession from "./CompressSession";
+import CompressSession, { ImageToEncoderNames } from "./CompressSession";
 import Chart from "./Chart";
 import style from "./App.scss";
 import ImageView from "./ImageView";
@@ -20,27 +20,27 @@ export interface InputImage {
 
 export interface Result {
 	original?: InputImage;
-	codec?: ImageEncoder;
-	outputs: ConvertOutput[];
+	state: Record<string, any>;
+	map: ImageToEncoderNames;
 }
 
 const PLACEHOLDER: Result = {
-	codec: undefined,
 	original: undefined,
-	outputs: [],
+	state: {},
+	map: new Map(),
 };
 
 interface DownloadButtonProps {
 	title?: string;
 	buffer?: ArrayBuffer;
-	encoder?: ImageEncoder;
 	filename?: string;
+	codec: ImageEncoder;
 	children: ReactNode;
 }
 
 function DownloadButton(props: DownloadButtonProps) {
 	const { title, buffer, filename, children } = props;
-	const { mimeType, extension } = props.encoder || {};
+	const { mimeType, extension } = props.codec;
 
 	const [url, setUrl] = useState("");
 	useEffect(() => () => URL.revokeObjectURL(url), []);
@@ -77,25 +77,24 @@ export default function App() {
 
 	const [showChart, setShowChart] = useState(false);
 	const [showDialog, setShowDialog] = useState(true);
-	const [index, setIndex] = useState(0);
+
+	const [image, setImage] = useState<ImageData>();
 	const [series, setSeries] = useState<ConvertOutput[]>([]);
+	const [output, setOutput] = useState<ConvertOutput>();
 
 	async function showResult(result: Result) {
 		setResults(result);
-		setSeries(result.outputs);
-		setIndex(75);
+		setImage(result.map.keys().next().value);
+
 		setShowChart(true);
 		setShowDialog(false);
 	}
 
-	function handleVariableChange(event: ChangeEvent<HTMLInputElement>) {
-		// setSeries(results.outputs);
-		setIndex(event.currentTarget.valueAsNumber);
-	}
+	const index = series.indexOf(output!);
 
 	return (
 		<>
-			<ImageView {...results} optimized={results.outputs[index]}/>
+			<ImageView {...results} optimized={output}/>
 
 			{showChart && <Chart original={results.original} outputs={series} index={index}/>}
 
@@ -126,30 +125,28 @@ export default function App() {
 				<DownloadButton
 					title="Download compressed image"
 					filename={results.original?.file.name}
-					encoder={results.codec}
-					buffer={results.outputs[index]?.buffer}
+					codec={WebP}
+					buffer={output?.buffer}
 				>
 					<DownloadIcon/>
 				</DownloadButton>
 			</div>
 
-			<div className={style.variableGroup}>
-				<label>
-					<p>
-						Quality (-q)
-						<span className={style.optionValue}>{index}</span>
-					</p>
-					<RangeInput
-						value={index}
-						min={0}
-						step={1}
-						max={100}
-						onChange={handleVariableChange}
-					/>
-				</label>
-			</div>
+			{
+				results.original &&
+				<ControlPanel
+					result={results}
+					onImageChange={setImage}
+					onSeriesChange={setSeries}
+					onOutputChange={setOutput}
+				/>
+			}
 
-			{showDialog && <CompressSession onClose={() => setShowDialog(false)} onChange={showResult}/>}
+			<CompressSession
+				open={showDialog}
+				onClose={() => setShowDialog(false)}
+				onChange={showResult}
+			/>
 		</>
 	);
 }
