@@ -2,13 +2,13 @@ import { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput, PinchZoom } from "../ui";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { IconButtonProps } from "../ui/IconButton";
-import { InputImage } from "./App";
 import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encode";
+import { InputImage } from "./index";
 
 interface ImageViewProps {
-	original?: InputImage;
-	optimized?: ConvertOutput;
+	original: InputImage;
+	optimized: ConvertOutput;
 }
 
 export enum ViewType {
@@ -38,7 +38,7 @@ function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>)
 
 export default function ImageView(props: ImageViewProps) {
 	const { original, optimized } = props;
-	const { width = 0, height = 0 } = original?.data || {};
+	const { width = 0, height = 0 } = original.data || {};
 
 	const [type, setType] = useState(ViewType.Compressed);
 	const [brightness, setBrightness] = useState(100);
@@ -49,17 +49,11 @@ export default function ImageView(props: ImageViewProps) {
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
 	function refreshBackCanvas() {
-		if (!original) {
-			return;
-		}
 		setPinchZoom({ x: 0, y: 0, scale: 1 });
 		drawDataToCanvas(original.data, backCanvas);
 	}
 
 	function refreshTopCanvas() {
-		if (!optimized) {
-			return;
-		}
 		const { metrics, data } = optimized;
 
 		const image = type === ViewType.HeatMap
@@ -117,7 +111,7 @@ export default function ImageView(props: ImageViewProps) {
 
 	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
 
-	const noHeatMap = !optimized?.metrics.butteraugli;
+	const noHeatMap = !optimized.metrics.butteraugli;
 	const heatMapTitle = noHeatMap ? "You should enable butteraugli to see this" : undefined;
 
 	return (

@@ -80,6 +80,8 @@ export default function ConfigDialog(props: Props) {
 			throw new Error();
 	}
 
+	const ready = file && Object.keys(encodeConfig).length;
+
 	return (
 		<Dialog className={Styles.dialog} onClose={onClose}>
 			<div className={Styles.header}>{tabs}</div>
@@ -87,7 +89,7 @@ export default function ConfigDialog(props: Props) {
 			<div className="dialog-actions">
 				<Button onClick={onSelectFile}>Select file...</Button>
 				<Button color="second" onClick={onClose}>Cancel</Button>
-				<Button disabled={!file} onClick={start}>Start</Button>
+				<Button disabled={!ready} onClick={start}>Start</Button>
 			</div>
 		</Dialog>
 	);

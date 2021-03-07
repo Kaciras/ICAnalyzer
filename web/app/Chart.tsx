@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { ECharts, init } from "echarts";
-import { InputImage } from "./App";
 import Styles from "./Chart.scss";
 import { ConvertOutput } from "../encode";
+import { InputImage } from "./index";
 import Series = echarts.EChartOption.Series;
 import YAxis = echarts.EChartOption.YAxis;
 
@@ -53,7 +53,7 @@ function refreshEcharts(chart: ECharts, original: InputImage, outputs: ConvertOu
 }
 
 export interface ChartProps {
-	original?: InputImage;
+	original: InputImage;
 	index: number;
 	outputs: ConvertOutput[];
 }
@@ -63,7 +63,7 @@ export default function Chart(props: ChartProps) {
 	const [chart, setChart] = useState<ECharts>();
 
 	function initEcharts(el: HTMLDivElement | null) {
-		if (!el || !original) {
+		if (!el) {
 			return;
 		}
 		if (!chart) {

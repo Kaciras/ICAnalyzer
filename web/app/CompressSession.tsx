@@ -1,7 +1,7 @@
 import { Dispatch, useState } from "react";
 import { decode } from "../decode";
 import { BatchEncodeAnalyzer, ConvertOutput } from "../encode";
-import { Result } from "./App";
+import type { Result } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";

@@ -2,7 +2,7 @@ import ReactDOM from "react-dom";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import "./index.scss";
-import App from "./app/App";
+import App from "./app";
 
 function detectBrowserSupport() {
 	try {

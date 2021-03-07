@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { SelectBox } from "../ui";
 import { ENCODER_MAP } from "../codecs";
 import { ConvertOutput } from "../encode";
-import type { Result } from "./App";
+import type { Result } from ".";
 import style from "./ControlPanel.scss";
 
 interface FieldProps {
@@ -61,7 +61,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 				onSeriesChange={handleSeriesChange}
 			/>
 			{
-				selectOptions &&
+				selectOptions.length > 1 &&
 				<Field>
 					<SelectBox
 						value={codec}

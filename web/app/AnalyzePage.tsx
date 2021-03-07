@@ -4,31 +4,13 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import GitHubIcon from "../assets/github-logo.svg";
 import { IconButton } from "../ui";
-import CompressSession, { ImageToEncoderNames } from "./CompressSession";
-import Chart from "./Chart";
-import style from "./App.scss";
-import ImageView from "./ImageView";
 import { ConvertOutput } from "../encode";
 import { ImageEncoder } from "../codecs";
+import { Result } from "./index";
+import ImageView from "./ImageView";
+import Chart from "./Chart";
 import ControlPanel from "./ControlPanel";
-import * as WebP from "../codecs/webp/client";
-
-export interface InputImage {
-	file: File;
-	data: ImageData;
-}
-
-export interface Result {
-	original?: InputImage;
-	state: Record<string, any>;
-	map: ImageToEncoderNames;
-}
-
-const PLACEHOLDER: Result = {
-	original: undefined,
-	state: {},
-	map: new Map(),
-};
+import style from "./AnalyzePage.scss";
 
 interface DownloadButtonProps {
 	title?: string;
@@ -72,31 +54,27 @@ function DownloadButton(props: DownloadButtonProps) {
 	);
 }
 
-export default function App() {
-	const [results, setResults] = useState(PLACEHOLDER);
+interface AnalyzePageProps {
+	result: Result;
+	onStart: () => void;
+}
 
-	const [showChart, setShowChart] = useState(false);
-	const [showDialog, setShowDialog] = useState(true);
+export default function AnalyzePage(props: AnalyzePageProps) {
+	const { result, onStart } = props;
 
-	const [image, setImage] = useState<ImageData>();
+	const [showChart, setShowChart] = useState(true);
+
+	const [image, setImage] = useState<ImageData>(result.map.keys().next().value);
 	const [series, setSeries] = useState<ConvertOutput[]>([]);
 	const [output, setOutput] = useState<ConvertOutput>();
-
-	async function showResult(result: Result) {
-		setResults(result);
-		setImage(result.map.keys().next().value);
-
-		setShowChart(true);
-		setShowDialog(false);
-	}
 
 	const index = series.indexOf(output!);
 
 	return (
 		<>
-			<ImageView {...results} optimized={output}/>
+			<ImageView {...result} optimized={output}/>
 
-			{showChart && <Chart original={results.original} outputs={series} index={index}/>}
+			{showChart && <Chart original={result.original} outputs={series} index={index}/>}
 
 			<div className={style.buttonGroup}>
 				<IconButton
@@ -109,14 +87,13 @@ export default function App() {
 				<IconButton
 					title="Select an image"
 					className={style.iconButton}
-					onClick={() => setShowDialog(true)}
+					onClick={onStart}
 				>
 					<UploadIcon/>
 				</IconButton>
 				<IconButton
 					title="Show chart"
 					className={style.iconButton}
-					disabled={results === PLACEHOLDER}
 					active={showChart}
 					onClick={() => setShowChart(!showChart)}
 				>
@@ -124,7 +101,7 @@ export default function App() {
 				</IconButton>
 				<DownloadButton
 					title="Download compressed image"
-					filename={results.original?.file.name}
+					filename={result.original?.file.name}
 					codec={WebP}
 					buffer={output?.buffer}
 				>
@@ -132,20 +109,11 @@ export default function App() {
 				</DownloadButton>
 			</div>
 
-			{
-				results.original &&
-				<ControlPanel
-					result={results}
-					onImageChange={setImage}
-					onSeriesChange={setSeries}
-					onOutputChange={setOutput}
-				/>
-			}
-
-			<CompressSession
-				open={showDialog}
-				onClose={() => setShowDialog(false)}
-				onChange={showResult}
+			<ControlPanel
+				result={result}
+				onImageChange={setImage}
+				onSeriesChange={setSeries}
+				onOutputChange={setOutput}
 			/>
 		</>
 	);
