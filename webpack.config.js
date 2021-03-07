@@ -1,10 +1,12 @@
 const { join } = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
+const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = function webpackConfig(env) {
 	const isProd = Boolean(env?.production);
+	const isDevelopment = !isProd;
 
 	function cssLoaderChain(cssModules) {
 		const outputLoader = isProd ? MiniCssExtractPlugin.loader : "style-loader";
@@ -26,15 +28,23 @@ module.exports = function webpackConfig(env) {
 	const loaders = [
 		{
 			test: /\.tsx?$/,
-			use: {
-				loader: "ts-loader",
-				options: {
-					compilerOptions: {
-						module: "ESNext",
+			use: [
+				isDevelopment && {
+					loader: "babel-loader",
+					options: {
+						plugins: ["react-refresh/babel"],
 					},
-					transpileOnly: true,
 				},
-			},
+				{
+					loader: "ts-loader",
+					options: {
+						compilerOptions: {
+							module: "ESNext",
+						},
+						transpileOnly: true,
+					},
+				},
+			].filter(Boolean),
 		},
 		{
 			test: /\.wasm$/,
@@ -95,6 +105,8 @@ module.exports = function webpackConfig(env) {
 		isProd && new MiniCssExtractPlugin({
 			filename: "[name].[contenthash:5].css",
 		}),
+
+		isDevelopment && new ReactRefreshPlugin(),
 	];
 
 	return {
