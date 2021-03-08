@@ -32,9 +32,8 @@ jobs:
         run: echo "ic-analyze.kaciras.com" > dist/CNAME
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CLEAN: true
-          BRANCH: gh-pages
-          FOLDER: dist
+          clean: true
+          branch: gh-pages
+          folder: dist
