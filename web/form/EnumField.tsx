@@ -1,8 +1,8 @@
 import { CheckBox, RadioBox } from "../ui";
 import { State } from "../codecs";
 import { ChangeEvent, Dispatch } from "react";
-import style from "../app/ControlPanel.scss";
 import { OptionType, StateProps } from "./base";
+import styles from "./EnumFIeld.scss";
 
 type EnumObject<T> = Record<string, T>;
 
@@ -28,22 +28,22 @@ export default function enumOption<T>(data: Metadata<T>): OptionType {
 		const a = (state.variables[property] ?? []) as string[];
 		const value = (state.values[property] ?? defaultValue) as string;
 
-		const items = Object.keys(a).map((name) => {
-			return <RadioBox
+		const items = Object.keys(a).map((name) =>
+			<RadioBox
 				key={name}
 				name={name}
 				checked={value === name}
 				onChange={() => onChange(name)}
 			>
 				{name}
-			</RadioBox>;
-		});
+			</RadioBox>,
+		);
 
 		return (
 			<label onFocus={onFocus}>
 				<p>
 					{label}
-					<span className={style.optionValue}>{value}</span>
+					<span>{value}</span>
 				</p>
 				<div>{items}</div>
 			</label>
@@ -63,6 +63,7 @@ export default function enumOption<T>(data: Metadata<T>): OptionType {
 
 		const items = Object.keys(enumObject).map((name) => {
 			return <RadioBox
+				className={styles.item}
 				key={name}
 				name={name}
 				checked={value === name}
@@ -101,15 +102,25 @@ export default function enumOption<T>(data: Metadata<T>): OptionType {
 
 		const items = Object.entries(enumObject).map(e => {
 			const [name, value] = e;
-			return <CheckBox key={name} name={name} checked={a.includes(name)}>{name}</CheckBox>;
+			return <CheckBox
+				className={styles.item}
+				key={name}
+				name={name}
+				checked={a.includes(name)}
+			>
+				{name}
+			</CheckBox>;
 		});
 
 		return (
-			<fieldset>
-				<div>
-					<CheckBox checked={isVariable} onChange={handleChange}/>
-					<span>{label}</span>
-				</div>
+			<fieldset className={styles.fieldset}>
+				<CheckBox
+					className={styles.header}
+					checked={isVariable}
+					onChange={handleChange}
+				>
+					{label}
+				</CheckBox>
 				{isVariable ? <div>{items}</div> : ConstMode(props)}
 			</fieldset>
 		);

@@ -1,0 +1,8 @@
+@import "NumberField";
+
+.container {
+	composes: fieldset;
+
+	display: flex;
+	align-items: center;
+}

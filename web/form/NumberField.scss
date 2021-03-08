@@ -1,0 +1,23 @@
+.spinner {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.numberInput {
+	width: 60px;
+	margin-right: 10px;
+}
+
+.fieldset {
+	padding: 12px 0;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.label {
+	margin-right: auto;
+}

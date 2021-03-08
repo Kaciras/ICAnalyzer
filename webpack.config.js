@@ -78,6 +78,7 @@ module.exports = function webpackConfig(env) {
 					include: [
 						join(__dirname, "web", "app"),
 						join(__dirname, "web", "ui"),
+						join(__dirname, "web", "form"),
 					],
 					use: cssLoaderChain(true),
 				},

@@ -1,7 +1,8 @@
 import { ChangeEvent, Dispatch } from "react";
-import { CheckBox } from "../ui";
+import { CheckBox, SwitchButton } from "../ui";
 import { State } from "../codecs";
 import { OptionType, StateProps } from "./base";
+import styles from "./BooleanField.scss";
 
 interface Metadata {
 	property: string;
@@ -45,7 +46,7 @@ export default function boolOption(data: Metadata): OptionType {
 			onChange(copy);
 		}
 
-		return <CheckBox checked={value} onChange={handleChange}>{label}</CheckBox>;
+		return <SwitchButton checked={value} onChange={handleChange}/>;
 	}
 
 	function OptionField(props: StateProps) {
@@ -63,11 +64,14 @@ export default function boolOption(data: Metadata): OptionType {
 		}
 
 		return (
-			<fieldset>
-				<div>
-					<CheckBox checked={isVariable} onChange={handleChange}/>
-					<span>{label}</span>
-				</div>
+			<fieldset className={styles.container}>
+				<CheckBox
+					className={styles.label}
+					checked={isVariable}
+					onChange={handleChange}
+				>
+					{label}
+				</CheckBox>
 				{isVariable ? <strong>OFF & ON</strong> : ConstMode(props)}
 			</fieldset>
 		);
