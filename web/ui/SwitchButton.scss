@@ -1,0 +1,48 @@
+$width: 55px;
+$height: 24px;
+$padding: 4px;
+
+.container {
+	display: inline-block;
+	position: relative;
+
+	width: $width;
+	height: $height;
+	padding: 4px;
+	border-radius: $height / 2;
+
+	cursor: pointer;
+	background: darkgray;
+
+	&:focus-within {
+		outline: dotted 2px;
+	}
+
+	&::before {
+		$thumbSize: $height - $padding * 2;
+
+		content: "";
+		display: block;
+
+		width: $thumbSize;
+		height: $thumbSize;
+
+		border-radius: 50%;
+		background: white;
+		transition: margin-left .2s;
+	}
+}
+
+.checked {
+	background: #0776df;
+
+	&::before {
+		margin-left: $width - $height;
+	}
+}
+
+.input {
+	position: absolute;
+	opacity: 0;
+	cursor: inherit;
+}
