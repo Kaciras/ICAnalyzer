@@ -6,11 +6,17 @@ export interface StateProps {
 	onChange: Dispatch<any>;
 }
 
+export interface ControlProps extends StateProps {
+	onFocus: () => void;
+}
+
 export interface OptionType {
 
-	ValueField(props: StateProps): JSX.Element;
+	id: string;
+
+	ValueField(props: ControlProps): JSX.Element;
 
 	OptionField(props: StateProps): JSX.Element;
 
-	generate(state: any, prev: any): any[];
+	generate(State: State, prev: any): any[];
 }

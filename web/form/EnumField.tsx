@@ -1,47 +1,136 @@
 import { CheckBox, RadioBox } from "../ui";
-import { OptionType } from "../app/OptionTemplate";
+import { State } from "../codecs";
+import { ChangeEvent, Dispatch } from "react";
+import style from "../app/ControlPanel.scss";
+import { OptionType, StateProps } from "./base";
 
-type EnumObject = Record<string, any>;
+type EnumObject<T> = Record<string, T>;
 
-type EnumVariableState = Record<string, boolean>;
+interface Metadata<T> {
+	property: string;
+	label: string;
+	enumObject: EnumObject<T>;
+	defaultValue: string;
+}
 
-export class EnumTemplate<T extends EnumObject> implements OptionType<any, EnumVariableState> {
+interface NumberRangeProps {
+	state: State;
+	onChange: Dispatch<string>;
+	onFocus: () => void;
+}
 
-	private readonly enumObject: T;
-	private readonly defaultValue: keyof T;
+export default function enumOption<T>(data: Metadata<T>): OptionType {
+	const { property, label, enumObject, defaultValue } = data;
 
-	constructor(enumObject: T, defaultValue: keyof T) {
-		this.enumObject = enumObject;
-		this.defaultValue = defaultValue;
-	}
+	function ValueField(props: NumberRangeProps) {
+		const { state, onChange, onFocus } = props;
 
-	newValue() {
-		return this.defaultValue;
-	}
+		const a = (state.variables[property] ?? []) as string[];
+		const value = (state.values[property] ?? defaultValue) as string;
 
-	ValueField(name: string, value: any): React.ReactElement {
-		const items = Object.keys(this.enumObject).map((name) => {
-			return <RadioBox key={name} name={name} checked={value}>{name}</RadioBox>;
+		const items = Object.keys(a).map((name) => {
+			return <RadioBox
+				key={name}
+				name={name}
+				checked={value === name}
+				onChange={() => onChange(name)}
+			>
+				{name}
+			</RadioBox>;
 		});
+
+		return (
+			<label onFocus={onFocus}>
+				<p>
+					{label}
+					<span className={style.optionValue}>{value}</span>
+				</p>
+				<div>{items}</div>
+			</label>
+		);
+	}
+
+	function ConstMode(props: StateProps) {
+		const { state, onChange } = props;
+
+		const value = (state.values[property] ?? defaultValue) as string;
+
+		function handleChange(newVal: string) {
+			const copy = { ...state };
+			copy.values[property] = newVal;
+			onChange(copy);
+		}
+
+		const items = Object.keys(enumObject).map((name) => {
+			return <RadioBox
+				key={name}
+				name={name}
+				checked={value === name}
+				onChange={() => handleChange(name)}
+			>
+				{name}
+			</RadioBox>;
+		});
+
 		return <div>{items}</div>;
 	}
 
-	newVariable(): any {
-		const map = Object.keys(this.enumObject).map(k => ({ [k]: false }));
-		map[this.defaultValue] = true;
-		return map;
-	}
+	function OptionField(props: StateProps) {
+		const { state, onChange } = props;
 
-	VariableField(name: string, value: EnumVariableState): React.ReactElement {
-		const items = Object.entries(value).map(e => {
-			return <CheckBox key={name} name={name} checked={e[1]}>{e[0]}</CheckBox>;
+		const isVariable = state.varNames.includes(property);
+		const a = (state.variables[property] ?? []) as string[];
+
+		function handleChange(e: ChangeEvent<HTMLInputElement>) {
+			if (e.currentTarget.checked) {
+				state.varNames.push(property);
+			} else {
+				state.varNames = state.varNames.filter(v => v != property);
+			}
+			onChange({ ...state });
+		}
+
+		function handleChangeV(e: ChangeEvent<HTMLInputElement>) {
+			const { valueAsNumber, name } = e.currentTarget;
+			(a as any)[name] = valueAsNumber;
+
+			const copy = { ...state };
+			copy.variables[property] = a;
+			onChange(copy);
+		}
+
+		const items = Object.entries(enumObject).map(e => {
+			const [name, value] = e;
+			return <CheckBox key={name} name={name} checked={a.includes(name)}>{name}</CheckBox>;
 		});
-		return <div>{items}</div>;
+
+		return (
+			<fieldset>
+				<div>
+					<CheckBox checked={isVariable} onChange={handleChange}/>
+					<span>{label}</span>
+				</div>
+				{isVariable ? <div>{items}</div> : ConstMode(props)}
+			</fieldset>
+		);
 	}
 
-	generate(name: string, options: any, value: EnumVariableState) {
-		return Object.entries(value)
-			.filter(e => e[1])
-			.map(e => this.enumObject[e[0]]);
+	function generate(state: State, prev: any) {
+		const { varNames, values, variables } = state;
+
+		if (varNames.includes(property)) {
+			const s = variables[property] as string[];
+
+			const rv = [];
+			for (const name of s) {
+				rv.push({ ...prev, [property]: enumObject[name] });
+			}
+			return rv;
+		} else {
+			prev[property] = enumObject[values[property] as string];
+			return [prev];
+		}
 	}
+
+	return { id: property, ValueField, OptionField, generate };
 }

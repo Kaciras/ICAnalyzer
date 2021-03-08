@@ -2,6 +2,7 @@ import { ChangeEvent, Dispatch } from "react";
 import { CheckBox, NumberInput, RangeInput } from "../ui";
 import { State } from "../codecs";
 import { OptionType, StateProps } from "./base";
+import styles from "./NumberField.module.scss";
 
 interface NumberRangeAttrs {
 	min: number;
@@ -15,15 +16,45 @@ interface Metadata extends NumberRangeAttrs {
 	defaultValue: number;
 }
 
-interface NumberRangeProps extends NumberRangeAttrs{
-	value: number;
+interface NumberRangeProps {
+	state: State;
 	onChange: Dispatch<number>;
+	onFocus: () => void;
 }
 
 export default function numberRange(data: Metadata): OptionType {
 	const { property, label, min, max, step, defaultValue } = data;
 
-	function ValueField(props: StateProps) {
+	function ValueField(props: NumberRangeProps) {
+		const { state, onChange, onFocus } = props;
+
+		const a = (state.variables[property] ?? data) as NumberRangeAttrs;
+		const { min, max, step } = a;
+
+		const value = (state.values[property] ?? defaultValue) as number;
+
+		function handleChange(e: ChangeEvent<HTMLInputElement>) {
+			onChange(e.currentTarget.valueAsNumber);
+		}
+
+		return (
+			<label onFocus={onFocus}>
+				<p>
+					{label}
+					<span className={styles.optionValue}>{value}</span>
+				</p>
+				<RangeInput
+					value={value}
+					min={min}
+					max={max}
+					step={step}
+					onChange={handleChange}
+				/>
+			</label>
+		);
+	}
+
+	function ConstMode(props: StateProps) {
 		const { state, onChange } = props;
 
 		const value = (state.values[property] ?? defaultValue) as number;
@@ -49,7 +80,7 @@ export default function numberRange(data: Metadata): OptionType {
 		);
 	}
 
-	function VariableField(props: StateProps) {
+	function VariableMode(props: StateProps) {
 		const { state, onChange } = props;
 
 		const a = (state.variables[property] ?? data) as NumberRangeAttrs;
@@ -70,7 +101,7 @@ export default function numberRange(data: Metadata): OptionType {
 
 		return (
 			<div>
-				<label>
+				<label className={styles.spinner}>
 					<span>from:</span>
 					<NumberInput
 						name="min"
@@ -81,7 +112,7 @@ export default function numberRange(data: Metadata): OptionType {
 						onChange={handleChange}
 					/>
 				</label>
-				<label>
+				<label className={styles.spinner}>
 					<span>to:</span>
 					<NumberInput
 						name="max"
@@ -92,7 +123,7 @@ export default function numberRange(data: Metadata): OptionType {
 						onChange={handleChange}
 					/>
 				</label>
-				<label>
+				<label className={styles.spinner}>
 					<span>step:</span>
 					<NumberInput
 						name="step"
@@ -122,13 +153,13 @@ export default function numberRange(data: Metadata): OptionType {
 		}
 
 		return (
-			<div>
-				<p>
-					<span>{label}</span>
+			<fieldset>
+				<div>
 					<CheckBox checked={checked} onChange={handleChange}/>
-				</p>
-				{checked ? VariableField(props) : ValueField(props)}
-			</div>
+					<span>{label}</span>
+				</div>
+				{checked ? VariableMode(props) : ConstMode(props)}
+			</fieldset>
 		);
 	}
 
@@ -148,5 +179,5 @@ export default function numberRange(data: Metadata): OptionType {
 		}
 	}
 
-	return { ValueField, OptionField, generate };
+	return { id: property, ValueField, OptionField, generate };
 }
