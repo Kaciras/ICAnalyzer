@@ -23,7 +23,7 @@ export default function App() {
 		setResult(value);
 	}
 
-	const showDialog = () => setOpen(false);
+	const showDialog = () => setOpen(true);
 
 	return (
 		<>
