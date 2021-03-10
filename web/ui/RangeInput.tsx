@@ -1,43 +1,49 @@
-import { CSSProperties, FormEvent } from "react";
-import Styles from "./RangeInput.scss";
+import { ChangeEventHandler, CSSProperties } from "react";
+import styles from "./RangeInput.scss";
 
-interface Props {
-	value?: number;
-	min?: number;
-	max?: number;
-	step?: number;
+interface RangeInputProps {
+	value: number;
+	min: number;
+	max: number;
+	step: number;
 
+	name?: string;
 	disabled?: boolean;
 
-	onChange(e: FormEvent<HTMLInputElement>):void
+	onChange: ChangeEventHandler<HTMLInputElement>;
 }
 
 interface RangeInputCSS extends CSSProperties {
 	"--value-percent": string;
 }
 
-export default function RangeInput(props: Props) {
+export default function RangeInput(props: RangeInputProps) {
+	const { value, min, max, step, disabled, onChange } = props;
+
+	const percent = (value - min) / (max - min);
+
 	const cssVariables: RangeInputCSS = {
-		"--value-percent": `${props.value ?? 0}%`,
+		"--value-percent": `${percent * 100}%`,
 	};
 
 	return (
 		<span
-			className={Styles.container}
+			className={styles.container}
 			style={cssVariables}
 		>
 			<input
 				type="range"
-				className={Styles.input}
-				value={props.value}
-				min={props.min}
-				max={props.max}
-				step={props.step}
-				onChange={props.onChange}
+				className={styles.input}
+				disabled={disabled}
+				value={value}
+				min={min}
+				max={max}
+				step={step}
+				onChange={onChange}
 			/>
 
-			<span className={Styles.thumbRegion}>
-				<span className={Styles.thumb}/>
+			<span className={styles.thumbRegion}>
+				<span className={styles.thumb}/>
 			</span>
 		</span>
 	);

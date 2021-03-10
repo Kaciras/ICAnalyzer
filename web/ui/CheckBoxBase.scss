@@ -5,6 +5,7 @@ $size: 24px;
 .container {
 	display: inline-block;
 	position: relative;
+	line-height: 1;
 	cursor: pointer;
 
 	&:focus-within {
@@ -19,7 +20,7 @@ $size: 24px;
 }
 
 .mark {
-	display: inline-block;
+	display: inline-flex;
 	height: $size;
 	font-size: $size;
 	color: #bbb;
@@ -33,5 +34,5 @@ $size: 24px;
 .label {
 	display: inline-block;
 	vertical-align: middle;
-	margin-left: 5px;
+	padding: 0 5px;
 }
