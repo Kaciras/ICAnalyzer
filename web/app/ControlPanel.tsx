@@ -1,75 +1,60 @@
-import { ChangeEvent, Dispatch, ReactNode, useState } from "react";
-import clsx from "clsx";
+import { ChangeEvent, Dispatch } from "react";
 import { SelectBox } from "../ui";
 import { ENCODER_MAP } from "../codecs";
-import { ConvertOutput } from "../encode";
-import type { Result } from ".";
-import style from "./ControlPanel.scss";
-
-interface FieldProps {
-	children: ReactNode;
-}
-
-function Field(props: FieldProps) {
-	const { children } = props;
-
-	const clazz = clsx(style.field);
-
-	return (
-		<div className={clazz} onClick={() => {}}>
-			{children}
-		</div>
-	);
-}
+import styles from "./ControlPanel.scss";
+import { ControlState, Step } from "./AnalyzePage";
+import { AnalyzeConfig } from "./ConfigDialog";
 
 export interface ControlPanelProps {
-	result: Result
-	onImageChange: Dispatch<ImageData>;
-	onSeriesChange: Dispatch<ConvertOutput[]>;
-	onOutputChange: Dispatch<ConvertOutput>;
+	config: AnalyzeConfig;
+	value: ControlState
+	onChange: Dispatch<ControlState>;
 }
 
 export default function ControlPanel(props: ControlPanelProps) {
-	const { result, onImageChange, onSeriesChange, onOutputChange } = props;
-	const { state, map, original } = result;
+	const { config, value, onChange } = props;
+	const { variableType, variableName, encoderName, options } = value;
 
-	const encoderMap = map.get(original!.data)!;
-
-	const [codec, setCodec] = useState(() => encoderMap.keys().next().value);
-
-	const selectOptions = Object.entries(encoderMap).map(e => {
-		const [name, outputMap] = e;
-		return <option key={name} value={name}>{name}</option>;
-	});
+	if (variableType === Step.None) {
+		return null;
+	}
 
 	function handleCodecChange(e: ChangeEvent<HTMLSelectElement>) {
-		setCodec(e.currentTarget.value);
+		onChange({ ...value, encoderName: e.currentTarget.value });
 	}
 
-	function handleSeriesChange(options: any[]) {
-		const e = encoderMap.get(codec)!;
-		onSeriesChange(options.map(o => e.get(JSON.stringify(o))!));
+	function handleVarChange(variableType: Step, variableName: string) {
+		onChange({ ...value, variableType, variableName });
 	}
 
-	const Encoder = ENCODER_MAP[codec];
+	function handleValueChange(options: any) {
+		onChange({ ...value, options });
+	}
+
+	const Encoder = ENCODER_MAP[encoderName];
+	const selectOptions = Object.keys(config.encode).map(n => <option key={n} value={n}>{n}</option>);
 
 	return (
-		<div className={style.variableGroup}>
+		<div className={styles.variableGroup}>
 			<Encoder.Controls
-				state={state[codec]}
-				onChange={options => onOutputChange(encoderMap.get(codec)!.get(JSON.stringify(options))!)}
-				onSeriesChange={handleSeriesChange}
+				state={config.encode[encoderName]}
+				varName={variableType === Step.Options && variableName}
+				onChange={handleValueChange}
+				onVariableChange={name => handleVarChange(Step.Encoder, name)}
 			/>
 			{
 				selectOptions.length > 1 &&
-				<Field>
+				<div
+					className={styles.field}
+					onClick={() => handleVarChange(Step.Encoder, "")}
+				>
 					<SelectBox
-						value={codec}
+						value={encoderName}
 						onChange={handleCodecChange}
 					>
 						{selectOptions}
 					</SelectBox>
-				</Field>
+				</div>
 			}
 			{ /* TODO: Preprocessors */}
 		</div>

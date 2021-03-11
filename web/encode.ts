@@ -48,14 +48,10 @@ export function newWorker() {
 
 export class BatchEncodeAnalyzer {
 
-	readonly progressMax: number;
-
 	private readonly image: ImageData;
 	private readonly config: AnalyzeConfig;
 
 	private readonly pool: WorkerPool<WorkerApi>;
-
-	private progress = 0;
 
 	constructor(image: ImageData, config: AnalyzeConfig) {
 		const { threads, optionsList } = config;
@@ -67,29 +63,16 @@ export class BatchEncodeAnalyzer {
 		this.image = image;
 		this.config = config;
 		this.pool = new WorkerPool(newWorker, concurrency);
-		this.progressMax = this.getProgressMax();
-	}
-
-	private getProgressMax() {
-		const { optionsList, measure } = this.config;
-
-		let calculations = 1;
-		if (measure.butteraugli) calculations++;
-		if (measure.SSIM) calculations++;
-		if (measure.PSNR) calculations++;
-
-		const value = optionsList.length * calculations;
-		return measure.time ? value + this.pool.count : value;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	onProgress(value: number) {}
+	onProgress() {}
 
 	private increaseProgress() {
-		this.onProgress(this.progress++);
+		this.onProgress();
 	}
 
-	async encode() {
+	async encode(): Promise<ConvertOutput[]> {
 		const { encoder, optionsList, measure } = this.config;
 		const { image } = this;
 

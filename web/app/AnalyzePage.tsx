@@ -2,10 +2,10 @@ import { ReactNode, useEffect, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
-import GitHubIcon from "../assets/github-logo.svg";
+import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { IconButton } from "../ui";
 import { ConvertOutput } from "../encode";
-import { ImageEncoder } from "../codecs";
+import { ENCODER_MAP, ImageEncoder } from "../codecs";
 import { Result } from "./index";
 import ImageView from "./ImageView";
 import Chart from "./Chart";
@@ -14,8 +14,8 @@ import style from "./AnalyzePage.scss";
 
 interface DownloadButtonProps {
 	title?: string;
-	buffer?: ArrayBuffer;
-	filename?: string;
+	buffer: ArrayBuffer;
+	filename: string;
 	codec: ImageEncoder;
 	children: ReactNode;
 }
@@ -28,7 +28,7 @@ function DownloadButton(props: DownloadButtonProps) {
 	useEffect(() => () => URL.revokeObjectURL(url), []);
 
 	function downloadImage() {
-		const blob = new Blob([buffer!], { type: mimeType });
+		const blob = new Blob([buffer], { type: mimeType });
 
 		URL.revokeObjectURL(url);
 		const newUrl = URL.createObjectURL(blob);
@@ -36,7 +36,7 @@ function DownloadButton(props: DownloadButtonProps) {
 
 		const a = document.createElement("a");
 		a.href = newUrl;
-		a.download = filename!.replace(/.[^.]*$/, `.${extension}`);
+		a.download = filename.replace(/.[^.]*$/, `.${extension}`);
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
@@ -46,7 +46,6 @@ function DownloadButton(props: DownloadButtonProps) {
 		<IconButton
 			className={style.iconButton}
 			title={title}
-			disabled={!buffer}
 			onClick={downloadImage}
 		>
 			{children}
@@ -54,21 +53,81 @@ function DownloadButton(props: DownloadButtonProps) {
 	);
 }
 
+export enum Step {
+	None,
+	Preprocess,
+	Encoder,
+	Options,
+}
+
+export interface ControlState {
+	// preprocess config;
+	encoderName: string;
+	options: any;
+
+	variableType: Step;
+	variableName: string;
+}
+
 interface AnalyzePageProps {
 	result: Result;
 	onStart: () => void;
+	onClose: () => void;
 }
 
 export default function AnalyzePage(props: AnalyzePageProps) {
-	const { result, onStart } = props;
+	const { result, onStart, onClose } = props;
+
+	function createControlState(): ControlState {
+		const { encode } = result.config;
+		let variableType = Step.None;
+		let variableName = "";
+
+		const kvs = Object.entries(encode);
+		if (kvs.length > 1) {
+			variableType = Step.Encoder;
+			variableName = "";
+		}
+
+		const [encoderName, state] = kvs[0];
+		if (state.varNames.length > 0) {
+			variableType = Step.Options;
+			variableName = state.varNames[0];
+		}
+
+		const options = ENCODER_MAP[encoderName].getOptionsList({
+			varNames: [],
+			data: state.data,
+		});
+
+		return { variableType, variableName, encoderName, options };
+	}
 
 	const [showChart, setShowChart] = useState(true);
+	const [state, setState] = useState(createControlState);
 
-	const [image, setImage] = useState<ImageData>(result.map.keys().next().value);
-	const [series, setSeries] = useState<ConvertOutput[]>([]);
-	const [output, setOutput] = useState<ConvertOutput>();
+	const { variableType, variableName, encoderName, options } = state;
+	const image = result.original.data;
 
-	const index = series.indexOf(output!);
+	const output = result.map.get(image)!.get(encoderName)!.get(JSON.stringify(options))!;
+	const encoder = ENCODER_MAP[encoderName];
+
+	let series: ConvertOutput[];
+	if (variableType === Step.None) {
+		series = [output]; // TODO: bar chart
+	} else if (variableType === Step.Encoder) {
+		const x = result.map.get(image)!;
+		series = Array.from(x.values()).map(e => e.get(JSON.stringify(options))!);
+	} else {
+		const x = result.map.get(image)!.get(encoderName)!;
+		const list = encoder.getOptionsList({
+			varNames: [variableName],
+			data: result.config.encode[encoderName].data,
+		});
+		series = list.map(options => x.get(JSON.stringify(options))!);
+	}
+
+	const index = series.indexOf(output);
 
 	return (
 		<>
@@ -78,11 +137,11 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 			<div className={style.buttonGroup}>
 				<IconButton
-					title="Fork me from GitHub"
-					href="https://github.com/Kaciras/ICAnalyze"
+					title="Back"
 					className={style.iconButton}
+					onClick={onClose}
 				>
-					<GitHubIcon/>
+					<CloseIcon/>
 				</IconButton>
 				<IconButton
 					title="Select an image"
@@ -101,20 +160,15 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</IconButton>
 				<DownloadButton
 					title="Download compressed image"
-					filename={result.original?.file.name}
-					codec={WebP}
-					buffer={output?.buffer}
+					filename={result.original.file.name}
+					codec={encoder}
+					buffer={output.buffer}
 				>
 					<DownloadIcon/>
 				</DownloadButton>
 			</div>
 
-			<ControlPanel
-				result={result}
-				onImageChange={setImage}
-				onSeriesChange={setSeries}
-				onOutputChange={setOutput}
-			/>
+			<ControlPanel value={state} onChange={setState} config={result.config}/>
 		</>
 	);
 }

@@ -55,8 +55,6 @@ export default function CompressSession(props: Props) {
 			// TODO
 		}
 
-		const encoders = ENCODERS.map(enc => enc.name).filter(name => name in encode);
-
 		let outputSizePerImage = 0;
 		const queue: [ImageEncoder, any[]][] = [];
 
@@ -71,7 +69,12 @@ export default function CompressSession(props: Props) {
 			outputSizePerImage += optList.length;
 		}
 
-		setMax(images.length * outputSizePerImage);
+		let calculations = 1;
+		if (measure.butteraugli) calculations++;
+		if (measure.SSIM) calculations++;
+		if (measure.PSNR) calculations++;
+
+		setMax(images.length * outputSizePerImage * calculations);
 		setProgress(0);
 
 		const iMap: ImageToEncoderNames = new Map();
@@ -90,6 +93,7 @@ export default function CompressSession(props: Props) {
 					optionsList,
 					measure,
 				});
+				worker.onProgress = () => setProgress(p => p++);
 
 				setEncoder(worker);
 				const outputs = await worker.encode();
@@ -102,10 +106,9 @@ export default function CompressSession(props: Props) {
 				}
 			}
 		}
-		// encoder.onProgress = setProgress;
 
 		props.onChange({
-			state: encode,
+			config,
 			map: iMap,
 			original: { file, data: image! },
 		});

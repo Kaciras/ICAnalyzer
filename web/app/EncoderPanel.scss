@@ -5,7 +5,6 @@
 
 .menu {
 	border-right: solid 1px #ddd;
-	margin-right: 20px;
 	padding-right: 20px;
 }
 
@@ -17,7 +16,8 @@
 	cursor: pointer;
 	transition: background-color .2s;
 
-	&:hover {
+	&:hover, &:focus {
+		outline: none; // for Chrome
 		background-color: #e8f5fe;
 	}
 }
@@ -27,12 +27,16 @@
 }
 
 .remove {
-	margin-right: 10px;
+	margin-right: 6px;
 	padding: 0;
 
 	color: red;
 	font-size: 1.25em;
 	vertical-align: middle;
+
+	&:focus {
+		outline: dotted 2px;
+	}
 }
 
 .name {
@@ -47,4 +51,9 @@
 	width: 5em;
 	font-size: 24px;
 	justify-content: center;
+}
+
+.optionsPanel {
+	overflow-y: auto;
+	padding: 0 20px;
 }

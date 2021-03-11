@@ -2,6 +2,7 @@ import { useState } from "react";
 import CompressSession, { ImageToEncoderNames } from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
+import { AnalyzeConfig } from "./ConfigDialog";
 
 export interface InputImage {
 	file: File;
@@ -10,7 +11,7 @@ export interface InputImage {
 
 export interface Result {
 	original: InputImage;
-	state: Record<string, any>;
+	config: AnalyzeConfig;
 	map: ImageToEncoderNames;
 }
 
@@ -28,7 +29,7 @@ export default function App() {
 	return (
 		<>
 			{result
-				? <AnalyzePage result={result} onStart={showDialog}/>
+				? <AnalyzePage result={result} onStart={showDialog} onClose={() => setResult(undefined)}/>
 				: <IntroPage onStart={showDialog}/>
 			}
 			<CompressSession
