@@ -15,10 +15,9 @@ interface Props {
 
 type OptKey = string | number;
 
-export type OptionsToResult = Map<OptKey, ConvertOutput>;
-export type EncoderNameToOptions = Map<string, OptionsToResult>;
-export type ImageToEncoderNames = Map<ImageData, EncoderNameToOptions>;
-export type PreprocessToImage = Map<OptKey, ImageToEncoderNames>;
+export type OptionsToResult = Record<OptKey, ConvertOutput>;
+export type EncoderNameToOptions = Record<string, OptionsToResult>;
+export type PreprocessToImage = Record<OptKey, EncoderNameToOptions>;
 
 export default function CompressSession(props: Props) {
 	const [file, setFile] = useState<File>();
@@ -48,8 +47,8 @@ export default function CompressSession(props: Props) {
 		if (!file) {
 			throw new Error("File is null");
 		}
-		const { preprocess, encode, threads, measure } = config;
-		const images = [await decode(file)];
+		const { preprocess, encoders, measure } = config;
+		const image = await decode(file);
 
 		for (const [name, options] of Object.entries(preprocess)) {
 			// TODO
@@ -60,11 +59,11 @@ export default function CompressSession(props: Props) {
 
 		for (const enc of ENCODERS) {
 			const { name, getOptionsList } = enc;
-			const state = encode[name];
-			if (!state) {
+			const config = encoders[name];
+			if (!config.enable) {
 				continue;
 			}
-			const optList = getOptionsList(state);
+			const optList = getOptionsList(config.state);
 			queue.push([enc, optList]);
 			outputSizePerImage += optList.length;
 		}
@@ -74,42 +73,35 @@ export default function CompressSession(props: Props) {
 		if (measure.SSIM) calculations++;
 		if (measure.PSNR) calculations++;
 
-		setMax(images.length * outputSizePerImage * calculations);
+		setMax(1 * outputSizePerImage * calculations);
 		setProgress(0);
 
-		const iMap: ImageToEncoderNames = new Map();
+		const eMap: EncoderNameToOptions = {};
 
-		for (const image of images) {
-			const eMap: EncoderNameToOptions = new Map();
-			iMap.set(image, eMap);
+		for (const [encoder, optionsList] of queue) {
+			const oMap: OptionsToResult = {};
+			eMap[encoder.name] = oMap;
 
-			for (const [encoder, optionsList] of queue) {
-				const oMap: OptionsToResult = new Map();
-				eMap.set(encoder.name, oMap);
+			const worker = new BatchEncodeAnalyzer(image, {
+				encoder,
+				optionsList,
+				measure,
+			});
+			worker.onProgress = () => setProgress(p => p++);
 
-				const worker = new BatchEncodeAnalyzer(image, {
-					encoder,
-					threads,
-					optionsList,
-					measure,
-				});
-				worker.onProgress = () => setProgress(p => p++);
+			setEncoder(worker);
+			const outputs = await worker.encode();
+			worker.terminate();
+			setEncoder(null);
 
-				setEncoder(worker);
-				const outputs = await worker.encode();
-				worker.terminate();
-				setEncoder(null);
-
-				for (let i = 0; i < optionsList.length; i++) {
-					const k = JSON.stringify(optionsList[i]);
-					oMap.set(k, outputs[i]);
-				}
+			for (let i = 0; i < optionsList.length; i++) {
+				oMap[JSON.stringify(optionsList[i])] = outputs[i];
 			}
 		}
 
 		props.onChange({
 			config,
-			map: iMap,
+			map: eMap,
 			original: { file, data: image! },
 		});
 	}

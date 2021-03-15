@@ -1,8 +1,9 @@
 import { Remote } from "comlink";
+import { defaultOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
-import { ControlProps, OptionListProps, OptionTemplate } from "../index";
-import { NumberRangeTemplate } from "../../app/OptionTemplate";
-import { EnumTemplate } from "../../form/EnumField";
+import numberOption from "../../form/NumberField";
+import enumOption from "../../form/EnumField";
+import { ControlProps, OptionListProps } from "../index";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";
@@ -15,45 +16,70 @@ export const Subsampling = {
 	YUV444: 3,
 };
 
-export function encode(options: any, worker: Remote<WorkerApi>) {
-	return worker.avifEncode(options);
-}
-
-export const optionTemplate: OptionTemplate[] = [
-	{
-		label: "minQuantizer",
-		name: "minQuantizer",
-		type: new NumberRangeTemplate(0, 63, 33),
-		defaultVariable: true,
-	},
-	{
-		label: "maxQuantizer",
-		name: "maxQuantizer",
-		type: new NumberRangeTemplate(0, 63, 63),
-	},
-	{
-		label: "minQuantizerAlpha",
-		name: "minQuantizer",
-		type: new NumberRangeTemplate(0, 63, 33),
-		defaultVariable: true,
-	},
-	{
-		label: "maxQuantizerAlpha",
-		name: "maxQuantizerAlpha",
-		type: new NumberRangeTemplate(0, 63, 63),
-	},
-	{
-		label: "speed",
-		name: "speed",
-		type: new NumberRangeTemplate(0, 10, 8),
-	},
-	{
-		label: "subsample",
-		name: "subsample",
-		type: new EnumTemplate(Subsampling, "YUV420"),
-	},
+const template = [
+	numberOption({
+		property: "minQuantizer",
+		label: "Min quality",
+		min: 0,
+		max: 63,
+		step: 1,
+		defaultValue: defaultOptions.minQuantizer,
+	}),
+	numberOption({
+		property: "maxQuantizer",
+		label: "Max quality",
+		min: 0,
+		max: 63,
+		step: 1,
+		defaultValue: defaultOptions.maxQuantizer,
+	}),
+	numberOption({
+		property: "minQuantizerAlpha",
+		label: "Min alpha quality",
+		min: 0,
+		max: 63,
+		step: 1,
+		defaultValue: defaultOptions.minQuantizerAlpha,
+	}),
+	numberOption({
+		property: "maxQuantizerAlpha",
+		label: "Max alpha quality",
+		min: 0,
+		max: 63,
+		step: 1,
+		defaultValue: defaultOptions.maxQuantizerAlpha,
+	}),
+	numberOption({
+		property: "tileRowsLog2",
+		label: "Log2 of tile rows",
+		min: 0,
+		max: 6,
+		step: 1,
+		defaultValue: defaultOptions.tileRowsLog2,
+	}),
+	numberOption({
+		property: "tileColsLog2",
+		label: "Log2 of tile cols",
+		min: 0,
+		max: 6,
+		step: 1,
+		defaultValue: defaultOptions.tileColsLog2,
+	}),
+	numberOption({
+		property: "speed",
+		label: "Speed",
+		min: 0,
+		max: 10,
+		step: 8,
+		defaultValue: defaultOptions.speed,
+	}),
+	enumOption({
+		property: "subsample",
+		label: "Subsample",
+		enumObject: Subsampling,
+		defaultValue: "YUV420",
+	}),
 ];
-
 
 export function getDefaultOptions() {
 	return <div/>;
@@ -65,4 +91,8 @@ export function OptionsPanel(props: OptionListProps) {
 
 export function Controls(props: ControlProps) {
 	return <div/>;
+}
+
+export function encode(options: any, worker: Remote<WorkerApi>) {
+	return worker.avifEncode(options);
 }

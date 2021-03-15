@@ -1,42 +1,52 @@
-import { Dispatch, MouseEvent, useState } from "react";
+import { ChangeEvent, Dispatch, useState } from "react";
 import clsx from "clsx";
-import AddIcon from "bootstrap-icons/icons/plus-circle.svg";
-import RemoveIcon from "bootstrap-icons/icons/x.svg";
-import { IconButton } from "../ui";
-import { ENCODER_MAP, EncoderState } from "../codecs";
+import { CheckBox } from "../ui";
+import { ENCODER_MAP, ENCODERS, EncoderState } from "../codecs";
 import styles from "./EncoderPanel.scss";
 
-export type StateMap = Record<string, EncoderState>;
+export interface EncoderConfig {
+	enable: boolean;
+	state: EncoderState;
+}
+
+export type EncodingConfig = Record<string, EncoderConfig>;
+
+export function createEncodingConfig(saved?: EncodingConfig): EncodingConfig {
+	if (saved) {
+		return saved;
+	}
+	const encoders: Record<string, EncoderConfig> = {};
+	for (const e of ENCODERS) {
+		encoders[e.name] = {
+			enable: false,
+			state: e.getDefaultOptions(),
+		};
+	}
+	encoders.WebP.enable = true;
+	return encoders;
+}
 
 export interface EncoderPanelProps {
-	value: StateMap;
-	onChange: Dispatch<StateMap>;
+	value: Record<string, EncoderConfig>;
+	onChange: Dispatch<Record<string, EncoderConfig>>;
 }
 
 export default function EncoderPanel(props: EncoderPanelProps) {
-	const [stateMap, setStateMap] = useState(props.value);
-	const [list, setList] = useState(["WebP"]);
+	const { value, onChange } = props;
+
 	const [current, setCurrent] = useState("WebP");
 
-	function showAddList() {
-		// TODO
-	}
+	const menuItems = ENCODERS.map(e => {
+		const { name } = e;
 
-	const menuItems = list.map((name, i) => {
 		const classes = clsx(
 			styles.menuItem,
 			{ [styles.active]: name === current },
 		);
 
-		function removeThis(e: MouseEvent) {
-			e.stopPropagation();
-
-			list.splice(i, 1);
-			setList([...list]);
-
-			if (name === current) {
-				setCurrent(list[0]);
-			}
+		function handleEnableChange(e: ChangeEvent<HTMLInputElement>) {
+			const x = { ...value[name], enable: e.currentTarget.checked };
+			onChange({ ...value, [name]: x });
 		}
 
 		return (
@@ -46,21 +56,18 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 				tabIndex={0}
 				onClick={() => setCurrent(name)}
 			>
-				<IconButton
-					className={styles.remove}
-					onClick={removeThis}
-				>
-					<RemoveIcon/>
-				</IconButton>
+				<CheckBox
+					checked={value[name].enable}
+					onChange={handleEnableChange}
+				/>
 				<span className={styles.name}>{name}</span>
 			</div>
 		);
 	});
 
-	function handleOptionChange(value: any) {
-		const newStateMap = { ...stateMap, [current]: value };
-		setStateMap(newStateMap);
-		props.onChange(newStateMap);
+	function handleOptionChange(newState: any) {
+		const c = { ...value[current], state: newState };
+		onChange({ ...value, [current]: c });
 	}
 
 	const { OptionsPanel } = ENCODER_MAP[current];
@@ -69,17 +76,10 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 		<div className={styles.container}>
 			<div className={styles.menu}>
 				{menuItems}
-				<IconButton
-					title="Add encoder"
-					className={styles.add}
-					onClick={showAddList}
-				>
-					<AddIcon/>
-				</IconButton>
 			</div>
 			<div className={styles.optionsPanel}>
 				<OptionsPanel
-					state={stateMap[current]}
+					state={value[current].state}
 					onChange={handleOptionChange}
 				/>
 			</div>

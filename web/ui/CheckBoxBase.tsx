@@ -1,4 +1,4 @@
-import { ChangeEvent, ComponentType, Dispatch, ReactNode } from "react";
+import { ChangeEvent, ChangeEventHandler, ComponentType, Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { NOOP } from "../utils";
 import styles from "./CheckBoxBase.scss";
@@ -8,7 +8,10 @@ export interface CheckBoxProps {
 	checked?: boolean;
 	name?: string;
 	disabled?: boolean;
-	onChange?: Dispatch<ChangeEvent<HTMLInputElement>>;
+
+	onValueChange?: Dispatch<boolean>;
+	onChange?: ChangeEventHandler<HTMLInputElement>;
+
 	children?: ReactNode;
 }
 
@@ -19,7 +22,15 @@ interface InternalProps extends CheckBoxProps {
 }
 
 export default function CheckBoxBase(props: InternalProps) {
-	const { className, type, Icon, IconChecked, name, children, checked, disabled, onChange = NOOP } = props;
+	const {
+		className, type, Icon, IconChecked, name, children, checked, disabled,
+		onChange = NOOP, onValueChange = NOOP,
+	} = props;
+
+	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+		onChange(e);
+		onValueChange(e.currentTarget.checked);
+	}
 
 	return (
 		<label className={clsx(styles.container, className)}>
@@ -28,7 +39,8 @@ export default function CheckBoxBase(props: InternalProps) {
 				className={styles.input}
 				name={name}
 				disabled={disabled}
-				onChange={onChange}
+				checked={checked}
+				onChange={handleChange}
 			/>
 			<span
 				className={clsx(styles.mark, { [styles.checked]: checked })}

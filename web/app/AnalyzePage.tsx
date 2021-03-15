@@ -77,27 +77,28 @@ interface AnalyzePageProps {
 
 export default function AnalyzePage(props: AnalyzePageProps) {
 	const { result, onStart, onClose } = props;
+	const { original, config, map } = result;
 
 	function createControlState(): ControlState {
-		const { encode } = result.config;
+		const { encoders } = config;
 		let variableType = Step.None;
 		let variableName = "";
 
-		const kvs = Object.entries(encode);
+		const kvs = Object.entries(encoders).filter(e => e[1].enable);
 		if (kvs.length > 1) {
 			variableType = Step.Encoder;
 			variableName = "";
 		}
 
 		const [encoderName, state] = kvs[0];
-		if (state.varNames.length > 0) {
+		if (state.state.varNames.length > 0) {
 			variableType = Step.Options;
-			variableName = state.varNames[0];
+			variableName = state.state.varNames[0];
 		}
 
 		const options = ENCODER_MAP[encoderName].getOptionsList({
 			varNames: [],
-			data: state.data,
+			data: state.state.data,
 		});
 
 		return { variableType, variableName, encoderName, options };
@@ -106,34 +107,36 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const [showChart, setShowChart] = useState(true);
 	const [state, setState] = useState(createControlState);
 
-	const { variableType, variableName, encoderName, options } = state;
-	const image = result.original.data;
+	const { variableType, variableName, encoderName } = state;
+	const options = state.options[0];
 
-	const output = result.map.get(image)!.get(encoderName)!.get(JSON.stringify(options))!;
+	const output = map[encoderName][JSON.stringify(options)];
 	const encoder = ENCODER_MAP[encoderName];
 
 	let series: ConvertOutput[];
-	if (variableType === Step.None) {
-		series = [output]; // TODO: bar chart
+	if (variableType === Step.Preprocess) {
+		series = []; // TODO
 	} else if (variableType === Step.Encoder) {
-		const x = result.map.get(image)!;
-		series = Array.from(x.values()).map(e => e.get(JSON.stringify(options))!);
-	} else {
-		const x = result.map.get(image)!.get(encoderName)!;
+		const optKey = JSON.stringify(options);
+		series = Array.from(Object.values(map)).map(e => e[optKey]);
+	} else if (variableType === Step.Options) {
+		const x = map[encoderName];
 		const list = encoder.getOptionsList({
 			varNames: [variableName],
-			data: result.config.encode[encoderName].data,
+			data: config.encoders[encoderName].state.data,
 		});
-		series = list.map(options => x.get(JSON.stringify(options))!);
+		series = list.map(options => x[JSON.stringify(options)]);
+	} else {
+		series = [output]; // TODO: bar chart
 	}
 
 	const index = series.indexOf(output);
 
 	return (
 		<>
-			<ImageView {...result} optimized={output}/>
+			<ImageView original={original} optimized={output}/>
 
-			{showChart && <Chart original={result.original} outputs={series} index={index}/>}
+			{showChart && <Chart original={original} outputs={series} index={index}/>}
 
 			<div className={style.buttonGroup}>
 				<IconButton
@@ -160,7 +163,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</IconButton>
 				<DownloadButton
 					title="Download compressed image"
-					filename={result.original.file.name}
+					filename={original.file.name}
 					codec={encoder}
 					buffer={output.buffer}
 				>
@@ -168,7 +171,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</DownloadButton>
 			</div>
 
-			<ControlPanel value={state} onChange={setState} config={result.config}/>
+			<ControlPanel value={state} onChange={setState} config={config}/>
 		</>
 	);
 }

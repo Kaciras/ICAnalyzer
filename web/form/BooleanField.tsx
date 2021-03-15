@@ -1,95 +1,69 @@
-import { ChangeEvent, Dispatch } from "react";
 import { CheckBox, SwitchButton } from "../ui";
-import { State } from "../codecs";
-import { OptionType, StateProps } from "./base";
+import { EncoderState } from "../codecs";
+import { ControlProps, OptionType, StateProps } from "./base";
 import styles from "./BooleanField.scss";
 
 interface Metadata {
 	property: string;
 	label: string;
-	defaultValue: boolean;
+	defaultValue: boolean | number;
 }
 
-interface NumberRangeProps {
-	state: State;
-	onChange: Dispatch<boolean>;
-	onFocus: () => void;
-}
-
-export default function boolOption(data: Metadata): OptionType {
+export default function boolOption(data: Metadata): OptionType<boolean> {
 	const { property, label, defaultValue } = data;
 
-	function ValueField(props: NumberRangeProps) {
+	function newState() {
+		return Boolean(defaultValue);
+	}
+
+	function ValueField(props: ControlProps<boolean>) {
 		const { state, onChange, onFocus } = props;
-
-		const value = (state.values[property] ?? defaultValue) as boolean;
-
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			onChange(e.currentTarget.checked);
-		}
 
 		return (
 			<label onFocus={onFocus}>
-				<CheckBox checked={value} onChange={handleChange}>{label}</CheckBox>;
+				<CheckBox
+					checked={state}
+					onValueChange={onChange}
+				>
+					{label}
+				</CheckBox>
 			</label>
 		);
 	}
 
-	function ConstMode(props: StateProps) {
-		const { state, onChange } = props;
-
-		const value = (state.values[property] ?? defaultValue) as boolean;
-
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			const copy = { ...state };
-			copy.values[property] = e.currentTarget.checked;
-			onChange(copy);
-		}
-
-		return <SwitchButton checked={value} onChange={handleChange}/>;
-	}
-
-	function OptionField(props: StateProps) {
-		const { state, onChange } = props;
-
-		const isVariable = state.varNames.includes(property);
-
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			if (e.currentTarget.checked) {
-				state.varNames.push(property);
-			} else {
-				state.varNames = state.varNames.filter(v => v != property);
-			}
-			onChange({ ...state });
-		}
+	function OptionField(props: StateProps<boolean>) {
+		const { isVariable, state, onChange, onVariabilityChange } = props;
 
 		return (
 			<fieldset className={styles.container}>
 				<CheckBox
 					className={styles.label}
 					checked={isVariable}
-					onChange={handleChange}
+					onValueChange={onVariabilityChange}
 				>
 					{label}
 				</CheckBox>
-				{isVariable ? <strong>OFF & ON</strong> : ConstMode(props)}
+				{isVariable
+					? <strong>OFF & ON</strong>
+					: <SwitchButton checked={state} onValueChange={onChange}/>
+				}
 			</fieldset>
 		);
 	}
 
-	function generate(state: State, prev: any) {
-		const { varNames, values } = state;
+	function generate(state: EncoderState, isVariable: boolean, prev: any) {
+		const { varNames, data } = state;
 
-		if (varNames.includes(property)) {
+		if (isVariable) {
 			return [
 				{ ...prev, [property]: false },
 				{ ...prev, [property]: true },
 			];
 		} else {
-			prev[property] = values[property] as boolean;
+			prev[property] = data[property] as boolean;
 			return [prev];
 		}
 	}
 
-	return { id: property, ValueField, OptionField, generate };
+	return { id: property, newState, ValueField, OptionField, generate };
 }

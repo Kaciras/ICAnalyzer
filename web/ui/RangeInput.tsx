@@ -1,5 +1,6 @@
-import { ChangeEventHandler, CSSProperties } from "react";
+import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch } from "react";
 import styles from "./RangeInput.scss";
+import { NOOP } from "../utils";
 
 interface RangeInputProps {
 	value: number;
@@ -10,7 +11,8 @@ interface RangeInputProps {
 	name?: string;
 	disabled?: boolean;
 
-	onChange: ChangeEventHandler<HTMLInputElement>;
+	onValueChange?: Dispatch<number>;
+	onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
 interface RangeInputCSS extends CSSProperties {
@@ -18,13 +20,17 @@ interface RangeInputCSS extends CSSProperties {
 }
 
 export default function RangeInput(props: RangeInputProps) {
-	const { value, min, max, step, disabled, onChange } = props;
+	const { value, min, max, step, disabled, onChange = NOOP, onValueChange = NOOP } = props;
 
 	const percent = (value - min) / (max - min);
-
 	const cssVariables: RangeInputCSS = {
 		"--value-percent": `${percent * 100}%`,
 	};
+
+	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+		onChange(e);
+		onValueChange(e.currentTarget.valueAsNumber);
+	}
 
 	return (
 		<span
@@ -39,7 +45,7 @@ export default function RangeInput(props: RangeInputProps) {
 				min={min}
 				max={max}
 				step={step}
-				onChange={onChange}
+				onChange={handleChange}
 			/>
 
 			<span className={styles.thumbRegion}>

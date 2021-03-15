@@ -3,16 +3,28 @@ import clsx from "clsx";
 import { MeasureOptions } from "../encode";
 import { Button, Dialog } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
-import MetricsPanel from "./MetricsPanel";
-import EncoderPanel, { StateMap } from "./EncoderPanel";
+import MetricsPanel, { createMeansureState } from "./MetricsPanel";
+import EncoderPanel, { createEncodingConfig, EncodingConfig } from "./EncoderPanel";
 import PreprocessPanel, { PreprocessConfig } from "./PreprocessPanel";
 import styles from "./ConfigDialog.scss";
 
 export interface AnalyzeConfig {
 	preprocess: PreprocessConfig;
-	encode: StateMap;
-	threads: number;
+	encoders: EncodingConfig;
 	measure: MeasureOptions;
+}
+
+function initEncoderConfig(): AnalyzeConfig {
+	const saved = localStorage.getItem("Config");
+	if (saved) {
+		return JSON.parse(saved);
+	}
+
+	return {
+		preprocess: {},
+		encoders: createEncodingConfig(),
+		measure: createMeansureState(),
+	};
 }
 
 interface ConfigDialogProps {
@@ -29,21 +41,11 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 	const { file, image, onStart, onClose, onSelectFile } = props;
 
 	const [index, setIndex] = useState(0);
-
-	const [preprocessConfig, setPreprocessConfig] = useState<any>({});
-	const [stateMap, setStateMap] = useState<any>({});
-
-	const [workerCount, setWorkerCount] = useState(navigator.hardwareConcurrency);
-
-	const [measure, setMeasure] = useState<MeasureOptions>({
-		time: false,
-		SSIM: false,
-		PSNR: true,
-		butteraugli: false,
-	});
+	const [data, setData] = useState(initEncoderConfig);
 
 	function start() {
-		onStart({ encode: stateMap, preprocess: {}, measure, threads: workerCount });
+		onStart(data);
+		localStorage.setItem("Config", JSON.stringify(data));
 	}
 
 	const tabs = [];
@@ -63,22 +65,26 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			/>;
 			break;
 		case 1:
-			panel = <PreprocessPanel onChange={setPreprocessConfig}/>;
+			panel = <PreprocessPanel
+				value={data.preprocess}
+				onChange={v => setData({ ...data, preprocess: v })}
+			/>;
 			break;
 		case 2:
-			panel = <EncoderPanel value={stateMap} onChange={setStateMap}/>;
+			panel = <EncoderPanel
+				value={data.encoders}
+				onChange={v => setData({ ...data, encoders: v })}
+			/>;
 			break;
 		case 3:
 			panel = <MetricsPanel
-				workerCount={workerCount}
-				options={measure}
-				onWorkerCountChange={setWorkerCount}
-				onMeasureChange={setMeasure}
+				value={data.measure}
+				onChange={v => setData({ ...data, measure: v })}
 			/>;
 			break;
 	}
 
-	const ready = file && Object.keys(stateMap).length;
+	const ready = file && Object.values(data.encoders).every(e => e.enable);
 
 	return (
 		<Dialog className={styles.dialog} onClose={onClose}>

@@ -11,16 +11,22 @@ export interface ButteraugliConfig {
 	badQualitySeek: number;
 }
 
+export interface Optional<T> {
+	options: T;
+	enabled: boolean;
+}
+
 export interface MeasureOptions {
+	version: number;
+	workerCount: number;
 	time: boolean;
 	PSNR: boolean;
-	SSIM: false | SSIMOptions;
-	butteraugli: false | ButteraugliConfig;
+	SSIM: Optional<SSIMOptions>;
+	butteraugli: Optional<ButteraugliConfig>;
 }
 
 export interface AnalyzeConfig {
 	encoder: ImageEncoder;
-	threads: number;
 	optionsList: any[];
 	measure: MeasureOptions;
 }
@@ -54,11 +60,11 @@ export class BatchEncodeAnalyzer {
 	private readonly pool: WorkerPool<WorkerApi>;
 
 	constructor(image: ImageData, config: AnalyzeConfig) {
-		const { threads, optionsList } = config;
-		if (threads < 1) {
+		const { measure, optionsList } = config;
+		if (measure.workerCount < 1) {
 			throw new Error("Thread count must be at least 1");
 		}
-		const concurrency = Math.min(threads, optionsList.length);
+		const concurrency = Math.min(measure.workerCount, optionsList.length);
 
 		this.image = image;
 		this.config = config;
@@ -113,12 +119,12 @@ export class BatchEncodeAnalyzer {
 			metrics.PSNR = await wrapper.calcPSNR(data);
 			this.increaseProgress();
 		}
-		if (SSIM) {
-			metrics.SSIM = await wrapper.calcSSIM(data, SSIM);
+		if (SSIM.enabled) {
+			metrics.SSIM = await wrapper.calcSSIM(data, SSIM.options);
 			this.increaseProgress();
 		}
-		if (butteraugli) {
-			const [source, raw] = await wrapper.calcButteraugli(data, butteraugli);
+		if (butteraugli.enabled) {
+			const [source, raw] = await wrapper.calcButteraugli(data, butteraugli.options);
 			this.increaseProgress();
 
 			const heatMap = rgbaToImage(raw, data.width, data.height);

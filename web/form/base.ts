@@ -1,22 +1,30 @@
 import { Dispatch } from "react";
-import { State } from "../codecs";
+import { EncoderState } from "../codecs";
 
-export interface StateProps {
-	state: State;
-	onChange: Dispatch<any>;
+export interface StateProps<T> {
+	isVariable: boolean;
+	state: T;
+	onChange: Dispatch<T>;
+	onVariabilityChange: Dispatch<boolean>;
 }
 
-export interface ControlProps extends StateProps {
+export interface ControlProps<T> {
+	state: T;
+	onChange: Dispatch<T>;
 	onFocus: () => void;
 }
 
-export interface OptionType {
+export interface OptionType<T = any> {
 
 	id: string;
 
-	ValueField(props: ControlProps): JSX.Element;
+	initControlValue(state: T): any;
 
-	OptionField(props: StateProps): JSX.Element;
+	ValueField(props: ControlProps<T>): JSX.Element;
 
-	generate(State: State, prev: any): any[];
+	newOptionState(): T;
+
+	OptionField(props: StateProps<T>): JSX.Element;
+
+	generate(state: EncoderState, isVariable: boolean, prev: any): any[];
 }

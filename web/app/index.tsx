@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CompressSession, { ImageToEncoderNames } from "./CompressSession";
+import CompressSession, { EncoderNameToOptions } from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import { AnalyzeConfig } from "./ConfigDialog";
@@ -12,7 +12,7 @@ export interface InputImage {
 export interface Result {
 	original: InputImage;
 	config: AnalyzeConfig;
-	map: ImageToEncoderNames;
+	map: EncoderNameToOptions;
 }
 
 export default function App() {

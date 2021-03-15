@@ -1,21 +1,11 @@
 import { Dispatch } from "react";
 import { Remote } from "comlink";
 import { WorkerApi } from "../worker";
-import { OptionType } from "../form/base";
 import * as WebP from "./webp/client";
 
-export interface State {
+export interface EncoderState {
 	varNames: string[];
-	values: Record<string, unknown>;
-	variables: Record<string, unknown>;
-}
-
-export interface OptionTemplate {
-	label: string;
-	name: string;
-	type: OptionType;
-	defaultVariable?: true;
-	when?: (vals: any, vars: any) => boolean;
+	data: Record<string, any>;
 }
 
 export interface EncodeResult {
@@ -24,14 +14,15 @@ export interface EncodeResult {
 }
 
 export interface OptionListProps {
-	state: State;
-	onChange: Dispatch<any>;
+	state: EncoderState;
+	onChange: Dispatch<EncoderState>;
 }
 
 export interface ControlProps {
-	state: State;
+	state: EncoderState;
+	varName: string | false;
 	onChange: Dispatch<any>;
-	onSeriesChange: Dispatch<any[]>;
+	onVariableChange: Dispatch<string>;
 }
 
 export interface ImageEncoder {
@@ -41,7 +32,7 @@ export interface ImageEncoder {
 
 	getDefaultOptions(): any;
 
-	getOptionsList(state: State): any[];
+	getOptionsList(state: EncoderState): any[];
 
 	OptionsPanel(props: OptionListProps): JSX.Element;
 
