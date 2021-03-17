@@ -5,11 +5,9 @@ import { Button, Dialog } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel, { createMeansureState } from "./MetricsPanel";
 import EncoderPanel, { createEncodingConfig, EncodingConfig } from "./EncoderPanel";
-import PreprocessPanel, { PreprocessConfig } from "./PreprocessPanel";
 import styles from "./ConfigDialog.scss";
 
 export interface AnalyzeConfig {
-	preprocess: PreprocessConfig;
 	encoders: EncodingConfig;
 	measure: MeasureOptions;
 }
@@ -19,9 +17,7 @@ function initEncoderConfig(): AnalyzeConfig {
 	if (saved) {
 		return JSON.parse(saved);
 	}
-
 	return {
-		preprocess: {},
 		encoders: createEncodingConfig(),
 		measure: createMeansureState(),
 	};
@@ -35,7 +31,7 @@ interface ConfigDialogProps {
 	onSelectFile: () => void;
 }
 
-const panels = ["Information", "Preprocess", "Encoding", "Measure"];
+const panels = ["Information", "Encoding", "Measure"];
 
 export default function ConfigDialog(props: ConfigDialogProps) {
 	const { file, image, onStart, onClose, onSelectFile } = props;
@@ -65,18 +61,12 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			/>;
 			break;
 		case 1:
-			panel = <PreprocessPanel
-				value={data.preprocess}
-				onChange={v => setData({ ...data, preprocess: v })}
-			/>;
-			break;
-		case 2:
 			panel = <EncoderPanel
 				value={data.encoders}
 				onChange={v => setData({ ...data, encoders: v })}
 			/>;
 			break;
-		case 3:
+		case 2:
 			panel = <MetricsPanel
 				value={data.measure}
 				onChange={v => setData({ ...data, measure: v })}

@@ -17,7 +17,6 @@ type OptKey = string | number;
 
 export type OptionsToResult = Record<OptKey, ConvertOutput>;
 export type EncoderNameToOptions = Record<string, OptionsToResult>;
-export type PreprocessToImage = Record<OptKey, EncoderNameToOptions>;
 
 export default function CompressSession(props: Props) {
 	const [file, setFile] = useState<File>();
@@ -47,12 +46,8 @@ export default function CompressSession(props: Props) {
 		if (!file) {
 			throw new Error("File is null");
 		}
-		const { preprocess, encoders, measure } = config;
+		const { encoders, measure } = config;
 		const image = await decode(file);
-
-		for (const [name, options] of Object.entries(preprocess)) {
-			// TODO
-		}
 
 		let outputSizePerImage = 0;
 		const queue: [ImageEncoder, any[]][] = [];

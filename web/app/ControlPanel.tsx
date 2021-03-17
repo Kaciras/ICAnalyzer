@@ -1,9 +1,9 @@
 import { ChangeEvent, Dispatch } from "react";
 import { SelectBox } from "../ui";
 import { ENCODER_MAP } from "../codecs";
-import styles from "./ControlPanel.scss";
-import { ControlState, Step } from "./AnalyzePage";
 import { AnalyzeConfig } from "./ConfigDialog";
+import { ControlState, Step } from "./AnalyzePage";
+import styles from "./ControlPanel.scss";
 
 export interface ControlPanelProps {
 	config: AnalyzeConfig;
@@ -37,8 +37,8 @@ export default function ControlPanel(props: ControlPanelProps) {
 	return (
 		<div className={styles.variableGroup}>
 			<Encoder.Controls
-				state={config.encode[encoderName]}
-				varName={variableType === Step.Options && variableName}
+				state={config.encoders[encoderName].state}
+				variableName={variableType === Step.Options && variableName}
 				onChange={handleValueChange}
 				onVariableChange={name => handleVarChange(Step.Encoder, name)}
 			/>
@@ -56,7 +56,6 @@ export default function ControlPanel(props: ControlPanelProps) {
 					</SelectBox>
 				</div>
 			}
-			{ /* TODO: Preprocessors */}
 		</div>
 	);
 }

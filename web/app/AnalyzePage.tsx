@@ -11,6 +11,8 @@ import ImageView from "./ImageView";
 import Chart from "./Chart";
 import ControlPanel from "./ControlPanel";
 import style from "./AnalyzePage.scss";
+import { AnalyzeConfig } from "./ConfigDialog";
+import { EncodingConfig } from "./EncoderPanel";
 
 interface DownloadButtonProps {
 	title?: string;
@@ -55,18 +57,24 @@ function DownloadButton(props: DownloadButtonProps) {
 
 export enum Step {
 	None,
-	Preprocess,
 	Encoder,
 	Options,
 }
 
 export interface ControlState {
-	// preprocess config;
 	encoderName: string;
 	options: any;
 
 	variableType: Step;
 	variableName: string;
+}
+
+function createTODOState(config: AnalyzeConfig) {
+	const rv: EncodingConfig = {};
+	for (const [name, state] of Object.entries(config.encoders)) {
+		const s = ENCODER_MAP[name].initControlState(state.state);
+		rv[name] = { enable: state.enable, state: s };
+	}
 }
 
 interface AnalyzePageProps {
@@ -114,9 +122,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const encoder = ENCODER_MAP[encoderName];
 
 	let series: ConvertOutput[];
-	if (variableType === Step.Preprocess) {
-		series = []; // TODO
-	} else if (variableType === Step.Encoder) {
+	if (variableType === Step.Encoder) {
 		const optKey = JSON.stringify(options);
 		series = Array.from(Object.values(map)).map(e => e[optKey]);
 	} else if (variableType === Step.Options) {
