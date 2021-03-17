@@ -13,7 +13,7 @@ export interface ControlPanelProps {
 
 export default function ControlPanel(props: ControlPanelProps) {
 	const { config, value, onChange } = props;
-	const { variableType, variableName, encoderName, options } = value;
+	const { variableType, variableName, encoderName, encoderState } = value;
 
 	if (variableType === Step.None) {
 		return null;
@@ -27,20 +27,22 @@ export default function ControlPanel(props: ControlPanelProps) {
 		onChange({ ...value, variableType, variableName });
 	}
 
-	function handleValueChange(options: any) {
-		onChange({ ...value, options });
+	function handleValueChange(values: Record<string, unknown>) {
+		const { varNames, ranges } = encoderState[encoderName];
+		const es = { ...encoderState, [encoderName]: { varNames, values, ranges } };
+		onChange({ ...value, encoderState: es });
 	}
 
 	const Encoder = ENCODER_MAP[encoderName];
-	const selectOptions = Object.keys(config.encode).map(n => <option key={n} value={n}>{n}</option>);
+	const selectOptions = Object.keys(config.encoders).map(n => <option key={n} value={n}>{n}</option>);
 
 	return (
 		<div className={styles.variableGroup}>
 			<Encoder.Controls
-				state={config.encoders[encoderName].state}
+				state={encoderState[encoderName]}
 				variableName={variableType === Step.Options && variableName}
 				onChange={handleValueChange}
-				onVariableChange={name => handleVarChange(Step.Encoder, name)}
+				onVariableChange={name => handleVarChange(Step.Options, name)}
 			/>
 			{
 				selectOptions.length > 1 &&

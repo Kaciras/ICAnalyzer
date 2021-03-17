@@ -1,7 +1,6 @@
 import { ChangeEvent } from "react";
 import { CheckBox, RangeInput } from "../ui";
-import { EncoderState } from "../codecs";
-import { ControlProps, OptionType, StateProps } from "./base";
+import { ControlFieldProps, OptionFieldProps, OptionType } from "./base";
 import styles from "./NumberField.scss";
 
 interface NumberRange {
@@ -16,71 +15,58 @@ interface Metadata extends NumberRange {
 	defaultValue: number;
 }
 
-interface NumberOptionState {
-	// isVariable: boolean;
-	constant: number;
-	variable: NumberRange;
-}
-
-export default function numberOption(data: Metadata): OptionType<NumberOptionState> {
+export default function numberOption(data: Metadata): OptionType<number, NumberRange> {
 	const { property, label, min, max, step, defaultValue } = data;
 
-	function newState() {
-		return {
-			constant: defaultValue,
-			variable: { min, max, step },
-		};
+	function initControlValue(range: NumberRange) {
+		return range.min;
 	}
 
-	function ValueField(props: ControlProps<NumberOptionState>) {
-		const { state, onChange, onFocus } = props;
-		const { constant, variable } = state;
-		const { min, max, step } = variable;
+	function newOptionState() {
+		return [defaultValue, { min, max, step }] as [number, NumberRange];
+	}
+
+	function ControlField(props: ControlFieldProps<number, NumberRange>) {
+		const { value, range, onChange, onFocus } = props;
+		const { min, max, step } = range;
 
 		return (
-			<label onFocus={onFocus}>
+			<label onClick={onFocus}>
 				<p>
 					{label}
-					<span className={styles.optionValue}>{constant}</span>
+					<span className={styles.optionValue}>{value}</span>
 				</p>
 				<RangeInput
-					value={constant}
+					value={value}
 					min={min}
 					max={max}
 					step={step}
-					onValueChange={v => onChange({ ...state, constant: v })}
+					onValueChange={onChange}
 				/>
 			</label>
 		);
 	}
 
-	function ConstMode(props: StateProps<NumberOptionState>) {
-		const { state, onChange } = props;
-
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			const { valueAsNumber } = e.currentTarget;
-			onChange({ ...state, constant: valueAsNumber });
-		}
+	function ConstMode(props: OptionFieldProps<number, NumberRange>) {
+		const { value, onValueChange } = props;
 
 		return (
 			<RangeInput
-				value={state.constant}
+				value={value}
 				min={min}
 				max={max}
 				step={step}
-				onChange={handleChange}
+				onValueChange={onValueChange}
 			/>
 		);
 	}
 
-	function VariableMode(props: StateProps<NumberOptionState>) {
-		const { state, onChange } = props;
-		const { variable } = state;
+	function VariableMode(props: OptionFieldProps<number, NumberRange>) {
+		const { range, onRangeChange } = props;
 
 		function handleChange(e: ChangeEvent<HTMLInputElement>) {
 			const { valueAsNumber, name } = e.currentTarget;
-			const newVariable = { ...variable, [name]: valueAsNumber };
-			onChange({ ...state, variable: newVariable });
+			onRangeChange({ ...range, [name]: valueAsNumber });
 		}
 
 		interface FieldProps {
@@ -92,6 +78,7 @@ export default function numberOption(data: Metadata): OptionType<NumberOptionSta
 
 		const Field = (props: FieldProps) => {
 			const { name, min, max, step } = { ...data, ...props };
+
 			return (
 				<label className={styles.spinner}>
 					<span>{name}</span>
@@ -99,7 +86,7 @@ export default function numberOption(data: Metadata): OptionType<NumberOptionSta
 						className={styles.numberInput}
 						type="number"
 						name={name}
-						value={variable[name]}
+						value={range[name]}
 						min={min}
 						max={max}
 						step={step}
@@ -111,16 +98,15 @@ export default function numberOption(data: Metadata): OptionType<NumberOptionSta
 
 		return (
 			<div>
-				<Field name="min" max={variable.max}/>
-				<Field name="max" min={variable.min}/>
-				<Field name="step" min={variable.step}/>
+				<Field name="min" max={range.max}/>
+				<Field name="max" min={range.min}/>
+				<Field name="step" min={step}/>
 			</div>
 		);
 	}
 
-	function OptionField(props: StateProps<NumberOptionState>) {
-		const { isVariable, state, onVariabilityChange } = props;
-		const { constant } = state;
+	function OptionField(props: OptionFieldProps<number, NumberRange>) {
+		const { isVariable, value, onVariabilityChange } = props;
 
 		return (
 			<fieldset className={styles.fieldset}>
@@ -132,28 +118,26 @@ export default function numberOption(data: Metadata): OptionType<NumberOptionSta
 					>
 						{label}
 					</CheckBox>
-					{!isVariable && constant}
+					{!isVariable && value}
 				</div>
-				{isVariable ? VariableMode(props) : ConstMode(props)}
+				{isVariable ? <VariableMode {...props}/> : <ConstMode {...props}/>}
 			</fieldset>
 		);
 	}
 
-	function generate(state: EncoderState, isVariable: boolean, prev: any) {
-		const { constant, variable } = state.data[property] as NumberOptionState;
-		if (isVariable) {
-			const { min, max, step } = variable;
-
-			const rv = [];
-			for (let i = min; i <= max; i += step) {
-				rv.push({ ...prev, [property]: i });
-			}
-			return rv;
-		} else {
-			prev[property] = constant;
-			return [prev];
-		}
+	function populate(value: number, options: any) {
+		options[property] = value;
 	}
 
-	return { id: property, newState, ValueField, OptionField, generate };
+	function generate(state: NumberRange, options: any) {
+		const { min, max, step } = state;
+
+		const list = [];
+		for (let i = min; i <= max; i += step) {
+			list.push({ ...options, [property]: i });
+		}
+		return list;
+	}
+
+	return { id: property, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
 }

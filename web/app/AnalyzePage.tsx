@@ -1,17 +1,15 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { IconButton } from "../ui";
-import { ConvertOutput } from "../encode";
-import { ENCODER_MAP, ImageEncoder } from "../codecs";
+import { ENCODER_MAP, EncoderState, ImageEncoder } from "../codecs";
 import { Result } from "./index";
 import ImageView from "./ImageView";
 import Chart from "./Chart";
 import ControlPanel from "./ControlPanel";
 import style from "./AnalyzePage.scss";
-import { AnalyzeConfig } from "./ConfigDialog";
 import { EncodingConfig } from "./EncoderPanel";
 
 interface DownloadButtonProps {
@@ -63,18 +61,24 @@ export enum Step {
 
 export interface ControlState {
 	encoderName: string;
-	options: any;
+	encoderState: Record<string, EncoderState>;
 
 	variableType: Step;
 	variableName: string;
 }
 
-function createTODOState(config: AnalyzeConfig) {
-	const rv: EncodingConfig = {};
-	for (const [name, state] of Object.entries(config.encoders)) {
-		const s = ENCODER_MAP[name].initControlState(state.state);
-		rv[name] = { enable: state.enable, state: s };
+function createTODOState(encoders: EncodingConfig): Record<string, EncoderState> {
+	const rv: Record<string, EncoderState> = {};
+
+	for (const [name, data] of Object.entries(encoders)) {
+		if (!data.enable) {
+			continue;
+		}
+		const values = ENCODER_MAP[name].initControlState(data.state);
+		rv[name] = { ...data.state, values };
 	}
+
+	return rv;
 }
 
 interface AnalyzePageProps {
@@ -98,43 +102,48 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			variableName = "";
 		}
 
+		const encoderState = createTODOState(encoders);
+
 		const [encoderName, state] = kvs[0];
 		if (state.state.varNames.length > 0) {
 			variableType = Step.Options;
 			variableName = state.state.varNames[0];
 		}
 
-		const options = ENCODER_MAP[encoderName].getOptionsList({
-			varNames: [],
-			data: state.state.data,
-		});
-
-		return { variableType, variableName, encoderName, options };
+		return { variableType, variableName, encoderName, encoderState };
 	}
 
 	const [showChart, setShowChart] = useState(true);
 	const [state, setState] = useState(createControlState);
 
-	const { variableType, variableName, encoderName } = state;
-	const options = state.options[0];
+	const { variableType, variableName, encoderName, encoderState } = state;
 
-	const output = map[encoderName][JSON.stringify(options)];
 	const encoder = ENCODER_MAP[encoderName];
 
-	let series: ConvertOutput[];
-	if (variableType === Step.Encoder) {
-		const optKey = JSON.stringify(options);
-		series = Array.from(Object.values(map)).map(e => e[optKey]);
-	} else if (variableType === Step.Options) {
-		const x = map[encoderName];
-		const list = encoder.getOptionsList({
-			varNames: [variableName],
-			data: config.encoders[encoderName].state.data,
-		});
-		series = list.map(options => x[JSON.stringify(options)]);
-	} else {
-		series = [output]; // TODO: bar chart
-	}
+	const [options] = encoder.getOptionsList({
+		varNames: [],
+		values: encoderState[encoderName].values,
+		ranges: encoderState[encoderName].ranges,
+	});
+
+	const output = map[encoderName][JSON.stringify(options)];
+
+	const series = useMemo(() => {
+		if (variableType === Step.Encoder) {
+			const optKey = JSON.stringify(options);
+			return Array.from(Object.values(map)).map(e => e[optKey]);
+		} else if (variableType === Step.Options) {
+			const x = map[encoderName];
+			const list = encoder.getOptionsList({
+				varNames: [variableName],
+				values: encoderState[encoderName].values,
+				ranges: encoderState[encoderName].ranges,
+			});
+			return list.map(op => x[JSON.stringify(op)]);
+		} else {
+			return [output]; // TODO: bar chart
+		}
+	}, [encoderName, variableType, variableName]);
 
 	const index = series.indexOf(output);
 

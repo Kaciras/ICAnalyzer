@@ -5,7 +5,8 @@ import * as WebP from "./webp/client";
 
 export interface EncoderState {
 	varNames: string[];
-	data: Record<string, any>;
+	values: Record<string, unknown>;
+	ranges: Record<string, unknown>;
 }
 
 export interface EncodeResult {
@@ -20,8 +21,8 @@ export interface OptionListProps {
 
 export interface ControlProps {
 	state: EncoderState;
-	varName: string | false;
-	onChange: Dispatch<any>;
+	variableName: string | false;
+	onChange: Dispatch<Record<string, unknown>>;
 	onVariableChange: Dispatch<string>;
 }
 
@@ -30,13 +31,15 @@ export interface ImageEncoder {
 	extension: string;
 	mimeType: string;
 
-	getDefaultOptions(): any;
+	initControlState(ranges: EncoderState): Record<string, unknown>;
 
-	getOptionsList(state: EncoderState): any[];
+	Controls(props: ControlProps): JSX.Element;
+
+	initOptionsState(saved?: EncoderState): any;
 
 	OptionsPanel(props: OptionListProps): JSX.Element;
 
-	Controls(props: ControlProps): JSX.Element;
+	getOptionsList(state: EncoderState): any[];
 
 	encode(options: any, worker: Remote<WorkerApi>): Promise<EncodeResult>;
 }

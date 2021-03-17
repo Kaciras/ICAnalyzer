@@ -19,7 +19,7 @@ export function createEncodingConfig(saved?: EncodingConfig): EncodingConfig {
 	for (const e of ENCODERS) {
 		encoders[e.name] = {
 			enable: false,
-			state: e.getDefaultOptions(),
+			state: e.initOptionsState(),
 		};
 	}
 	encoders.WebP.enable = true;

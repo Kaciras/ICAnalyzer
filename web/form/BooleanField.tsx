@@ -1,6 +1,5 @@
 import { CheckBox, SwitchButton } from "../ui";
-import { EncoderState } from "../codecs";
-import { ControlProps, OptionType, StateProps } from "./base";
+import { ControlFieldProps, OptionFieldProps, OptionType } from "./base";
 import styles from "./BooleanField.scss";
 
 interface Metadata {
@@ -9,20 +8,24 @@ interface Metadata {
 	defaultValue: boolean | number;
 }
 
-export default function boolOption(data: Metadata): OptionType<boolean> {
+export default function boolOption(data: Metadata): OptionType<boolean, undefined> {
 	const { property, label, defaultValue } = data;
 
-	function newState() {
-		return Boolean(defaultValue);
+	function initControlValue() {
+		return false;
 	}
 
-	function ValueField(props: ControlProps<boolean>) {
-		const { state, onChange, onFocus } = props;
+	function newOptionState() {
+		return [Boolean(defaultValue), undefined] as [boolean, never];
+	}
+
+	function ControlField(props: ControlFieldProps<boolean, never>) {
+		const { value, onChange, onFocus } = props;
 
 		return (
-			<label onFocus={onFocus}>
+			<label onClick={onFocus}>
 				<CheckBox
-					checked={state}
+					checked={value}
 					onValueChange={onChange}
 				>
 					{label}
@@ -31,8 +34,8 @@ export default function boolOption(data: Metadata): OptionType<boolean> {
 		);
 	}
 
-	function OptionField(props: StateProps<boolean>) {
-		const { isVariable, state, onChange, onVariabilityChange } = props;
+	function OptionField(props: OptionFieldProps<boolean, undefined>) {
+		const { isVariable, value, onValueChange, onVariabilityChange } = props;
 
 		return (
 			<fieldset className={styles.container}>
@@ -45,25 +48,22 @@ export default function boolOption(data: Metadata): OptionType<boolean> {
 				</CheckBox>
 				{isVariable
 					? <strong>OFF & ON</strong>
-					: <SwitchButton checked={state} onValueChange={onChange}/>
+					: <SwitchButton checked={value} onValueChange={onValueChange}/>
 				}
 			</fieldset>
 		);
 	}
 
-	function generate(state: EncoderState, isVariable: boolean, prev: any) {
-		const { varNames, data } = state;
-
-		if (isVariable) {
-			return [
-				{ ...prev, [property]: false },
-				{ ...prev, [property]: true },
-			];
-		} else {
-			prev[property] = data[property] as boolean;
-			return [prev];
-		}
+	function populate(value: boolean, options: any) {
+		options[property] = value;
 	}
 
-	return { id: property, newState, ValueField, OptionField, generate };
+	function generate(_: never, options: any) {
+		return [
+			{ ...options, [property]: true },
+			{ ...options, [property]: false },
+		];
+	}
+
+	return { id: property, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
 }

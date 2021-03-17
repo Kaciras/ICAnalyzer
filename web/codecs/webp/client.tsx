@@ -133,17 +133,35 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function getDefaultOptions(saved?: EncoderState): EncoderState {
+export function initControlState(state: EncoderState): Record<string, unknown> {
+	const { varNames, ranges, values } = state;
+
+	templates
+		.filter(t => varNames.includes(t.id))
+		.forEach(t => values[t.id] = t.initControlValue(ranges[t.id]));
+
+	return values;
+}
+
+export function initOptionsState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
 	}
-	const data = Object.fromEntries(templates.map(t => [t.id, t.newState()]));
-	(data.quality as any).variable.step = 5;
-	return { varNames: ["quality"], data };
+	const values: Record<string, any> = {};
+	const ranges: Record<string, any> = {};
+
+	for (const t of templates) {
+		const [value, range] = t.newOptionState();
+		values[t.id] = value;
+		ranges[t.id] = range;
+	}
+	(ranges.quality as any).step = 5;
+	return { varNames: ["quality"], values, ranges };
 }
 
 export function OptionsPanel(props: OptionListProps) {
 	const { state, onChange } = props;
+	const { varNames, values, ranges } = state;
 
 	function handleVarChange(id: string, value: boolean) {
 		let { varNames } = state;
@@ -156,38 +174,45 @@ export function OptionsPanel(props: OptionListProps) {
 	}
 
 	function handleValueChange(id: string, value: any) {
-		state.data[id] = value;
-		onChange({ ...state });
+		onChange({ ...state, values: { ...values, [id]: value } });
+	}
+
+	function handleRangeChange(id: string, range: any) {
+		onChange({ ...state, ranges: { ...ranges, [id]: range } });
 	}
 
 	const items = templates.map(({ id, OptionField }) =>
 		<OptionField
 			key={id}
-			isVariable={state.varNames.includes(id)}
-			state={state.data[id]}
-			onChange={v => handleValueChange(id, v)}
+			isVariable={varNames.includes(id)}
+			value={values[id]}
+			range={ranges[id]}
+			onValueChange={v => handleValueChange(id, v)}
+			onRangeChange={v => handleRangeChange(id, v)}
 			onVariabilityChange={v => handleVarChange(id, v)}
 		/>,
 	);
+
 	return <>{items}</>;
 }
 
 export function Controls(props: ControlProps) {
-	const { state, varName, onChange, onVariableChange } = props;
+	const { state, variableName, onChange, onVariableChange } = props;
+	const { varNames, values, ranges } = state;
 
 	const fields = templates
-		.filter(t => state.varNames.includes(t.id))
-		.map(({ id, ValueField }) => {
+		.filter(t => varNames.includes(t.id))
+		.map(({ id, ControlField }) => {
 
 			function handleChange(nval: any) {
-				const newValues = { ...state.data, [id]: nval };
-				const optList = getOptionsList({ varNames: [], data: newValues });
-				onChange(optList[0]);
+				onVariableChange(id);
+				onChange({ ...values, [id]: nval });
 			}
 
-			return <ValueField
+			return <ControlField
 				key={id}
-				state={state.data[id]}
+				value={values[id]}
+				range={ranges[id]}
 				onFocus={() => onVariableChange(id)}
 				onChange={handleChange}
 			/>;
@@ -197,11 +222,17 @@ export function Controls(props: ControlProps) {
 }
 
 export function getOptionsList(state: EncoderState) {
-	const { varNames } = state;
+	const { varNames, values, ranges } = state;
 
 	function map(list: any[], t: OptionType) {
 		return list
-			.map(options => t.generate(state, varNames.includes(t.id), options))
+			.map(options => {
+				if (varNames.includes(t.id)) {
+					return t.generate(ranges[t.id], options);
+				}
+				t.populate(values[t.id], options);
+				return [options];
+			})
 			.reduce((p, c) => p.concat(c), []);
 	}
 
@@ -209,5 +240,5 @@ export function getOptionsList(state: EncoderState) {
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {
-	return worker.webpEncode({ ...defaultOptions, options });
+	return worker.webpEncode({ ...defaultOptions, ...options });
 }

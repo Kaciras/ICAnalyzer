@@ -60,6 +60,7 @@ export interface ChartProps {
 
 export default function Chart(props: ChartProps) {
 	const { original, outputs, index } = props;
+
 	const [chart, setChart] = useState<ECharts>();
 
 	function initEcharts(el: HTMLDivElement | null) {
