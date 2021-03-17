@@ -1,64 +1,58 @@
-import { ChangeEvent, ChangeEventHandler, Dispatch, useState } from "react";
+import { Dispatch } from "react";
 import clsx from "clsx";
+import { NOOP } from "../utils";
 import styles from "./NumberInput.scss";
 
-interface Props {
-	value?: number;
+export interface NumberInputProps {
+	value: number;
 	min?: number;
 	max?: number;
 	step?: number;
-	precision?: number;
 
 	name?: string;
 	className?: string;
 	disabled?: boolean;
 
-	onChange?: ChangeEventHandler<HTMLInputElement>;
 	onValueChange?: Dispatch<number>;
 }
 
-function useLimitedValue(
-	init = 0,
-	min: number = Number.NEGATIVE_INFINITY,
-	max: number = Number.POSITIVE_INFINITY,
-	precision = 0,
-): [number, (v: number) => number] {
+export default function NumberInput(props: NumberInputProps) {
+	const {
+		name,
+		className,
+		disabled,
+		value,
+		min = 0,
+		max = Number.MAX_SAFE_INTEGER,
+		step = 1,
+		onValueChange = NOOP,
+	} = props;
 
-	const [value, setValue] = useState(init);
+	function startUpdate(diff: number) {
+		let timer = 0;
 
-	function setValueLimited(newValue: number) {
-		if (newValue > max) {
-			newValue = max;
-		} else if (newValue < min) {
-			newValue = min;
-		} else if (precision !== 0) {
-			const s = newValue / precision;
-			if (!Number.isInteger(s)) {
-				newValue = Math.round(s) * precision;
+		function update(localValue: number) {
+			const newValue = localValue + diff;
+			if (newValue > max || newValue < min) {
+				return;
 			}
+			onValueChange(newValue);
+			timer = setTimeout(() => update(newValue), 50);
 		}
-		setValue(newValue);
-		return newValue;
-	}
 
-	return [value, setValueLimited];
-}
-
-export default function NumberInput(props: Props) {
-	const { name, className, value, min, max, step, disabled, onChange, onValueChange } = props;
-	const [localValue, setLocalValue] = useLimitedValue(value, min, max, 0.5);
-
-	const valueT = typeof value === "undefined" ? localValue : value;
-
-	function setValue(event: ChangeEvent<HTMLInputElement>) {
-		const value = event.target.valueAsNumber;
-		if (onChange) {
-			onChange(event);
+		function onMouseUp() {
+			clearTimeout(timer);
+			document.removeEventListener("mouseup", onMouseUp);
 		}
-		if (onValueChange) {
-			onValueChange(value);
+
+		const newValue = value + diff;
+		if (newValue > max || newValue < min) {
+			return;
 		}
-		setLocalValue(value);
+		onValueChange(newValue);
+
+		timer = setTimeout(() => update(newValue), 400);
+		document.addEventListener("mouseup", onMouseUp);
 	}
 
 	return (
@@ -68,22 +62,25 @@ export default function NumberInput(props: Props) {
 				className={styles.input}
 				disabled={disabled}
 				name={name}
+				min={min}
+				max={max}
+				step={step}
 				value={value}
-				onChange={setValue}
+				onChange={e => onValueChange(e.currentTarget.valueAsNumber)}
 			/>
 			<button
 				type="button"
 				className={clsx(styles.button, styles.plus)}
 				tabIndex={-1}
 				disabled={disabled}
-				onClick={() => setValue(valueT + (step || 1))}
+				onMouseDown={() => startUpdate(step)}
 			/>
 			<button
 				type="button"
 				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
-				onClick={() => setValue(valueT - (step || 1))}
+				onMouseDown={() => startUpdate(-step)}
 			/>
 		</div>
 	);

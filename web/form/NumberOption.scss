@@ -1,11 +1,14 @@
 .spinner {
 	display: inline-flex;
 	flex-direction: column;
+
+	&:not(:first-child) {
+		margin-left: 10px;
+	}
 }
 
 .numberInput {
-	width: 60px;
-	margin-right: 10px;
+	width: 110px;
 }
 
 .fieldset {
@@ -20,4 +23,8 @@
 
 .label {
 	margin-right: auto;
+}
+
+.body {
+	margin-left: 30px;
 }

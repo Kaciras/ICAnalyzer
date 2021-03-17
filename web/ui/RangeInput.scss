@@ -16,7 +16,7 @@ $thumb-size: 18px;
 		width: 100%;
 		height: 2px;
 
-		background: linear-gradient($color, $color) 0/var(--value-percent,0) 100% no-repeat #eee
+		background: linear-gradient($color, $color) 0/var(--value-percent,0) 100% no-repeat #ddd
 	}
 }
 
@@ -24,8 +24,8 @@ $thumb-size: 18px;
 	display: block;
 	position: absolute;
 	top: 0;
-	left: 6px;
-	right: 6px;
+	left: 0;
+	right: $thumb-size;
 	pointer-events: none;
 }
 
@@ -34,7 +34,7 @@ $thumb-size: 18px;
 	width: $thumb-size;
 	height: $thumb-size;
 	padding: 3px;
-	margin-left: calc(var(--value-percent, 0) - 10px);
+	margin-left: var(--value-percent, 0);
 
 	border-radius: 50%;
 	border: 2px solid $color;

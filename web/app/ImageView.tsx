@@ -89,8 +89,8 @@ export default function ImageView(props: ImageViewProps) {
 	if (type === ViewType.AbsDiff) {
 		brightnessVal = brightness;
 		brightnessInput = (
-			<label>
-				Brightness:
+			<label className={styles.option}>
+				Brightness %:
 				<NumberInput
 					value={brightness}
 					min={100}
@@ -112,7 +112,7 @@ export default function ImageView(props: ImageViewProps) {
 	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
 
 	const noHeatMap = !optimized.metrics.butteraugli;
-	const heatMapTitle = noHeatMap ? "You should enable butteraugli to see this" : undefined;
+	const heatMapTitle = noHeatMap ? "Require enable butteraugli" : undefined;
 
 	return (
 		<div className={styles.container}>

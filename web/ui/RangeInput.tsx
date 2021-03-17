@@ -1,6 +1,7 @@
 import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch } from "react";
 import { NOOP } from "../utils";
 import styles from "./RangeInput.scss";
+import clsx from "clsx";
 
 interface RangeInputProps {
 	value: number;
@@ -8,6 +9,7 @@ interface RangeInputProps {
 	max: number;
 	step: number;
 
+	className?: string;
 	name?: string;
 	disabled?: boolean;
 
@@ -20,7 +22,7 @@ interface RangeInputCSS extends CSSProperties {
 }
 
 export default function RangeInput(props: RangeInputProps) {
-	const { value, min, max, step, disabled, onChange = NOOP, onValueChange = NOOP } = props;
+	const { className, value, min, max, step, disabled, onChange = NOOP, onValueChange = NOOP } = props;
 
 	const percent = (value - min) / (max - min);
 	const cssVariables: RangeInputCSS = {
@@ -34,7 +36,7 @@ export default function RangeInput(props: RangeInputProps) {
 
 	return (
 		<span
-			className={styles.container}
+			className={clsx(styles.container, className)}
 			style={cssVariables}
 		>
 			<input

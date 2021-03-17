@@ -44,7 +44,7 @@ export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Ar
 				<p>
 					{label}
 				</p>
-				<div>{items}</div>
+				<div className={styles.body}>{items}</div>
 			</label>
 		);
 	}
@@ -104,7 +104,7 @@ export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Ar
 				>
 					{label}
 				</CheckBox>
-				{items}
+				<div className={styles.body}>{items}</div>
 			</fieldset>
 		);
 	}

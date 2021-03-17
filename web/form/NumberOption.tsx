@@ -1,6 +1,5 @@
 import type { ControlFieldProps, OptionFieldProps, OptionType } from ".";
-import { ChangeEvent } from "react";
-import { CheckBox, RangeInput } from "../ui";
+import { CheckBox, NumberInput, RangeInput } from "../ui";
 import styles from "./NumberOption.scss";
 
 interface NumberRange {
@@ -31,11 +30,11 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		const { min, max, step } = range;
 
 		return (
-			<label onClick={onFocus}>
-				<p>
-					{label}
-					<span className={styles.optionValue}>{value}</span>
-				</p>
+			<label className={styles.fieldset} onClick={onFocus}>
+				<div className={styles.header}>
+					<span className={styles.label}>{label}</span>
+					{value}
+				</div>
 				<RangeInput
 					value={value}
 					min={min}
@@ -52,6 +51,7 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 
 		return (
 			<RangeInput
+				className={styles.body}
 				value={value}
 				min={min}
 				max={max}
@@ -64,8 +64,7 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 	function VariableMode(props: OptionFieldProps<number, NumberRange>) {
 		const { range, onRangeChange } = props;
 
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			const { valueAsNumber, name } = e.currentTarget;
+		function handleChange(name: keyof NumberRange, valueAsNumber: number) {
 			onRangeChange({ ...range, [name]: valueAsNumber });
 		}
 
@@ -82,22 +81,21 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 			return (
 				<label className={styles.spinner}>
 					<span>{name}</span>
-					<input
+					<NumberInput
 						className={styles.numberInput}
-						type="number"
 						name={name}
 						value={range[name]}
 						min={min}
 						max={max}
 						step={step}
-						onChange={handleChange}
+						onValueChange={v => handleChange(name, v)}
 					/>
 				</label>
 			);
 		};
 
 		return (
-			<div>
+			<div className={styles.body}>
 				<Field name="min" max={range.max}/>
 				<Field name="max" min={range.min}/>
 				<Field name="step" min={step}/>

@@ -9,6 +9,7 @@
 }
 
 .menuItem {
+	white-space: nowrap;
 	padding: 10px 15px 10px 10px;
 
 	border-radius: 10px;
@@ -26,31 +27,9 @@
 	color: #139df2;
 }
 
-.remove {
-	margin-right: 6px;
-	padding: 0;
-
-	color: red;
-	font-size: 1.25em;
-	vertical-align: middle;
-
-	&:focus {
-		outline: dotted 2px;
-	}
-}
-
 .name {
+	margin-left: 5px;
 	vertical-align: middle;
-}
-
-.add {
-	composes: menuItem;
-
-	display: flex;
-	padding: 10px;
-	width: 5em;
-	font-size: 24px;
-	justify-content: center;
 }
 
 .optionsPanel {

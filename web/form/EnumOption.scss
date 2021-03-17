@@ -1,5 +1,5 @@
-@import "NumberField";
+@import "NumberOption";
 
-.item {
+.item:not(:last-child) {
 	margin-right: 5px;
 }
