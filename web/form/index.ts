@@ -33,3 +33,7 @@ export interface OptionType<T = any, V = any> {
 
 	generate(range: V, options: any): any[];
 }
+
+export { default as boolOption } from "./BoolOption";
+export { default as enumOption } from "./EnumOption";
+export { default as numberOption } from "./NumberOption";

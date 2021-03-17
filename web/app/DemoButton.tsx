@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Styles from "./DemoButton.scss";
+import styles from "./DemoButton.scss";
 
 interface DemoButtonProps {
 	description: string;
@@ -26,14 +26,14 @@ export default function DemoButton(props: DemoButtonProps) {
 	}
 
 	return (
-		<button key={url} className={Styles.card} onClick={handleClick}>
+		<button key={url} className={styles.card} onClick={handleClick}>
 			<img
 				src={icon}
 				alt="icon"
-				className={Styles.demoIcon}
+				className={styles.demoIcon}
 			/>
-			{loading && <div className={Styles.loading}/>}
-			<span className={Styles.demoDescription}>{description}</span>
+			{loading && <div className={styles.loading}/>}
+			<span className={styles.demoDescription}>{description}</span>
 		</button>
 	);
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { ECharts, init } from "echarts";
-import Styles from "./Chart.scss";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
+import styles from "./Chart.scss";
 import Series = echarts.EChartOption.Series;
 import YAxis = echarts.EChartOption.YAxis;
 
@@ -98,8 +98,8 @@ export default function Chart(props: ChartProps) {
 	});
 
 	return (
-		<section className={Styles.container}>
-			<div className={Styles.chart} ref={initEcharts}/>
+		<section className={styles.container}>
+			<div className={styles.chart} ref={initEcharts}/>
 		</section>
 	);
 }

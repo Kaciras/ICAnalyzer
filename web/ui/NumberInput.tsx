@@ -1,6 +1,6 @@
 import { ChangeEvent, ChangeEventHandler, Dispatch, useState } from "react";
 import clsx from "clsx";
-import Style from "./NumberInput.scss";
+import styles from "./NumberInput.scss";
 
 interface Props {
 	value?: number;
@@ -62,10 +62,10 @@ export default function NumberInput(props: Props) {
 	}
 
 	return (
-		<div className={clsx(Style.container, className)}>
+		<div className={clsx(styles.container, className)}>
 			<input
 				type="number"
-				className={Style.input}
+				className={styles.input}
 				disabled={disabled}
 				name={name}
 				value={value}
@@ -73,14 +73,14 @@ export default function NumberInput(props: Props) {
 			/>
 			<button
 				type="button"
-				className={clsx(Style.button, Style.plus)}
+				className={clsx(styles.button, styles.plus)}
 				tabIndex={-1}
 				disabled={disabled}
 				onClick={() => setValue(valueT + (step || 1))}
 			/>
 			<button
 				type="button"
-				className={Style.button}
+				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
 				onClick={() => setValue(valueT - (step || 1))}

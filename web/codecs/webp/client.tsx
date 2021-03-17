@@ -1,12 +1,9 @@
 import { Remote } from "comlink";
-import { WorkerApi } from "../../worker";
-import { ControlProps, EncoderState, OptionListProps } from "../index";
-import { EncodeOptions } from "./encoder";
-import enumOption from "../../form/EnumField";
 import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
-import numberOption from "../../form/NumberField";
-import boolOption from "../../form/BooleanField";
-import { OptionType } from "../../form/base";
+import { WorkerApi } from "../../worker";
+import { boolOption, enumOption, numberOption, OptionType } from "../../form";
+import { EncodeOptions } from "./encoder";
+import { ControlProps, EncoderState, OptionListProps } from "../index";
 
 export const name = "WebP";
 export const mimeType = "image/webp";

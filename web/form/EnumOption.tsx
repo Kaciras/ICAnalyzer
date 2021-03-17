@@ -1,7 +1,7 @@
-import { CheckBox, RadioBox } from "../ui";
+import type { ControlFieldProps, OptionFieldProps, OptionType } from ".";
 import { ChangeEvent } from "react";
-import { ControlFieldProps, OptionFieldProps, OptionType } from "./base";
-import styles from "./EnumFIeld.scss";
+import { CheckBox, RadioBox } from "../ui";
+import styles from "./EnumOption.scss";
 
 interface Metadata<T extends Record<string, any>> {
 	property: string;

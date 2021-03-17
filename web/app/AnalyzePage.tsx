@@ -9,8 +9,8 @@ import { Result } from "./index";
 import ImageView from "./ImageView";
 import Chart from "./Chart";
 import ControlPanel from "./ControlPanel";
-import style from "./AnalyzePage.scss";
 import { EncodingConfig } from "./EncoderPanel";
+import styles from "./AnalyzePage.scss";
 
 interface DownloadButtonProps {
 	title?: string;
@@ -44,7 +44,7 @@ function DownloadButton(props: DownloadButtonProps) {
 
 	return (
 		<IconButton
-			className={style.iconButton}
+			className={styles.iconButton}
 			title={title}
 			onClick={downloadImage}
 		>
@@ -153,24 +153,24 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 			{showChart && <Chart original={original} outputs={series} index={index}/>}
 
-			<div className={style.buttonGroup}>
+			<div className={styles.buttonGroup}>
 				<IconButton
 					title="Back"
-					className={style.iconButton}
+					className={styles.iconButton}
 					onClick={onClose}
 				>
 					<CloseIcon/>
 				</IconButton>
 				<IconButton
 					title="Select an image"
-					className={style.iconButton}
+					className={styles.iconButton}
 					onClick={onStart}
 				>
 					<UploadIcon/>
 				</IconButton>
 				<IconButton
 					title="Show chart"
-					className={style.iconButton}
+					className={styles.iconButton}
 					active={showChart}
 					onClick={() => setShowChart(!showChart)}
 				>

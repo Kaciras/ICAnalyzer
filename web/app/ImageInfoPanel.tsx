@@ -1,5 +1,5 @@
 import { bytes } from "../utils";
-import Styles from "./ImageInfoPanel.scss";
+import styles from "./ImageInfoPanel.scss";
 
 interface Props {
 	file: File;
@@ -23,12 +23,12 @@ export default function ImageInfoPanel(props: Props) {
 	return (
 		<div className="dialog-content">
 			<canvas
-				className={Styles.canvas}
+				className={styles.canvas}
 				ref={draw}
 				width={width}
 				height={height}
 			/>
-			<dl className={Styles.attributes}>
+			<dl className={styles.attributes}>
 				<dt>File name:</dt>
 				<dd>{file.name}</dd>
 

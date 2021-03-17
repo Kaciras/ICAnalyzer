@@ -1,9 +1,9 @@
-import { ButteraugliConfig, MeasureOptions, Optional } from "../encode";
 import React, { ChangeEvent, Dispatch } from "react";
-import { defaultButteraugliOptions } from "../../lib/similarity";
-import Styles from "./MetricsPanel.scss";
-import { CheckBox, NumberInput } from "../ui";
 import * as ssimJs from "ssim.js";
+import { defaultButteraugliOptions } from "../../lib/similarity";
+import { CheckBox, NumberInput } from "../ui";
+import { ButteraugliConfig, MeasureOptions, Optional } from "../encode";
+import styles from "./MetricsPanel.scss";
 
 export function createMeansureState(saved?: MeasureOptions): MeasureOptions {
 	if (saved) {
@@ -40,14 +40,14 @@ function ButteraugliFields(props: ButteraugliProps) {
 
 	const inputs = Object.entries(value.options).map(([name, value]) => (
 		<label
-			className={Styles.field}
+			className={styles.field}
 			key={name}
 		>
-			<span className={Styles.label}>
+			<span className={styles.label}>
 				{name}
 			</span>
 			<NumberInput
-				className={Styles.value}
+				className={styles.value}
 				name={name}
 				min={0}
 				step={0.1}
@@ -106,9 +106,9 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 	}
 
 	return (
-		<form className={Styles.form}>
+		<form className={styles.form}>
 			<label>
-				<span className={Styles.inlineLabel}>
+				<span className={styles.inlineLabel}>
 					Worker count:
 				</span>
 				<NumberInput

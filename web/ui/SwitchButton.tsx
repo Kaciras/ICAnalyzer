@@ -1,9 +1,8 @@
 import clsx from "clsx";
 import { CheckBoxProps } from "./CheckBoxBase";
-import styles from "./SwitchButton.scss";
 import { NOOP } from "../utils";
 import { ChangeEvent } from "react";
-import Omit = jest.Omit;
+import styles from "./SwitchButton.scss";
 
 export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
 

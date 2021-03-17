@@ -1,6 +1,6 @@
 import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch } from "react";
-import styles from "./RangeInput.scss";
 import { NOOP } from "../utils";
+import styles from "./RangeInput.scss";
 
 interface RangeInputProps {
 	value: number;

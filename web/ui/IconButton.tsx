@@ -1,7 +1,7 @@
 import { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
 import { avoidMouseFocus } from "./common";
-import Styles from "./IconButton.scss";
+import styles from "./IconButton.scss";
 
 export interface IconButtonProps {
 	title?: string;
@@ -17,9 +17,9 @@ export default function IconButton(props: IconButtonProps) {
 	const { className, children, title, href, disabled, active, onClick } = props;
 
 	const classes = clsx(
-		Styles.iconButton,
+		styles.iconButton,
 		className,
-		{ [Styles.active]: active },
+		{ [styles.active]: active },
 	);
 
 	const ButtonTag = href ? "a" : "button";

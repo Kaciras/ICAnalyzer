@@ -1,7 +1,7 @@
+import type { ControlFieldProps, OptionFieldProps, OptionType } from ".";
 import { ChangeEvent } from "react";
 import { CheckBox, RangeInput } from "../ui";
-import { ControlFieldProps, OptionFieldProps, OptionType } from "./base";
-import styles from "./NumberField.scss";
+import styles from "./NumberOption.scss";
 
 interface NumberRange {
 	min: number;

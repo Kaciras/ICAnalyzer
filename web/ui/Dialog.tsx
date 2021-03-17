@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { NOOP } from "../utils";
-import Styles from "./Dialog.scss";
+import styles from "./Dialog.scss";
 
 interface DialogProps {
 	className?: string;
@@ -16,13 +16,13 @@ interface DialogProps {
  * there is no :last-of-class selector so use js to implement.
  */
 function hidePrevious() {
-	const dialogs = document.body.querySelectorAll("." + Styles.dimmer);
+	const dialogs = document.body.querySelectorAll("." + styles.dimmer);
 	const previous = dialogs[dialogs.length - 2];
 	if (!previous) {
 		return;
 	}
-	previous.classList.add(Styles.hide);
-	return () => previous.classList.remove(Styles.hide);
+	previous.classList.add(styles.hide);
+	return () => previous.classList.remove(styles.hide);
 }
 
 export default function Dialog(props: DialogProps) {
@@ -43,8 +43,8 @@ export default function Dialog(props: DialogProps) {
 	useLayoutEffect(hidePrevious, []);
 
 	return createPortal(
-		<div className={Styles.dimmer}>
-			<div className={clsx(className, Styles.dialog)}>
+		<div className={styles.dimmer}>
+			<div className={clsx(className, styles.dialog)}>
 				{props.children}
 			</div>
 		</div>,

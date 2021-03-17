@@ -1,17 +1,17 @@
 import { ChangeEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
-import { Button, Dialog } from "../ui";
-import { getFileFromUrl } from "../utils";
-import { decode } from "../decode";
 import largePhoto from "squoosh/src/shared/prerendered-app/Intro/imgs/demos/demo-large-photo.jpg";
 import largePhotoIcon from "squoosh/src/shared/prerendered-app/Intro/imgs/demos/icon-demo-large-photo.jpg";
 import artwork from "../assets/demo/artwork.jpg";
 import artworkIcon from "../assets/demo/artwork-icon.jpg";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import colorfulText from "../assets/demo/colorful-text.png";
+import { Button, Dialog } from "../ui";
+import { getFileFromUrl } from "../utils";
+import { decode } from "../decode";
 import DemoButton from "./DemoButton";
-import Styles from "./SelectFileDialog.scss";
+import styles from "./SelectFileDialog.scss";
 
 const demos = [
 	{
@@ -114,7 +114,7 @@ export default function SelectFileDialog(props: Props) {
 		<Dialog onClose={onCancel}>
 			<div className="dialog-content">
 				<label
-					className={clsx(Styles.uploadFile, { [Styles.dragging]: boundary.isInArea })}
+					className={clsx(styles.uploadFile, { [styles.dragging]: boundary.isInArea })}
 					tabIndex={0}
 					onDragEnter={boundary.enter}
 					onDragOver={e => e.preventDefault()}
@@ -122,31 +122,31 @@ export default function SelectFileDialog(props: Props) {
 					onDragLeave={boundary.leave}
 				>
 					<div>
-						<span className={Styles.icon}>
+						<span className={styles.icon}>
 							<ImageIcon/>
 						</span>
-						<span className={Styles.text}>
+						<span className={styles.text}>
 							Drag & drop
 						</span>
 					</div>
-					<div className={Styles.text}>
+					<div className={styles.text}>
 						Or select an image
 					</div>
 					<input
-						className={Styles.fileInput}
+						className={styles.fileInput}
 						name="file"
 						type="file"
 						accept="image/*"
 						onChange={handleFileChange}
 					/>
 				</label>
-				<span className={Styles.demoLabel}>
+				<span className={styles.demoLabel}>
 					Or try one of these:
 				</span>
-				<div className={Styles.demo}>{demoButtons}</div>
+				<div className={styles.demo}>{demoButtons}</div>
 			</div>
 			<div className="dialog-actions">
-				<span className={Styles.error}>{error}</span>
+				<span className={styles.error}>{error}</span>
 				<Button color="second" onClick={onCancel}>Back</Button>
 			</div>
 		</Dialog>

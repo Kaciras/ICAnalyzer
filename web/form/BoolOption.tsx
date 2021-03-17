@@ -1,6 +1,6 @@
+import type { ControlFieldProps, OptionFieldProps, OptionType } from ".";
 import { CheckBox, SwitchButton } from "../ui";
-import { ControlFieldProps, OptionFieldProps, OptionType } from "./base";
-import styles from "./BooleanField.scss";
+import styles from "./BoolOption.scss";
 
 interface Metadata {
 	property: string;

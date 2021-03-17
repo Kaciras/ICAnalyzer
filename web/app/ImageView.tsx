@@ -2,9 +2,9 @@ import { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput, PinchZoom } from "../ui";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { IconButtonProps } from "../ui/IconButton";
-import Styles from "./ImageView.scss";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
+import styles from "./ImageView.scss";
 
 interface ImageViewProps {
 	original: InputImage;
@@ -115,8 +115,8 @@ export default function ImageView(props: ImageViewProps) {
 	const heatMapTitle = noHeatMap ? "You should enable butteraugli to see this" : undefined;
 
 	return (
-		<div className={Styles.container}>
-			<div className={Styles.inputs}>
+		<div className={styles.container}>
+			<div className={styles.inputs}>
 				<div>
 					<ImageViewTab
 						target={ViewType.Original}
@@ -143,23 +143,23 @@ export default function ImageView(props: ImageViewProps) {
 				</div>
 				{brightnessInput}
 			</div>
-			<div className={Styles.controls}>
+			<div className={styles.controls}>
 
 			</div>
 			<PinchZoom
-				className={Styles.imageView}
+				className={styles.imageView}
 				state={pinchZoom}
 				onChange={setPinchZoom}
 			>
-				<div className={Styles.wrapper} style={wrapperCss}>
+				<div className={styles.wrapper} style={wrapperCss}>
 					<canvas
-						className={Styles.canvas}
+						className={styles.canvas}
 						ref={backCanvas}
 						width={width}
 						height={height}
 					/>
 					<canvas
-						className={Styles.canvas}
+						className={styles.canvas}
 						ref={topCanvas}
 						width={width}
 						height={height}
