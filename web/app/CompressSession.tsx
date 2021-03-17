@@ -64,11 +64,13 @@ export default function CompressSession(props: Props) {
 		}
 
 		let calculations = 1;
-		if (measure.butteraugli) calculations++;
-		if (measure.SSIM) calculations++;
+		if (measure.butteraugli.enabled) calculations++;
+		if (measure.SSIM.enabled) calculations++;
 		if (measure.PSNR) calculations++;
 
-		setMax(1 * outputSizePerImage * calculations);
+		const warmup = measure.time ? measure.workerCount : 0;
+
+		setMax(outputSizePerImage * calculations + warmup);
 		setProgress(0);
 
 		const eMap: EncoderNameToOptions = {};
@@ -82,7 +84,7 @@ export default function CompressSession(props: Props) {
 				optionsList,
 				measure,
 			});
-			worker.onProgress = () => setProgress(p => p++);
+			worker.onProgress = () => setProgress(p => p + 1);
 
 			setEncoder(worker);
 			const outputs = await worker.encode();
