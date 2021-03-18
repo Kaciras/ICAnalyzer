@@ -1,9 +1,10 @@
 import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 import { WorkerApi } from "../../worker";
-import { boolOption, enumOption, numberOption, OptionType } from "../../form";
+import { boolOption, enumOption, numberOption, OptionType, presetOption } from "../../form";
 import { EncodeOptions } from "./encoder";
 import { ControlProps, EncoderState, OptionListProps } from "../index";
+import { buildOptions, mergeOptions } from "../common";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -25,13 +26,13 @@ const WebPPreset = {
 		sns_strength: 80,
 		filter_sharpness: 3,
 		filter_strength: 30,
-		preprocessing: 2,
+		preprocessing: (v: number) => v | 2,
 	},
 	picture: {
 		sns_strength: 80,
 		filter_sharpness: 4,
 		filter_strength: 35,
-		preprocessing: ~2,
+		preprocessing: (v: number) => v & ~2,
 	},
 	drawing: {
 		sns_strength: 25,
@@ -41,13 +42,13 @@ const WebPPreset = {
 	icon: {
 		sns_strength: 25,
 		filter_strength: 10,
-		preprocessing: ~2,
+		preprocessing: (v: number) => v & ~2,
 	},
 	text: {
 		sns_strength: 0,
 		filter_strength: 0,
 		segments: 2,
-		preprocessing: ~2,
+		preprocessing: (v: number) => v & ~2,
 	},
 };
 
@@ -81,19 +82,19 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.method,
 	}),
-	enumOption({
+	presetOption({
 		property: "preset",
 		label: "Preset (-preset)",
 		enumObject: WebPPreset,
 		defaultValue: "default",
 	}),
 	numberOption({
-		property: "sns",
+		property: "sns_strength",
 		label: "Spatial noise shaping (-sns)",
 		min: 0,
 		max: 100,
 		step: 1,
-		defaultValue: defaultOptions.sns,
+		defaultValue: defaultOptions.sns_strength,
 	}),
 	boolOption({
 		property: "filter_type",
@@ -121,6 +122,11 @@ const templates: OptionType[] = [
 		max: 7,
 		step: 1,
 		defaultValue: defaultOptions.filter_sharpness,
+	}),
+	boolOption({
+		property: "use_sharp_yuv",
+		label: "Sharp YUV",
+		defaultValue: defaultOptions.use_sharp_yuv,
 	}),
 	enumOption({
 		property: "image_hint",
@@ -219,23 +225,9 @@ export function Controls(props: ControlProps) {
 }
 
 export function getOptionsList(state: EncoderState) {
-	const { varNames, values, ranges } = state;
-
-	function map(list: any[], t: OptionType) {
-		return list
-			.map(options => {
-				if (varNames.includes(t.id)) {
-					return t.generate(ranges[t.id], options);
-				}
-				t.populate(values[t.id], options);
-				return [options];
-			})
-			.reduce((p, c) => p.concat(c), []);
-	}
-
-	return templates.reduce(map, [{}] as EncodeOptions[]);
+	return buildOptions(templates, state);
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {
-	return worker.webpEncode({ ...defaultOptions, ...options });
+	return worker.webpEncode(mergeOptions(defaultOptions, options));
 }

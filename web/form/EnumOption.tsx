@@ -3,7 +3,7 @@ import { ChangeEvent } from "react";
 import { CheckBox, RadioBox } from "../ui";
 import styles from "./EnumOption.scss";
 
-interface Metadata<T extends Record<string, any>> {
+export interface Metadata<T extends Record<string, any>> {
 	property: string;
 	label: string;
 	enumObject: T;

@@ -37,3 +37,4 @@ export interface OptionType<T = any, V = any> {
 export { default as boolOption } from "./BoolOption";
 export { default as enumOption } from "./EnumOption";
 export { default as numberOption } from "./NumberOption";
+export { default as presetOption } from "./PresetOption";
