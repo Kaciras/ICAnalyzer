@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { SelectBox } from "../ui";
 import { ENCODER_MAP } from "../codecs";
 import { AnalyzeConfig } from "./ConfigDialog";
@@ -8,7 +8,7 @@ import styles from "./ControlPanel.scss";
 export interface ControlPanelProps {
 	config: AnalyzeConfig;
 	value: ControlState
-	onChange: Dispatch<ControlState>;
+	onChange: Dispatch<ControlState | SetStateAction<ControlState>>;
 }
 
 export default function ControlPanel(props: ControlPanelProps) {
@@ -20,17 +20,17 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	function handleCodecChange(e: ChangeEvent<HTMLSelectElement>) {
-		onChange({ ...value, encoderName: e.currentTarget.value });
+		onChange(prev => ({ ...prev, encoderName: e.currentTarget.value }));
 	}
 
 	function handleVarChange(variableType: Step, variableName: string) {
-		onChange({ ...value, variableType, variableName });
+		onChange(prev => ({ ...prev, variableType, variableName }));
 	}
 
 	function handleValueChange(values: Record<string, unknown>) {
 		const { varNames, ranges } = encoderState[encoderName];
 		const es = { ...encoderState, [encoderName]: { varNames, values, ranges } };
-		onChange({ ...value, encoderState: es });
+		onChange(prev => ({ ...prev, encoderState: es }));
 	}
 
 	const Encoder = ENCODER_MAP[encoderName];

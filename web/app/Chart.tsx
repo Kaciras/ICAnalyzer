@@ -74,7 +74,7 @@ export default function Chart(props: ChartProps) {
 		}
 	}
 
-	// useEffect(() => chart && refreshEcharts(chart), [outputs]);
+	useEffect(() => chart && refreshEcharts(chart, original, outputs), [outputs]);
 
 	useEffect(() => {
 		if (!chart) {

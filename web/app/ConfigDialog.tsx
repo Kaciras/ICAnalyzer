@@ -74,7 +74,7 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			break;
 	}
 
-	const ready = file && Object.values(data.encoders).every(e => e.enable);
+	const ready = file && Object.values(data.encoders).some(e => e.enable);
 
 	return (
 		<Dialog className={styles.dialog} onClose={onClose}>

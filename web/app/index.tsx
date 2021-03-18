@@ -15,13 +15,18 @@ export interface Result {
 	map: EncoderNameToOptions;
 }
 
+interface ResultWithId extends Result {
+	id: number;
+}
+
 export default function App() {
 	const [isOpen, setOpen] = useState(false);
-	const [result, setResult] = useState<Result>();
+	const [result, setResult] = useState<ResultWithId>();
 
 	function handleChange(value: Result) {
 		setOpen(false);
-		setResult(value);
+		(value as ResultWithId).id = (result?.id || 1) + 1;
+		setResult(value as ResultWithId);
 	}
 
 	const showDialog = () => setOpen(true);
@@ -29,7 +34,12 @@ export default function App() {
 	return (
 		<>
 			{result
-				? <AnalyzePage result={result} onStart={showDialog} onClose={() => setResult(undefined)}/>
+				? <AnalyzePage
+					key={result.id} // force
+					result={result}
+					onStart={showDialog}
+					onClose={() => setResult(undefined)}
+				/>
 				: <IntroPage onStart={showDialog}/>
 			}
 			<CompressSession
