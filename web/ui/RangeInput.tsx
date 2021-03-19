@@ -35,7 +35,7 @@ export default function RangeInput(props: RangeInputProps) {
 	}
 
 	return (
-		<span
+		<div
 			className={clsx(styles.container, className)}
 			style={cssVariables}
 		>
@@ -50,9 +50,9 @@ export default function RangeInput(props: RangeInputProps) {
 				onChange={handleChange}
 			/>
 
-			<span className={styles.thumbRegion}>
+			<div className={styles.thumbRegion}>
 				<span className={styles.thumb}/>
-			</span>
-		</span>
+			</div>
+		</div>
 	);
 }

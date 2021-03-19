@@ -2,7 +2,6 @@ $color: #2183ff;
 $thumb-size: 18px;
 
 .container {
-	display: block;
 	position: relative;
 
 	&::before {
@@ -11,7 +10,7 @@ $thumb-size: 18px;
 
 		position: absolute;
 		left: 0;
-		top: calc(50% - 4px);
+		top: calc(50% - 1px);
 		width: 100%;
 		height: 2px;
 
@@ -20,10 +19,12 @@ $thumb-size: 18px;
 }
 
 .thumbRegion {
-	display: block;
+	display: flex;
+	align-items: center;
 	position: absolute;
 	top: 0;
 	left: 0;
+	bottom: 0;
 	right: $thumb-size;
 	pointer-events: none;
 }
@@ -33,7 +34,7 @@ $thumb-size: 18px;
 	width: $thumb-size;
 	height: $thumb-size;
 	padding: 3px;
-	margin-left: var(--value-percent, 0);
+	margin-left: var(--value-percent);
 
 	border-radius: 50%;
 	border: 2px solid $color;
@@ -51,6 +52,7 @@ $thumb-size: 18px;
 }
 
 .input {
+	display: block;
 	width: 100%;
 	margin: 0;
 	opacity: 0;
