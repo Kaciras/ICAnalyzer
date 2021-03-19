@@ -41,7 +41,7 @@ export default function ImageInfoPanel(props: Props) {
 				<dt>Raw size:</dt>
 				<dd>{bytes(data.byteLength)}</dd>
 
-				<dt>File size:</dt>
+				<dt>File size (Ratio %):</dt>
 				<dd>{bytes(file.size)} ({ratio}%)</dd>
 			</dl>
 		</div>

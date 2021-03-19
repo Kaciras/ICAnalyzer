@@ -28,6 +28,10 @@ $decrement-color: #d23e40;
 	border: 0;
 	background: transparent;
 
+	&:focus {
+		outline: none;
+	}
+
 	&::-webkit-outer-spin-button,
 	&::-webkit-inner-spin-button {
 		margin: 0;
@@ -75,7 +79,7 @@ $decrement-color: #d23e40;
 		background-color: rgba(210, 62, 64, .05)
 	}
 
-	&.plus:active{
+	&.plus:active {
 		background-color: rgba(69, 194, 80, .05);
 	}
 

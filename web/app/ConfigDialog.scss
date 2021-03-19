@@ -13,12 +13,12 @@
 	flex: 1;
 	position: relative;
 	padding: 12px;
-	cursor: pointer;
 
 	&:not(.active) {
 		transition: background-color .1s;
 		color: white;
 		background: #888;
+		cursor: pointer;
 
 		&:hover, &:focus {
 			background: #999;
