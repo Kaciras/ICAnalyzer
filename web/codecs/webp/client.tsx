@@ -3,7 +3,7 @@ import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 import { WorkerApi } from "../../worker";
 import { boolOption, enumOption, numberOption, OptionType, presetOption } from "../../form";
 import { EncodeOptions } from "./encoder";
-import { ControlProps, EncoderState, OptionListProps } from "../index";
+import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
 import { buildOptions, mergeOptions } from "../common";
 
 export const name = "WebP";
@@ -54,12 +54,12 @@ const WebPPreset = {
 
 const templates: OptionType[] = [
 	boolOption({
-		property: "lossless",
+		id: "lossless",
 		label: "lossless",
 		defaultValue: defaultOptions.lossless,
 	}),
 	numberOption({
-		property: "quality",
+		id: "quality",
 		label: "Quality (-q)",
 		min: 0,
 		max: 100,
@@ -67,7 +67,7 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.quality,
 	}),
 	numberOption({
-		property: "near_lossless",
+		id: "near_lossless",
 		label: "Near lossless (-near_lossless)",
 		min: 0,
 		max: 100,
@@ -75,7 +75,7 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.near_lossless,
 	}),
 	numberOption({
-		property: "method",
+		id: "method",
 		label: "Method (-m)",
 		min: 0,
 		max: 6,
@@ -83,13 +83,13 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.method,
 	}),
 	presetOption({
-		property: "preset",
+		id: "preset",
 		label: "Preset (-preset)",
 		enumObject: WebPPreset,
 		defaultValue: "default",
 	}),
 	numberOption({
-		property: "sns_strength",
+		id: "sns_strength",
 		label: "Spatial noise shaping (-sns)",
 		min: 0,
 		max: 100,
@@ -97,18 +97,18 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.sns_strength,
 	}),
 	boolOption({
-		property: "filter_type",
+		id: "filter_type",
 		label: "User strong filter (-strong)",
 		defaultValue: defaultOptions.filter_type,
 	}),
 
 	boolOption({
-		property: "autofilter",
+		id: "autofilter",
 		label: "Auto adjust filter strength (-af)",
 		defaultValue: defaultOptions.autofilter,
 	}),
 	numberOption({
-		property: "filter_strength",
+		id: "filter_strength",
 		label: "Filter strength (-f)",
 		min: 0,
 		max: 100,
@@ -116,7 +116,7 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.filter_strength,
 	}),
 	numberOption({
-		property: "filter_sharpness",
+		id: "filter_sharpness",
 		label: "Filter sharpness (-sharpness)",
 		min: 0,
 		max: 7,
@@ -124,26 +124,31 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.filter_sharpness,
 	}),
 	boolOption({
-		property: "use_sharp_yuv",
+		id: "use_sharp_yuv",
 		label: "Sharp YUV",
 		defaultValue: defaultOptions.use_sharp_yuv,
 	}),
 	enumOption({
-		property: "image_hint",
+		id: "image_hint",
 		label: "Hint (-hint)",
 		enumObject: WebPImageHint,
 		defaultValue: "Default",
 	}),
 ];
 
-export function initControlState(state: EncoderState): Record<string, unknown> {
+export function initControlState(state: EncoderState): ControlStateMap {
 	const { varNames, ranges, values } = state;
+	const labels: Record<string, string[]> = {};
 
-	templates
-		.filter(t => varNames.includes(t.id))
-		.forEach(t => values[t.id] = t.initControlValue(ranges[t.id]));
-
-	return values;
+	for (const t of templates) {
+		if (!varNames.includes(t.id)) {
+			continue;
+		}
+		const init = t.initControlValue(ranges[t.id]);
+		values[t.id] = init.value;
+		labels[t.id] = init.labels;
+	}
+	return { values, labels };
 }
 
 export function initOptionsState(saved?: EncoderState): EncoderState {
@@ -214,6 +219,7 @@ export function Controls(props: ControlProps) {
 
 			return <ControlField
 				key={id}
+				active={id === variableName}
 				value={values[id]}
 				range={ranges[id]}
 				onFocus={() => onVariableChange(id)}

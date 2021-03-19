@@ -9,16 +9,25 @@ interface NumberRange {
 }
 
 interface Metadata extends NumberRange {
-	property: string;
+	id: string;
 	label: string;
+	offset?: number;
 	defaultValue: number;
 }
 
 export default function numberOption(data: Metadata): OptionType<number, NumberRange> {
-	const { property, label, min, max, step, defaultValue } = data;
+	const { id, label, min, max, step, offset = 0, defaultValue } = data;
+
+	function sequence(range: NumberRange) {
+		const { min, max, step } = range;
+		return new Array<number>(Math.ceil((max + 1 - min) / step))
+			.fill(min)
+			.map((v, i) => v + offset + i * step);
+	}
 
 	function initControlValue(range: NumberRange) {
-		return range.min;
+		const labels = sequence(range).map(v => v.toString());
+		return { value: range.min, labels };
 	}
 
 	function newOptionState() {
@@ -42,7 +51,7 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 					step={step}
 					onValueChange={onChange}
 				/>
-			</label>
+			</ControlFieldWrapper>
 		);
 	}
 
@@ -124,18 +133,12 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 	}
 
 	function populate(value: number, options: any) {
-		options[property] = value;
+		options[id] = offset + value;
 	}
 
-	function generate(state: NumberRange, options: any) {
-		const { min, max, step } = state;
-
-		const list = [];
-		for (let i = min; i <= max; i += step) {
-			list.push({ ...options, [property]: i });
-		}
-		return list;
+	function generate(range: NumberRange, options: any) {
+		return sequence(range).map(value => ({ ...options, [id]: value }));
 	}
 
-	return { id: property, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
+	return { id, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
 }

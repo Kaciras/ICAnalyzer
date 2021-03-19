@@ -17,11 +17,16 @@ export interface ControlFieldProps<T, V> {
 	onFocus: () => void;
 }
 
+interface ControlInit<T> {
+	value: T;
+	labels: string[];
+}
+
 export interface OptionType<T = any, V = any> {
 
 	id: string;
 
-	initControlValue(state: V): T;
+	initControlValue(state: V): ControlInit<T>;
 
 	ControlField(props: ControlFieldProps<T, V>): JSX.Element;
 

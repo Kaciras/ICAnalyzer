@@ -1,5 +1,5 @@
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
-import { SelectBox } from "../ui";
+import { ControlFieldWrapper, SelectBox } from "../ui";
 import { ENCODER_MAP } from "../codecs";
 import { AnalyzeConfig } from "./ConfigDialog";
 import { ControlState, Step } from "./AnalyzePage";
@@ -28,8 +28,8 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	function handleValueChange(values: Record<string, unknown>) {
-		const { varNames, ranges } = encoderState[encoderName];
-		const es = { ...encoderState, [encoderName]: { varNames, values, ranges } };
+		const { varNames, ranges, labels } = encoderState[encoderName];
+		const es = { ...encoderState, [encoderName]: { varNames, values, ranges, labels } };
 		onChange(prev => ({ ...prev, encoderState: es }));
 	}
 
@@ -37,7 +37,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 	const selectOptions = Object.keys(config.encoders).map(n => <option key={n} value={n}>{n}</option>);
 
 	return (
-		<div className={styles.variableGroup}>
+		<form className={styles.variableGroup}>
 			<Encoder.Controls
 				state={encoderState[encoderName]}
 				variableName={variableType === Step.Options && variableName}
@@ -46,9 +46,9 @@ export default function ControlPanel(props: ControlPanelProps) {
 			/>
 			{
 				selectOptions.length > 1 &&
-				<div
-					className={styles.field}
-					onClick={() => handleVarChange(Step.Encoder, "")}
+				<ControlFieldWrapper
+					active={variableType === Step.Encoder}
+					onFocus={() => handleVarChange(Step.Encoder, "Encoder")}
 				>
 					<SelectBox
 						value={encoderName}
@@ -56,8 +56,8 @@ export default function ControlPanel(props: ControlPanelProps) {
 					>
 						{selectOptions}
 					</SelectBox>
-				</div>
+				</ControlFieldWrapper>
 			}
-		</div>
+		</form>
 	);
 }

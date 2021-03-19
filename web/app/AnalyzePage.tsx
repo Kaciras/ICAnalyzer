@@ -59,23 +59,27 @@ export enum Step {
 	Options,
 }
 
+interface EncoderControlState extends EncoderState {
+	labels: Record<string, string[]>;
+}
+
 export interface ControlState {
 	encoderName: string;
-	encoderState: Record<string, EncoderState>;
+	encoderState: Record<string, EncoderControlState>;
 
 	variableType: Step;
 	variableName: string;
 }
 
-function createTODOState(encoders: EncodingConfig): Record<string, EncoderState> {
-	const rv: Record<string, EncoderState> = {};
+function createTODOState(encoders: EncodingConfig): Record<string, EncoderControlState> {
+	const rv: Record<string, EncoderControlState> = {};
 
 	for (const [name, data] of Object.entries(encoders)) {
 		if (!data.enable) {
 			continue;
 		}
-		const values = ENCODER_MAP[name].initControlState(data.state);
-		rv[name] = { ...data.state, values };
+		const s = ENCODER_MAP[name].initControlState(data.state);
+		rv[name] = { ...data.state, ...s };
 	}
 
 	return rv;
@@ -128,10 +132,14 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 	const output = map[encoderName][JSON.stringify(options)];
 
-	const series = useMemo(() => {
+	const [labels, series] = useMemo(() => {
 		if (variableType === Step.Encoder) {
 			const optKey = JSON.stringify(options);
-			return Array.from(Object.values(map)).map(e => e[optKey]);
+			const kvs = Array.from(Object.entries(map));
+
+			const s = kvs.map(e => e[1][optKey]);
+			const l = kvs.map(e => e[0]);
+			return [l, s];
 		} else if (variableType === Step.Options) {
 			const x = map[encoderName];
 			const list = encoder.getOptionsList({
@@ -139,11 +147,14 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				values: encoderState[encoderName].values,
 				ranges: encoderState[encoderName].ranges,
 			});
-			return list.map(op => x[JSON.stringify(op)]);
+
+			const s = list.map(op => x[JSON.stringify(op)]);
+			const l = encoderState[encoderName].labels[variableName];
+			return [l, s];
 		} else {
-			return [output]; // TODO: bar chart
+			return [[""], [output]]; // TODO: bar chart
 		}
-	}, [encoderName, variableType, variableName]);
+	}, [variableType, variableName]);
 
 	const index = series.indexOf(output);
 
@@ -151,7 +162,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		<>
 			<ImageView original={original} optimized={output}/>
 
-			{showChart && <Chart original={original} outputs={series} index={index}/>}
+			{showChart && <Chart original={original} values={labels} outputs={series} index={index}/>}
 
 			<div className={styles.buttonGroup}>
 				<IconButton

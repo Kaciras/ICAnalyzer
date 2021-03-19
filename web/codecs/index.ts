@@ -26,12 +26,17 @@ export interface ControlProps {
 	onVariableChange: Dispatch<string>;
 }
 
+export interface ControlStateMap {
+	values: Record<string, unknown>;
+	labels: Record<string, string[]>;
+}
+
 export interface ImageEncoder {
 	name: string;
 	extension: string;
 	mimeType: string;
 
-	initControlState(ranges: EncoderState): Record<string, unknown>;
+	initControlState(ranges: EncoderState): ControlStateMap;
 
 	Controls(props: ControlProps): JSX.Element;
 

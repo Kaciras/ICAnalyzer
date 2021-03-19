@@ -3,16 +3,16 @@ import { CheckBox, SwitchButton } from "../ui";
 import styles from "./BoolOption.scss";
 
 interface Metadata {
-	property: string;
+	id: string;
 	label: string;
 	defaultValue: boolean | number;
 }
 
 export default function boolOption(data: Metadata): OptionType<boolean, undefined> {
-	const { property, label, defaultValue } = data;
+	const { id, label, defaultValue } = data;
 
 	function initControlValue() {
-		return false;
+		return { value: false, labels: ["false", "true"] };
 	}
 
 	function newOptionState() {
@@ -55,15 +55,12 @@ export default function boolOption(data: Metadata): OptionType<boolean, undefine
 	}
 
 	function populate(value: boolean, options: any) {
-		options[property] = value;
+		options[id] = value;
 	}
 
 	function generate(_: never, options: any) {
-		return [
-			{ ...options, [property]: true },
-			{ ...options, [property]: false },
-		];
+		return [{ ...options, [id]: false }, { ...options, [id]: true }];
 	}
 
-	return { id: property, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
+	return { id, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
 }

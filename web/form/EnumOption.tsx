@@ -3,18 +3,33 @@ import { ChangeEvent } from "react";
 import { CheckBox, RadioBox } from "../ui";
 import styles from "./EnumOption.scss";
 
-export interface Metadata<T extends Record<string, any>> {
-	property: string;
+interface MappingConfig<T extends Record<string, any>> {
+	id: string;
 	label: string;
 	enumObject: T;
 	defaultValue: keyof T;
 }
 
-export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Array<keyof T>> {
-	const { property, label, enumObject, defaultValue } = data;
+interface ArrayConfig {
+	id: string;
+	label: string;
+	enumObject: string[];
+	defaultValue: string;
+}
+
+function selfMap(values: string[]) {
+	return Object.fromEntries(values.map(v => [v, v]));
+}
+
+export type EnumOptionConfig<T> = ArrayConfig | MappingConfig<T>;
+
+export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<keyof T, Array<keyof T>> {
+	const { id, label, enumObject, defaultValue } = data;
+
+	const valueMap = Array.isArray(enumObject) ? selfMap(enumObject) : enumObject;
 
 	function initControlValue(range: Array<keyof T>) {
-		return range[0];
+		return { value: range[0], labels: range };
 	}
 
 	function newOptionState() {
@@ -31,6 +46,7 @@ export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Ar
 		const items = (range as string[]).map(name =>
 			<RadioBox
 				key={name}
+				className={styles.item}
 				checked={name === value}
 				name={name}
 				onChange={handleChange}
@@ -70,7 +86,7 @@ export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Ar
 
 		let items: any[];
 		if (isVariable) {
-			items = Object.keys(enumObject).map(name => {
+			items = Object.keys(valueMap).map(name => {
 				return <CheckBox
 					className={styles.item}
 					key={name}
@@ -82,7 +98,7 @@ export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Ar
 				</CheckBox>;
 			});
 		} else {
-			items = Object.keys(enumObject).map((name) => {
+			items = Object.keys(valueMap).map(name => {
 				return <RadioBox
 					className={styles.item}
 					key={name}
@@ -110,12 +126,12 @@ export default function enumOption<T>(data: Metadata<T>): OptionType<keyof T, Ar
 	}
 
 	function populate(value: keyof T, options: any) {
-		options[property] = enumObject[value];
+		options[id] = valueMap[value];
 	}
 
 	function generate(range: Array<keyof T>, prev: any) {
-		return range.map(name => ({ ...prev, [property]: enumObject[name] }));
+		return range.map(name => ({ ...prev, [id]: valueMap[name] }));
 	}
 
-	return { id: property, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
+	return { id, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
 }

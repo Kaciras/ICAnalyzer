@@ -6,7 +6,7 @@ import styles from "./Chart.scss";
 import Series = echarts.EChartOption.Series;
 import YAxis = echarts.EChartOption.YAxis;
 
-function refreshEcharts(chart: ECharts, original: InputImage, outputs: ConvertOutput[]) {
+function refreshEcharts(chart: ECharts, original: InputImage, outputs: ConvertOutput[], values: string[]) {
 	const type = "line"; // TODO
 
 	const legends: string[] = [];
@@ -44,7 +44,7 @@ function refreshEcharts(chart: ECharts, original: InputImage, outputs: ConvertOu
 			data: legends,
 		},
 		xAxis: {
-			data: outputs.map((_, i) => i),
+			data: values,
 		},
 		yAxis,
 		series,
@@ -55,26 +55,25 @@ function refreshEcharts(chart: ECharts, original: InputImage, outputs: ConvertOu
 export interface ChartProps {
 	original: InputImage;
 	index: number;
+	values: string[];
 	outputs: ConvertOutput[];
 }
 
 export default function Chart(props: ChartProps) {
-	const { original, outputs, index } = props;
+	const { original, outputs, index, values } = props;
 
 	const [chart, setChart] = useState<ECharts>();
 
 	function initEcharts(el: HTMLDivElement | null) {
-		if (!el) {
+		if (!el || chart) {
 			return;
 		}
-		if (!chart) {
-			const newChart = init(el, "dark", { renderer: "svg" });
-			setChart(newChart);
-			refreshEcharts(newChart, original, outputs);
-		}
+		const newChart = init(el, "dark", { renderer: "svg" });
+		setChart(newChart);
+		refreshEcharts(newChart, original, outputs, values);
 	}
 
-	useEffect(() => chart && refreshEcharts(chart, original, outputs), [outputs]);
+	useEffect(() => chart && refreshEcharts(chart, original, outputs, values), [outputs]);
 
 	useEffect(() => {
 		if (!chart) {
