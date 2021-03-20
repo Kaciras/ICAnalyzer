@@ -33,7 +33,7 @@ export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<key
 	}
 
 	function newOptionState() {
-		return [defaultValue, []] as [keyof T, Array<keyof T>];
+		return [defaultValue, [defaultValue]] as [keyof T, Array<keyof T>];
 	}
 
 	function ControlField(props: ControlFieldProps<keyof T, Array<keyof T>>) {
@@ -77,7 +77,10 @@ export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<key
 			} else {
 				newVariables = range.filter(v => v !== name);
 			}
-			onRangeChange(newVariables);
+
+			if (newVariables.length > 0) {
+				onRangeChange(newVariables);
+			}
 		}
 
 		function handleChangeC(e: ChangeEvent<HTMLInputElement>) {
