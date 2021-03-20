@@ -1,0 +1,49 @@
+.header {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	padding: 80px;
+
+	color: white;
+	background: #252829;
+}
+
+.banner {
+	width: 586px;
+	height: 420px;
+	margin-right: 5vw;
+}
+
+.title {
+	font-size: 3em;
+}
+
+.bigButton {
+	width: 180px;
+	height: 45px;
+	font-size: 20px;
+}
+
+.unsplash {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	font-size: 14px;
+}
+
+.link {
+	margin: 0 5px;
+	text-decoration: none;
+
+	&, &:visited {
+		color: #ff3ba3;
+	}
+
+	&:hover, &:active {
+		text-decoration: underline;
+	}
+}
+
+.section {
+	padding: 50px;
+}
