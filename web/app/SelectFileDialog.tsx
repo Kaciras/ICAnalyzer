@@ -1,8 +1,8 @@
 import { ChangeEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
-import largePhoto from "squoosh/src/shared/prerendered-app/Intro/imgs/demos/demo-large-photo.jpg";
-import largePhotoIcon from "squoosh/src/shared/prerendered-app/Intro/imgs/demos/icon-demo-large-photo.jpg";
+import largePhoto from "../assets/demo/large-photo.jpg";
+import largePhotoIcon from "../assets/demo/large-photo-icon.jpg";
 import artwork from "../assets/demo/artwork.jpg";
 import artworkIcon from "../assets/demo/artwork-icon.jpg";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
