@@ -5,7 +5,7 @@
 $background-color: transparent;
 
 // Colors for data series and points.
-$colors: #2b908f #90ee7e #f45b5b #7798bf #aaeeee #ff0066 #eeaaee #55BF3B #DF5353 #7798BF #aaeeee;
+$colors: #4992ff #7cffb2 #fddd60 #ff6e76 #58d9f9 #05c091 #ff8a45 #8d48e3 #dd79ff;
 
 // Neutral colors
 $neutral-color-100: #fff;
@@ -18,7 +18,7 @@ $neutral-color-5: #505053;
 
 // Colored, shades
 $highlight-color-100: #F0F0F3;
-$highlight-color-60: rgba(255,255,255,0.1);
+$highlight-color-60: rgba(255, 255, 255, 0.1);
 $highlight-color-20: $neutral-color-10;
 
 // Data-labels
@@ -36,13 +36,13 @@ $range-selector-input-border: $neutral-color-5;
 
 // Buttons
 $highcharts-button-background: $neutral-color-5;
-$highcharts-button-text:  #ccc;
+$highcharts-button-text: #ccc;
 
 $highcharts-button-pressed-background: #000003;
-$highcharts-button-pressed-text:  $neutral-color-100;
+$highcharts-button-pressed-text: $neutral-color-100;
 
 $highcharts-button-hover-background: $neutral-color-10;
-$highcharts-button-hover-text:  $neutral-color-100;
+$highcharts-button-hover-text: $neutral-color-100;
 
 $context-button-background: $neutral-color-5;
 
@@ -70,7 +70,7 @@ $scrollbar-track-border: #404043;
 }
 
 // Axes
-.highcharts-yaxis-grid  {
+.highcharts-yaxis-grid {
 	stroke-width: 1px;
 }
 
@@ -127,6 +127,7 @@ $scrollbar-track-border: #404043;
 
 .highcharts-menu {
 	background: #111;
+	box-shadow: none;
 }
 
 .highcharts-menu-item:hover {

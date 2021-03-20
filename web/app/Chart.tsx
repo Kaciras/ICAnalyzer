@@ -45,13 +45,28 @@ function refreshEcharts(original: InputImage, outputs: ConvertOutput[], values: 
 		chart: {
 			styledMode: true,
 		},
-		// legend: {
-		// 	data: legends,
-		// },
+		title: {
+			text: "",
+		},
+		tooltip: {
+			borderRadius: 0,
+		},
+		legend: {
+			verticalAlign: "top",
+		},
 		xAxis: {
 			categories: values,
 		},
 		exporting: {
+			buttons: {
+				contextButton: {
+					height: 32,
+					width: 35,
+					symbolSize: 16,
+					symbolX: 18,
+					symbolY: 16,
+				},
+			},
 			chartOptions: {
 				chart: {
 					className: "exporting_chart_class",
