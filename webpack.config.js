@@ -131,7 +131,6 @@ module.exports = function webpackConfig(env) {
 			extensions: [".tsx", ".ts", ".mjs", ".js", ".json"],
 			alias: {
 				squoosh: join(__dirname, "deps/squoosh"),
-				echarts: "echarts/index.common",
 			},
 			fallback: {
 				path: false,
