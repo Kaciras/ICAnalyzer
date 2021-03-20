@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import Highcharts, { Options, SeriesLineOptions, YAxisOptions } from "highcharts";
+import Highcharts, { Options, Point, SeriesLineOptions, YAxisOptions } from "highcharts";
+import Export from "highcharts/modules/exporting";
+import ExportS from "highcharts/modules/offline-exporting";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
 import "../highcharts.scss";
 import styles from "./Chart.scss";
+
+Export(Highcharts);
+ExportS(Highcharts);
 
 function refreshEcharts(original: InputImage, outputs: ConvertOutput[], values: string[]): Options {
 	const yAxis: YAxisOptions[] = [];
@@ -45,6 +50,13 @@ function refreshEcharts(original: InputImage, outputs: ConvertOutput[], values: 
 		// },
 		xAxis: {
 			categories: values,
+		},
+		exporting: {
+			chartOptions: {
+				chart: {
+					className: "exporting_chart_class",
+				},
+			},
 		},
 		yAxis,
 		series,
