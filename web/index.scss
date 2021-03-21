@@ -1,3 +1,5 @@
+@import "highcharts";
+
 * {
 	box-sizing: border-box;
 }
@@ -31,7 +33,6 @@ button {
 }
 
 #root {
-	width: 100vw;
 	height: 100vh;
 }
 

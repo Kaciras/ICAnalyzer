@@ -53,6 +53,7 @@ function addLegendListener(chart: Highcharts.Chart) {
 }
 
 export interface ChartProps {
+	visible: boolean;
 	original: InputImage;
 	index: number;
 	values: string[];
@@ -60,7 +61,7 @@ export interface ChartProps {
 }
 
 export default function Chart(props: ChartProps) {
-	const { original, outputs, index, values } = props;
+	const { visible, original, outputs, index, values } = props;
 
 	const [chart, setChart] = useState<Highcharts.Chart>();
 
@@ -121,7 +122,7 @@ export default function Chart(props: ChartProps) {
 			yAxis,
 			series,
 		};
-		setChart(Highcharts.chart(el, options, instance =>{
+		setChart(Highcharts.chart(el, options, instance => {
 			addSeriesListener(instance);
 			addLegendListener(instance);
 		}));
@@ -155,8 +156,11 @@ export default function Chart(props: ChartProps) {
 	useEffect(() => chart && updateSeriesData(chart), [outputs]);
 	useEffect(() => chart && updatePlotLine(chart));
 
+	// High cost of rendering chart, so keep the element
+	const display = visible ? {} : { display: "none" };
+
 	return (
-		<section className={styles.container}>
+		<section className={styles.container} style={display}>
 			<div className={styles.chart} ref={initHighcharts}/>
 		</section>
 	);

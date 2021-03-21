@@ -162,7 +162,13 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		<>
 			<ImageView original={original} optimized={output}/>
 
-			{showChart && <Chart original={original} values={labels} outputs={series} index={index}/>}
+			<Chart
+				visible={showChart}
+				original={original}
+				index={index}
+				values={labels}
+				outputs={series}
+			/>
 
 			<div className={styles.buttonGroup}>
 				<IconButton
