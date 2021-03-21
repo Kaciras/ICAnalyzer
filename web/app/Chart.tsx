@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import Highcharts, { Options, SeriesLineOptions, YAxisOptions } from "highcharts";
+import Highcharts, { Options, SeriesLineOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
-import "../highcharts.scss";
 import styles from "./Chart.scss";
 
 Export(Highcharts);
@@ -32,22 +31,24 @@ function toSeries(original: InputImage, outputs: ConvertOutput[]) {
 	return series;
 }
 
-function onChartCreated(chart: Highcharts.Chart) {
+function handleMouseover(chart: Highcharts.Chart, i: number) {
+	chart.yAxis.forEach((axis, j) => {
+		if (j === 0) return;
+		axis.update({ visible: i === j });
+	});
+}
 
-	function handleMouseover(i: number) {
-		chart.yAxis.forEach((axis, j) => {
-			if (j === 0) return;
-			axis.update({ visible: i === j });
-		});
-	}
-
+function addSeriesListener(chart: Highcharts.Chart) {
 	chart.legend.allItems.forEach((s, i) => {
 		if (i === 0) return;
-		s.onMouseOver = () => handleMouseover(i);
+		s.onMouseOver = () => handleMouseover(chart, i);
 	});
+}
+
+function addLegendListener(chart: Highcharts.Chart) {
 	chart.series.forEach((s, i) => {
 		if (i === 0) return;
-		(s as any).legendItem.on("mouseover", () => handleMouseover(i));
+		(s as any).legendItem.on("mouseover", () => handleMouseover(chart, i));
 	});
 }
 
@@ -63,13 +64,13 @@ export default function Chart(props: ChartProps) {
 
 	const [chart, setChart] = useState<Highcharts.Chart>();
 
-	function initEcharts(el: HTMLDivElement | null) {
+	function initHighcharts(el: HTMLDivElement | null) {
 		if (!el || chart) {
 			return;
 		}
 		const series = toSeries(original, outputs);
 
-		const yAxis: YAxisOptions[] = series.map(s => ({
+		const yAxis = series.map(s => ({
 			title: {
 				text: s.name,
 			},
@@ -120,29 +121,27 @@ export default function Chart(props: ChartProps) {
 			yAxis,
 			series,
 		};
-		setChart(Highcharts.chart(el, options, onChartCreated));
+		setChart(Highcharts.chart(el, options, instance =>{
+			addSeriesListener(instance);
+			addLegendListener(instance);
+		}));
 	}
 
-	useEffect(() => {
-		if (!chart) {
-			return;
-		}
+	function updateSeriesData(chart: Highcharts.Chart) {
 		const series = toSeries(original, outputs);
-		chart.series.forEach((s, i) => s.setData(series[i].data!));
 		chart.xAxis[0].setCategories(values);
-	}, [outputs]);
+		chart.series.forEach((s, i) => s.setData(series[i].data!));
+	}
 
-	useEffect(() => {
-		if (!chart) {
-			return;
-		}
-		const xAxis = chart.xAxis[0];
+	function updatePlotLine(chart: Highcharts.Chart) {
+		const [xAxis] = chart.xAxis;
 		xAxis.removePlotLine("MarkLine");
 		xAxis.addPlotLine({
 			id: "MarkLine",
 			value: index,
 			dashStyle: "Dash",
 		});
+
 		chart.legend.update({
 			labelFormatter() {
 				const { name, yData } = this as any;
@@ -150,11 +149,15 @@ export default function Chart(props: ChartProps) {
 				return `<span>${name}: </span><b>${v}<br/>`;
 			},
 		});
-	});
+		addLegendListener(chart);
+	}
+
+	useEffect(() => chart && updateSeriesData(chart), [outputs]);
+	useEffect(() => chart && updatePlotLine(chart));
 
 	return (
 		<section className={styles.container}>
-			<div className={styles.chart} ref={initEcharts}/>
+			<div className={styles.chart} ref={initHighcharts}/>
 		</section>
 	);
 }
