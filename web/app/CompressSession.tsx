@@ -19,11 +19,15 @@ export type OptionsToResult = Record<OptKey, ConvertOutput>;
 export type EncoderNameToOptions = Record<string, OptionsToResult>;
 
 export default function CompressSession(props: Props) {
+	const { open, onClose, onChange } = props;
+
+	const [selectFile, setSelectFile] = useState(true);
 	const [file, setFile] = useState<File>();
 	const [image, setImage] = useState<ImageData>();
-	const [selectFile, setSelectFile] = useState(true);
 
-	const [encoder, setEncoder] = useState<BatchEncodeAnalyzer | null>(null);
+	const [encoder, setEncoder] = useState<BatchEncodeAnalyzer>();
+
+	const [error, setError] = useState<string>();
 	const [max, setMax] = useState(1);
 	const [progress, setProgress] = useState(0);
 
@@ -31,7 +35,7 @@ export default function CompressSession(props: Props) {
 		if (file) {
 			setSelectFile(false);
 		} else {
-			props.onClose();
+			onClose();
 		}
 	}
 
@@ -74,53 +78,70 @@ export default function CompressSession(props: Props) {
 		setProgress(0);
 
 		const eMap: EncoderNameToOptions = {};
+		let worker: BatchEncodeAnalyzer | null = null;
+		try {
+			for (const [encoder, optionsList] of queue) {
+				const oMap: OptionsToResult = {};
+				eMap[encoder.name] = oMap;
 
-		for (const [encoder, optionsList] of queue) {
-			const oMap: OptionsToResult = {};
-			eMap[encoder.name] = oMap;
+				worker = new BatchEncodeAnalyzer(image, {
+					encoder,
+					optionsList,
+					measure,
+				});
+				worker.onProgress = () => setProgress(p => p + 1);
 
-			const worker = new BatchEncodeAnalyzer(image, {
-				encoder,
-				optionsList,
-				measure,
-			});
-			worker.onProgress = () => setProgress(p => p + 1);
+				setEncoder(worker);
+				const outputs = await worker.encode();
+				worker.terminate();
+				setEncoder(undefined);
 
-			setEncoder(worker);
-			const outputs = await worker.encode();
-			worker.terminate();
-			setEncoder(null);
+				for (let i = 0; i < optionsList.length; i++) {
+					oMap[JSON.stringify(optionsList[i])] = outputs[i];
+				}
 
-			for (let i = 0; i < optionsList.length; i++) {
-				oMap[JSON.stringify(optionsList[i])] = outputs[i];
+				onChange({ config, map: eMap, original: { file, data: image! } });
 			}
+		} catch (e) {
+			// Some browsers will crash the page on OOM.
+			worker?.terminate();
+			console.error(e);
+			setError(e.message);
 		}
-
-		props.onChange({
-			config,
-			map: eMap,
-			original: { file, data: image! },
-		});
 	}
 
 	function stop() {
 		encoder!.terminate();
-		setEncoder(null);
+		setEncoder(undefined);
 	}
 
-	if (!props.open) {
+	if (!open) {
 		return null;
 	} else if (encoder) {
-		return <ProgressDialog value={progress} max={max} onCancel={stop}/>;
+		return (
+			<ProgressDialog
+				error={error}
+				value={progress}
+				max={max}
+				onCancel={stop}
+			/>
+		);
 	} else if (selectFile) {
-		return <SelectFileDialog onCancel={cancelSelectFile} onFileChange={handleFileChange}/>;
+		return (
+			<SelectFileDialog
+				onCancel={cancelSelectFile}
+				onFileChange={handleFileChange}
+			/>
+		);
 	} else {
-		return <ConfigDialog
-			image={image!}
-			file={file!}
-			onSelectFile={() => setSelectFile(true)}
-			onClose={props.onClose}
-			onStart={handleStart}
-		/>;
+		return (
+			<ConfigDialog
+				image={image!}
+				file={file!}
+				onStart={handleStart}
+				onClose={onClose}
+				onSelectFile={() => setSelectFile(true)}
+			/>
+		);
 	}
 }

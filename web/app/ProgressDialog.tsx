@@ -6,6 +6,7 @@ import styles from "./ProgressDialog.scss";
 const formatter = new Intl.RelativeTimeFormat("en");
 
 interface ProgressPanelProps {
+	error?: string;
 	max: number;
 	value: number;
 	onCancel: () => void;
@@ -17,7 +18,7 @@ function calcTime(start: number, value: number, max: number) {
 }
 
 export default function ProgressDialog(props: ProgressPanelProps) {
-	const { value, max, onCancel } = props;
+	const { error, value, max, onCancel } = props;
 
 	const [start] = useState(() => performance.now());
 	const debounced = useMemo(() => debounce(500, calcTime), []);
@@ -31,10 +32,14 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 		<Dialog>
 			<div className={styles.content}>
 				<h1>Encoding...</h1>
+
+				{error && <p className={styles.error}>Error: {error}</p>}
+
 				<div className={styles.text}>
 					<span>{value} / {max}</span>
 					<span>{remaining}</span>
 				</div>
+
 				<progress
 					value={value}
 					max={max}
