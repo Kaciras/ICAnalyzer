@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Highcharts, { Options, SeriesLineOptions } from "highcharts";
+import Highcharts, { Chart, Options, SeriesLineOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
-import styles from "./Chart.scss";
+import styles from "./ChartPanel.scss";
 
 Export(Highcharts);
 ExportOffline(Highcharts);
@@ -31,21 +31,21 @@ function toSeries(original: InputImage, outputs: ConvertOutput[]) {
 	return series;
 }
 
-function handleMouseover(chart: Highcharts.Chart, i: number) {
+function handleMouseover(chart: Chart, i: number) {
 	chart.yAxis.forEach((axis, j) => {
 		if (j === 0) return;
 		axis.update({ visible: i === j });
 	});
 }
 
-function addSeriesListener(chart: Highcharts.Chart) {
+function addSeriesListener(chart: Chart) {
 	chart.legend.allItems.forEach((s, i) => {
 		if (i === 0) return;
 		s.onMouseOver = () => handleMouseover(chart, i);
 	});
 }
 
-function addLegendListener(chart: Highcharts.Chart) {
+function addLegendListener(chart: Chart) {
 	chart.series.forEach((s, i) => {
 		if (i === 0) return;
 		(s as any).legendItem.on("mouseover", () => handleMouseover(chart, i));
@@ -60,10 +60,10 @@ export interface ChartProps {
 	outputs: ConvertOutput[];
 }
 
-export default function Chart(props: ChartProps) {
+export default function ChartPanel(props: ChartProps) {
 	const { visible, original, outputs, index, values } = props;
 
-	const [chart, setChart] = useState<Highcharts.Chart>();
+	const [chart, setChart] = useState<Chart>();
 
 	function initHighcharts(el: HTMLDivElement | null) {
 		if (!el || chart) {
@@ -102,6 +102,7 @@ export default function Chart(props: ChartProps) {
 			},
 			xAxis: {
 				categories: values,
+
 			},
 			exporting: {
 				buttons: {
@@ -128,13 +129,13 @@ export default function Chart(props: ChartProps) {
 		}));
 	}
 
-	function updateSeriesData(chart: Highcharts.Chart) {
+	function updateSeriesData(chart: Chart) {
 		const series = toSeries(original, outputs);
 		chart.xAxis[0].setCategories(values);
 		chart.series.forEach((s, i) => s.setData(series[i].data!));
 	}
 
-	function updatePlotLine(chart: Highcharts.Chart) {
+	function updatePlotLine(chart: Chart) {
 		const [xAxis] = chart.xAxis;
 		xAxis.removePlotLine("MarkLine");
 		xAxis.addPlotLine({

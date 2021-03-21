@@ -7,7 +7,7 @@ import { IconButton } from "../ui";
 import { ENCODER_MAP, EncoderState, ImageEncoder } from "../codecs";
 import { Result } from "./index";
 import ImageView from "./ImageView";
-import Chart from "./Chart";
+import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import { EncodingConfig } from "./EncoderPanel";
 import styles from "./AnalyzePage.scss";
@@ -160,9 +160,9 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 	return (
 		<>
-			<ImageView original={original} optimized={output}/>
+			<ImageView original={original} output={output}/>
 
-			<Chart
+			<ChartPanel
 				visible={showChart}
 				original={original}
 				index={index}

@@ -1,15 +1,10 @@
-import { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
+import { CSSProperties, Dispatch, RefObject, useEffect, useRef, useState } from "react";
 import { IconButton, NumberInput, PinchZoom } from "../ui";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { IconButtonProps } from "../ui/IconButton";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
 import styles from "./ImageView.scss";
-
-interface ImageViewProps {
-	original: InputImage;
-	optimized: ConvertOutput;
-}
 
 export enum ViewType {
 	Original,
@@ -25,6 +20,11 @@ interface ImageViewCSS extends CSSProperties {
 	"--brightness": string;
 }
 
+function useResettable<T>(initialState: T): [T, Dispatch<T>, () => void] {
+	const [value, setValue] = useState(initialState);
+	return [value, setValue, () => setValue(initialState)];
+}
+
 function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>) {
 	if (canvas.current === null) {
 		throw new Error("Canvas is null");
@@ -36,34 +36,41 @@ function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>)
 	ctx.putImageData(data, 0, 0);
 }
 
+interface ImageViewProps {
+	original: InputImage;
+	output: ConvertOutput;
+}
+
 export default function ImageView(props: ImageViewProps) {
-	const { original, optimized } = props;
+	const { original, output } = props;
 	const { width = 0, height = 0 } = original.data || {};
 
 	const [type, setType] = useState(ViewType.Compressed);
 	const [brightness, setBrightness] = useState(100);
 
-	const [pinchZoom, setPinchZoom] = useState<PinchZoomState>({ x: 0, y: 0, scale: 1 });
+	const [pinchZoom, setPinchZoom, resetPinchZoom] = useResettable<PinchZoomState>({
+		x: 0,
+		y: 0,
+		scale: 1,
+	});
 
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
-	function refreshBackCanvas() {
-		setPinchZoom({ x: 0, y: 0, scale: 1 });
+	function refreshBottomCanvas() {
+		resetPinchZoom();
 		drawDataToCanvas(original.data, backCanvas);
 	}
 
 	function refreshTopCanvas() {
-		const { metrics, data } = optimized;
+		const { metrics, data } = output;
 
-		const image = type === ViewType.HeatMap
-			? metrics.butteraugli!.heatMap : data;
-
+		const image = type === ViewType.HeatMap ? metrics.butteraugli!.heatMap : data;
 		drawDataToCanvas(image, topCanvas);
 	}
 
-	useEffect(refreshBackCanvas, [original]);
-	useEffect(refreshTopCanvas, [type, optimized]);
+	useEffect(refreshBottomCanvas, [original]);
+	useEffect(refreshTopCanvas, [type, output]);
 
 	interface ImageViewTabProps extends IconButtonProps {
 		target: ViewType;
@@ -109,9 +116,9 @@ export default function ImageView(props: ImageViewProps) {
 		"--brightness": `${brightnessVal}%`,
 	};
 
-	const blend = type === ViewType.AbsDiff ? "difference" : undefined;
+	const mixBlendMode = type === ViewType.AbsDiff ? "difference" : undefined;
 
-	const noHeatMap = !optimized.metrics.butteraugli;
+	const noHeatMap = !output.metrics.butteraugli;
 	const heatMapTitle = noHeatMap ? "Require enable butteraugli" : undefined;
 
 	return (
@@ -163,7 +170,7 @@ export default function ImageView(props: ImageViewProps) {
 						ref={topCanvas}
 						width={width}
 						height={height}
-						style={{ mixBlendMode: blend }}
+						style={{ mixBlendMode }}
 						hidden={type === ViewType.Original}
 					/>
 				</div>
