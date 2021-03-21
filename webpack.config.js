@@ -1,4 +1,5 @@
 const { join } = require("path");
+const { EnvironmentPlugin } = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
@@ -91,6 +92,8 @@ module.exports = function webpackConfig(env) {
 	];
 
 	const plugins = [
+		new EnvironmentPlugin(["npm_package_version"]),
+
 		new HtmlPlugin({
 			filename: "index.html",
 			template: "web/index.html",
