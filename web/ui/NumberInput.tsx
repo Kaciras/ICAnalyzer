@@ -3,6 +3,15 @@ import clsx from "clsx";
 import { NOOP } from "../utils";
 import styles from "./NumberInput.scss";
 
+const UPDATE_SPEED = 50;
+const UPDATE_DELAY = 400;
+
+function getPrecision(value: number) {
+	const s = value.toString();
+	const d = s.indexOf(".") + 1;
+	return d || s.length - d;
+}
+
 export interface NumberInputProps {
 	value: number;
 	min?: number;
@@ -28,16 +37,21 @@ export default function NumberInput(props: NumberInputProps) {
 		onValueChange = NOOP,
 	} = props;
 
-	function startUpdate(diff: number) {
+	function handleMouseDown(diff: number) {
 		let timer = 0;
+		const q = Math.pow(10, getPrecision(step));
 
-		function update(localValue: number) {
-			const newValue = localValue + diff;
-			if (newValue > max || newValue < min) {
-				return;
-			}
+		/** get the next value, resolve precision problem */
+		function next(n: number) {
+			n += diff;
+			n = Math.min(Math.max(n, min), max);
+			return Math.round(n * q) / q;
+		}
+
+		function update(current: number) {
+			const newValue = next(current);
 			onValueChange(newValue);
-			timer = setTimeout(() => update(newValue), 50);
+			timer = window.setTimeout(() => update(newValue), UPDATE_SPEED);
 		}
 
 		function onMouseUp() {
@@ -45,13 +59,9 @@ export default function NumberInput(props: NumberInputProps) {
 			document.removeEventListener("mouseup", onMouseUp);
 		}
 
-		const newValue = value + diff;
-		if (newValue > max || newValue < min) {
-			return;
-		}
+		const newValue = next(value);
 		onValueChange(newValue);
-
-		timer = setTimeout(() => update(newValue), 400);
+		timer = window.setTimeout(() => update(newValue), UPDATE_DELAY);
 		document.addEventListener("mouseup", onMouseUp);
 	}
 
@@ -73,14 +83,14 @@ export default function NumberInput(props: NumberInputProps) {
 				className={clsx(styles.button, styles.plus)}
 				tabIndex={-1}
 				disabled={disabled}
-				onMouseDown={() => startUpdate(step)}
+				onMouseDown={() => handleMouseDown(step)}
 			/>
 			<button
 				type="button"
 				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
-				onMouseDown={() => startUpdate(-step)}
+				onMouseDown={() => handleMouseDown(-step)}
 			/>
 		</div>
 	);
