@@ -45,6 +45,7 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 					{value}
 				</div>
 				<RangeInput
+					name={id}
 					value={value}
 					min={min}
 					max={max}
@@ -61,6 +62,7 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		return (
 			<RangeInput
 				className={styles.body}
+				name={id}
 				value={value}
 				min={min}
 				max={max}

@@ -48,7 +48,7 @@ export default function boolOption(data: Metadata): OptionType<boolean, undefine
 				</CheckBox>
 				{isVariable
 					? <strong>OFF & ON</strong>
-					: <SwitchButton checked={value} onValueChange={onValueChange}/>
+					: <SwitchButton name={id} checked={value} onValueChange={onValueChange}/>
 				}
 			</fieldset>
 		);

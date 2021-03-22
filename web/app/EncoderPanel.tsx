@@ -36,11 +36,11 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 
 	const [current, setCurrent] = useState("WebP");
 
-	const menuItems = ENCODERS.map(e => {
+	const tabs = ENCODERS.map(e => {
 		const { name } = e;
 
 		const classes = clsx(
-			styles.menuItem,
+			styles.tab,
 			{ [styles.active]: name === current },
 		);
 
@@ -50,18 +50,18 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 		}
 
 		return (
-			<div
+			<button
 				className={classes}
 				key={name}
-				tabIndex={0}
 				onClick={() => setCurrent(name)}
 			>
 				<CheckBox
 					checked={value[name].enable}
+					onClick={e => e.stopPropagation()}
 					onChange={handleEnableChange}
 				/>
 				<span className={styles.name}>{name}</span>
-			</div>
+			</button>
 		);
 	});
 
@@ -73,16 +73,16 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 	const { OptionsPanel } = ENCODER_MAP[current];
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.menu}>
-				{menuItems}
+		<div className={styles.container} role="tabpanel">
+			<div className={styles.tablist}>
+				{tabs}
 			</div>
-			<div className={styles.optionsPanel}>
+			<form className={styles.form}>
 				<OptionsPanel
 					state={value[current].state}
 					onChange={handleOptionChange}
 				/>
-			</div>
+			</form>
 		</div>
 	);
 }

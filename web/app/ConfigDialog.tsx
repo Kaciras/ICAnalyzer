@@ -44,12 +44,16 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 		localStorage.setItem("Config", JSON.stringify(data));
 	}
 
-	const tabs = [];
-	for (let i = 0; i < panels.length; i++) {
-		const name = panels[i];
-		const clazz = i === index ? clsx(styles.tab, styles.active) : styles.tab;
-		tabs.push(<div key={i} className={clazz} onClick={() => setIndex(i)}>{name}</div>);
-	}
+	const tabs = panels.map((name, i) =>
+		<div
+			className={styles.tab}
+			key={i}
+			role="tab"
+			aria-selected={i === index}
+			onClick={() => setIndex(i)}
+		>
+			{name}
+		</div>);
 
 	let panel;
 
@@ -77,8 +81,12 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 	const ready = file && Object.values(data.encoders).some(e => e.enable);
 
 	return (
-		<Dialog className={styles.dialog} onClose={onClose}>
-			<div className={styles.header}>{tabs}</div>
+		<Dialog
+			name="Analysis config"
+			className={styles.dialog}
+			onClose={onClose}
+		>
+			<div className={styles.header} role="tablist">{tabs}</div>
 			{panel}
 			<div className="dialog-actions">
 				<Button onClick={onSelectFile}>Select file...</Button>

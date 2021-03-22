@@ -6,6 +6,7 @@ import styles from "./Dialog.scss";
 
 interface DialogProps {
 	className?: string;
+	name?: string;
 	children: ReactNode;
 	onClose?: () => void;
 }
@@ -26,7 +27,7 @@ function hidePrevious() {
 }
 
 export default function Dialog(props: DialogProps) {
-	const { className, onClose = NOOP } = props;
+	const { className, name, onClose = NOOP, children } = props;
 
 	function handleKeyUp(event: KeyboardEvent) {
 		if (event.key === "Escape") {
@@ -44,8 +45,12 @@ export default function Dialog(props: DialogProps) {
 
 	return createPortal(
 		<div className={styles.dimmer}>
-			<div className={clsx(className, styles.dialog)}>
-				{props.children}
+			<div
+				role="dialog"
+				aria-label={name}
+				className={clsx(className, styles.dialog)}
+			>
+				{children}
 			</div>
 		</div>,
 		document.body,

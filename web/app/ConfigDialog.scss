@@ -1,8 +1,8 @@
 .dialog {
 	display: flex;
 	flex-direction: column;
-	width: 640px;
-	height: 540px;
+	width: 680px;
+	height: 560px;
 }
 
 .header {
@@ -14,7 +14,7 @@
 	position: relative;
 	padding: 12px;
 
-	&:not(.active) {
+	&[aria-selected="false"] {
 		transition: background-color .1s;
 		color: white;
 		background: #888;

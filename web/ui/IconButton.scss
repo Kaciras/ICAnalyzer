@@ -3,20 +3,24 @@
 	padding: 10px;
 	color: inherit;
 
+	// Avoid +1px height for <a> on chrome
+	line-height: 1;
+
 	&:hover, &:focus {
 		background: rgba(255, 255, 255, .2);
-	}
-
-	&:active {
-		background: rgba(255, 255, 255, .15);
 	}
 
 	&:focus {
 		outline: 1px white dotted;
 	}
 
-	// Avoid +1px height for <a> on chrome
-	line-height: 1;
+	&:active {
+		background: rgba(255, 255, 255, .15);
+	}
+
+	&.active {
+		color: #08c5ff;
+	}
 }
 
 // <a> does not support :enabled
@@ -26,8 +30,4 @@
 	&:hover, &:active {
 		background: none;
 	}
-}
-
-.iconButton.active {
-	color: #08f7ff;
 }

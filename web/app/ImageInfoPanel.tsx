@@ -21,9 +21,10 @@ export default function ImageInfoPanel(props: Props) {
 	}
 
 	return (
-		<div className="dialog-content">
+		<div className="dialog-content" role="tabpanel">
 			<canvas
 				className={styles.canvas}
+				aria-label="Preview"
 				ref={draw}
 				width={width}
 				height={height}

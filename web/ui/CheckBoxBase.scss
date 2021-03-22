@@ -17,18 +17,22 @@ $size: 24px;
 	position: absolute;
 	opacity: 0;
 	cursor: inherit;
+
+	&:checked + .mark {
+		color: $color-checked;
+	}
+
+	&:disabled + .mark {
+		color: #aaa;
+	}
 }
 
 .mark {
 	display: inline-flex;
 	height: $size;
 	font-size: $size;
-	color: #bbb;
+	color: #777;
 	vertical-align: middle;
-
-	&.checked {
-		color: $color-checked;
-	}
 }
 
 .label {

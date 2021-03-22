@@ -3,19 +3,21 @@
 	display: flex;
 }
 
-.menu {
+.tablist {
 	border-right: solid 1px #ddd;
 	padding-right: 20px;
 }
 
-.menuItem {
+.tab {
+	display: block;
+	width: 100%;
+	padding: 8px 12px 8px 8px;
 	white-space: nowrap;
-	padding: 10px 15px 10px 10px;
 
+	text-align: left;
 	border-radius: 10px;
 	font-size: 1.25em;
-	cursor: pointer;
-	transition: background-color .2s;
+	transition-property: background-color;
 
 	&:hover, &:focus {
 		outline: none; // for Chrome
@@ -32,7 +34,7 @@
 	vertical-align: middle;
 }
 
-.optionsPanel {
+.form {
 	flex: 1;
 	overflow-y: auto;
 	padding: 0 20px;
