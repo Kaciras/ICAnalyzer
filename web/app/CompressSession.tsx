@@ -7,18 +7,16 @@ import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
 import { ENCODERS, ImageEncoder } from "../codecs";
 
-interface Props {
+interface CompressSessionProps {
 	open: boolean;
 	onChange: Dispatch<Result>;
 	onClose: () => void;
 }
 
-type OptKey = string | number;
-
-export type OptionsToResult = Record<OptKey, ConvertOutput>;
+export type OptionsToResult = Record<string, ConvertOutput>;
 export type EncoderNameToOptions = Record<string, OptionsToResult>;
 
-export default function CompressSession(props: Props) {
+export default function CompressSession(props: CompressSessionProps) {
 	const { open, onClose, onChange } = props;
 
 	const [selectFile, setSelectFile] = useState(true);
@@ -99,8 +97,6 @@ export default function CompressSession(props: Props) {
 				for (let i = 0; i < optionsList.length; i++) {
 					oMap[JSON.stringify(optionsList[i])] = outputs[i];
 				}
-
-				onChange({ config, map: eMap, original: { file, data: image! } });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
@@ -108,6 +104,8 @@ export default function CompressSession(props: Props) {
 			console.error(e);
 			setError(e.message);
 		}
+
+		onChange({ config, map: eMap, original: { file, data: image! } });
 	}
 
 	function stop() {

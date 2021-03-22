@@ -4,7 +4,7 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { IconButton } from "../ui";
-import { ENCODER_MAP, EncoderState, ImageEncoder } from "../codecs";
+import { ENCODER_MAP, ENCODERS, EncoderState, ImageEncoder } from "../codecs";
 import { Result } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
@@ -85,6 +85,27 @@ function createTODOState(encoders: EncodingConfig): Record<string, EncoderContro
 	return rv;
 }
 
+// function getSeries(result: Result, state: ControlState, optKey: string) {
+// 	const { map } = result;
+// 	const { variableType, encoderName, encoderState, variableName } = state;
+//
+// 	switch (variableType) {
+// 		case Step.None:
+// 			return [options];
+// 		case Step.Encoder:
+// 			const optKey = JSON.stringify(options);
+// 			return Array.from(Object.values(map)).map(e => e[optKey]);
+// 		case Step.Options:
+// 			const x = map[encoderName];
+// 			const list = encoder.getOptionsList({
+// 				varNames: [variableName],
+// 				values: encoderState[encoderName].values,
+// 				ranges: encoderState[encoderName].ranges,
+// 			});
+// 			return list.map(op => x[JSON.stringify(op)]);
+// 	}
+// }
+
 interface AnalyzePageProps {
 	result: Result;
 	onStart: () => void;
@@ -134,12 +155,16 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 	const [labels, series] = useMemo(() => {
 		if (variableType === Step.Encoder) {
-			const optKey = JSON.stringify(options);
-			const kvs = Array.from(Object.entries(map));
-
-			const s = kvs.map(e => e[1][optKey]);
-			const l = kvs.map(e => e[0]);
-			return [l, s];
+			const encodings = ENCODERS.filter(e => e.name in map);
+			const s = encodings.map(e => {
+				const op = e.getOptionsList({
+					varNames: [],
+					values: encoderState[e.name].values,
+					ranges: encoderState[e.name].ranges,
+				});
+				return map[e.name][JSON.stringify(op[0])];
+			});
+			return [encodings.map(e => e.name), s];
 		} else if (variableType === Step.Options) {
 			const x = map[encoderName];
 			const list = encoder.getOptionsList({
@@ -152,7 +177,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			const l = encoderState[encoderName].labels[variableName];
 			return [l, s];
 		} else {
-			return [[""], [output]]; // TODO: bar chart
+			return [[""], [output]];
 		}
 	}, [variableType, variableName]);
 

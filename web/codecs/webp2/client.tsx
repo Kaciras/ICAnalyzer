@@ -1,83 +1,110 @@
 import { Remote } from "comlink";
-import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
-import { enumOption, numberOption, OptionType } from "../../form";
+import { boolOption, enumOption, numberOption, OptionType } from "../../form";
+import { EncodeOptions } from "./encoder";
 import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
-import { buildOptions } from "../common";
+import { buildOptions, mergeOptions } from "../common";
 
-export const name = "AVIF";
-export const mimeType = "image/avif";
-export const extension = "avif";
+export const name = "WebP v2";
+export const mimeType = "image/webp2";
+export const extension = "wp2";
 
-export const Subsampling = {
-	YUV400: 0,
-	YUV420: 1,
-	YUV422: 2,
-	YUV444: 3,
+export const UVMode = {
+	"Adapt": 0,
+	"420": 1,
+	"444": 2,
+	"Auto": 3,
+};
+
+export const Csp = {
+	YCoCg: 0,
+	YCbCr: 1,
+	Custom: 2,
+	YIQ: 3,
+};
+
+const defaultOptions: EncodeOptions = {
+	quality: 75,
+	alpha_quality: 75,
+	effort: 5,
+	pass: 1,
+	sns: 50,
+	uv_mode: UVMode.Adapt,
+	csp_type: Csp.YCoCg,
+	error_diffusion: 0,
+	use_random_matrix: false,
 };
 
 const templates: OptionType[] = [
+	// boolOption({
+	// 	id: "lossless",
+	// 	label: "lossless",
+	// 	defaultValue: defaultOptions.lossless,
+	// }),
 	numberOption({
-		id: "minQuantizer",
-		label: "Min quality",
+		id: "quality",
+		label: "Quality",
 		min: 0,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.minQuantizer,
+		max: 95,
+		step: 0.1,
+		defaultValue: defaultOptions.quality,
 	}),
 	numberOption({
-		id: "maxQuantizer",
-		label: "Max quality",
+		id: "alpha_quality",
+		label: "Alpha Quality",
 		min: 0,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.maxQuantizer,
+		max: 95,
+		step: 0.1,
+		defaultValue: defaultOptions.alpha_quality,
 	}),
 	numberOption({
-		id: "minQuantizerAlpha",
-		label: "Min alpha quality",
+		id: "effort",
+		label: "Effort",
 		min: 0,
-		max: 63,
+		max: 9,
 		step: 1,
-		defaultValue: defaultOptions.minQuantizerAlpha,
+		defaultValue: defaultOptions.effort,
 	}),
 	numberOption({
-		id: "maxQuantizerAlpha",
-		label: "Max alpha quality",
+		id: "pass",
+		label: "Passes",
 		min: 0,
-		max: 63,
+		max: 9,
 		step: 1,
-		defaultValue: defaultOptions.maxQuantizerAlpha,
+		defaultValue: defaultOptions.pass,
 	}),
 	numberOption({
-		id: "tileRowsLog2",
-		label: "Log2 of tile rows",
+		id: "sns",
+		label: "Spatial noise shaping",
 		min: 0,
-		max: 6,
+		max: 100,
 		step: 1,
-		defaultValue: defaultOptions.tileRowsLog2,
+		defaultValue: defaultOptions.sns,
 	}),
 	numberOption({
-		id: "tileColsLog2",
-		label: "Log2 of tile cols",
+		id: "error_diffusion",
+		label: "Error diffusion",
 		min: 0,
-		max: 6,
+		max: 100,
 		step: 1,
-		defaultValue: defaultOptions.tileColsLog2,
-	}),
-	numberOption({
-		id: "speed",
-		label: "Speed",
-		min: 0,
-		max: 10,
-		step: 8,
-		defaultValue: defaultOptions.speed,
+		defaultValue: defaultOptions.error_diffusion,
 	}),
 	enumOption({
-		id: "subsample",
-		label: "Subsample",
-		enumObject: Subsampling,
-		defaultValue: "YUV420",
+		id: "uv_mode",
+		label: "UVMode",
+		enumObject: UVMode,
+		defaultValue: "Adapt",
+	}),
+	enumOption({
+		id: "csp_type",
+		label: "Color space",
+		enumObject: Csp,
+		defaultValue: "YCoCg",
+	}),
+	boolOption({
+		id: "use_random_matrix",
+		label: "Random matrix",
+		defaultValue: defaultOptions.use_random_matrix,
 	}),
 ];
 export function initControlState(state: EncoderState): ControlStateMap {
@@ -95,7 +122,7 @@ export function initControlState(state: EncoderState): ControlStateMap {
 	return { values, labels };
 }
 
-export function initOptionsState(saved: EncodeOptions) {
+export function initOptionsState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
 	}
@@ -176,6 +203,6 @@ export function getOptionsList(state: EncoderState) {
 	return buildOptions(templates, state);
 }
 
-export function encode(options: any, worker: Remote<WorkerApi>) {
-	return worker.avifEncode({ ...defaultOptions, ...options });
+export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {
+	return worker.webp2Encode(mergeOptions(defaultOptions, options));
 }

@@ -1,6 +1,6 @@
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { ControlFieldWrapper, SelectBox } from "../ui";
-import { ENCODER_MAP } from "../codecs";
+import { ENCODER_MAP, ENCODERS } from "../codecs";
 import { AnalyzeConfig } from "./ConfigDialog";
 import { ControlState, Step } from "./AnalyzePage";
 import styles from "./ControlPanel.scss";
@@ -20,7 +20,8 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	function handleCodecChange(e: ChangeEvent<HTMLSelectElement>) {
-		onChange(prev => ({ ...prev, encoderName: e.currentTarget.value }));
+		const { value } = e.currentTarget;
+		onChange(prev => ({ ...prev, encoderName: value }));
 	}
 
 	function handleVarChange(variableType: Step, variableName: string) {
@@ -34,7 +35,8 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	const Encoder = ENCODER_MAP[encoderName];
-	const selectOptions = Object.keys(config.encoders).map(n => <option key={n} value={n}>{n}</option>);
+	const selectOptions = ENCODERS.filter(e => config.encoders[e.name].enable)
+		.map(({ name }) => <option key={name} value={name}>{name}</option>);
 
 	return (
 		<form className={styles.variableGroup}>

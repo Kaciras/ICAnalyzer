@@ -1,85 +1,52 @@
 import { Remote } from "comlink";
-import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/avif/shared/meta";
+import { defaultOptions } from "squoosh/src/features/encoders/jxl/shared/meta";
 import { WorkerApi } from "../../worker";
-import { enumOption, numberOption, OptionType } from "../../form";
+import { boolOption, numberOption, OptionType } from "../../form";
+import { EncodeOptions } from "./encoder";
 import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
-import { buildOptions } from "../common";
+import { buildOptions, mergeOptions } from "../common";
 
-export const name = "AVIF";
-export const mimeType = "image/avif";
-export const extension = "avif";
-
-export const Subsampling = {
-	YUV400: 0,
-	YUV420: 1,
-	YUV422: 2,
-	YUV444: 3,
-};
+export const name = "JPEG XL";
+export const mimeType = "image/jxl";
+export const extension = "jxl";
 
 const templates: OptionType[] = [
-	numberOption({
-		id: "minQuantizer",
-		label: "Min quality",
+	numberOption({ // 100 = lossless
+		id: "quality",
+		label: "Quality",
 		min: 0,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.minQuantizer,
+		max: 100,
+		step: 0.1,
+		defaultValue: defaultOptions.quality,
 	}),
-	numberOption({
-		id: "maxQuantizer",
-		label: "Max quality",
-		min: 0,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.maxQuantizer,
+	boolOption({
+		id: "lossyPalette",
+		label: "Slight loss",
+		defaultValue: defaultOptions.lossyPalette,
 	}),
-	numberOption({
-		id: "minQuantizerAlpha",
-		label: "Min alpha quality",
-		min: 0,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.minQuantizerAlpha,
-	}),
-	numberOption({
-		id: "maxQuantizerAlpha",
-		label: "Max alpha quality",
-		min: 0,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.maxQuantizerAlpha,
-	}),
-	numberOption({
-		id: "tileRowsLog2",
-		label: "Log2 of tile rows",
-		min: 0,
-		max: 6,
-		step: 1,
-		defaultValue: defaultOptions.tileRowsLog2,
-	}),
-	numberOption({
-		id: "tileColsLog2",
-		label: "Log2 of tile cols",
-		min: 0,
-		max: 6,
-		step: 1,
-		defaultValue: defaultOptions.tileColsLog2,
+	boolOption({
+		id: "progressive",
+		label: "Progressive",
+		defaultValue: defaultOptions.progressive,
 	}),
 	numberOption({
 		id: "speed",
 		label: "Speed",
 		min: 0,
-		max: 10,
-		step: 8,
+		max: 6,
+		step: 1,
 		defaultValue: defaultOptions.speed,
 	}),
-	enumOption({
-		id: "subsample",
-		label: "Subsample",
-		enumObject: Subsampling,
-		defaultValue: "YUV420",
+	numberOption({
+		id: "epf",
+		label: "Edge preserving filter",
+		min: -1,
+		max: 6,
+		step: 1,
+		defaultValue: defaultOptions.epf,
 	}),
 ];
+
 export function initControlState(state: EncoderState): ControlStateMap {
 	const { varNames, ranges, values } = state;
 	const labels: Record<string, string[]> = {};
@@ -95,7 +62,7 @@ export function initControlState(state: EncoderState): ControlStateMap {
 	return { values, labels };
 }
 
-export function initOptionsState(saved: EncodeOptions) {
+export function initOptionsState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
 	}
@@ -162,6 +129,7 @@ export function Controls(props: ControlProps) {
 
 			return <ControlField
 				key={id}
+				active={id === variableName}
 				value={values[id]}
 				range={ranges[id]}
 				onFocus={() => onVariableChange(id)}
@@ -176,6 +144,6 @@ export function getOptionsList(state: EncoderState) {
 	return buildOptions(templates, state);
 }
 
-export function encode(options: any, worker: Remote<WorkerApi>) {
-	return worker.avifEncode({ ...defaultOptions, ...options });
+export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {
+	return worker.jxlEncode(mergeOptions(defaultOptions, options));
 }

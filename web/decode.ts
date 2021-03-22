@@ -61,6 +61,20 @@ function decodeWebPWorker(blob: Blob) {
 		.finally(() => worker.terminate());
 }
 
+function decodeJXLWorker(blob: Blob) {
+	const worker = newWorker();
+	return blob.arrayBuffer()
+		.then(buf => wrap<WorkerApi>(worker).jxlDecode(buf))
+		.finally(() => worker.terminate());
+}
+
+function decodeWebP2Worker(blob: Blob) {
+	const worker = newWorker();
+	return blob.arrayBuffer()
+		.then(buf => wrap<WorkerApi>(worker).webp2Decode(buf))
+		.finally(() => worker.terminate());
+}
+
 export const decodeWebP = autoSelect(detectWebPSupport, decodeImageNative, decodeWebPWorker);
 export const decodeAVIF = autoSelect(detectAVIFSupport, decodeImageNative, decodeAVIFWorker);
 
@@ -98,6 +112,10 @@ export function decode(blob: Blob) {
 			return decodeWebP(blob);
 		case "image/avif":
 			return decodeAVIF(blob);
+		case "image/jxl":
+			return decodeJXLWorker(blob);
+		case "image/webp2":
+			return decodeWebP2Worker(blob);
 		default:
 			return decodeImageNative(blob);
 	}
