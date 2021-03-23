@@ -1,7 +1,7 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
 import { boolOption, enumOption, numberOption, OptionType } from "../../form";
-import { EncodeOptions } from "./encoder";
+import { EncodeOptions } from "./codec";
 import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
 import { buildOptions, mergeOptions } from "../common";
 

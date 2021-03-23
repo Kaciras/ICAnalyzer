@@ -2,7 +2,7 @@ import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 import { WorkerApi } from "../../worker";
 import { boolOption, enumOption, numberOption, OptionType, presetOption } from "../../form";
-import { EncodeOptions } from "./encoder";
+import { EncodeOptions } from "./codec";
 import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
 import { buildOptions, mergeOptions } from "../common";
 

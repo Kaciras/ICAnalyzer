@@ -29,3 +29,46 @@ export function mergeOptions<T>(base: T, from: Partial<T>) {
 	}
 	return { ...base, ...from } as T;
 }
+
+export type EncModuleFactory<T> = () => Promise<EncodeModule<T>>;
+
+export interface EncodeModule<T> {
+	encode(data: BufferSource, width: number, height: number, options: T): Uint8Array | null;
+}
+
+export function createEncodeFn<T>(loader: EncModuleFactory<T>) {
+	let module: Promise<EncodeModule<T>> | undefined;
+
+	return async (image: ImageData, options: T) => {
+		const { data, width, height } = image;
+		if (!module) {
+			module = loader();
+		}
+		const result = (await module).encode(data, width, height, options);
+		if (result) {
+			return result.buffer;
+		}
+		throw new Error("Encoding error");
+	};
+}
+
+export interface DecodeModule {
+	decode(data: BufferSource): ImageData | null;
+}
+
+export type DecModuleFactory = () => Promise<DecodeModule>;
+
+export function createDecodeFn(loader: DecModuleFactory) {
+	let module: Promise<DecodeModule> | undefined;
+
+	return async (data: ArrayBuffer) => {
+		if (!module) {
+			module = loader();
+		}
+		const result = (await module).decode(data);
+		if (result) {
+			return result;
+		}
+		throw new Error("Decoding error");
+	};
+}

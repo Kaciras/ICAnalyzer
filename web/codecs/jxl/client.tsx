@@ -2,9 +2,9 @@ import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/jxl/shared/meta";
 import { WorkerApi } from "../../worker";
 import { boolOption, numberOption, OptionType } from "../../form";
-import { EncodeOptions } from "./encoder";
-import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
 import { buildOptions, mergeOptions } from "../common";
+import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
+import { EncodeOptions } from "./codec";
 
 export const name = "JPEG XL";
 export const mimeType = "image/jxl";
