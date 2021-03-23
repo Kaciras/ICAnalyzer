@@ -7,3 +7,4 @@ deps
 dist
 test/**/*.js
 lib/**/*.js
+web/**/*.js

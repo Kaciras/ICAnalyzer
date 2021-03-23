@@ -1,7 +1,8 @@
 module.exports = {
+	root: true,
 	env: {
-		node: true,
 		es2021: true,
+		node: true,
 	},
 	extends: [
 		"eslint:recommended",
@@ -11,7 +12,6 @@ module.exports = {
 		sourceType: "module",
 	},
 	plugins: [
-		"@typescript-eslint",
 		"react",
 		"react-hooks",
 	],
@@ -24,6 +24,7 @@ module.exports = {
 		"quotes": ["error", "double", { avoidEscape: true }],
 		"indent": ["error", "tab", { SwitchCase: 1 }],
 		"linebreak-style": ["error", "unix"],
+		"eqeqeq": "error",
 		"semi": ["error", "always"],
 		"comma-dangle": ["error", "always-multiline"],
 	},
@@ -47,16 +48,15 @@ module.exports = {
 		},
 		{
 			files: ["*.ts?(x)"],
-			parser: "@typescript-eslint/parser",
 			extends: [
 				"plugin:@typescript-eslint/recommended",
 			],
 			rules: {
-				"@typescript-eslint/no-non-null-assertion": ["off"],
-				"@typescript-eslint/no-explicit-any": ["off"],
-				"@typescript-eslint/explicit-module-boundary-types": ["off"],
-				"@typescript-eslint/ban-ts-comment": ["off"],
-				"@typescript-eslint/no-empty-function": ["off"],
+				"@typescript-eslint/no-non-null-assertion": "off",
+				"@typescript-eslint/no-explicit-any": "off",
+				"@typescript-eslint/explicit-module-boundary-types": "off",
+				"@typescript-eslint/ban-ts-comment": "off",
+				"@typescript-eslint/no-empty-function": "off",
 			},
 		},
 		{

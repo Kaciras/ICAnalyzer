@@ -181,7 +181,7 @@ export function OptionsPanel(props: OptionListProps) {
 		if (value) {
 			varNames.push(id);
 		} else {
-			varNames = varNames.filter(v => v != id);
+			varNames = varNames.filter(v => v !== id);
 		}
 		onChange({ ...state, varNames });
 	}
