@@ -14,7 +14,7 @@ $thumb-size: 18px;
 		width: 100%;
 		height: 2px;
 
-		background: linear-gradient($color, $color) 0/var(--value-percent,0) 100% no-repeat #ddd;
+		background: linear-gradient($color, $color) 0/var(--value-percent) 100% no-repeat #ddd;
 	}
 }
 
