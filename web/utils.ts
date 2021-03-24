@@ -46,7 +46,7 @@ const SIZE_UNITS = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 export function bytes(value: number, fraction = 1024) {
 	const size = Math.abs(value);
 
-	if (size == 0) {
+	if (size === 0) {
 		return `${value.toFixed(2)} B`;
 	}
 
