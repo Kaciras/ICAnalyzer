@@ -103,6 +103,8 @@ export default function ChartPanel(props: ChartProps) {
 			xAxis: {
 				categories: values,
 
+				// Avoid layout shift on Y axis changes
+				width: 420,
 			},
 			exporting: {
 				buttons: {
