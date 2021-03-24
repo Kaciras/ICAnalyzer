@@ -6,11 +6,11 @@
 	// Avoid +1px height for <a> on chrome
 	line-height: 1;
 
-	&:hover, &:focus {
+	&:hover, &:focus-visible {
 		background: rgba(255, 255, 255, .2);
 	}
 
-	&:focus {
+	&:focus-visible {
 		outline: 1px white dotted;
 	}
 

@@ -1,6 +1,5 @@
 import { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
-import { avoidMouseFocus } from "./common";
 import styles from "./IconButton.scss";
 
 export interface IconButtonProps {
@@ -32,7 +31,6 @@ export default function IconButton(props: IconButtonProps) {
 			href={href}
 			type="button"
 			onClick={onClick}
-			onMouseUp={avoidMouseFocus}
 		>
 			{children}
 		</ButtonTag>

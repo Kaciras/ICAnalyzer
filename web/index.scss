@@ -28,6 +28,14 @@ button {
 	}
 }
 
+a {
+	text-decoration: none;
+
+	&:hover, &:focus-visible {
+		text-decoration: underline;
+	}
+}
+
 .subfields {
 	padding: 0 0 0 40px;
 }

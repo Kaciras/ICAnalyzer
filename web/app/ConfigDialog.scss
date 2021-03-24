@@ -17,10 +17,10 @@
 	&[aria-selected="false"] {
 		transition: background-color .1s;
 		color: white;
-		background: #888;
+		background: #777;
 		cursor: pointer;
 
-		&:hover, &:focus {
+		&:hover, &:focus-visible {
 			background: #999;
 		}
 	}

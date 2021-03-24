@@ -1,6 +1,5 @@
 import { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
-import { avoidMouseFocus } from "./common";
 import styles from "./Button.scss";
 
 interface Props {
@@ -30,7 +29,6 @@ export default function Button(props: Props) {
 			disabled={disabled}
 			type="button"
 			onClick={onClick}
-			onMouseUp={avoidMouseFocus}
 		>
 			{children}
 		</button>

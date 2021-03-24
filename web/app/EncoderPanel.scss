@@ -19,7 +19,7 @@
 	font-size: 1.25em;
 	transition-property: background-color;
 
-	&:hover, &:focus {
+	&:hover, &:focus-visible {
 		outline: none; // for Chrome
 		background-color: #e8f5fe;
 	}
