@@ -30,23 +30,21 @@ export function mergeOptions<T>(base: T, from: Partial<T>) {
 	return { ...base, ...from } as T;
 }
 
-export interface Encoder<T> {
+export type EncodeModuleLoader<T> = () => Promise<EncodeModule<T>>;
+
+export interface EncodeModule<T> {
 	encode(data: BufferSource, width: number, height: number, options: T): Uint8Array | null;
 }
 
-export interface EncodeModule<T> {
-	getEncoder(): Promise<Encoder<T>>;
-}
-
-export function createEncodeFn<T>(module: EncodeModule<T>) {
-	let encoder: Promise<Encoder<T>> | undefined;
+export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
+	let module: Promise<EncodeModule<T>> | undefined;
 
 	return async (image: ImageData, options: T) => {
 		const { data, width, height } = image;
-		if (!encoder) {
-			encoder = module.getEncoder();
+		if (!module) {
+			module = loader();
 		}
-		const result = (await encoder).encode(data, width, height, options);
+		const result = (await module).encode(data, width, height, options);
 		if (result) {
 			return result.buffer;
 		}
@@ -54,22 +52,20 @@ export function createEncodeFn<T>(module: EncodeModule<T>) {
 	};
 }
 
-export interface Decoder {
+export interface DecodeModule {
 	decode(data: BufferSource): ImageData | null;
 }
 
-export interface DecodeModule {
-	getDecoder(): Promise<Decoder>;
-}
+export type DecodeModuleLoader = () => Promise<DecodeModule>;
 
-export function createDecodeFn(module: DecodeModule) {
-	let decoder: Promise<Decoder> | undefined;
+export function wasmDecodeFn(loader: DecodeModuleLoader) {
+	let module: Promise<DecodeModule> | undefined;
 
 	return async (data: ArrayBuffer) => {
-		if (!decoder) {
-			decoder = module.getDecoder();
+		if (!module) {
+			module = loader();
 		}
-		const result = (await decoder).decode(data);
+		const result = (await module).decode(data);
 		if (result) {
 			return result;
 		}

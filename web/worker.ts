@@ -2,7 +2,6 @@ import * as Comlink from "comlink";
 import * as Similarity from "../lib/similarity";
 import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../lib/similarity";
 import wasmUrl from "../lib/diff.wasm";
-import { createDecodeFn, createEncodeFn, EncodeModule } from "./codecs/common";
 import * as MozJPEG from "./codecs/mozjpeg/codec";
 import * as JXL from "./codecs/jxl/codec";
 import * as WebP from "./codecs/webp/codec";
@@ -13,12 +12,14 @@ import * as WebP2 from "./codecs/webp2/codec";
 let data: ImageData;
 let butteraugli: Butteraugli;
 
-function bindEncoder<T>(loader: EncodeModule<T>) {
-	const encodeFn = createEncodeFn(loader);
+interface CodecModule<T> {
+	encode(image: ImageData, options: T): Promise<ArrayBufferLike>;
+}
 
+function bindEncoder<T>(module: CodecModule<T>) {
 	return async (options: T) => {
 		const start = performance.now();
-		const buffer = await encodeFn(data, options);
+		const buffer = await module.encode(data, options);
 		const end = performance.now();
 		return { buffer, time: end - start };
 	};
@@ -36,10 +37,10 @@ const workerApi = {
 	avifEncode: bindEncoder(AVIF),
 	webp2Encode: bindEncoder(WebP2),
 
-	jxlDecode: createDecodeFn(JXL),
-	webpDecode: createDecodeFn(WebP),
-	avifDecode: createDecodeFn(AVIF),
-	webp2Decode: createDecodeFn(WebP2),
+	jxlDecode: JXL.decode,
+	webpDecode: WebP.decode,
+	avifDecode: AVIF.decode,
+	webp2Decode: WebP2.decode,
 
 	async calcSSIM(image: ImageData, options?: SSIMOptions) {
 		await Similarity.initWasmModule(wasmUrl);

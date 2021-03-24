@@ -2,14 +2,16 @@ import type { EncodeOptions } from "squoosh/codecs/avif/enc/avif_enc";
 import encodeWasmUrl from "squoosh/codecs/avif/enc/avif_enc.wasm";
 import decodeWasmUrl from "squoosh/codecs/avif/dec/avif_dec.wasm";
 import { initEmscriptenModule } from "squoosh/src/features/worker-utils";
-import type { Decoder, Encoder } from "../common";
+import { wasmDecodeFn, wasmEncodeFn } from "../common";
 
-export async function getEncoder() {
+export { EncodeOptions };
+
+export const encode = wasmEncodeFn<EncodeOptions>(async () => {
 	const module = await import("squoosh/codecs/avif/enc/avif_enc");
-	return initEmscriptenModule<Encoder<EncodeOptions>>(module.default, encodeWasmUrl);
-}
+	return initEmscriptenModule(module.default, encodeWasmUrl);
+});
 
-export async function getDecoder() {
+export const decode = wasmDecodeFn(async () => {
 	const module = await import("squoosh/codecs/avif/dec/avif_dec");
-	return initEmscriptenModule<Decoder>(module.default, decodeWasmUrl);
-}
+	return initEmscriptenModule(module.default, decodeWasmUrl);
+});

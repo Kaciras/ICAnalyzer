@@ -4,20 +4,20 @@ import encodeWasmUrl from "squoosh/codecs/webp/enc/webp_enc.wasm";
 import encodeWasmSIMDUrl from "squoosh/codecs/webp/enc/webp_enc_simd.wasm";
 import decodeWasmUrl from "squoosh/codecs/webp/dec/webp_dec.wasm";
 import { initEmscriptenModule } from "squoosh/src/features/worker-utils";
-import type { Decoder, Encoder } from "../common";
+import { wasmDecodeFn, wasmEncodeFn } from "../common";
 
 export { EncodeOptions };
 
-export async function getEncoder() {
+export const encode = wasmEncodeFn<EncodeOptions>(async () => {
 	if (await simd()) {
 		const webpEncoder = await import("squoosh/codecs/webp/enc/webp_enc_simd");
-		return initEmscriptenModule<Encoder<EncodeOptions>>(webpEncoder.default, encodeWasmSIMDUrl);
+		return initEmscriptenModule(webpEncoder.default, encodeWasmSIMDUrl);
 	}
 	const webpEncoder = await import("squoosh/codecs/webp/enc/webp_enc");
-	return initEmscriptenModule<Encoder<EncodeOptions>>(webpEncoder.default, encodeWasmUrl);
-}
+	return initEmscriptenModule(webpEncoder.default, encodeWasmUrl);
+});
 
-export async function getDecoder() {
+export const decode = wasmDecodeFn(async () => {
 	const module = await import("squoosh/codecs/webp/dec/webp_dec");
-	return initEmscriptenModule<Decoder>(module.default, decodeWasmUrl);
-}
+	return initEmscriptenModule(module.default, decodeWasmUrl);
+});
