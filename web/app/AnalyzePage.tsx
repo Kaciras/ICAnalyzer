@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
@@ -24,15 +24,16 @@ function DownloadButton(props: DownloadButtonProps) {
 	const { title, buffer, filename, children } = props;
 	const { mimeType, extension } = props.codec;
 
-	const [url, setUrl] = useState("");
-	useEffect(() => () => URL.revokeObjectURL(url), []);
+	const url = useRef("");
+
+	useEffect(() => () => URL.revokeObjectURL(url.current), []);
 
 	function downloadImage() {
 		const blob = new Blob([buffer], { type: mimeType });
 
-		URL.revokeObjectURL(url);
+		URL.revokeObjectURL(url.current);
 		const newUrl = URL.createObjectURL(blob);
-		setUrl(newUrl);
+		url.current = newUrl;
 
 		const a = document.createElement("a");
 		a.href = newUrl;
@@ -179,7 +180,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		} else {
 			return [[""], [output]];
 		}
-	}, [variableType, variableName]);
+	}, [result, variableType, variableName]);
 
 	const index = series.indexOf(output);
 

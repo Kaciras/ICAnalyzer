@@ -1,9 +1,8 @@
 import { useState } from "react";
-import clsx from "clsx";
 import { MeasureOptions } from "../encode";
 import { Button, Dialog } from "../ui";
 import ImageInfoPanel from "./ImageInfoPanel";
-import MetricsPanel, { createMeansureState } from "./MetricsPanel";
+import MetricsPanel, { createMeasureState } from "./MetricsPanel";
 import EncoderPanel, { createEncodingConfig, EncodingConfig } from "./EncoderPanel";
 import styles from "./ConfigDialog.scss";
 
@@ -19,7 +18,7 @@ function initEncoderConfig(): AnalyzeConfig {
 	}
 	return {
 		encoders: createEncodingConfig(),
-		measure: createMeansureState(),
+		measure: createMeasureState(),
 	};
 }
 
@@ -90,7 +89,7 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			{panel}
 			<div className="dialog-actions">
 				<Button onClick={onSelectFile}>Select file...</Button>
-				<Button color="second" onClick={onClose}>Cancel</Button>
+				<Button className="second" onClick={onClose}>Cancel</Button>
 				<Button disabled={!ready} onClick={start}>Start</Button>
 			</div>
 		</Dialog>

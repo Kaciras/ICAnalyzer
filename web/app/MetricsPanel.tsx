@@ -1,11 +1,11 @@
 import React, { ChangeEvent, Dispatch } from "react";
 import * as ssimJs from "ssim.js";
-import { defaultButteraugliOptions } from "../../lib/similarity";
+import { defaultButteraugliOptions, SSIMOptions } from "../../lib/similarity";
 import { CheckBox, NumberInput } from "../ui";
 import { ButteraugliConfig, MeasureOptions, Optional } from "../encode";
 import styles from "./MetricsPanel.scss";
 
-export function createMeansureState(saved?: MeasureOptions): MeasureOptions {
+export function createMeasureState(saved?: MeasureOptions): MeasureOptions {
 	if (saved) {
 		return saved;
 	}
@@ -33,9 +33,9 @@ interface ButteraugliProps {
 function ButteraugliFields(props: ButteraugliProps) {
 	const { value, onChange } = props;
 
-	function handleChange(event: ChangeEvent<HTMLInputElement>) {
-		const { name, valueAsNumber } = event.currentTarget;
-		onChange({ ...value, [name]: valueAsNumber });
+	function handleChange(name: string, newValue: number) {
+		const options = { ...value.options, [name]: newValue };
+		onChange({ ...value, options });
 	}
 
 	const inputs = Object.entries(value.options).map(([name, value]) => (
@@ -50,15 +50,16 @@ function ButteraugliFields(props: ButteraugliProps) {
 				className={styles.value}
 				name={name}
 				min={0}
+				max={2}
 				step={0.1}
 				value={value}
-				onChange={handleChange}
+				onValueChange={v => handleChange(name, v)}
 			/>
 		</label>
 	));
 
 	return (
-		<fieldset>
+		<div>
 			<CheckBox
 				checked={value.enabled}
 				name="butteraugli"
@@ -67,20 +68,22 @@ function ButteraugliFields(props: ButteraugliProps) {
 				Calculate Butteraugli
 			</CheckBox>
 
-			<div className="subfields">
+			<fieldset className="subfields">
 				{value.enabled && inputs}
-			</div>
-		</fieldset>
+			</fieldset>
+		</div>
 	);
 }
 
 interface SSIMProps {
-	options: ButteraugliConfig;
-	onChange: Dispatch<ButteraugliConfig>;
+	options: SSIMOptions;
+	onChange: Dispatch<SSIMOptions>;
 }
 
-function SSIMFields() {
-
+function SSIMFields(props: SSIMProps) {
+	return (
+		<></>
+	);
 }
 
 interface MetricsPanelProps {
@@ -90,7 +93,7 @@ interface MetricsPanelProps {
 
 export default function MetricsPanel(props: MetricsPanelProps) {
 	const { value, onChange } = props;
-	const { workerCount, SSIM, PSNR, butteraugli } = value;
+	const { workerCount,time, SSIM, PSNR, butteraugli } = value;
 
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
 		const { name, checked } = event.currentTarget;
@@ -106,7 +109,7 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 	}
 
 	return (
-		<form className={styles.form}>
+		<form className={styles.form} role="tabpanel">
 			<label>
 				<span className={styles.inlineLabel}>
 					Worker count:
@@ -118,6 +121,13 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 					onValueChange={handleWorkerCountChange}
 				/>
 			</label>
+			<CheckBox
+				checked={time}
+				name="time"
+				onChange={handleChange}
+			>
+				Encode time (Not very accurate)
+			</CheckBox>
 			<CheckBox
 				checked={PSNR}
 				name="PSNR"

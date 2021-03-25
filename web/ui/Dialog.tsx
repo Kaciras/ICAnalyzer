@@ -14,7 +14,7 @@ interface DialogProps {
 /**
  * Hide non-top-level dialogs.
  *
- * there is no :last-of-class selector so use js to implement.
+ * there is no :last-of-class selector so use JS to implement.
  */
 function hidePrevious() {
 	const dialogs = document.body.querySelectorAll("." + styles.dimmer);
@@ -29,18 +29,19 @@ function hidePrevious() {
 export default function Dialog(props: DialogProps) {
 	const { className, name, onClose = NOOP, children } = props;
 
-	function handleKeyUp(event: KeyboardEvent) {
-		if (event.key === "Escape") {
-			onClose();
-			event.stopImmediatePropagation();
+	function listenKeyboardClose() {
+		function handleKeyUp(event: KeyboardEvent) {
+			if (event.key === "Escape") {
+				onClose();
+				event.stopImmediatePropagation();
+			}
 		}
-	}
 
-	useEffect(() => {
 		window.addEventListener("keyup", handleKeyUp);
 		return () => window.removeEventListener("keyup", handleKeyUp);
-	}, []);
+	}
 
+	useEffect(listenKeyboardClose, [onClose]);
 	useLayoutEffect(hidePrevious, []);
 
 	return createPortal(

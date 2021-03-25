@@ -7,6 +7,22 @@ import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
 import { ENCODERS, ImageEncoder } from "../codecs";
 
+function useProgress(initialMax = 1) {
+	const [max, setMax] = useState(initialMax);
+	const [value, setValue] = useState(0);
+
+	function reset(value: number) {
+		setValue(0);
+		setMax(value);
+	}
+
+	function increase() {
+		setValue(v => v + 1);
+	}
+
+	return { value, max, increase, reset };
+}
+
 interface CompressSessionProps {
 	open: boolean;
 	onChange: Dispatch<Result>;
@@ -20,14 +36,14 @@ export default function CompressSession(props: CompressSessionProps) {
 	const { open, onClose, onChange } = props;
 
 	const [selectFile, setSelectFile] = useState(true);
+
 	const [file, setFile] = useState<File>();
 	const [image, setImage] = useState<ImageData>();
 
 	const [encoder, setEncoder] = useState<BatchEncodeAnalyzer>();
 
+	const progress = useProgress();
 	const [error, setError] = useState<string>();
-	const [max, setMax] = useState(1);
-	const [progress, setProgress] = useState(0);
 
 	function cancelSelectFile() {
 		if (file) {
@@ -51,7 +67,7 @@ export default function CompressSession(props: CompressSessionProps) {
 		const { encoders, measure } = config;
 		const image = await decode(file);
 
-		let outputSizePerImage = 0;
+		let outputSize = 0;
 		const queue: [ImageEncoder, any[]][] = [];
 
 		for (const enc of ENCODERS) {
@@ -62,18 +78,17 @@ export default function CompressSession(props: CompressSessionProps) {
 			}
 			const optList = getOptionsList(config.state);
 			queue.push([enc, optList]);
-			outputSizePerImage += optList.length;
+			outputSize += optList.length;
 		}
 
 		let calculations = 1;
 		if (measure.butteraugli.enabled) calculations++;
-		if (measure.SSIM.enabled) calculations++;
 		if (measure.PSNR) calculations++;
+		if (measure.SSIM.enabled) calculations++;
 
 		const warmup = measure.time ? measure.workerCount : 0;
 
-		setMax(outputSizePerImage * calculations + warmup);
-		setProgress(0);
+		progress.reset(outputSize * calculations + warmup);
 
 		const eMap: EncoderNameToOptions = {};
 		let worker: BatchEncodeAnalyzer | null = null;
@@ -87,7 +102,7 @@ export default function CompressSession(props: CompressSessionProps) {
 					optionsList,
 					measure,
 				});
-				worker.onProgress = () => setProgress(p => p + 1);
+				worker.onProgress = progress.increase;
 
 				setEncoder(worker);
 				const outputs = await worker.encode();
@@ -118,9 +133,9 @@ export default function CompressSession(props: CompressSessionProps) {
 	} else if (encoder) {
 		return (
 			<ProgressDialog
+				value={progress.value}
+				max={progress.max}
 				error={error}
-				value={progress}
-				max={max}
 				onCancel={stop}
 			/>
 		);

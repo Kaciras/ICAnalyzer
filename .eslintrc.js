@@ -8,13 +8,8 @@ module.exports = {
 		"eslint:recommended",
 	],
 	parserOptions: {
-		ecmaVersion: 12,
 		sourceType: "module",
 	},
-	plugins: [
-		"react",
-		"react-hooks",
-	],
 	settings: {
 		react: {
 			version: "detect",
@@ -37,10 +32,9 @@ module.exports = {
 			},
 			extends: [
 				"plugin:react/recommended",
+				"plugin:react-hooks/recommended",
 			],
 			rules: {
-				"react-hooks/rules-of-hooks": "error",
-
 				// https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#eslint
 				"react/jsx-uses-react": "off",
 				"react/react-in-jsx-scope": "off",
@@ -61,9 +55,6 @@ module.exports = {
 		},
 		{
 			files: ["**/test/*.spec.{j,t}s"],
-			env: {
-				jest: true,
-			},
 			extends: [
 				"plugin:jest/style",
 				"plugin:jest/recommended",

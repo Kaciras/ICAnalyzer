@@ -71,7 +71,6 @@ export class BatchEncodeAnalyzer {
 		this.pool = new WorkerPool(newWorker, concurrency);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	onProgress() {}
 
 	private increaseProgress() {
