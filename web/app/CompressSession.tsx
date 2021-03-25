@@ -93,26 +93,31 @@ export default function CompressSession(props: CompressSessionProps) {
 		const eMap: EncoderNameToOptions = {};
 		let worker: BatchEncodeAnalyzer | null = null;
 		try {
+			worker = new BatchEncodeAnalyzer(image, measure);
+			worker.onProgress = progress.increase;
+
+			setEncoder(worker);
+			await worker.initialize();
+
 			for (const [encoder, optionsList] of queue) {
 				const oMap: OptionsToResult = {};
 				eMap[encoder.name] = oMap;
 
-				worker = new BatchEncodeAnalyzer(image, {
-					encoder,
-					optionsList,
-					measure,
-				});
-				worker.onProgress = progress.increase;
-
-				setEncoder(worker);
-				const outputs = await worker.encode();
-				worker.terminate();
-				setEncoder(undefined);
+				// Warmup workers to avoid disturbance of initialize time
+				if (measure.time) {
+					await worker.pool.runOnEach(async remote => {
+						await encoder.encode(optionsList[0], remote);
+						progress.increase();
+					});
+				}
 
 				for (let i = 0; i < optionsList.length; i++) {
-					oMap[JSON.stringify(optionsList[i])] = outputs[i];
+					const options = optionsList[i];
+					oMap[JSON.stringify(options)] = await worker.encode(encoder, options);
 				}
 			}
+			worker.terminate();
+			setEncoder(undefined);
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
 			worker?.terminate();

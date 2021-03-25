@@ -25,12 +25,6 @@ export interface MeasureOptions {
 	butteraugli: Optional<ButteraugliConfig>;
 }
 
-export interface AnalyzeConfig {
-	encoder: ImageEncoder;
-	optionsList: any[];
-	measure: MeasureOptions;
-}
-
 interface Metrics {
 	SSIM?: number;
 	PSNR?: number;
@@ -55,76 +49,55 @@ export function newWorker() {
 export class BatchEncodeAnalyzer {
 
 	private readonly image: ImageData;
-	private readonly config: AnalyzeConfig;
+	private readonly measureOptions: MeasureOptions;
 
-	private readonly pool: WorkerPool<WorkerApi>;
+	readonly pool: WorkerPool<WorkerApi>;
 
-	constructor(image: ImageData, config: AnalyzeConfig) {
-		const { measure, optionsList } = config;
-		if (measure.workerCount < 1) {
-			throw new Error("Thread count must be at least 1");
-		}
-		const concurrency = Math.min(measure.workerCount, optionsList.length);
-
+	constructor(image: ImageData, measure: MeasureOptions) {
 		this.image = image;
-		this.config = config;
-		this.pool = new WorkerPool(newWorker, concurrency);
+		this.measureOptions = measure;
+		this.pool = new WorkerPool(newWorker, measure.workerCount);
 	}
 
 	onProgress() {}
 
-	private increaseProgress() {
-		this.onProgress();
+	async initialize() {
+		await this.pool.runOnEach(remote => remote.setImageToEncode(this.image));
 	}
 
-	async encode(): Promise<ConvertOutput[]> {
-		const { encoder, optionsList, measure } = this.config;
-		const { image } = this;
-
-		await this.pool.runOnEach(remote => remote.setImageToEncode(image));
-
-		// Warmup workers to avoid disturbance of initialize time
-		if (measure.time) {
-			await this.pool.runOnEach(async remote => {
-				await encoder.encode(optionsList[0], remote);
-				this.increaseProgress();
-			});
-		}
-
-		return this.pool.all(optionsList, this.poll.bind(this));
+	async encode(encoder: ImageEncoder, options: any): Promise<ConvertOutput> {
+		return this.pool.run(remote => this.poll(remote, encoder, options));
 	}
 
 	terminate() {
 		this.pool.terminate();
 	}
 
-	private async poll(remote: Remote<WorkerApi>, options: any) {
-		const { encoder } = this.config;
-
+	private async poll(remote: Remote<WorkerApi>, encoder: ImageEncoder, options: any) {
 		const { buffer, time } = await encoder.encode(options, remote);
 		const blob = new Blob([buffer], { type: encoder.mimeType });
 		const data = await decode(blob);
-		this.increaseProgress();
+		this.onProgress();
 
 		const metrics = await this.measure(remote, data);
 		return { time, buffer, data, metrics };
 	}
 
 	async measure(wrapper: Remote<WorkerApi>, data: ImageData) {
-		const { SSIM, PSNR, butteraugli } = this.config.measure;
+		const { SSIM, PSNR, butteraugli } = this.measureOptions;
 		const metrics: Metrics = {};
 
 		if (PSNR) {
 			metrics.PSNR = await wrapper.calcPSNR(data);
-			this.increaseProgress();
+			this.onProgress();
 		}
 		if (SSIM.enabled) {
 			metrics.SSIM = await wrapper.calcSSIM(data, SSIM.options);
-			this.increaseProgress();
+			this.onProgress();
 		}
 		if (butteraugli.enabled) {
 			const [source, raw] = await wrapper.calcButteraugli(data, butteraugli.options);
-			this.increaseProgress();
+			this.onProgress();
 
 			const heatMap = rgbaToImage(raw, data.width, data.height);
 			metrics.butteraugli = { source, heatMap };
