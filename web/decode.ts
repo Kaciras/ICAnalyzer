@@ -1,7 +1,6 @@
-import { wrap } from "comlink";
-import { blobToImg, drawableToImageData } from "squoosh/src/client/lazy-app/util";
+import { Remote, wrap } from "comlink";
+import { blobToImg, canDecodeImageType, drawableToImageData } from "squoosh/src/client/lazy-app/util";
 import { WorkerApi } from "./worker";
-import { detectAVIFSupport, detectWebPSupport } from "./utils";
 import { newWorker } from "./encode";
 
 export async function decodeImageNative(blob: Blob) {
@@ -21,62 +20,6 @@ export async function decodeImageNative(blob: Blob) {
 	ctx.drawImage(bitmap, 0, 0);
 	return ctx.getImageData(0, 0, width, height);
 }
-
-type featureDetector = () => Promise<boolean>;
-
-type DecodeFunction = (blob: Blob) => Promise<ImageData>;
-
-function autoSelect(
-	checkFn: featureDetector,
-	native: DecodeFunction,
-	polyfill: DecodeFunction,
-): DecodeFunction {
-	let bestDecodeFn: DecodeFunction;
-
-	async function choose(blob: Blob) {
-		if (await checkFn()) {
-			bestDecodeFn = native;
-		} else {
-			bestDecodeFn = polyfill;
-		}
-		return await bestDecodeFn(blob);
-	}
-
-	bestDecodeFn = choose;
-
-	return buffer => bestDecodeFn(buffer);
-}
-
-function decodeAVIFWorker(blob: Blob) {
-	const worker = newWorker();
-	return blob.arrayBuffer()
-		.then(buf => wrap<WorkerApi>(worker).avifDecode(buf))
-		.finally(() => worker.terminate());
-}
-
-function decodeWebPWorker(blob: Blob) {
-	const worker = newWorker();
-	return blob.arrayBuffer()
-		.then(buf => wrap<WorkerApi>(worker).webpDecode(buf))
-		.finally(() => worker.terminate());
-}
-
-function decodeJXLWorker(blob: Blob) {
-	const worker = newWorker();
-	return blob.arrayBuffer()
-		.then(buf => wrap<WorkerApi>(worker).jxlDecode(buf))
-		.finally(() => worker.terminate());
-}
-
-function decodeWebP2Worker(blob: Blob) {
-	const worker = newWorker();
-	return blob.arrayBuffer()
-		.then(buf => wrap<WorkerApi>(worker).webp2Decode(buf))
-		.finally(() => worker.terminate());
-}
-
-export const decodeWebP = autoSelect(detectWebPSupport, decodeImageNative, decodeWebPWorker);
-export const decodeAVIF = autoSelect(detectAVIFSupport, decodeImageNative, decodeAVIFWorker);
 
 function ensureSVGSize(svgXml: string) {
 	const parser = new DOMParser();
@@ -104,18 +47,27 @@ export async function svgToImageData(svgXml: string) {
 	return drawableToImageData(await blobToImg(blob));
 }
 
-export function decode(blob: Blob) {
-	switch (blob.type) {
-		case "image/svg+xml":
-			return blob.text().then(svgToImageData);
+export async function decode(blob: Blob, worker?: Remote<WorkerApi>) {
+	const { type } = blob;
+
+	if (type === "image/svg+xml") {
+		return blob.text().then(svgToImageData);
+	}
+	if (await canDecodeImageType(type)) {
+		return decodeImageNative(blob);
+	}
+
+	worker ??= wrap<WorkerApi>(newWorker());
+	const buffer = await blob.arrayBuffer();
+	switch (type) {
 		case "image/webp":
-			return decodeWebP(blob);
+			return worker.webpDecode(buffer);
 		case "image/avif":
-			return decodeAVIF(blob);
+			return worker.avifDecode(buffer);
 		case "image/jxl":
-			return decodeJXLWorker(blob);
+			return worker.jxlDecode(buffer);
 		case "image/webp2":
-			return decodeWebP2Worker(blob);
+			return worker.webp2Decode(buffer);
 		default:
 			return decodeImageNative(blob);
 	}

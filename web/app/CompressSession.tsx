@@ -99,23 +99,25 @@ export default function CompressSession(props: CompressSessionProps) {
 			setEncoder(worker);
 			await worker.initialize();
 
+			// Warmup workers to avoid disturbance of initialize time
+			if (measure.time) {
+				for (const [encoder, optionsList] of queue) {
+					await worker.pool.runOnEach(async remote => {
+						return encoder.encode(remote, optionsList[0]).then(progress.increase);
+					});
+				}
+			}
+
 			for (const [encoder, optionsList] of queue) {
 				const oMap: OptionsToResult = {};
 				eMap[encoder.name] = oMap;
 
-				// Warmup workers to avoid disturbance of initialize time
-				if (measure.time) {
-					await worker.pool.runOnEach(async remote => {
-						await encoder.encode(optionsList[0], remote);
-						progress.increase();
-					});
-				}
-
 				for (let i = 0; i < optionsList.length; i++) {
 					const options = optionsList[i];
-					oMap[JSON.stringify(options)] = await worker.encode(encoder, options);
+					worker.encode(encoder, options).then(o => oMap[JSON.stringify(options)] = o);
 				}
 			}
+			await worker.pool.join();
 			worker.terminate();
 			setEncoder(undefined);
 		} catch (e) {

@@ -9,23 +9,26 @@ interface WorkerJob<T> {
 	resolve: (value: any) => void;
 }
 
-export class WorkerPool<T> {
+// Is a worker pool necessary? Multiple consumer cycles can also works.
+export default class WorkerPool<T> {
 
 	private readonly queue: WorkerJob<T>[] = [];
 
+	private readonly waiters: Array<() => void> = [];
+
 	// Track workers for terminate
-	private readonly workers: Worker[] = [];
+	private readonly workers: Worker[];
 
-	private readonly remotes: Remote<T>[] = [];
+	private readonly remotes: Remote<T>[];
 
-	constructor(factory: WorkerFactory, count: number) {
-		if (count < 1) {
+	constructor(factory: WorkerFactory, size: number) {
+		if (size < 1) {
 			throw new Error("Worker count must be at least 1");
 		}
-		this.workers = new Array(count);
-		this.remotes = new Array(count);
+		this.workers = new Array(size);
+		this.remotes = new Array(size);
 
-		for (let i = 0; i < count; i++) {
+		for (let i = 0; i < size; i++) {
 			const worker = factory();
 			this.workers[i] = worker;
 			this.remotes[i] = wrap<T>(worker);
@@ -45,6 +48,14 @@ export class WorkerPool<T> {
 		return new Promise<R>(resolve => this.addJob({ task, resolve }));
 	}
 
+	join() {
+		const { queue, remotes, workers, waiters } = this;
+		if (queue.length === 0 && remotes.length === workers.length) {
+			return Promise.resolve();
+		}
+		return new Promise<void>(resolve => waiters.push(resolve));
+	}
+
 	private addJob(job: WorkerJob<T>) {
 		const remote = this.remotes.pop();
 		if (!remote) {
@@ -54,15 +65,19 @@ export class WorkerPool<T> {
 		}
 	}
 
-	private async runJob(remote: Remote<T>, job: WorkerJob<T>) {
+	private async runJob(remote: Remote<T>, job: WorkerJob<T>): Promise<void> {
 		const { task, resolve } = job;
 		resolve(await task(remote));
 
 		const next = this.queue.pop();
-		if (!next) {
-			this.remotes.push(remote);
-		} else {
-			await this.runJob(remote, next);
+		if (next) {
+			return this.runJob(remote, next);
+		}
+
+		const { remotes, workers, waiters } = this;
+		remotes.push(remote);
+		if (remotes.length === workers.length) {
+			waiters.splice(0, waiters.length).forEach(resolve => resolve());
 		}
 	}
 

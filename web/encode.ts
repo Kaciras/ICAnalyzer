@@ -2,7 +2,7 @@ import { Remote } from "comlink";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
-import { WorkerPool } from "./WorkerPool";
+import WorkerPool from "./WorkerPool";
 import { SSIMOptions } from "../lib/similarity";
 
 export interface ButteraugliConfig {
@@ -65,7 +65,7 @@ export class BatchEncodeAnalyzer {
 		await this.pool.runOnEach(remote => remote.setImageToEncode(this.image));
 	}
 
-	async encode(encoder: ImageEncoder, options: any): Promise<ConvertOutput> {
+	encode(encoder: ImageEncoder, options: any) {
 		return this.pool.run(remote => this.poll(remote, encoder, options));
 	}
 
@@ -76,11 +76,11 @@ export class BatchEncodeAnalyzer {
 	private async poll(remote: Remote<WorkerApi>, encoder: ImageEncoder, options: any) {
 		const { buffer, time } = await encoder.encode(options, remote);
 		const blob = new Blob([buffer], { type: encoder.mimeType });
-		const data = await decode(blob);
+		const data = await decode(blob, remote);
 		this.onProgress();
 
 		const metrics = await this.measure(remote, data);
-		return { time, buffer, data, metrics };
+		return { time, buffer, data, metrics } as ConvertOutput;
 	}
 
 	async measure(wrapper: Remote<WorkerApi>, data: ImageData) {
