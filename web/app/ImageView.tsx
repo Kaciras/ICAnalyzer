@@ -1,10 +1,10 @@
 import { CSSProperties, Dispatch, RefObject, useEffect, useRef, useState } from "react";
-import { IconButton, NumberInput, PinchZoom } from "../ui";
+import { Button, NumberInput, PinchZoom } from "../ui";
 import { PinchZoomState } from "../ui/PinchZoom";
-import { IconButtonProps } from "../ui/IconButton";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
 import styles from "./ImageView.scss";
+import { ButtonProps } from "../ui/Button";
 
 export enum ViewType {
 	Original,
@@ -72,21 +72,22 @@ export default function ImageView(props: ImageViewProps) {
 	useEffect(refreshBottomCanvas, [original]);
 	useEffect(refreshTopCanvas, [type, output]);
 
-	interface ImageViewTabProps extends IconButtonProps {
+	interface ImageViewTabProps extends ButtonProps {
 		target: ViewType;
 	}
 
 	function ImageViewTab(props: ImageViewTabProps) {
 		const { children, target, disabled, title } = props;
 		return (
-			<IconButton
+			<Button
+				type="text"
 				active={type === target}
 				disabled={disabled}
 				title={title}
 				onClick={() => setType(target)}
 			>
 				{children}
-			</IconButton>
+			</Button>
 		);
 	}
 

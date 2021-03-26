@@ -1,3 +1,37 @@
+.text {
+	display: inline-flex;
+	padding: 10px;
+	color: inherit;
+
+	// Avoid +1px height for <a> on chrome
+	line-height: 1;
+
+	&:hover, &:focus-visible {
+		background: rgba(255, 255, 255, .2);
+	}
+
+	&:focus-visible {
+		outline: 1px white dotted;
+	}
+
+	&:active {
+		background: rgba(255, 255, 255, .15);
+	}
+
+	&.active {
+		color: #08c5ff;
+	}
+
+	// <a> does not support :enabled
+	&[disabled] {
+		color: #999;
+
+		&:hover, &:active {
+			background: none;
+		}
+	}
+}
+
 $stripeWidth: 32px;
 
 .button {
@@ -14,13 +48,17 @@ $stripeWidth: 32px;
 	align-items: center;
 	letter-spacing: .5px;
 
+	text-decoration: none;
+
 	&:hover {
+		text-decoration: none;
 		background-color: var(--color-light);
 	}
 
 	&:focus-visible {
+		text-decoration: none;
 		outline: none;
-		box-shadow: 0 0 0 4px var(--color-outline);
+		box-shadow: 0 0 0 5px var(--color-outline);
 	}
 
 	&:disabled {
@@ -30,13 +68,27 @@ $stripeWidth: 32px;
 	}
 }
 
+.outline {
+	composes: button;
+
+	background-color: transparent;
+	color: var(--color-light);
+	border: solid 1px var(--color-light);
+
+	&:hover {
+		color: white;
+		background-color: var(--color);
+		border-color: var(--color);
+	}
+}
+
 :global(.second) {
 	--color: #e10199;
 	--color-light: #f525af;
 	--color-outline: rgba(242, 0, 166, .4);
 }
 
-.busy {
+.button.active {
 	&, &:hover {
 		background-color: var(--color);
 		background-size: $stripeWidth $stripeWidth;

@@ -147,7 +147,7 @@ export default function SelectFileDialog(props: Props) {
 			</div>
 			<div className="dialog-actions">
 				<span className={styles.error}>{error}</span>
-				<Button color="second" onClick={onCancel}>Back</Button>
+				<Button className="second" onClick={onCancel}>Back</Button>
 			</div>
 		</Dialog>
 	);

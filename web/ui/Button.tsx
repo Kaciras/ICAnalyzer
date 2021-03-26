@@ -2,35 +2,41 @@ import { MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
 import styles from "./Button.scss";
 
-interface Props {
+export interface ButtonProps {
+	type?: "button" | "text" | "outline";
+	href?: string;
+	active?: boolean;
+
 	title?: string;
 	className?: string;
 	disabled?: boolean;
-	color?: string;
-	busy?: boolean;
+
 	onClick?: MouseEventHandler;
 	children?: ReactNode;
 }
 
-export default function Button(props: Props) {
-	const { className, children, title, disabled, color, busy, onClick } = props;
+export default function Button(props: ButtonProps) {
+	const { type = "button", href, active, title, className, disabled, onClick, children } = props;
 
 	const classes = clsx(
-		styles.button,
+		styles[type],
 		className,
-		color,
-		{ [styles.busy]: busy },
+		{ [styles.active]: active },
 	);
 
+	const ButtonTag = href ? "a" : "button";
+	const htmlType = href ? undefined : "button";
+
 	return (
-		<button
+		<ButtonTag
 			className={classes}
+			href={href}
 			title={title}
 			disabled={disabled}
-			type="button"
+			type={htmlType}
 			onClick={onClick}
 		>
 			{children}
-		</button>
+		</ButtonTag>
 	);
 }

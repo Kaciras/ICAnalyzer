@@ -1,4 +1,4 @@
-import { Button, IconButton } from "../ui";
+import { Button } from "../ui";
 import styles from "./IntroPage.scss";
 import GitHubIcon from "../assets/github-logo.svg";
 import banner from "../assets/intro-banner.png";
@@ -17,19 +17,23 @@ export default function IntroPage(props: IntroPageProps) {
 
 				<div>
 					<h1 className={styles.title}>ICAnalyze</h1>
+					<h2>Image Codec & Quality analyze tool</h2>
+
 					<Button
+						type="outline"
 						className={styles.bigButton}
 						onClick={onStart}
 					>
 						Try it!
 					</Button>
-					<IconButton
+					<Button
+						type="outline"
+						className={styles.bigButton + " second"}
 						href="https://github.com/Kaciras/ICAnalyze"
-						className={styles.bigButton}
 					>
 						<GitHubIcon/>
 						Source Code
-					</IconButton>
+					</Button>
 				</div>
 
 				<div className={styles.unsplash}>

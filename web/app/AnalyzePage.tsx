@@ -3,7 +3,7 @@ import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
-import { IconButton } from "../ui";
+import { Button } from "../ui";
 import { ENCODER_MAP, ENCODERS, EncoderState, ImageEncoder } from "../codecs";
 import { Result } from "./index";
 import ImageView from "./ImageView";
@@ -44,13 +44,14 @@ function DownloadButton(props: DownloadButtonProps) {
 	}
 
 	return (
-		<IconButton
+		<Button
 			className={styles.iconButton}
+			type="text"
 			title={title}
 			onClick={downloadImage}
 		>
 			{children}
-		</IconButton>
+		</Button>
 	);
 }
 
@@ -197,28 +198,31 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			/>
 
 			<div className={styles.buttonGroup}>
-				<IconButton
+				<Button
 					title="Back"
+					type="text"
 					className={styles.iconButton}
 					onClick={onClose}
 				>
 					<CloseIcon/>
-				</IconButton>
-				<IconButton
+				</Button>
+				<Button
 					title="Select an image"
+					type="text"
 					className={styles.iconButton}
 					onClick={onStart}
 				>
 					<UploadIcon/>
-				</IconButton>
-				<IconButton
+				</Button>
+				<Button
 					title="Show chart"
+					type="text"
 					className={styles.iconButton}
 					active={showChart}
 					onClick={() => setShowChart(!showChart)}
 				>
 					<ChartIcon/>
-				</IconButton>
+				</Button>
 				<DownloadButton
 					title="Download compressed image"
 					filename={original.file.name}
