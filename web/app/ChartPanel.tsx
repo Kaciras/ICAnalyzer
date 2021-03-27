@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Highcharts, { Chart, Options, SeriesLineOptions } from "highcharts";
+import { useEffect, useMemo, useState } from "react";
+import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import { ConvertOutput } from "../encode";
@@ -9,33 +9,46 @@ import styles from "./ChartPanel.scss";
 Export(Highcharts);
 ExportOffline(Highcharts);
 
-function toSeries(original: InputImage, outputs: ConvertOutput[]) {
-	const series: SeriesLineOptions[] = [];
-	let index = 0;
+type MapFn = (output: ConvertOutput) => number | undefined;
 
-	function tryAddSeries(name: string, fn: (output: ConvertOutput) => number | undefined) {
-		if (fn(outputs[0]) === undefined) {
-			return;
+class SeriesMapper {
+
+	private readonly mapping: MapFn[] = [];
+	private readonly divisor: number;
+
+	readonly labels: string[] = [];
+
+	constructor(original: InputImage, outputs: ConvertOutput[]) {
+		this.divisor = original.file.size / 100;
+
+		const { labels, mapping, divisor } = this;
+		const [output] = outputs;
+
+		function define(name: string, fn: MapFn) {
+			if (fn(output) !== undefined) {
+				mapping.push(fn);
+				labels.push(name);
+			}
 		}
-		const data = outputs.map(fn) as number[];
-		series.push({ name, type: "line", data, yAxis: index++ });
+
+		define("Compression Ratio %", v => v.buffer.byteLength / divisor);
+		define("Encode Time (ms)", v => v.time);
+		define("SSIM", v => v.metrics.SSIM);
+		define("PSNR (db)", v => v.metrics.PSNR);
+		define("Butteraugli Source", v => v.metrics.butteraugli?.source);
 	}
 
-	const divisor = original.file.size / 100;
-	tryAddSeries("Compression Ratio %", v => v.buffer.byteLength / divisor);
-	tryAddSeries("Encode Time (ms)", v => v.time);
-	tryAddSeries("SSIM", v => v.metrics.SSIM);
-	tryAddSeries("PSNR (db)", v => v.metrics.PSNR);
-	tryAddSeries("Butteraugli Source", v => v.metrics.butteraugli?.source);
-
-	return series;
+	convert(outputs: ConvertOutput[]) {
+		return this.mapping.map(fn => outputs.map(output => fn(output)!));
+	}
 }
 
 function handleMouseover(chart: Chart, i: number) {
 	chart.yAxis.forEach((axis, j) => {
 		if (j === 0) return;
-		axis.update({ visible: i === j });
+		axis.update({ visible: i === j }, false);
 	});
+	chart.redraw();
 }
 
 function addSeriesListener(chart: Chart) {
@@ -65,28 +78,44 @@ export default function ChartPanel(props: ChartProps) {
 
 	const [chart, setChart] = useState<Chart>();
 
+	const mapper = useMemo(() => new SeriesMapper(original, outputs), [original]);
+
 	function initHighcharts(el: HTMLDivElement | null) {
 		if (!el || chart) {
 			return;
 		}
-		const series = toSeries(original, outputs);
 
-		const yAxis = series.map(s => ({
-			title: {
-				text: s.name,
-			},
-			visible: false,
-			opposite: true,
-		}));
+		const data = mapper.convert(outputs);
+		const series = new Array<SeriesLineOptions>(data.length);
+		const yAxis = new Array<YAxisOptions>(data.length);
 
-		const [left, right] = yAxis;
+		for (let i = 0; i < data.length; i++) {
+			const name = mapper.labels[i];
+			series[i] = {
+				name,
+				type: "line",
+				data: data[i],
+				yAxis: i,
+			};
+			yAxis[i] = {
+				title: {
+					text: name,
+				},
+				visible: false,
+				opposite: true,
+			};
+		}
+
+		const [left, firstRight] = yAxis;
 		left.visible = true;
 		left.opposite = false;
-		if (right) {
-			right.visible = true;
+		if (firstRight) {
+			firstRight.visible = true;
 		}
 
 		const options: Options = {
+			series,
+			yAxis,
 			chart: {
 				animation: false,
 				styledMode: true,
@@ -122,8 +151,6 @@ export default function ChartPanel(props: ChartProps) {
 					},
 				},
 			},
-			yAxis,
-			series,
 		};
 		setChart(Highcharts.chart(el, options, instance => {
 			addSeriesListener(instance);
@@ -132,9 +159,9 @@ export default function ChartPanel(props: ChartProps) {
 	}
 
 	function updateSeriesData(chart: Chart) {
-		const series = toSeries(original, outputs);
-		chart.xAxis[0].setCategories(values);
-		chart.series.forEach((s, i) => s.setData(series[i].data!));
+		const data = mapper.convert(outputs);
+		chart.xAxis[0].setCategories(values, false);
+		chart.series.forEach((s, i) => s.setData(data[i], false));
 	}
 
 	function updatePlotLine(chart: Chart) {
