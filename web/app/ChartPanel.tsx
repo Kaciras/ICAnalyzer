@@ -5,6 +5,8 @@ import ExportOffline from "highcharts/modules/offline-exporting";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
 import styles from "./ChartPanel.scss";
+import { Button } from "../ui";
+import LockIcon from "../assets/lock.svg";
 
 Export(Highcharts);
 ExportOffline(Highcharts);
@@ -77,6 +79,7 @@ export default function ChartPanel(props: ChartProps) {
 	const { visible, original, outputs, index, values } = props;
 
 	const [chart, setChart] = useState<Chart>();
+	const [locked, setLocked] = useState<boolean>(false);
 
 	const mapper = useMemo(() => new SeriesMapper(original, outputs), [original]);
 
@@ -179,7 +182,7 @@ export default function ChartPanel(props: ChartProps) {
 				const value = options.data[index];
 				let displayValue;
 
-				switch (value){
+				switch (value) {
 					case +Infinity:
 						displayValue = "∞";
 						break;
@@ -199,11 +202,33 @@ export default function ChartPanel(props: ChartProps) {
 	useEffect(() => chart && updateSeriesData(chart), [outputs]);
 	useEffect(() => chart && updatePlotLine(chart));
 
+	function handleLockChange() {
+		if (locked) {
+			const clear = { min: null, max: null };
+			chart!.yAxis.forEach(y => y.update(clear, false));
+			setLocked(false);
+		} else {
+			const rx = chart!.yAxis.map(y => ({ min: y.min!, max: y.max! }));
+			setLocked(true);
+			chart!.yAxis.forEach((y, i) => y.update(rx[i], false));
+		}
+		chart!.redraw();
+	}
+
 	// High cost of rendering chart, so keep the element
 	const display = visible ? {} : { display: "none" };
 
 	return (
 		<section className={styles.container} style={display}>
+			<Button
+				title="Lock Y axis range"
+				type="text"
+				className={styles.lock}
+				active={locked}
+				onClick={handleLockChange}
+			>
+				<LockIcon/>
+			</Button>
 			<div className={styles.chart} ref={initHighcharts}/>
 		</section>
 	);
