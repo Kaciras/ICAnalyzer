@@ -175,9 +175,22 @@ export default function ChartPanel(props: ChartProps) {
 
 		chart.legend.update({
 			labelFormatter() {
-				const { name, yData } = this as any;
-				const v = yData[index].toFixed(2);
-				return `<span>${name}: </span><b>${v}<br/>`;
+				const { name, options } = this as any;
+				const value = options.data[index];
+				let displayValue;
+
+				switch (value){
+					case +Infinity:
+						displayValue = "∞";
+						break;
+					case -Infinity:
+						displayValue = "-∞";
+						break;
+					default:
+						displayValue = value.toFixed(2);
+						break;
+				}
+				return `<span>${name}: </span><b>${displayValue}<br/>`;
 			},
 		});
 		addLegendListener(chart);
