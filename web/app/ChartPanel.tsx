@@ -136,15 +136,17 @@ export default function ChartPanel(props: ChartProps) {
 				categories: values,
 
 				// Avoid layout shift on Y axis changes
-				width: 420,
+				width: 430,
 			},
 			exporting: {
 				buttons: {
 					contextButton: {
+						y: 5,
+						x: -5,
 						height: 32,
-						width: 35,
+						width: 32,
 						symbolSize: 16,
-						symbolX: 18,
+						symbolX: 17,
 						symbolY: 16,
 					},
 				},
@@ -208,9 +210,8 @@ export default function ChartPanel(props: ChartProps) {
 			chart!.yAxis.forEach(y => y.update(clear, false));
 			setLocked(false);
 		} else {
-			const rx = chart!.yAxis.map(y => ({ min: y.min!, max: y.max! }));
 			setLocked(true);
-			chart!.yAxis.forEach((y, i) => y.update(rx[i], false));
+			chart!.yAxis.forEach(y => y.update({ min: y.min, max: y.max }), false);
 		}
 		chart!.redraw();
 	}
