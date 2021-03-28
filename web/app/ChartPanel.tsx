@@ -34,7 +34,7 @@ class SeriesMapper {
 		}
 
 		define("Compression Ratio %", v => v.buffer.byteLength / divisor);
-		define("Encode Time (ms)", v => v.time);
+		define("Encode Time (s)", v => v.time);
 		define("SSIM", v => v.metrics.SSIM);
 		define("PSNR (db)", v => v.metrics.PSNR);
 		define("Butteraugli Source", v => v.metrics.butteraugli?.source);

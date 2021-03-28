@@ -21,7 +21,7 @@ function bindEncoder<T>(module: CodecModule<T>) {
 		const start = performance.now();
 		const buffer = await module.encode(data, options);
 		const end = performance.now();
-		return { buffer, time: end - start };
+		return { buffer, time: (end - start) / 1000 };
 	};
 }
 
