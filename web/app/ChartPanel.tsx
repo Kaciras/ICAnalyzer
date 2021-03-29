@@ -131,6 +131,10 @@ export default function ChartPanel(props: ChartProps) {
 			},
 			legend: {
 				verticalAlign: "top",
+				width: 450,
+
+				// Since legend item vary widely in width, disable align to use space more efficiently
+				alignColumns: false,
 			},
 			xAxis: {
 				categories: values,
@@ -195,7 +199,7 @@ export default function ChartPanel(props: ChartProps) {
 						displayValue = value.toFixed(2);
 						break;
 				}
-				return `<span>${name}: </span><b>${displayValue}<br/>`;
+				return `${name}: <b>${displayValue}</b>`;
 			},
 		});
 		addLegendListener(chart);

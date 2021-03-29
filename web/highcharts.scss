@@ -126,7 +126,7 @@ $scrollbar-track-border: #404043;
 }
 
 .highcharts-menu {
-	background: #111;
+	background: #222;
 	box-shadow: none;
 }
 
@@ -137,5 +137,5 @@ $scrollbar-track-border: #404043;
 
 // https://stackoverflow.com/a/63055006
 .exporting_chart_class .highcharts-background {
-	fill: black;
+	fill: #222;
 }
