@@ -12,6 +12,8 @@ interface WorkerJob<T> {
 // Is a worker pool necessary? Multiple consumer cycles can also works.
 export default class WorkerPool<T> {
 
+	terminated = false;
+
 	private readonly queue: WorkerJob<T>[] = [];
 
 	private readonly waiters: Array<() => void> = [];
@@ -56,6 +58,12 @@ export default class WorkerPool<T> {
 		return new Promise<void>(resolve => waiters.push(resolve));
 	}
 
+	terminate() {
+		this.terminated = true;
+		this.workers.forEach(worker => worker.terminate());
+		this.waiters.forEach(resolve => resolve());
+	}
+
 	private addJob(job: WorkerJob<T>) {
 		const remote = this.remotes.pop();
 		if (!remote) {
@@ -79,9 +87,5 @@ export default class WorkerPool<T> {
 		if (remotes.length === workers.length) {
 			waiters.splice(0, waiters.length).forEach(resolve => resolve());
 		}
-	}
-
-	terminate() {
-		this.workers.forEach(worker => worker.terminate());
 	}
 }

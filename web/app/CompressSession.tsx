@@ -91,12 +91,12 @@ export default function CompressSession(props: CompressSessionProps) {
 		progress.reset(outputSize * calculations + warmup);
 
 		const eMap: EncoderNameToOptions = {};
-		let worker: BatchEncodeAnalyzer | null = null;
-		try {
-			worker = new BatchEncodeAnalyzer(image, measure);
-			worker.onProgress = progress.increase;
+		const worker = new BatchEncodeAnalyzer(image, measure);
 
-			setEncoder(worker);
+		setEncoder(worker);
+		worker.onProgress = progress.increase;
+
+		try {
 			await worker.initialize();
 
 			// Warmup workers to avoid disturbance of initialize time
@@ -118,21 +118,22 @@ export default function CompressSession(props: CompressSessionProps) {
 				}
 			}
 			await worker.pool.join();
-			worker.terminate();
-			setEncoder(undefined);
+
+			if (!worker.pool.terminated) {
+				setEncoder(undefined);
+				onChange({ config, map: eMap, original: { file, data: image! } });
+			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
-			worker?.terminate();
 			console.error(e);
 			setError(e.message);
 		}
 
-		onChange({ config, map: eMap, original: { file, data: image! } });
+		worker.terminate();
 	}
 
 	function stop() {
 		encoder!.terminate();
-		setEncoder(undefined);
 	}
 
 	if (!open) {
