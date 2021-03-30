@@ -7,7 +7,7 @@ import styles from "./SwitchButton.scss";
 export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
 
 export default function SwitchButton(props: SwitchButtonProps) {
-	const { className, name, checked, disabled, onChange = NOOP, onValueChange = NOOP } = props;
+	const { className, name, checked, disabled, onClick, onChange = NOOP, onValueChange = NOOP } = props;
 
 	const clazz = clsx(
 		styles.container,
@@ -28,6 +28,7 @@ export default function SwitchButton(props: SwitchButtonProps) {
 				disabled={disabled}
 				checked={checked}
 				name={name}
+				onClick={onClick}
 				onChange={handleChange}
 			/>
 		</label>

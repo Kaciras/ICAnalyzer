@@ -1,5 +1,5 @@
-import type { ControlFieldProps, OptionFieldProps, OptionType } from ".";
-import { CheckBox, SwitchButton } from "../ui";
+import type { ControllerProps, OptionFieldProps, OptionType } from ".";
+import { CheckBox, ControlField, SwitchButton } from "../ui";
 import styles from "./BoolOption.scss";
 
 interface Metadata {
@@ -19,18 +19,18 @@ export default function boolOption(data: Metadata): OptionType<boolean, undefine
 		return [Boolean(defaultValue), undefined] as [boolean, never];
 	}
 
-	function ControlField(props: ControlFieldProps<boolean, never>) {
-		const { value, onChange, onFocus } = props;
+	function Controller(props: ControllerProps<boolean, never>) {
+		const { value, onChange } = props;
 
 		return (
-			<label onClick={onFocus}>
-				<CheckBox
+			<ControlField {...props} className={styles.control}>
+				{label}
+				<SwitchButton
 					checked={value}
 					onValueChange={onChange}
-				>
-					{label}
-				</CheckBox>
-			</label>
+					onClick={e => e.stopPropagation()}
+				/>
+			</ControlField>
 		);
 	}
 
@@ -62,5 +62,5 @@ export default function boolOption(data: Metadata): OptionType<boolean, undefine
 		return [{ ...options, [id]: false }, { ...options, [id]: true }];
 	}
 
-	return { id, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
+	return { id, initControlValue, newOptionState, Controller, OptionField, populate, generate };
 }

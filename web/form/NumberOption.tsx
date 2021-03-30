@@ -1,5 +1,5 @@
-import type { ControlFieldProps, OptionFieldProps, OptionType } from ".";
-import { CheckBox, NumberInput, RangeInput } from "../ui";
+import type { ControllerProps, OptionFieldProps, OptionType } from ".";
+import { CheckBox, ControlField, NumberInput, RangeInput } from "../ui";
 import styles from "./NumberOption.scss";
 
 interface NumberRange {
@@ -34,12 +34,12 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		return [defaultValue, { min, max, step }] as [number, NumberRange];
 	}
 
-	function ControlField(props: ControlFieldProps<number, NumberRange>) {
-		const { value, range, onChange, onFocus } = props;
+	function Controller(props: ControllerProps<number, NumberRange>) {
+		const { value, range, onChange } = props;
 		const { min, max, step } = range;
 
 		return (
-			<label className={styles.fieldset} onClick={onFocus}>
+			<ControlField {...props}>
 				<div className={styles.header}>
 					<span className={styles.label}>{label}</span>
 					{value}
@@ -50,9 +50,10 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 					min={min}
 					max={max}
 					step={step}
+					onClick={e => e.stopPropagation()}
 					onValueChange={onChange}
 				/>
-			</ControlFieldWrapper>
+			</ControlField>
 		);
 	}
 
@@ -142,5 +143,5 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		return sequence(range).map(value => ({ ...options, [id]: value }));
 	}
 
-	return { id, initControlValue, newOptionState, ControlField, OptionField, populate, generate };
+	return { id, initControlValue, newOptionState, Controller, OptionField, populate, generate };
 }

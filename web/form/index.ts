@@ -10,7 +10,8 @@ export interface OptionFieldProps<T, V> {
 	onRangeChange: Dispatch<V>;
 }
 
-export interface ControlFieldProps<T, V> {
+export interface ControllerProps<T, V> {
+	active: boolean;
 	value: T;
 	range: V;
 	onChange: Dispatch<T>;
@@ -28,7 +29,7 @@ export interface OptionType<T = any, V = any> {
 
 	initControlValue(state: V): ControlInit<T>;
 
-	ControlField(props: ControlFieldProps<T, V>): JSX.Element;
+	Controller(props: ControllerProps<T, V>): JSX.Element;
 
 	newOptionState(): [T, V];
 

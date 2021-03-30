@@ -1,5 +1,5 @@
-import { ChangeEvent, Dispatch, SetStateAction } from "react";
-import { ControlFieldWrapper, SelectBox } from "../ui";
+import { ChangeEvent, Dispatch } from "react";
+import { ControlField, SelectBox } from "../ui";
 import { ENCODER_MAP, ENCODERS } from "../codecs";
 import { AnalyzeConfig } from "./ConfigDialog";
 import { ControlState, Step } from "./AnalyzePage";
@@ -8,7 +8,7 @@ import styles from "./ControlPanel.scss";
 export interface ControlPanelProps {
 	config: AnalyzeConfig;
 	value: ControlState
-	onChange: Dispatch<ControlState | SetStateAction<ControlState>>;
+	onChange: Dispatch<Partial<ControlState>>;
 }
 
 export default function ControlPanel(props: ControlPanelProps) {
@@ -20,18 +20,17 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	function handleCodecChange(e: ChangeEvent<HTMLSelectElement>) {
-		const { value } = e.currentTarget;
-		onChange(prev => ({ ...prev, encoderName: value }));
+		onChange({ encoderName: e.currentTarget.value });
 	}
 
 	function handleVarChange(variableType: Step, variableName: string) {
-		onChange(prev => ({ ...prev, variableType, variableName }));
+		onChange({ variableType, variableName });
 	}
 
 	function handleValueChange(values: Record<string, unknown>) {
 		const { varNames, ranges, labels } = encoderState[encoderName];
 		const es = { ...encoderState, [encoderName]: { varNames, values, ranges, labels } };
-		onChange(prev => ({ ...prev, encoderState: es }));
+		onChange({ encoderState: es });
 	}
 
 	const Encoder = ENCODER_MAP[encoderName];
@@ -48,7 +47,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 			/>
 			{
 				selectOptions.length > 1 &&
-				<ControlFieldWrapper
+				<ControlField
 					active={variableType === Step.Encoder}
 					onFocus={() => handleVarChange(Step.Encoder, "Encoder")}
 				>
@@ -58,7 +57,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 					>
 						{selectOptions}
 					</SelectBox>
-				</ControlFieldWrapper>
+				</ControlField>
 			}
 		</form>
 	);

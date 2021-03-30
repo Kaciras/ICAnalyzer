@@ -1,4 +1,4 @@
-import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch } from "react";
+import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch, MouseEventHandler } from "react";
 import { NOOP } from "../utils";
 import styles from "./RangeInput.scss";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ interface RangeInputProps {
 	name?: string;
 	disabled?: boolean;
 
+	onClick?: MouseEventHandler<HTMLInputElement>;
 	onValueChange?: Dispatch<number>;
 	onChange?: ChangeEventHandler<HTMLInputElement>;
 }
@@ -22,7 +23,8 @@ interface RangeInputCSS extends CSSProperties {
 }
 
 export default function RangeInput(props: RangeInputProps) {
-	const { className, name, value, min, max, step, disabled, onChange = NOOP, onValueChange = NOOP } = props;
+	const { className, name, value, min, max, step, disabled,
+		onClick, onChange = NOOP, onValueChange = NOOP } = props;
 
 	const percent = (value - min) / (max - min);
 	const cssVariables: RangeInputCSS = {
@@ -48,11 +50,11 @@ export default function RangeInput(props: RangeInputProps) {
 				min={min}
 				max={max}
 				step={step}
+				onClick={onClick}
 				onChange={handleChange}
 			/>
-
 			<div className={styles.thumbRegion}>
-				<span className={styles.thumb}/>
+				<div className={styles.thumb}/>
 			</div>
 		</div>
 	);

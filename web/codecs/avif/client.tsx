@@ -153,15 +153,16 @@ export function Controls(props: ControlProps) {
 
 	const fields = templates
 		.filter(t => varNames.includes(t.id))
-		.map(({ id, ControlField }) => {
+		.map(({ id, Controller }) => {
 
 			function handleChange(nval: any) {
 				onVariableChange(id);
 				onChange({ ...values, [id]: nval });
 			}
 
-			return <ControlField
+			return <Controller
 				key={id}
+				active={id === variableName}
 				value={values[id]}
 				range={ranges[id]}
 				onFocus={() => onVariableChange(id)}

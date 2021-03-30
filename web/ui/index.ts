@@ -19,4 +19,4 @@ export { default as Dialog } from "./Dialog";
 export { default as PinchZoom } from "./PinchZoom";
 export { default as SelectBox } from "./SelectBox";
 export { default as SwitchButton } from "./SwitchButton";
-export { default as ControlFieldWrapper } from "./ControlFieldWrapper";
+export { default as ControlField } from "./ControlField";

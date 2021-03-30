@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
@@ -87,27 +87,6 @@ function createTODOState(encoders: EncodingConfig): Record<string, EncoderContro
 	return rv;
 }
 
-// function getSeries(result: Result, state: ControlState, optKey: string) {
-// 	const { map } = result;
-// 	const { variableType, encoderName, encoderState, variableName } = state;
-//
-// 	switch (variableType) {
-// 		case Step.None:
-// 			return [options];
-// 		case Step.Encoder:
-// 			const optKey = JSON.stringify(options);
-// 			return Array.from(Object.values(map)).map(e => e[optKey]);
-// 		case Step.Options:
-// 			const x = map[encoderName];
-// 			const list = encoder.getOptionsList({
-// 				varNames: [variableName],
-// 				values: encoderState[encoderName].values,
-// 				ranges: encoderState[encoderName].ranges,
-// 			});
-// 			return list.map(op => x[JSON.stringify(op)]);
-// 	}
-// }
-
 interface AnalyzePageProps {
 	result: Result;
 	onStart: () => void;
@@ -140,8 +119,12 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		return { variableType, variableName, encoderName, encoderState };
 	}
 
+	function updateControlState(state: ControlState, action: Partial<ControlState>){
+		return { ...state, ...action };
+	}
+
 	const [showChart, setShowChart] = useState(true);
-	const [state, setState] = useState(createControlState);
+	const [state, setState] = useReducer(updateControlState, null, createControlState);
 
 	const { variableType, variableName, encoderName, encoderState } = state;
 
@@ -181,7 +164,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		} else {
 			return [[""], [output]];
 		}
-	}, [result, variableType, variableName]);
+	}, [options, result, variableType, variableName]);
 
 	const index = series.indexOf(output);
 
