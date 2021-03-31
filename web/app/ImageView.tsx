@@ -1,10 +1,12 @@
-import { CSSProperties, Dispatch, RefObject, useEffect, useRef, useState } from "react";
-import { Button, NumberInput, PinchZoom } from "../ui";
+import { CSSProperties, Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
+import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import { PinchZoomState } from "../ui/PinchZoom";
+import { Button, NumberInput, PinchZoom } from "../ui";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
-import styles from "./ImageView.scss";
 import { ButtonProps } from "../ui/Button";
+import styles from "./ImageView.scss";
 
 export enum ViewType {
 	Original,
@@ -20,7 +22,7 @@ interface ImageViewCSS extends CSSProperties {
 	"--brightness": string;
 }
 
-function useResettable<T>(initialState: T): [T, Dispatch<T>, () => void] {
+function useResettable<T>(initialState: T): [T, Dispatch<SetStateAction<T>>, () => void] {
 	const [value, setValue] = useState(initialState);
 	return [value, setValue, () => setValue(initialState)];
 }
@@ -97,11 +99,16 @@ export default function ImageView(props: ImageViewProps) {
 	if (type === ViewType.AbsDiff) {
 		brightnessVal = brightness;
 		brightnessInput = (
-			<label className={styles.option}>
-				Brightness %:
+			<label
+				title="Brightness %"
+				className={styles.option}
+			>
+				<BrightnessIcon className={styles.icon}/>
 				<NumberInput
+					className={styles.darkNumberInput}
 					value={brightness}
 					min={100}
+					max={25500}
 					step={50}
 					onValueChange={setBrightness}
 				/>
@@ -122,8 +129,35 @@ export default function ImageView(props: ImageViewProps) {
 	const noHeatMap = !output.metrics.butteraugli;
 	const heatMapTitle = noHeatMap ? "Require enable butteraugli" : undefined;
 
+	function setZoom(value: number) {
+		setPinchZoom(prev => ({ ...prev, scale: value / 100 }));
+	}
+
 	return (
 		<div className={styles.container}>
+			<PinchZoom
+				className={styles.imageView}
+				state={pinchZoom}
+				onChange={setPinchZoom}
+			>
+				<div className={styles.wrapper} style={wrapperCss}>
+					<canvas
+						className={styles.canvas}
+						ref={backCanvas}
+						width={width}
+						height={height}
+					/>
+					<canvas
+						className={styles.canvas}
+						ref={topCanvas}
+						width={width}
+						height={height}
+						style={{ mixBlendMode }}
+						hidden={type === ViewType.Original}
+					/>
+				</div>
+			</PinchZoom>
+
 			<div className={styles.inputs}>
 				<div>
 					<ImageViewTab
@@ -151,31 +185,26 @@ export default function ImageView(props: ImageViewProps) {
 				</div>
 				{brightnessInput}
 			</div>
-			<div className={styles.controls}>
 
+			<div className={styles.controls}>
+				<NumberInput
+					title="Zoom scale"
+					min={25}
+					step={1}
+					increment={25}
+					className={styles.zoomInput}
+					value={Math.round(pinchZoom.scale * 100)}
+					onValueChange={setZoom}
+				/>
+				<Button
+					title="Reset view"
+					type="text"
+					className={styles.button}
+					onClick={resetPinchZoom}
+				>
+					<ResetIcon/>
+				</Button>
 			</div>
-			<PinchZoom
-				className={styles.imageView}
-				state={pinchZoom}
-				onChange={setPinchZoom}
-			>
-				<div className={styles.wrapper} style={wrapperCss}>
-					<canvas
-						className={styles.canvas}
-						ref={backCanvas}
-						width={width}
-						height={height}
-					/>
-					<canvas
-						className={styles.canvas}
-						ref={topCanvas}
-						width={width}
-						height={height}
-						style={{ mixBlendMode }}
-						hidden={type === ViewType.Original}
-					/>
-				</div>
-			</PinchZoom>
 		</div>
 	);
 }

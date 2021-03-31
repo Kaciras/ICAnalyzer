@@ -1,5 +1,7 @@
-import { Dispatch } from "react";
+import { Dispatch, MouseEvent } from "react";
 import clsx from "clsx";
+import PlusIcon from "bootstrap-icons/icons/plus.svg";
+import MinusIcon from "bootstrap-icons/icons/dash.svg";
 import { NOOP } from "../utils";
 import styles from "./NumberInput.scss";
 
@@ -17,7 +19,10 @@ export interface NumberInputProps {
 	min?: number;
 	max?: number;
 	step?: number;
+	increment?: number;
 
+	inputId?: string;
+	title?: string;
 	name?: string;
 	className?: string;
 	disabled?: boolean;
@@ -27,6 +32,8 @@ export interface NumberInputProps {
 
 export default function NumberInput(props: NumberInputProps) {
 	const {
+		inputId,
+		title,
 		name,
 		className,
 		disabled,
@@ -34,10 +41,14 @@ export default function NumberInput(props: NumberInputProps) {
 		min = 0,
 		max = Number.MAX_SAFE_INTEGER,
 		step = 1,
+		increment = step,
 		onValueChange = NOOP,
 	} = props;
 
-	function handleMouseDown(diff: number) {
+	function handleMouseDown(event: MouseEvent, diff: number) {
+		if (event.button !== 0) {
+			return;
+		}
 		let timer = 0;
 		const q = Math.pow(10, getPrecision(step));
 
@@ -66,9 +77,20 @@ export default function NumberInput(props: NumberInputProps) {
 	}
 
 	return (
-		<div className={clsx(styles.container, className)}>
+		<div title={title} className={clsx(styles.container, className)}>
+			<button
+				title="Decrease"
+				type="button"
+				className={clsx(styles.button, styles.add)}
+				tabIndex={-1}
+				disabled={disabled}
+				onMouseDown={e => handleMouseDown(e, -increment)}
+			>
+				<MinusIcon/>
+			</button>
 			<input
 				type="number"
+				id={inputId}
 				className={styles.input}
 				disabled={disabled}
 				name={name}
@@ -79,19 +101,15 @@ export default function NumberInput(props: NumberInputProps) {
 				onChange={e => onValueChange(e.currentTarget.valueAsNumber)}
 			/>
 			<button
-				type="button"
-				className={clsx(styles.button, styles.plus)}
-				tabIndex={-1}
-				disabled={disabled}
-				onMouseDown={() => handleMouseDown(step)}
-			/>
-			<button
+				title="Increase"
 				type="button"
 				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
-				onMouseDown={() => handleMouseDown(-step)}
-			/>
+				onMouseDown={e => handleMouseDown(e, increment)}
+			>
+				<PlusIcon/>
+			</button>
 		</div>
 	);
 }

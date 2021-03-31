@@ -1,32 +1,35 @@
-$border-active-color: rgba(0, 191, 255, .5);
-$increment-color: #45c250;
-$decrement-color: #d23e40;
+$border-active-color: rgb(0, 128, 255, .8);
 
 .container {
-	--text-color: currentColor;
-	--border-color: #d0d5d9;
+	--border-color: #d7d7d7;
+	--button-bg: var(--border-color);
+	--border-radius: 4px;
 
 	display: inline-flex;
-	border: 1px solid var(--border-color);
 	width: 140px;
+	border-radius: var(--border-radius);
+
+	color: black;
 	background: var(--background-input);
 
 	&:focus-within {
-		border-color: $border-active-color;
 		box-shadow: 0 0 0 3px $border-active-color;
 	}
 }
 
 .input {
-	display: inline-block;
-	flex: 1;
 	-moz-appearance: textfield;
+	flex: 1;
 	min-width: 0;
-	padding: 5px;
+	padding: 5px 10px;
 
-	color: var(--text-color);
-	border: 0;
-	background: transparent;
+	border: solid 1px var(--border-color);
+	font-size: inherit;
+	font-weight: inherit;
+
+	text-align: center;
+	color: currentColor;
+	background: none;
 
 	&:focus {
 		outline: none;
@@ -40,51 +43,31 @@ $decrement-color: #d23e40;
 }
 
 .button {
-	position: relative;
-	width: 28px;
+	font-size: var(--size, 28px);
 	padding: 0;
+	line-height: 1rem;
 
-	background: none;
-	border: none;
-	border-left: solid 1px #cbcbcb;
-	outline: 0;
+	color: currentColor;
+	background-color: var(--button-bg);
 
-	cursor: pointer;
+	border: solid 1px var(--border-color);
+	border-right-width: 0;
 
-	&::before, &::after {
-		position: absolute;
-		width: 1rem;
-		height: 2px;
+	&:first-child {
+		border-radius: var(--border-radius) 0 0 var(--border-radius);
 	}
 
-	&::before {
-		content: "";
-		background-color: $decrement-color;
-		transform: translate(-50%, -50%);
-	}
-
-	&.plus::before {
-		content: "";
-		background-color: $increment-color;
-		transform: translate(-50%, -50%);
-	}
-
-	&.plus::after {
-		content: "";
-		background-color: $increment-color;
-		transform: translate(-50%, -50%) rotate(90deg)
-	}
-
-	&:active {
-		background-color: rgba(210, 62, 64, .05)
-	}
-
-	&.plus:active {
-		background-color: rgba(69, 194, 80, .05);
+	&:last-child {
+		border-radius: 0 var(--border-radius) var(--border-radius) 0;
 	}
 
 	&:disabled {
 		cursor: default;
 		background-color: rgb(227, 227, 227);
 	}
+}
+
+.input + .button {
+	border-left-width: 0;
+	border-right-width: 1px;
 }
