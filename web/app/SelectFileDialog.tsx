@@ -1,13 +1,11 @@
-import { ChangeEvent, useRef, useState } from "react";
-import clsx from "clsx";
-import ImageIcon from "bootstrap-icons/icons/image.svg";
+import { useRef, useState } from "react";
 import largePhoto from "../assets/demo/large-photo.jpg";
 import largePhotoIcon from "../assets/demo/large-photo-icon.jpg";
 import artwork from "../assets/demo/artwork.jpg";
 import artworkIcon from "../assets/demo/artwork-icon.jpg";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import colorfulText from "../assets/demo/colorful-text.png";
-import { Button, Dialog } from "../ui";
+import { Button, Dialog, FileDrop } from "../ui";
 import { getFileFromUrl } from "../utils";
 import { decode } from "../decode";
 import DemoButton from "./DemoButton";
@@ -31,47 +29,26 @@ const demos = [
 	},
 ];
 
-/**
- * dragenter & dragleave can be triggered on crossing children element boundary,
- */
-function useBoundaryCounter() {
-	const [isInArea, setInArea] = useState(false);
-	const counter = useRef(0);
-
-	function enter() {
-		setInArea(++counter.current > 0);
-	}
-
-	function leave() {
-		setInArea(--counter.current > 0);
-	}
-
-	function reset() {
-		counter.current = 0;
-		setInArea(false);
-	}
-
-	return { isInArea, enter, leave, reset };
-}
-
-const initController = new AbortController();
-
-interface Props {
+interface SelectFileDialogProps {
 	onCancel: () => void;
 	onFileChange: (file: File, image: ImageData) => void;
 }
 
-export default function SelectFileDialog(props: Props) {
+export default function SelectFileDialog(props: SelectFileDialogProps) {
 	const { onCancel, onFileChange } = props;
 
-	const boundary = useBoundaryCounter();
-	const abortController = useRef(initController);
+	const abortController = useRef(new AbortController());
 	const [error, setError] = useState("");
 
 	function accept(file: File) {
 		decode(file)
 			.then(image => onFileChange(file, image))
 			.catch(() => setError("Can not decode file as image."));
+	}
+
+	function acceptUpload(file: File) {
+		accept(file);
+		abortController.current.abort();
 	}
 
 	async function acceptUrl(url: string) {
@@ -87,59 +64,17 @@ export default function SelectFileDialog(props: Props) {
 		}
 	}
 
-	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-		abortController.current.abort();
-		const { files } = event.currentTarget;
-		if (files?.length) accept(files[0]);
-	}
-
-	function handleDrop(event: React.DragEvent) {
-		event.preventDefault();
-		boundary.reset();
-		abortController.current.abort();
-
-		const { items } = event.dataTransfer;
-		const file = items[0].getAsFile();
-
-		if (file) {
-			accept(file);
-		} else {
-			setError("The dropped item is not a file");
-		}
-	}
-
-	const demoButtons = demos.map(demo => <DemoButton {...demo} key={demo.url} onClick={acceptUrl}/>);
+	const demoButtons = demos.map(demo =>
+		<DemoButton {...demo} key={demo.url} onClick={acceptUrl}/>,
+	);
 
 	return (
 		<Dialog onClose={onCancel}>
 			<div className="dialog-content">
-				<label
-					className={clsx(styles.uploadFile, { [styles.dragging]: boundary.isInArea })}
-					tabIndex={0}
-					onDragEnter={boundary.enter}
-					onDragOver={e => e.preventDefault()}
-					onDrop={handleDrop}
-					onDragLeave={boundary.leave}
-				>
-					<div>
-						<span className={styles.icon}>
-							<ImageIcon/>
-						</span>
-						<span className={styles.text}>
-							Drag & drop
-						</span>
-					</div>
-					<div className={styles.text}>
-						Or select an image
-					</div>
-					<input
-						className={styles.fileInput}
-						name="file"
-						type="file"
-						accept="image/*"
-						onChange={handleFileChange}
-					/>
-				</label>
+				<FileDrop
+					onChange={acceptUpload}
+					onError={setError}
+				/>
 				<span className={styles.demoLabel}>
 					Or try one of these:
 				</span>

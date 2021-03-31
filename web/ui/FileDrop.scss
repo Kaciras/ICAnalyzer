@@ -1,0 +1,46 @@
+.uploadFile {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	width: 600px;
+	height: 320px;
+
+	position: relative;
+	flex: 1;
+	cursor: pointer;
+
+	border: dashed 5px #ccc;
+	transition: .2s;
+
+	&.dragging, &:focus-within, &:hover {
+		outline: none;
+		border-color: #76b3ff;
+
+		& .icon {
+			color: #da76ff;
+		}
+
+		& .text {
+			color: #4d89ff;
+		}
+	}
+}
+
+.icon {
+	font-size: 4em;
+	padding: 20px;
+	color: #ccc;
+	transition: .2s;
+}
+
+.text {
+	color: #ccc;
+	font-size: 48px;
+	transition: .2s;
+}
+
+.fileInput {
+	display: none;
+}
