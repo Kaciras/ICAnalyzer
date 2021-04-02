@@ -95,7 +95,7 @@ interface AnalyzePageProps {
 
 export default function AnalyzePage(props: AnalyzePageProps) {
 	const { result, onStart, onClose } = props;
-	const { original, config, map } = result;
+	const { original, config, outputMap } = result;
 
 	function createControlState(): ControlState {
 		const { encoders } = config;
@@ -119,7 +119,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		return { variableType, variableName, encoderName, encoderState };
 	}
 
-	function updateControlState(state: ControlState, action: Partial<ControlState>){
+	function updateControlState(state: ControlState, action: Partial<ControlState>) {
 		return { ...state, ...action };
 	}
 
@@ -136,29 +136,28 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		ranges: encoderState[encoderName].ranges,
 	});
 
-	const output = map[encoderName][JSON.stringify(options)];
+	const output = outputMap[JSON.stringify({ encoder: encoderName, options })];
 
 	const [labels, series] = useMemo(() => {
 		if (variableType === Step.Encoder) {
-			const encodings = ENCODERS.filter(e => e.name in map);
+			const encodings = ENCODERS.filter(e => e.name in config.encoders);
 			const s = encodings.map(e => {
-				const op = e.getOptionsList({
+				const [options] = e.getOptionsList({
 					varNames: [],
 					values: encoderState[e.name].values,
 					ranges: encoderState[e.name].ranges,
 				});
-				return map[e.name][JSON.stringify(op[0])];
+				return outputMap[JSON.stringify({ encoder: e.name, options })];
 			});
 			return [encodings.map(e => e.name), s];
 		} else if (variableType === Step.Options) {
-			const x = map[encoderName];
 			const list = encoder.getOptionsList({
 				varNames: [variableName],
 				values: encoderState[encoderName].values,
 				ranges: encoderState[encoderName].ranges,
 			});
 
-			const s = list.map(op => x[JSON.stringify(op)]);
+			const s = list.map(options => outputMap[JSON.stringify({ encoder: encoderName, options })]);
 			const l = encoderState[encoderName].labels[variableName];
 			return [l, s];
 		} else {

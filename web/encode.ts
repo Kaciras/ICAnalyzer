@@ -2,7 +2,6 @@ import { Remote } from "comlink";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
-import WorkerPool from "./WorkerPool";
 import { SSIMOptions } from "../lib/similarity";
 
 export interface ButteraugliConfig {
@@ -48,55 +47,30 @@ export function newWorker() {
 
 export class BatchEncodeAnalyzer {
 
-	private readonly image: ImageData;
-	private readonly measureOptions: MeasureOptions;
-
-	readonly pool: WorkerPool<WorkerApi>;
-
-	constructor(image: ImageData, measure: MeasureOptions) {
-		this.image = image;
-		this.measureOptions = measure;
-		this.pool = new WorkerPool(newWorker, measure.workerCount);
-	}
-
 	onProgress() {}
 
-	async initialize() {
-		await this.pool.runOnEach(remote => remote.setImageToEncode(this.image));
-	}
-
-	encode(encoder: ImageEncoder, options: any) {
-		return this.pool.run(remote => this.poll(remote, encoder, options));
-	}
-
-	terminate() {
-		this.pool.terminate();
-	}
-
-	private async poll(remote: Remote<WorkerApi>, encoder: ImageEncoder, options: any) {
+	async encode(remote: Remote<WorkerApi>, encoder: ImageEncoder, options: any) {
 		const { buffer, time } = await encoder.encode(options, remote);
-		const blob = new Blob([buffer], { type: encoder.mimeType });
-		const data = await decode(blob, remote);
 		this.onProgress();
 
-		const metrics = await this.measure(remote, data);
-		return { time, buffer, data, metrics } as ConvertOutput;
+		const blob = new Blob([buffer], { type: encoder.mimeType });
+		return { time, buffer, data: await decode(blob, remote) };
 	}
 
-	async measure(wrapper: Remote<WorkerApi>, data: ImageData) {
-		const { SSIM, PSNR, butteraugli } = this.measureOptions;
+	async measure(remote: Remote<WorkerApi>, data: ImageData, options: MeasureOptions) {
+		const { SSIM, PSNR, butteraugli } = options;
 		const metrics: Metrics = {};
 
 		if (PSNR) {
-			metrics.PSNR = await wrapper.calcPSNR(data);
+			metrics.PSNR = await remote.calcPSNR(data);
 			this.onProgress();
 		}
 		if (SSIM.enabled) {
-			metrics.SSIM = await wrapper.calcSSIM(data, SSIM.options);
+			metrics.SSIM = await remote.calcSSIM(data, SSIM.options);
 			this.onProgress();
 		}
 		if (butteraugli.enabled) {
-			const [source, raw] = await wrapper.calcButteraugli(data, butteraugli.options);
+			const [source, raw] = await remote.calcButteraugli(data, butteraugli.options);
 			this.onProgress();
 
 			const heatMap = rgbaToImage(raw, data.width, data.height);

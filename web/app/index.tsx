@@ -1,8 +1,9 @@
 import { useState } from "react";
-import CompressSession, { EncoderNameToOptions } from "./CompressSession";
+import CompressSession, { OutputMap } from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import { AnalyzeConfig } from "./ConfigDialog";
+import CompareSession from "./CompareSession";
 
 export interface InputImage {
 	file: File;
@@ -12,7 +13,7 @@ export interface InputImage {
 export interface Result {
 	original: InputImage;
 	config: AnalyzeConfig;
-	map: EncoderNameToOptions;
+	outputMap: OutputMap;
 }
 
 interface ResultWithId extends Result {

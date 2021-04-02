@@ -1,11 +1,13 @@
 import { Dispatch, useState } from "react";
 import { decode } from "../decode";
-import { BatchEncodeAnalyzer, ConvertOutput } from "../encode";
+import { BatchEncodeAnalyzer, ConvertOutput, newWorker } from "../encode";
 import type { Result } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
 import { ENCODERS, ImageEncoder } from "../codecs";
+import WorkerPool from "../WorkerPool";
+import { WorkerApi } from "../worker";
 
 function useProgress(initialMax = 1) {
 	const [max, setMax] = useState(initialMax);
@@ -29,8 +31,7 @@ interface CompressSessionProps {
 	onClose: () => void;
 }
 
-export type OptionsToResult = Record<string, ConvertOutput>;
-export type EncoderNameToOptions = Record<string, OptionsToResult>;
+export type OutputMap = Record<string, ConvertOutput>;
 
 export default function CompressSession(props: CompressSessionProps) {
 	const { open, onClose, onChange } = props;
@@ -40,7 +41,7 @@ export default function CompressSession(props: CompressSessionProps) {
 	const [file, setFile] = useState<File>();
 	const [image, setImage] = useState<ImageData>();
 
-	const [encoder, setEncoder] = useState<BatchEncodeAnalyzer>();
+	const [encoder, setEncoder] = useState<WorkerPool<WorkerApi>>();
 
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
@@ -68,7 +69,7 @@ export default function CompressSession(props: CompressSessionProps) {
 		const image = await decode(file);
 
 		let outputSize = 0;
-		const queue: [ImageEncoder, any[]][] = [];
+		const queue: Array<[ImageEncoder, any[]]> = [];
 
 		for (const enc of ENCODERS) {
 			const { name, getOptionsList } = enc;
@@ -90,38 +91,43 @@ export default function CompressSession(props: CompressSessionProps) {
 
 		progress.reset(outputSize * calculations + warmup);
 
-		const eMap: EncoderNameToOptions = {};
-		const worker = new BatchEncodeAnalyzer(image, measure);
+		const outputMap: OutputMap = {};
+		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
+		const worker = new BatchEncodeAnalyzer();
 
-		setEncoder(worker);
+		setEncoder(pool);
 		worker.onProgress = progress.increase;
 
+		// noinspection ES6MissingAwait
 		try {
-			await worker.initialize();
+			await pool.runOnEach(r => r.setImageToEncode(image));
 
 			// Warmup workers to avoid disturbance of initialize time
 			if (measure.time) {
 				for (const [encoder, optionsList] of queue) {
-					await worker.pool.runOnEach(async remote => {
-						return encoder.encode(remote, optionsList[0]).then(progress.increase);
-					});
+					const options = optionsList[0];
+					await pool.runOnEach(async r => encoder.encode(r, options).then(progress.increase));
 				}
 			}
 
 			for (const [encoder, optionsList] of queue) {
-				const oMap: OptionsToResult = {};
-				eMap[encoder.name] = oMap;
+				for (const options of optionsList) {
 
-				for (let i = 0; i < optionsList.length; i++) {
-					const options = optionsList[i];
-					worker.encode(encoder, options).then(o => oMap[JSON.stringify(options)] = o);
+					// noinspection ES6MissingAwait
+					pool.run(async r => {
+						const info = await worker.encode(r, encoder, options);
+						const metrics = await worker.measure(r, info.data, measure);
+
+						const config = { encoder: encoder.name, options };
+						outputMap[JSON.stringify(config)] = { ...info, metrics };
+					});
 				}
 			}
-			await worker.pool.join();
+			await pool.join();
 
-			if (!worker.pool.terminated) {
+			if (!pool.terminated) {
 				setEncoder(undefined);
-				onChange({ config, map: eMap, original: { file, data: image! } });
+				onChange({ config, outputMap, original: { file, data: image! } });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
@@ -129,7 +135,7 @@ export default function CompressSession(props: CompressSessionProps) {
 			setError(e.message);
 		}
 
-		worker.terminate();
+		pool.terminate();
 	}
 
 	function stop() {
