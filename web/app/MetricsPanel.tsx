@@ -65,7 +65,7 @@ function ButteraugliFields(props: ButteraugliProps) {
 				name="butteraugli"
 				onValueChange={v => onChange({ ...value, enabled: v })}
 			>
-				Calculate Butteraugli
+				Butteraugli
 			</CheckBox>
 
 			<fieldset className="subfields">
@@ -133,14 +133,14 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 				name="PSNR"
 				onChange={handleChange}
 			>
-				Calculate PSNR
+				Peak signal-to-noise ratio
 			</CheckBox>
 			<CheckBox
 				checked={SSIM.enabled}
 				name="SSIM"
 				onChange={handleChange}
 			>
-				Calculate SSIM
+				Structural similarity index measure
 			</CheckBox>
 
 			<ButteraugliFields value={butteraugli} onChange={handleBgChange}/>

@@ -14,14 +14,14 @@ export default class WorkerPool<T> {
 
 	terminated = false;
 
-	private readonly queue: WorkerJob<T>[] = [];
+	private readonly queue: Array<WorkerJob<T>> = [];
 
 	private readonly waiters: Array<() => void> = [];
 
 	// Track workers for terminate
 	private readonly workers: Worker[];
 
-	private readonly remotes: Remote<T>[];
+	private readonly remotes: Array<Remote<T>>;
 
 	constructor(factory: WorkerFactory, size: number) {
 		if (size < 1) {

@@ -81,7 +81,7 @@ export default function NumberInput(props: NumberInputProps) {
 			<button
 				title="Decrease"
 				type="button"
-				className={clsx(styles.button, styles.add)}
+				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, -increment)}

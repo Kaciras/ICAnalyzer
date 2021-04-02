@@ -36,7 +36,7 @@ export default function App() {
 		<>
 			{result
 				? <AnalyzePage
-					key={result.id} // force
+					key={result.id} // avoid reuse of control state
 					result={result}
 					onStart={showDialog}
 					onClose={() => setResult(undefined)}
