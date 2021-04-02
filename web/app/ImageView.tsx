@@ -56,6 +56,12 @@ export default function ImageView(props: ImageViewProps) {
 		scale: 1,
 	});
 
+	function handlePinchZoomChange(newValue: PinchZoomState) {
+		if (newValue.scale > 0.01) {
+			setPinchZoom(newValue);
+		}
+	}
+
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
@@ -138,7 +144,7 @@ export default function ImageView(props: ImageViewProps) {
 			<PinchZoom
 				className={styles.imageView}
 				state={pinchZoom}
-				onChange={setPinchZoom}
+				onChange={handlePinchZoomChange}
 			>
 				<div className={styles.wrapper} style={wrapperCss}>
 					<canvas
@@ -189,7 +195,7 @@ export default function ImageView(props: ImageViewProps) {
 			<div className={styles.controls}>
 				<NumberInput
 					title="Zoom scale"
-					min={25}
+					min={1}
 					step={1}
 					increment={25}
 					className={styles.zoomInput}
