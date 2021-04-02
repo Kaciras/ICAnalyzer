@@ -72,6 +72,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 		<Dialog onClose={onCancel}>
 			<div className="dialog-content">
 				<FileDrop
+					className={styles.drop}
 					onChange={acceptUpload}
 					onError={setError}
 				/>

@@ -27,12 +27,13 @@ function useBoundaryCounter() {
 }
 
 export interface FileDropProps {
+	className?: string;
 	onChange: Dispatch<File>;
 	onError: Dispatch<string>;
 }
 
 export default function FileDrop(props: FileDropProps) {
-	const { onChange, onError } = props;
+	const { className, onChange, onError } = props;
 
 	const boundary = useBoundaryCounter();
 
@@ -55,19 +56,22 @@ export default function FileDrop(props: FileDropProps) {
 		}
 	}
 
+	const classes = clsx(
+		styles.uploadFile,
+		className,
+		{ [styles.dragging]: boundary.isInArea },
+	);
+
 	return (
 		<label
-			className={clsx(styles.uploadFile, { [styles.dragging]: boundary.isInArea })}
-			tabIndex={0}
+			className={classes}
 			onDragEnter={boundary.enter}
 			onDragOver={e => e.preventDefault()}
 			onDrop={handleDrop}
 			onDragLeave={boundary.leave}
 		>
 			<div>
-				<span className={styles.icon}>
-					<ImageIcon/>
-				</span>
+				<ImageIcon className={styles.icon}/>
 				<span className={styles.text}>
 					Drag & drop
 				</span>

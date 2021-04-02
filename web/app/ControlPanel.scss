@@ -5,6 +5,9 @@
 	right: 0;
 	bottom: 0;
 	width: 320px;
+	max-height: 400px;
+
+	overflow-y: auto;
 	border-top-left-radius: 4px;
 }
 

@@ -1,8 +1,8 @@
 @import "NumberOption";
 
 .item:not(:last-child) {
+	margin-top: 5px;
 	margin-right: 5px;
-	margin-bottom: 5px;
 }
 
 .body {

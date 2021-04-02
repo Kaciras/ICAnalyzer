@@ -4,43 +4,44 @@
 	justify-content: center;
 	align-items: center;
 
-	width: 600px;
-	height: 320px;
-
 	position: relative;
-	flex: 1;
 	cursor: pointer;
-
 	border: dashed 5px #ccc;
 	transition: .2s;
 
-	&.dragging, &:focus-within, &:hover {
+	&.dragging,
+	&:focus-within,
+	&:hover {
 		outline: none;
 		border-color: #76b3ff;
-
-		& .icon {
-			color: #da76ff;
-		}
 
 		& .text {
 			color: #4d89ff;
 		}
+
+		& .icon {
+			color: #da76ff;
+		}
 	}
 }
 
-.icon {
-	font-size: 4em;
-	padding: 20px;
+.text {
+	font-size: 3em;
 	color: #ccc;
 	transition: .2s;
+	vertical-align: middle;
 }
 
-.text {
-	color: #ccc;
-	font-size: 48px;
-	transition: .2s;
+.icon {
+	composes: text;
+
+	display: inline-block;
+	font-size: 4em;
+	margin-right: .375em;
 }
 
 .fileInput {
-	display: none;
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
 }

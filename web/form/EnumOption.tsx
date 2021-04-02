@@ -43,7 +43,7 @@ export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<key
 		return (
 			<ControlField {...props}>
 				{label}
-				<div className={styles.controls}>{items}</div>
+				<div>{items}</div>
 			</ControlField>
 		);
 	}
