@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === "production") {
 			new Integrations.BrowserTracing(),
 		],
 		tracesSampleRate: 0.2,
-		release: "ic-analyze@" + process.env.npm_package_version,
+		release: `${process.env.npm_package_name}@${process.env.npm_package_version}`,
 		dsn: "https://d101904fac2c486ea6f8563c2cf054af@o253601.ingest.sentry.io/5499968",
 	});
 }

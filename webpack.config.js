@@ -92,7 +92,7 @@ module.exports = function webpackConfig(env) {
 	];
 
 	const plugins = [
-		new EnvironmentPlugin(["npm_package_version"]),
+		new EnvironmentPlugin(["npm_package_name", "npm_package_version"]),
 
 		new HtmlPlugin({
 			filename: "index.html",
@@ -122,6 +122,7 @@ module.exports = function webpackConfig(env) {
 		},
 		output: {
 			assetModuleFilename: "[name].[hash:5][ext][query]",
+			clean: true,
 		},
 		devtool: isProd ? "source-map" : "inline-source-map",
 		devServer: {
