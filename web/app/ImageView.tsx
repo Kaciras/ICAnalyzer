@@ -116,6 +116,7 @@ export default function ImageView(props: ImageViewProps) {
 					min={100}
 					max={25500}
 					step={50}
+					minMaxButton={true}
 					onValueChange={setBrightness}
 				/>
 			</label>

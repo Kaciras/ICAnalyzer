@@ -87,10 +87,11 @@
 .zoomInput {
 	composes: darkNumberInput;
 
-	width: 160px;
-	font-weight: 700;
-	--size: 38px;
+	--input-width: 80px;
+	--size: 32px;
 	--border-radius: 6px;
+
+	font-weight: 700;
 }
 
 .button {

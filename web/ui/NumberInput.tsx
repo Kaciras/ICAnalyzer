@@ -1,7 +1,9 @@
 import { Dispatch, MouseEvent } from "react";
 import clsx from "clsx";
-import PlusIcon from "bootstrap-icons/icons/plus.svg";
-import MinusIcon from "bootstrap-icons/icons/dash.svg";
+import PlusIcon from "../assets/add.svg";
+import MinusIcon from "../assets/remove.svg";
+import ArrowUpIcon from "../assets/arrow_up.svg";
+import ArrowDownIcon from "../assets/arrow_down.svg";
 import { NOOP } from "../utils";
 import styles from "./NumberInput.scss";
 
@@ -21,6 +23,8 @@ export interface NumberInputProps {
 	step?: number;
 	increment?: number;
 
+	minMaxButton?: boolean;
+
 	inputId?: string;
 	title?: string;
 	name?: string;
@@ -37,6 +41,7 @@ export default function NumberInput(props: NumberInputProps) {
 		name,
 		className,
 		disabled,
+		minMaxButton,
 		value,
 		min = 0,
 		max = Number.MAX_SAFE_INTEGER,
@@ -78,6 +83,19 @@ export default function NumberInput(props: NumberInputProps) {
 
 	return (
 		<div title={title} className={clsx(styles.container, className)}>
+			{
+				minMaxButton &&
+				<button
+					title="Min"
+					type="button"
+					className={styles.button}
+					tabIndex={-1}
+					disabled={disabled}
+					onClick={() => onValueChange(min)}
+				>
+					<ArrowDownIcon/>
+				</button>
+			}
 			<button
 				title="Decrease"
 				type="button"
@@ -86,7 +104,7 @@ export default function NumberInput(props: NumberInputProps) {
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, -increment)}
 			>
-				<MinusIcon/>
+				<MinusIcon shape-rendering="crispEdges"/>
 			</button>
 			<input
 				type="number"
@@ -108,8 +126,21 @@ export default function NumberInput(props: NumberInputProps) {
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, increment)}
 			>
-				<PlusIcon/>
+				<PlusIcon shape-rendering="crispEdges"/>
 			</button>
+			{
+				minMaxButton &&
+				<button
+					title="Max"
+					type="button"
+					className={styles.button}
+					tabIndex={-1}
+					disabled={disabled}
+					onClick={() => onValueChange(max)}
+				>
+					<ArrowUpIcon/>
+				</button>
+			}
 		</div>
 	);
 }

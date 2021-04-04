@@ -62,6 +62,7 @@ module.exports = function webpackConfig(env) {
 						],
 					},
 					svgProps: {
+						fill: "currentColor",
 						width: "1em",
 						height: "1em",
 					},
