@@ -1,8 +1,8 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
-import { boolOption, enumOption, numberOption, OptionType } from "../../form";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncodeOptions } from "./codec";
-import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
+import { EncoderState, OptionListProps } from "../index";
 import { buildOptions, mergeOptions } from "../common";
 
 export const name = "MozJPEG";
@@ -47,7 +47,7 @@ const defaultOptions: EncodeOptions = {
 };
 
 const templates: OptionType[] = [
-	numberOption({
+	new NumberOption({
 		id: "quality",
 		label: "Quality (-q)",
 		min: 0,
@@ -55,35 +55,35 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.quality,
 	}),
-	enumOption({
+	new EnumOption({
 		id: "color_space",
 		label: "Channels",
 		enumObject: ColorSpace,
 		defaultValue: "YCbCr",
 	}),
-	enumOption({
+	new EnumOption({
 		id: "quant_table",
 		label: "Quantization",
 		enumObject: Quantization,
 		defaultValue: "ImageMagick",
 	}),
-	boolOption({
+	new BoolOption({
 		id: "arithmetic",
 		label: "Arithmetic",
 		defaultValue: defaultOptions.arithmetic,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "auto_subsample",
 		label: "Auto subsample chroma",
 		defaultValue: defaultOptions.auto_subsample,
 	}),
 
-	boolOption({
+	new BoolOption({
 		id: "separate_chroma_quality",
 		label: "Separate chroma quality",
 		defaultValue: defaultOptions.separate_chroma_quality,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "chroma_quality",
 		label: "Chroma quality",
 		min: 0,
@@ -92,7 +92,7 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.chroma_quality,
 	}),
 
-	numberOption({
+	new NumberOption({
 		id: "smoothing",
 		label: "Smoothing",
 		min: 0,
@@ -101,38 +101,38 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.smoothing,
 	}),
 
-	boolOption({
+	new BoolOption({
 		id: "baseline",
 		label: "Pointless spec compliance",
 		defaultValue: defaultOptions.baseline,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "progressive",
 		label: "Progressive",
 		defaultValue: defaultOptions.progressive,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "optimize_coding",
 		label: "Optimize Huffman table",
 		defaultValue: defaultOptions.optimize_coding,
 	}),
 
-	boolOption({
+	new BoolOption({
 		id: "trellis_multipass",
 		label: "Trellis multipass",
 		defaultValue: defaultOptions.trellis_multipass,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "trellis_opt_zero",
 		label: "Optimize zero block runs",
 		defaultValue: defaultOptions.trellis_opt_zero,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "trellis_opt_table",
 		label: "Optimize after trellis quantization",
 		defaultValue: defaultOptions.trellis_opt_table,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "trellis_loops",
 		label: "Trellis quantization passes",
 		min: 0,
@@ -142,21 +142,6 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function initControlState(state: EncoderState): ControlStateMap {
-	const { varNames, ranges, values } = state;
-	const labels: Record<string, string[]> = {};
-
-	for (const t of templates) {
-		if (!varNames.includes(t.id)) {
-			continue;
-		}
-		const init = t.initControlValue(ranges[t.id]);
-		values[t.id] = init.value;
-		labels[t.id] = init.labels;
-	}
-	return { values, labels };
-}
-
 export function initOptionsState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
@@ -165,7 +150,7 @@ export function initOptionsState(saved?: EncoderState): EncoderState {
 	const ranges: Record<string, any> = {};
 
 	for (const t of templates) {
-		const [value, range] = t.newOptionState();
+		const [value, range] = t.createState();
 		values[t.id] = value;
 		ranges[t.id] = range;
 	}
@@ -209,34 +194,11 @@ export function OptionsPanel(props: OptionListProps) {
 	return <>{items}</>;
 }
 
-export function Controls(props: ControlProps) {
-	const { state, variableName, onChange, onVariableChange } = props;
-	const { varNames, values, ranges } = state;
-
-	const fields = templates
-		.filter(t => varNames.includes(t.id))
-		.map(({ id, Controller }) => {
-
-			function handleChange(nval: any) {
-				onVariableChange(id);
-				onChange({ ...values, [id]: nval });
-			}
-
-			return <Controller
-				key={id}
-				active={id === variableName}
-				value={values[id]}
-				range={ranges[id]}
-				onFocus={() => onVariableChange(id)}
-				onChange={handleChange}
-			/>;
-		});
-
-	return <>{fields}</>;
-}
-
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	const { varNames, ranges } = state;
+	const optionsList = buildOptions(templates, state);
+	const controls = templates.filter(t => varNames.includes(t.id)).map(t => t.createControl(ranges[t.id]));
+	return { controls, optionsList };
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {

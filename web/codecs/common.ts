@@ -1,22 +1,27 @@
-import { OptionType } from "../form";
+import { OptionsKeyPair, OptionType } from "../form";
 import { EncoderState } from "./index";
 
 export function buildOptions(templates: OptionType[], state: EncoderState) {
 	const { varNames, values, ranges } = state;
 
-	function map(list: any[], t: OptionType) {
-		return list
-			.map(options => {
-				if (varNames.includes(t.id)) {
-					return t.generate(ranges[t.id], options);
-				}
-				t.populate(values[t.id], options);
-				return [options];
-			})
-			.reduce((p, c) => p.concat(c), []);
+	function applyOption(list: OptionsKeyPair[], template: OptionType) {
+		const { id } = template;
+
+		if (varNames.includes(id)) {
+			const newList: OptionsKeyPair[] = [];
+
+			for (const { key, options } of list) {
+				const generated = template.generate(ranges[id], key, options);
+				newList.push(...generated);
+			}
+			return newList;
+		} else {
+			list.forEach(({ options }) => template.populate(values[id], options));
+			return list;
+		}
 	}
 
-	return templates.reduce(map, [{}]);
+	return templates.reduce(applyOption, [{ key: {}, options: {} }]);
 }
 
 export function mergeOptions<T>(base: T, from: Partial<T>) {

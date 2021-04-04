@@ -1,4 +1,4 @@
-import type { ControllerProps, OptionFieldProps, OptionType } from ".";
+import type { ControlType, FieldProps, OptionFieldProps, OptionType } from ".";
 import { CheckBox, ControlField, NumberInput, RangeInput } from "../ui";
 import styles from "./NumberOption.scss";
 
@@ -8,6 +8,13 @@ interface NumberRange {
 	step: number;
 }
 
+function sequence(range: NumberRange) {
+	const { min, max, step } = range;
+	return new Array<number>(Math.ceil((max + 1 - min) / step))
+		.fill(min)
+		.map((v, i) => v + i * step);
+}
+
 interface Metadata extends NumberRange {
 	id: string;
 	label: string;
@@ -15,28 +22,26 @@ interface Metadata extends NumberRange {
 	defaultValue: number;
 }
 
-export default function numberOption(data: Metadata): OptionType<number, NumberRange> {
-	const { id, label, min, max, step, offset = 0, defaultValue } = data;
+export class NumberControl implements ControlType<number> {
 
-	function sequence(range: NumberRange) {
-		const { min, max, step } = range;
-		return new Array<number>(Math.ceil((max + 1 - min) / step))
-			.fill(min)
-			.map((v, i) => v + offset + i * step);
+	private readonly data: Metadata;
+
+	constructor(data: Metadata) {
+		this.data = data;
+		this.Input = this.Input.bind(this);
 	}
 
-	function initControlValue(range: NumberRange) {
-		const labels = sequence(range).map(v => v.toString());
-		return { value: range.min, labels };
+	get id() {
+		return this.data.id;
 	}
 
-	function newOptionState() {
-		return [defaultValue, { min, max, step }] as [number, NumberRange];
+	createState() {
+		return sequence(this.data);
 	}
 
-	function Controller(props: ControllerProps<number, NumberRange>) {
-		const { value, range, onChange } = props;
-		const { min, max, step } = range;
+	Input(props: FieldProps<number>) {
+		const { id, label, min, max, step } = this.data;
+		const { value, onChange } = props;
 
 		return (
 			<ControlField {...props}>
@@ -56,8 +61,34 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 			</ControlField>
 		);
 	}
+}
 
-	function ConstMode(props: OptionFieldProps<number, NumberRange>) {
+export class NumberOption implements OptionType<number, NumberRange> {
+
+	private readonly data: Metadata;
+
+	constructor(data: Metadata) {
+		this.data = data;
+		this.VariableMode = this.VariableMode.bind(this);
+		this.ConstMode = this.ConstMode.bind(this);
+		this.OptionField = this.OptionField.bind(this);
+	}
+
+	get id() {
+		return this.data.id;
+	}
+
+	createControl(range: NumberRange) {
+		return new NumberControl({ ...this.data, ...range });
+	}
+
+	createState() {
+		const { min, max, step, defaultValue } = this.data;
+		return [defaultValue, { min, max, step }] as [number, NumberRange];
+	}
+
+	ConstMode(props: OptionFieldProps<number, NumberRange>) {
+		const { id, min, max, step } = this.data;
 		const { value, onValueChange } = props;
 
 		return (
@@ -73,7 +104,8 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		);
 	}
 
-	function VariableMode(props: OptionFieldProps<number, NumberRange>) {
+	VariableMode(props: OptionFieldProps<number, NumberRange>) {
+		const { step } = this.data;
 		const { range, onRangeChange } = props;
 
 		function handleChange(name: keyof NumberRange, valueAsNumber: number) {
@@ -88,7 +120,7 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		}
 
 		const Field = (props: FieldProps) => {
-			const { name, min, max, step } = { ...data, ...props };
+			const { name, min, max, step } = { ...this.data, ...props };
 
 			return (
 				<label className={styles.spinner}>
@@ -115,7 +147,9 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		);
 	}
 
-	function OptionField(props: OptionFieldProps<number, NumberRange>) {
+	OptionField(props: OptionFieldProps<number, NumberRange>) {
+		const { VariableMode, ConstMode } = this;
+		const { label } = this.data;
 		const { isVariable, value, onVariabilityChange } = props;
 
 		return (
@@ -135,13 +169,19 @@ export default function numberOption(data: Metadata): OptionType<number, NumberR
 		);
 	}
 
-	function populate(value: number, options: any) {
+	populate(value: number, options: any) {
+		const { id, offset = 0 } = this.data;
 		options[id] = offset + value;
 	}
 
-	function generate(range: NumberRange, options: any) {
-		return sequence(range).map(value => ({ ...options, [id]: value }));
-	}
+	generate(range: NumberRange, key: any, options: any) {
+		const { id, offset = 0 } = this.data;
 
-	return { id, initControlValue, newOptionState, Controller, OptionField, populate, generate };
+		return sequence(range).map(value => {
+			value += offset;
+			const newOpts = { ...options, [id]: value };
+			const newKey = { ...key, [id]: value };
+			return { key: newKey, options: newOpts };
+		});
+	}
 }

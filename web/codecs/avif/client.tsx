@@ -1,8 +1,8 @@
 import { Remote } from "comlink";
 import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
-import { enumOption, numberOption, OptionType } from "../../form";
-import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
+import { EnumOption, NumberOption, OptionType } from "../../form";
+import { EncoderState, OptionListProps } from "../index";
 import { buildOptions } from "../common";
 
 export const name = "AVIF";
@@ -17,7 +17,7 @@ export const Subsampling = {
 };
 
 const templates: OptionType[] = [
-	numberOption({
+	new NumberOption({
 		id: "minQuantizer",
 		label: "Min quality",
 		min: 0,
@@ -25,7 +25,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.minQuantizer,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "maxQuantizer",
 		label: "Max quality",
 		min: 0,
@@ -33,7 +33,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.maxQuantizer,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "minQuantizerAlpha",
 		label: "Min alpha quality",
 		min: 0,
@@ -41,7 +41,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.minQuantizerAlpha,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "maxQuantizerAlpha",
 		label: "Max alpha quality",
 		min: 0,
@@ -49,7 +49,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.maxQuantizerAlpha,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "tileRowsLog2",
 		label: "Log2 of tile rows",
 		min: 0,
@@ -57,7 +57,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.tileRowsLog2,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "tileColsLog2",
 		label: "Log2 of tile cols",
 		min: 0,
@@ -65,7 +65,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.tileColsLog2,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "speed",
 		label: "Speed",
 		min: 0,
@@ -73,27 +73,13 @@ const templates: OptionType[] = [
 		step: 8,
 		defaultValue: defaultOptions.speed,
 	}),
-	enumOption({
+	new EnumOption({
 		id: "subsample",
 		label: "Subsample",
 		enumObject: Subsampling,
 		defaultValue: "YUV420",
 	}),
 ];
-export function initControlState(state: EncoderState): ControlStateMap {
-	const { varNames, ranges, values } = state;
-	const labels: Record<string, string[]> = {};
-
-	for (const t of templates) {
-		if (!varNames.includes(t.id)) {
-			continue;
-		}
-		const init = t.initControlValue(ranges[t.id]);
-		values[t.id] = init.value;
-		labels[t.id] = init.labels;
-	}
-	return { values, labels };
-}
 
 export function initOptionsState(saved: EncodeOptions) {
 	if (saved) {
@@ -103,7 +89,7 @@ export function initOptionsState(saved: EncodeOptions) {
 	const ranges: Record<string, any> = {};
 
 	for (const t of templates) {
-		const [value, range] = t.newOptionState();
+		const [value, range] = t.createState();
 		values[t.id] = value;
 		ranges[t.id] = range;
 	}
@@ -147,34 +133,11 @@ export function OptionsPanel(props: OptionListProps) {
 	return <>{items}</>;
 }
 
-export function Controls(props: ControlProps) {
-	const { state, variableName, onChange, onVariableChange } = props;
-	const { varNames, values, ranges } = state;
-
-	const fields = templates
-		.filter(t => varNames.includes(t.id))
-		.map(({ id, Controller }) => {
-
-			function handleChange(nval: any) {
-				onVariableChange(id);
-				onChange({ ...values, [id]: nval });
-			}
-
-			return <Controller
-				key={id}
-				active={id === variableName}
-				value={values[id]}
-				range={ranges[id]}
-				onFocus={() => onVariableChange(id)}
-				onChange={handleChange}
-			/>;
-		});
-
-	return <>{fields}</>;
-}
-
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	const { varNames, ranges } = state;
+	const optionsList = buildOptions(templates, state);
+	const controls = templates.filter(t => varNames.includes(t.id)).map(t => t.createControl(ranges[t.id]));
+	return { controls, optionsList };
 }
 
 export function encode(options: any, worker: Remote<WorkerApi>) {

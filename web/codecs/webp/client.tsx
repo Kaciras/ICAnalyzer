@@ -1,9 +1,9 @@
 import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 import { WorkerApi } from "../../worker";
-import { boolOption, enumOption, numberOption, OptionType, presetOption } from "../../form";
+import { BoolOption, EnumOption, NumberOption, OptionType, PresetOption } from "../../form";
 import { EncodeOptions } from "./codec";
-import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
+import { EncoderState, OptionListProps } from "../index";
 import { buildOptions, mergeOptions } from "../common";
 
 export const name = "WebP";
@@ -53,12 +53,12 @@ const WebPPreset = {
 };
 
 const templates: OptionType[] = [
-	boolOption({
+	new BoolOption({
 		id: "lossless",
 		label: "lossless",
 		defaultValue: defaultOptions.lossless,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "quality",
 		label: "Quality (-q)",
 		min: 0,
@@ -66,7 +66,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.quality,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "near_lossless",
 		label: "Near lossless (-near_lossless)",
 		min: 0,
@@ -74,7 +74,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.near_lossless,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "method",
 		label: "Method (-m)",
 		min: 0,
@@ -82,13 +82,13 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.method,
 	}),
-	presetOption({
+	new PresetOption({
 		id: "preset",
 		label: "Preset (-preset)",
 		enumObject: WebPPreset,
 		defaultValue: "default",
 	}),
-	numberOption({
+	new NumberOption({
 		id: "sns_strength",
 		label: "Spatial noise shaping (-sns)",
 		min: 0,
@@ -96,18 +96,18 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.sns_strength,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "filter_type",
 		label: "User strong filter (-strong)",
 		defaultValue: defaultOptions.filter_type,
 	}),
 
-	boolOption({
+	new BoolOption({
 		id: "autofilter",
 		label: "Auto adjust filter strength (-af)",
 		defaultValue: defaultOptions.autofilter,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "filter_strength",
 		label: "Filter strength (-f)",
 		min: 0,
@@ -115,7 +115,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.filter_strength,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "filter_sharpness",
 		label: "Filter sharpness (-sharpness)",
 		min: 0,
@@ -123,33 +123,18 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.filter_sharpness,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "use_sharp_yuv",
 		label: "Sharp YUV",
 		defaultValue: defaultOptions.use_sharp_yuv,
 	}),
-	enumOption({
+	new EnumOption({
 		id: "image_hint",
 		label: "Hint (-hint)",
 		enumObject: WebPImageHint,
 		defaultValue: "Default",
 	}),
 ];
-
-export function initControlState(state: EncoderState): ControlStateMap {
-	const { varNames, ranges, values } = state;
-	const labels: Record<string, string[]> = {};
-
-	for (const t of templates) {
-		if (!varNames.includes(t.id)) {
-			continue;
-		}
-		const init = t.initControlValue(ranges[t.id]);
-		values[t.id] = init.value;
-		labels[t.id] = init.labels;
-	}
-	return { values, labels };
-}
 
 export function initOptionsState(saved?: EncoderState): EncoderState {
 	if (saved) {
@@ -159,7 +144,7 @@ export function initOptionsState(saved?: EncoderState): EncoderState {
 	const ranges: Record<string, any> = {};
 
 	for (const t of templates) {
-		const [value, range] = t.newOptionState();
+		const [value, range] = t.createState();
 		values[t.id] = value;
 		ranges[t.id] = range;
 	}
@@ -204,34 +189,11 @@ export function OptionsPanel(props: OptionListProps) {
 	return <>{items}</>;
 }
 
-export function Controls(props: ControlProps) {
-	const { state, variableName, onChange, onVariableChange } = props;
-	const { varNames, values, ranges } = state;
-
-	const fields = templates
-		.filter(t => varNames.includes(t.id))
-		.map(({ id, Controller }) => {
-
-			function handleChange(nval: any) {
-				onVariableChange(id);
-				onChange({ ...values, [id]: nval });
-			}
-
-			return <Controller
-				key={id}
-				active={id === variableName}
-				value={values[id]}
-				range={ranges[id]}
-				onFocus={() => onVariableChange(id)}
-				onChange={handleChange}
-			/>;
-		});
-
-	return <>{fields}</>;
-}
-
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	const { varNames, ranges } = state;
+	const optionsList = buildOptions(templates, state);
+	const controls = templates.filter(t => varNames.includes(t.id)).map(t => t.createControl(ranges[t.id]));
+	return { controls, optionsList };
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {

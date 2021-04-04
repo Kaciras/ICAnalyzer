@@ -2,17 +2,21 @@ import { useState } from "react";
 import CompressSession, { OutputMap } from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
-import { AnalyzeConfig } from "./ConfigDialog";
 import CompareSession from "./CompareSession";
+import { ControlType } from "../form";
 
 export interface InputImage {
 	file: File;
 	data: ImageData;
 }
 
+export interface AnalyzeContext {
+	controlsMap: Record<string, ControlType[]>;
+}
+
 export interface Result {
 	original: InputImage;
-	config: AnalyzeConfig;
+	config: AnalyzeContext;
 	outputMap: OutputMap;
 }
 

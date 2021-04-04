@@ -1,6 +1,6 @@
 import { Dispatch, useState } from "react";
 import { decode } from "../decode";
-import { BatchEncodeAnalyzer, ConvertOutput, newWorker } from "../encode";
+import { BatchEncodeAnalyzer, ConvertOutput, newWorker, ObjectKeyMap } from "../encode";
 import type { Result } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
@@ -8,6 +8,7 @@ import ProgressDialog from "./ProgressDialog";
 import { ENCODERS, ImageEncoder } from "../codecs";
 import WorkerPool from "../WorkerPool";
 import { WorkerApi } from "../worker";
+import { ControlType, OptionsKeyPair } from "../form";
 
 function useProgress(initialMax = 1) {
 	const [max, setMax] = useState(initialMax);
@@ -31,7 +32,7 @@ interface CompressSessionProps {
 	onClose: () => void;
 }
 
-export type OutputMap = Record<string, ConvertOutput>;
+export type OutputMap = ObjectKeyMap<any, ConvertOutput>;
 
 export default function CompressSession(props: CompressSessionProps) {
 	const { open, onClose, onChange } = props;
@@ -47,11 +48,7 @@ export default function CompressSession(props: CompressSessionProps) {
 	const [error, setError] = useState<string>();
 
 	function cancelSelectFile() {
-		if (file) {
-			setSelectFile(false);
-		} else {
-			onClose();
-		}
+		file ? setSelectFile(false) : onClose();
 	}
 
 	async function handleFileChange(newFile: File) {
@@ -69,7 +66,8 @@ export default function CompressSession(props: CompressSessionProps) {
 		const image = await decode(file);
 
 		let outputSize = 0;
-		const queue: Array<[ImageEncoder, any[]]> = [];
+		const queue: Array<[ImageEncoder, OptionsKeyPair[]]> = [];
+		const controlsMap: Record<string, ControlType[]> = {};
 
 		for (const enc of ENCODERS) {
 			const { name, getOptionsList } = enc;
@@ -77,9 +75,10 @@ export default function CompressSession(props: CompressSessionProps) {
 			if (!config.enable) {
 				continue;
 			}
-			const optList = getOptionsList(config.state);
-			queue.push([enc, optList]);
-			outputSize += optList.length;
+			const { controls, optionsList } = getOptionsList(config.state);
+			controlsMap[name] = controls;
+			queue.push([enc, optionsList]);
+			outputSize += optionsList.length;
 		}
 
 		let calculations = 1;
@@ -91,7 +90,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 		progress.reset(outputSize * calculations + warmup);
 
-		const outputMap: OutputMap = {};
+		const outputMap = new ObjectKeyMap<any, ConvertOutput>();
 		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
 		const worker = new BatchEncodeAnalyzer();
 
@@ -105,21 +104,21 @@ export default function CompressSession(props: CompressSessionProps) {
 			// Warmup workers to avoid disturbance of initialize time
 			if (measure.time) {
 				for (const [encoder, optionsList] of queue) {
-					const options = optionsList[0];
+					const { options } = optionsList[0];
 					await pool.runOnEach(async r => encoder.encode(r, options).then(progress.increase));
 				}
 			}
 
 			for (const [encoder, optionsList] of queue) {
-				for (const options of optionsList) {
+				for (const { key, options } of optionsList) {
 
 					// noinspection ES6MissingAwait
 					pool.run(async r => {
 						const info = await worker.encode(r, encoder, options);
 						const metrics = await worker.measure(r, info.data, measure);
 
-						const config = { encoder: encoder.name, options };
-						outputMap[JSON.stringify(config)] = { ...info, metrics };
+						const config = { encoder: encoder.name, key };
+						outputMap.set(config, { ...info, metrics });
 					});
 				}
 			}
@@ -127,7 +126,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
-				onChange({ config, outputMap, original: { file, data: image! } });
+				onChange({ config: { controlsMap }, outputMap, original: { file, data: image! } });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.

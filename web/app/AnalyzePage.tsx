@@ -4,12 +4,11 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button } from "../ui";
-import { ENCODER_MAP, ENCODERS, EncoderState, ImageEncoder } from "../codecs";
+import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs";
 import { Result } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
-import { EncodingConfig } from "./EncoderPanel";
 import styles from "./AnalyzePage.scss";
 
 interface DownloadButtonProps {
@@ -61,30 +60,12 @@ export enum Step {
 	Options,
 }
 
-interface EncoderControlState extends EncoderState {
-	labels: Record<string, string[]>;
-}
-
 export interface ControlState {
 	encoderName: string;
-	encoderState: Record<string, EncoderControlState>;
+	encoderState: Record<string, Record<string, any>>;
 
 	variableType: Step;
 	variableName: string;
-}
-
-function createTODOState(encoders: EncodingConfig): Record<string, EncoderControlState> {
-	const rv: Record<string, EncoderControlState> = {};
-
-	for (const [name, data] of Object.entries(encoders)) {
-		if (!data.enable) {
-			continue;
-		}
-		const s = ENCODER_MAP[name].initControlState(data.state);
-		rv[name] = { ...data.state, ...s };
-	}
-
-	return rv;
 }
 
 interface AnalyzePageProps {
@@ -98,22 +79,26 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const { original, config, outputMap } = result;
 
 	function createControlState(): ControlState {
-		const { encoders } = config;
+		const { controlsMap } = config;
 		let variableType = Step.None;
 		let variableName = "";
 
-		const kvs = Object.entries(encoders).filter(e => e[1].enable);
+		const kvs = Object.entries(controlsMap);
 		if (kvs.length > 1) {
 			variableType = Step.Encoder;
 			variableName = "";
 		}
 
-		const encoderState = createTODOState(encoders);
+		// encoder name -> option id -> values
+		const encoderState: Record<string, Record<string, any>> = {};
+		for (const [k, v] of kvs) {
+			encoderState[k] = Object.fromEntries(v.map(c => [c.id, c.createState()[0]]));
+		}
 
-		const [encoderName, state] = kvs[0];
-		if (state.state.varNames.length > 0) {
+		const [encoderName, controls] = kvs[0];
+		if (controls.length > 0) {
 			variableType = Step.Options;
-			variableName = state.state.varNames[0];
+			variableName = controls[0].id;
 		}
 
 		return { variableType, variableName, encoderName, encoderState };
@@ -127,43 +112,45 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const [state, setState] = useReducer(updateControlState, null, createControlState);
 
 	const { variableType, variableName, encoderName, encoderState } = state;
-
 	const encoder = ENCODER_MAP[encoderName];
+	const key = encoderState[encoderName];
 
-	const [options] = encoder.getOptionsList({
-		varNames: [],
-		values: encoderState[encoderName].values,
-		ranges: encoderState[encoderName].ranges,
-	});
+	// const [options] = encoder.getOptionsList({
+	// 	varNames: [],
+	// 	values: encoderState[encoderName].values,
+	// 	ranges: encoderState[encoderName].ranges,
+	// });
 
-	const output = outputMap[JSON.stringify({ encoder: encoderName, options })];
+	const output = outputMap.get({ encoder: encoderName, key });
 
 	const [labels, series] = useMemo(() => {
 		if (variableType === Step.Encoder) {
-			const encodings = ENCODERS.filter(e => e.name in config.encoders);
+			const encodings = ENCODERS.filter(e => e.name in encoderState);
 			const s = encodings.map(e => {
-				const [options] = e.getOptionsList({
-					varNames: [],
-					values: encoderState[e.name].values,
-					ranges: encoderState[e.name].ranges,
-				});
-				return outputMap[JSON.stringify({ encoder: e.name, options })];
+				const key = encoderState[e.name];
+
+				return outputMap.get({ encoder: e.name, key });
 			});
 			return [encodings.map(e => e.name), s];
 		} else if (variableType === Step.Options) {
-			const list = encoder.getOptionsList({
-				varNames: [variableName],
-				values: encoderState[encoderName].values,
-				ranges: encoderState[encoderName].ranges,
-			});
+			// const { values, ranges } = encoderState[encoderName];
 
-			const s = list.map(options => outputMap[JSON.stringify({ encoder: encoderName, options })]);
-			const l = encoderState[encoderName].labels[variableName];
-			return [l, s];
+			// ranges[variableName]
+			// const list = encoder.getOptionsList({
+			// 	varNames: [variableName],
+			// 	values: encoderState[encoderName].values,
+			// 	ranges: encoderState[encoderName].ranges,
+			// });
+			const control = config.controlsMap[encoderName].find(c => c.id === variableName);
+			const allValues = control!.createState();
+			const s = allValues.map(v => outputMap
+				.get({ encoder: encoderName, key: { ...key, [variableName]: v } }));
+
+			return [allValues.map(v => v.toString()), s];
 		} else {
 			return [[""], [output]];
 		}
-	}, [options, result, variableType, variableName]);
+	}, [key, result, variableType, variableName]);
 
 	const index = series.indexOf(output);
 

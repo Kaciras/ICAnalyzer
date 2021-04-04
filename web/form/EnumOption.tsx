@@ -1,34 +1,47 @@
-import type { ControllerProps, OptionFieldProps, OptionType } from ".";
+import type { FieldProps, OptionFieldProps, OptionType } from ".";
+import { ControlType } from ".";
 import { ChangeEvent } from "react";
 import { CheckBox, ControlField, RadioBox } from "../ui";
 import styles from "./EnumOption.scss";
 
-interface EnumOptionConfig<T extends Record<string, any>> {
+interface ControlData {
+	id: string;
+	label: string;
+	names: string[];
+}
+
+export interface EnumOptionConfig<T extends Record<string, any>> {
 	id: string;
 	label: string;
 	enumObject: T;
 	defaultValue: keyof T;
 }
 
-export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<keyof T, Array<keyof T>> {
-	const { id, label, enumObject, defaultValue } = data;
+export class EnumControl implements ControlType<string> {
 
-	function initControlValue(range: Array<keyof T>) {
-		return { value: range[0], labels: range };
+	private readonly data: ControlData;
+
+	constructor(data: ControlData) {
+		this.data = data;
 	}
 
-	function newOptionState() {
-		return [defaultValue, [defaultValue]] as [keyof T, Array<keyof T>];
+	get id() {
+		return this.data.id;
 	}
 
-	function Controller(props: ControllerProps<keyof T, Array<keyof T>>) {
-		const { value, range, onChange } = props;
+	createState() {
+		return this.data.names;
+	}
+
+	Input(props: FieldProps<string>) {
+		const { id, label, names } = this.data;
+		const { value, onChange } = props;
 
 		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			onChange(e.currentTarget.name as keyof T);
+			onChange(e.currentTarget.name);
 		}
 
-		const items = range.map(name =>
+		const items = names.map(name =>
 			<RadioBox
 				key={name}
 				className={styles.item}
@@ -47,8 +60,33 @@ export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<key
 			</ControlField>
 		);
 	}
+}
 
-	function OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
+export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
+
+	protected readonly data: EnumOptionConfig<T>;
+
+	constructor(data: EnumOptionConfig<T>) {
+		this.data = data;
+		this.OptionField = this.OptionField.bind(this);
+	}
+
+	get id() {
+		return this.data.id;
+	}
+
+	createControl(names: Array<keyof T>) {
+		const { id, label } = this.data;
+		return new EnumControl({ id, label, names });
+	}
+
+	createState() {
+		const { defaultValue } = this.data;
+		return [defaultValue, [defaultValue]] as [keyof T, Array<keyof T>];
+	}
+
+	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
+		const { id, label, enumObject } = this.data;
 		const { isVariable, value, range, onValueChange, onRangeChange, onVariabilityChange } = props;
 
 		function handleChangeV(e: ChangeEvent<HTMLInputElement>) {
@@ -112,13 +150,18 @@ export default function enumOption<T>(data: EnumOptionConfig<T>): OptionType<key
 		);
 	}
 
-	function populate(value: keyof T, options: any) {
+	populate(value: keyof T, options: any) {
+		const { id, enumObject } = this.data;
 		options[id] = enumObject[value];
 	}
 
-	function generate(range: Array<keyof T>, prev: any) {
-		return range.map(name => ({ ...prev, [id]: enumObject[name] }));
-	}
+	generate(range: Array<keyof T>, key: any, options: any) {
+		const { id, enumObject } = this.data;
 
-	return { id, initControlValue, newOptionState, Controller, OptionField, populate, generate };
+		return range.map(name => {
+			const newKey = { ...key, [id]: name };
+			const newOpts = { ...options, [id]: enumObject[name] };
+			return { key: newKey, options: newOpts };
+		});
+	}
 }

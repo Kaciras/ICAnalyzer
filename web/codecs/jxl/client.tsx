@@ -1,9 +1,9 @@
 import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/jxl/shared/meta";
 import { WorkerApi } from "../../worker";
-import { boolOption, numberOption, OptionType } from "../../form";
+import { BoolOption, NumberOption, OptionType } from "../../form";
 import { buildOptions, mergeOptions } from "../common";
-import { ControlProps, ControlStateMap, EncoderState, OptionListProps } from "../index";
+import { EncoderState, OptionListProps } from "../index";
 import { EncodeOptions } from "./codec";
 
 export const name = "JPEG XL";
@@ -11,7 +11,7 @@ export const mimeType = "image/jxl";
 export const extension = "jxl";
 
 const templates: OptionType[] = [
-	numberOption({ // 100 = lossless
+	new NumberOption({ // 100 = lossless
 		id: "quality",
 		label: "Quality",
 		min: 0,
@@ -19,17 +19,17 @@ const templates: OptionType[] = [
 		step: 0.1,
 		defaultValue: defaultOptions.quality,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "lossyPalette",
 		label: "Slight loss",
 		defaultValue: defaultOptions.lossyPalette,
 	}),
-	boolOption({
+	new BoolOption({
 		id: "progressive",
 		label: "Progressive",
 		defaultValue: defaultOptions.progressive,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "speed",
 		label: "Speed",
 		min: 0,
@@ -37,7 +37,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.speed,
 	}),
-	numberOption({
+	new NumberOption({
 		id: "epf",
 		label: "Edge preserving filter",
 		min: -1,
@@ -47,21 +47,6 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function initControlState(state: EncoderState): ControlStateMap {
-	const { varNames, ranges, values } = state;
-	const labels: Record<string, string[]> = {};
-
-	for (const t of templates) {
-		if (!varNames.includes(t.id)) {
-			continue;
-		}
-		const init = t.initControlValue(ranges[t.id]);
-		values[t.id] = init.value;
-		labels[t.id] = init.labels;
-	}
-	return { values, labels };
-}
-
 export function initOptionsState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
@@ -70,7 +55,7 @@ export function initOptionsState(saved?: EncoderState): EncoderState {
 	const ranges: Record<string, any> = {};
 
 	for (const t of templates) {
-		const [value, range] = t.newOptionState();
+		const [value, range] = t.createState();
 		values[t.id] = value;
 		ranges[t.id] = range;
 	}
@@ -114,34 +99,11 @@ export function OptionsPanel(props: OptionListProps) {
 	return <>{items}</>;
 }
 
-export function Controls(props: ControlProps) {
-	const { state, variableName, onChange, onVariableChange } = props;
-	const { varNames, values, ranges } = state;
-
-	const fields = templates
-		.filter(t => varNames.includes(t.id))
-		.map(({ id, Controller }) => {
-
-			function handleChange(nval: any) {
-				onVariableChange(id);
-				onChange({ ...values, [id]: nval });
-			}
-
-			return <Controller
-				key={id}
-				active={id === variableName}
-				value={values[id]}
-				range={ranges[id]}
-				onFocus={() => onVariableChange(id)}
-				onChange={handleChange}
-			/>;
-		});
-
-	return <>{fields}</>;
-}
-
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	const { varNames, ranges } = state;
+	const optionsList = buildOptions(templates, state);
+	const controls = templates.filter(t => varNames.includes(t.id)).map(t => t.createControl(ranges[t.id]));
+	return { controls, optionsList };
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {

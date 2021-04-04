@@ -1,5 +1,6 @@
 import { Dispatch } from "react";
 import { Remote } from "comlink";
+import { ControlType, OptionsKeyPair } from "../form";
 import { WorkerApi } from "../worker";
 import * as MozJPEG from "./mozjpeg/client";
 import * as JXL from "./jxl/client";
@@ -35,20 +36,21 @@ export interface ControlStateMap {
 	labels: Record<string, string[]>;
 }
 
+export interface EncodeConfig {
+	controls: Array<ControlType<any>>;
+	optionsList: OptionsKeyPair[];
+}
+
 export interface ImageEncoder {
 	name: string;
 	extension: string;
 	mimeType: string;
 
-	initControlState(ranges: EncoderState): ControlStateMap;
-
-	Controls(props: ControlProps): JSX.Element;
-
 	initOptionsState(saved?: EncoderState): any;
 
 	OptionsPanel(props: OptionListProps): JSX.Element;
 
-	getOptionsList(state: EncoderState): any[];
+	getOptionsList(state: EncoderState): EncodeConfig;
 
 	encode(options: any, worker: Remote<WorkerApi>): Promise<EncodeResult>;
 }

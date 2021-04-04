@@ -1,20 +1,20 @@
-import enumOption, { Metadata } from "./EnumOption";
+import { EnumOption } from "./EnumOption";
 
-export default function presetOption<T>(data: Metadata<T>) {
-	const { enumObject } = data;
-	const parent = enumOption(data);
+export class PresetOption<T> extends EnumOption<T> {
 
-	parent.generate = (range, options) => range.map(name => {
-		const copy = { ...options };
-		parent.populate(name, copy);
-		return copy;
-	});
+	generate(range: Array<keyof T>, key: any, options: any) {
+		const { id } = this;
 
+		return range.map(name => {
+			const newKey = { ...key, [id]: name };
+			const copy = { ...options };
+			this.populate(name, copy);
+			return { key: newKey, options: copy };
+		});
+	}
 
-	parent.populate = (name, options) => {
-		Object.entries(enumObject[name])
+	populate(name: keyof T, options: any) {
+		Object.entries(this.data.enumObject[name])
 			.forEach(([k, v]) => options[k] = (typeof v === "function") ? v(options[k]) : v);
-	};
-
-	return parent;
+	}
 }

@@ -1,12 +1,12 @@
 import { ChangeEvent, Dispatch } from "react";
 import { ControlField, SelectBox } from "../ui";
-import { ENCODER_MAP, ENCODERS } from "../codecs";
-import { AnalyzeConfig } from "./ConfigDialog";
+import { ENCODERS } from "../codecs";
 import { ControlState, Step } from "./AnalyzePage";
 import styles from "./ControlPanel.scss";
+import { AnalyzeContext } from "./index";
 
 export interface ControlPanelProps {
-	config: AnalyzeConfig;
+	config: AnalyzeContext;
 	value: ControlState
 	onChange: Dispatch<Partial<ControlState>>;
 }
@@ -27,24 +27,30 @@ export default function ControlPanel(props: ControlPanelProps) {
 		onChange({ variableType, variableName });
 	}
 
-	function handleValueChange(values: Record<string, unknown>) {
-		const { varNames, ranges, labels } = encoderState[encoderName];
-		const es = { ...encoderState, [encoderName]: { varNames, values, ranges, labels } };
+	function handleValueChange(id: string, newValue: any) {
+		const key = encoderState[encoderName];
+		const es = { ...encoderState, [encoderName]: { ...key, [id]: newValue } };
 		onChange({ encoderState: es });
 	}
 
-	const Encoder = ENCODER_MAP[encoderName];
-	const selectOptions = ENCODERS.filter(e => config.encoders[e.name].enable)
+	const selectOptions = ENCODERS
+		.filter(e => e.name in config.controlsMap)
 		.map(({ name }) => <option key={name} value={name}>{name}</option>);
+
+	const state = encoderState[encoderName];
+	const controls = config.controlsMap[encoderName].map(C =>
+		<C.Input
+			value={state[C.id]}
+			active={variableType === Step.Options && variableName === C.id}
+			key={C.id}
+			onChange={v => handleValueChange(C.id, v)}
+			onFocus={() => handleVarChange(Step.Options, C.id)}
+		/>,
+	);
 
 	return (
 		<form className={styles.variableGroup}>
-			<Encoder.Controls
-				state={encoderState[encoderName]}
-				variableName={variableType === Step.Options && variableName}
-				onChange={handleValueChange}
-				onVariableChange={name => handleVarChange(Step.Options, name)}
-			/>
+			{controls}
 			{
 				selectOptions.length > 1 &&
 				<ControlField

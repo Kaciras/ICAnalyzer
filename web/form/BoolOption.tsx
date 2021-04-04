@@ -1,4 +1,5 @@
-import type { ControllerProps, OptionFieldProps, OptionType } from ".";
+import type { FieldProps, OptionFieldProps, OptionType } from ".";
+import { ControlType } from ".";
 import { CheckBox, ControlField, SwitchButton } from "../ui";
 import styles from "./BoolOption.scss";
 
@@ -8,19 +9,25 @@ interface Metadata {
 	defaultValue: boolean | number;
 }
 
-export default function boolOption(data: Metadata): OptionType<boolean, undefined> {
-	const { id, label, defaultValue } = data;
+export class BoolControl implements ControlType<boolean> {
 
-	function initControlValue() {
-		return { value: false, labels: ["false", "true"] };
+	private readonly data: Metadata;
+
+	constructor(data: Metadata) {
+		this.data = data;
 	}
 
-	function newOptionState() {
-		return [Boolean(defaultValue), undefined] as [boolean, never];
+	get id() {
+		return this.data.id;
 	}
 
-	function Controller(props: ControllerProps<boolean, never>) {
+	createState() {
+		return [false, true];
+	}
+
+	Input(props: FieldProps<boolean>) {
 		const { value, onChange } = props;
+		const { label } = this.data;
 
 		return (
 			<ControlField {...props} className={styles.control}>
@@ -33,8 +40,31 @@ export default function boolOption(data: Metadata): OptionType<boolean, undefine
 			</ControlField>
 		);
 	}
+}
 
-	function OptionField(props: OptionFieldProps<boolean, undefined>) {
+export class BoolOption implements OptionType<boolean, undefined> {
+
+	private readonly data: Metadata;
+
+	constructor(data: Metadata) {
+		this.data = data;
+		this.OptionField = this.OptionField.bind(this);
+	}
+
+	get id() {
+		return this.data.id;
+	}
+
+	createControl(range: undefined) {
+		return new BoolControl(this.data);
+	}
+
+	createState() {
+		return [Boolean(this.data.defaultValue), undefined] as [boolean, never];
+	}
+
+	OptionField(props: OptionFieldProps<boolean, undefined>) {
+		const { id, label } = this.data;
 		const { isVariable, value, onValueChange, onVariabilityChange } = props;
 
 		return (
@@ -54,13 +84,21 @@ export default function boolOption(data: Metadata): OptionType<boolean, undefine
 		);
 	}
 
-	function populate(value: boolean, options: any) {
-		options[id] = value;
+	populate(value: boolean, options: any) {
+		options[this.data.id] = value;
 	}
 
-	function generate(_: never, options: any) {
-		return [{ ...options, [id]: false }, { ...options, [id]: true }];
+	generate(_: never, key: any, options: any) {
+		const { id } = this.data;
+		return [
+			{
+				key: { ...key, [id]: false },
+				options: { ...options, [id]: false },
+			},
+			{
+				key: { ...key, [id]: true },
+				options: { ...options, [id]: true },
+			},
+		];
 	}
-
-	return { id, initControlValue, newOptionState, Controller, OptionField, populate, generate };
 }

@@ -1,4 +1,7 @@
 import { Dispatch } from "react";
+import { NumberControl } from "./NumberOption";
+import { BoolControl } from "./BoolOption";
+import { EnumControl } from "./EnumOption";
 
 export interface OptionFieldProps<T, V> {
 	isVariable: boolean;
@@ -10,37 +13,50 @@ export interface OptionFieldProps<T, V> {
 	onRangeChange: Dispatch<V>;
 }
 
-export interface ControllerProps<T, V> {
-	active: boolean;
+export interface FieldProps<T> {
 	value: T;
-	range: V;
 	onChange: Dispatch<T>;
+
+	active: boolean;
 	onFocus: () => void;
 }
 
-interface ControlInit<T> {
-	value: T;
-	labels: string[];
+export interface ControlType<T =any> {
+
+	id: string;
+
+	createState(): T[];
+
+	Input(props: FieldProps<T>): JSX.Element;
+}
+
+export interface OptionsKeyPair {
+	key: any;
+	options: any;
 }
 
 export interface OptionType<T = any, V = any> {
 
 	id: string;
 
-	initControlValue(state: V): ControlInit<T>;
+	createControl(range: V): ControlType<T>;
 
-	Controller(props: ControllerProps<T, V>): JSX.Element;
-
-	newOptionState(): [T, V];
+	createState(): [T, V];
 
 	OptionField(props: OptionFieldProps<T, V>): JSX.Element;
 
 	populate(value: T, options: any): void;
 
-	generate(range: V, options: any): any[];
+	generate(range: V, key: any, options: any): OptionsKeyPair[];
 }
 
-export { default as boolOption } from "./BoolOption";
-export { default as enumOption } from "./EnumOption";
-export { default as numberOption } from "./NumberOption";
-export { default as presetOption } from "./PresetOption";
+export { BoolOption } from "./BoolOption";
+export { EnumOption } from "./EnumOption";
+export { NumberOption } from "./NumberOption";
+export { PresetOption } from "./PresetOption";
+
+export const controlMap = {
+	bool: BoolControl,
+	number: NumberControl,
+	enum: EnumControl,
+};
