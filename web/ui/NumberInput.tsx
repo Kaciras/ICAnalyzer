@@ -104,7 +104,7 @@ export default function NumberInput(props: NumberInputProps) {
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, -increment)}
 			>
-				<MinusIcon shape-rendering="crispEdges"/>
+				<MinusIcon shapeRendering="crispEdges"/>
 			</button>
 			<input
 				type="number"
@@ -126,7 +126,7 @@ export default function NumberInput(props: NumberInputProps) {
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, increment)}
 			>
-				<PlusIcon shape-rendering="crispEdges"/>
+				<PlusIcon shapeRendering="crispEdges"/>
 			</button>
 			{
 				minMaxButton &&
