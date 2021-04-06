@@ -1,8 +1,9 @@
-import { CSSProperties, Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, MouseEvent, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
+import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
 import { PinchZoomState } from "../ui/PinchZoom";
-import { Button, NumberInput, PinchZoom } from "../ui";
+import { Button, NumberInput, PinchZoom, SwitchButton } from "../ui";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
 import { ButtonProps } from "../ui/Button";
@@ -13,13 +14,6 @@ export enum ViewType {
 	Compressed,
 	AbsDiff,
 	HeatMap,
-}
-
-interface ImageViewCSS extends CSSProperties {
-	"--x": string;
-	"--y": string;
-	"--scale": number;
-	"--brightness": string;
 }
 
 function useResettable<T>(initialState: T): [T, Dispatch<SetStateAction<T>>, () => void] {
@@ -45,22 +39,19 @@ interface ImageViewProps {
 
 export default function ImageView(props: ImageViewProps) {
 	const { original, output } = props;
-	const { width = 0, height = 0 } = original.data || {};
+	const { width, height } = original.data;
 
 	const [type, setType] = useState(ViewType.Compressed);
-	const [brightness, setBrightness] = useState(100);
+	const [picking, setPicking] = useState(false);
+	const [brightness, setBrightness] = useState(1);
+
+	const [mousePos, setMousePos] = useState({ clientX: 0, clientY: 0 });
 
 	const [pinchZoom, setPinchZoom, resetPinchZoom] = useResettable<PinchZoomState>({
 		x: 0,
 		y: 0,
 		scale: 1,
 	});
-
-	function handlePinchZoomChange(newValue: PinchZoomState) {
-		if (newValue.scale > 0.01) {
-			setPinchZoom(newValue);
-		}
-	}
 
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
@@ -79,6 +70,17 @@ export default function ImageView(props: ImageViewProps) {
 
 	useEffect(refreshBottomCanvas, [original]);
 	useEffect(refreshTopCanvas, [type, output]);
+
+	function handlePinchZoomChange(newValue: PinchZoomState) {
+		if (newValue.scale > 0.01) {
+			setPinchZoom(newValue);
+		}
+	}
+
+	function handleMouseOver(event: MouseEvent) {
+		const { clientX, clientY } = event;
+		setMousePos({ clientX, clientY });
+	}
 
 	interface ImageViewTabProps extends ButtonProps {
 		target: ViewType;
@@ -100,22 +102,22 @@ export default function ImageView(props: ImageViewProps) {
 	}
 
 	let brightnessInput = null;
-	let brightnessVal = 100;
+	let brightnessVal = 1;
 
 	if (type === ViewType.AbsDiff) {
 		brightnessVal = brightness;
 		brightnessInput = (
 			<label
-				title="Brightness %"
+				title="Brightness"
 				className={styles.option}
 			>
 				<BrightnessIcon className={styles.icon}/>
 				<NumberInput
 					className={styles.darkNumberInput}
 					value={brightness}
-					min={100}
-					max={25500}
-					step={50}
+					min={1}
+					max={255}
+					step={1}
 					minMaxButton={true}
 					onValueChange={setBrightness}
 				/>
@@ -123,12 +125,38 @@ export default function ImageView(props: ImageViewProps) {
 		);
 	}
 
-	const wrapperCss: ImageViewCSS = {
+	const wrapperCSS = {
 		width, height,
 		"--scale": pinchZoom.scale,
 		"--x": pinchZoom.x + "px",
 		"--y": pinchZoom.y + "px",
-		"--brightness": `${brightnessVal}%`,
+		"--brightness": `${brightnessVal}`,
+	};
+
+	const { clientX, clientY } = mousePos;
+	const px = Math.floor((clientX - pinchZoom.x - (window.innerWidth - width * pinchZoom.scale) / 2) / pinchZoom.scale);
+	const py = Math.floor((clientY - pinchZoom.y - (window.innerHeight - height * pinchZoom.scale) / 2) / pinchZoom.scale);
+
+	function getPixel(image: ImageData, x: number, y: number) {
+		const { width, data } = image;
+		const i = (x + y * width) * 4;
+		return Array.from(data.slice(i, i + 4));
+	}
+
+	function pixelToString(pixel: number[]) {
+		return pixel.map(n => n.toString(16)).join("");
+	}
+
+	const originPixel = getPixel(original.data, px, py);
+	const outputPixel = getPixel(output.data, px, py);
+
+	const ips = pixelToString(originPixel);
+	const ops = pixelToString(originPixel);
+	const dps = pixelToString(originPixel.map((n, i) => Math.abs(n - outputPixel[i])));
+
+	const pickerCSS = {
+		left: mousePos.clientX,
+		top: mousePos.clientY,
 	};
 
 	const mixBlendMode = type === ViewType.AbsDiff ? "difference" : undefined;
@@ -147,7 +175,11 @@ export default function ImageView(props: ImageViewProps) {
 				state={pinchZoom}
 				onChange={handlePinchZoomChange}
 			>
-				<div className={styles.wrapper} style={wrapperCss}>
+				<div
+					className={styles.wrapper}
+					style={wrapperCSS}
+					onMouseOver={handleMouseOver}
+				>
 					<canvas
 						className={styles.canvas}
 						ref={backCanvas}
@@ -163,6 +195,16 @@ export default function ImageView(props: ImageViewProps) {
 						hidden={type === ViewType.Original}
 					/>
 				</div>
+
+				{
+					picking &&
+					<div className={styles.popup} style={pickerCSS}>
+						<div>x: {px}, y: {py}</div>
+						<div className={styles.color}>Orig: #{ips}</div>
+						<div className={styles.color}>Output: #{ops}</div>
+						<div className={styles.color}>Diff: #{dps}</div>
+					</div>
+				}
 			</PinchZoom>
 
 			<div className={styles.inputs}>
@@ -190,6 +232,18 @@ export default function ImageView(props: ImageViewProps) {
 						HeatMap
 					</ImageViewTab>
 				</div>
+
+				<div
+					className={styles.option}
+					title="Pick color"
+				>
+					<PickColorIcon className={styles.icon}/>
+					<SwitchButton
+						checked={picking}
+						onValueChange={setPicking}
+					/>
+				</div>
+
 				{brightnessInput}
 			</div>
 
@@ -198,7 +252,7 @@ export default function ImageView(props: ImageViewProps) {
 					title="Zoom scale"
 					min={1}
 					step={1}
-					increment={25}
+					increment={50}
 					className={styles.zoomInput}
 					value={Math.round(pinchZoom.scale * 100)}
 					onValueChange={setZoom}
