@@ -1,0 +1,30 @@
+.popup {
+	position: absolute;
+	padding: 6px;
+
+	font-size: .875em;
+	font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+
+	transform: translateY(-100%);
+
+	background: black;
+	color: white;
+	border: solid 1px white;
+}
+
+.color {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	margin: 2px;
+
+	&::before {
+		content: "";
+		display: inline-block;
+		width: .875em;
+		height: .875em;
+		margin-right: 8px;
+		background-color: var(--color);
+	}
+}

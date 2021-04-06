@@ -7,6 +7,7 @@ import { Button, NumberInput, PinchZoom, SwitchButton } from "../ui";
 import { ConvertOutput } from "../encode";
 import { InputImage } from "./index";
 import { ButtonProps } from "../ui/Button";
+import ColorPicker from "./ColorPicker";
 import styles from "./ImageView.scss";
 
 export enum ViewType {
@@ -137,23 +138,6 @@ export default function ImageView(props: ImageViewProps) {
 	const px = Math.floor((clientX - pinchZoom.x - (window.innerWidth - width * pinchZoom.scale) / 2) / pinchZoom.scale);
 	const py = Math.floor((clientY - pinchZoom.y - (window.innerHeight - height * pinchZoom.scale) / 2) / pinchZoom.scale);
 
-	function getPixel(image: ImageData, x: number, y: number) {
-		const { width, data } = image;
-		const i = (x + y * width) * 4;
-		return Array.from(data.slice(i, i + 4));
-	}
-
-	function pixelToString(pixel: number[]) {
-		return pixel.map(n => n.toString(16)).join("");
-	}
-
-	const originPixel = getPixel(original.data, px, py);
-	const outputPixel = getPixel(output.data, px, py);
-
-	const ips = pixelToString(originPixel);
-	const ops = pixelToString(originPixel);
-	const dps = pixelToString(originPixel.map((n, i) => Math.abs(n - outputPixel[i])));
-
 	const pickerCSS = {
 		left: mousePos.clientX,
 		top: mousePos.clientY,
@@ -195,16 +179,6 @@ export default function ImageView(props: ImageViewProps) {
 						hidden={type === ViewType.Original}
 					/>
 				</div>
-
-				{
-					picking &&
-					<div className={styles.popup} style={pickerCSS}>
-						<div>x: {px}, y: {py}</div>
-						<div className={styles.color}>Orig: #{ips}</div>
-						<div className={styles.color}>Output: #{ops}</div>
-						<div className={styles.color}>Diff: #{dps}</div>
-					</div>
-				}
 			</PinchZoom>
 
 			<div className={styles.inputs}>
@@ -266,6 +240,16 @@ export default function ImageView(props: ImageViewProps) {
 					<ResetIcon/>
 				</Button>
 			</div>
+
+			{
+				picking && <ColorPicker
+					style={pickerCSS}
+					x={px}
+					y={py}
+					imageA={original.data}
+					imageB={output.data}
+				/>
+			}
 		</div>
 	);
 }
