@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MeasureOptions } from "../encode";
 import { Button, Dialog } from "../ui";
+import { InputImage } from "./index";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MetricsPanel, { createMeasureState } from "./MetricsPanel";
 import EncoderPanel, { createEncodingConfig, EncodingConfig } from "./EncoderPanel";
@@ -23,8 +24,7 @@ function initEncoderConfig(): AnalyzeConfig {
 }
 
 interface ConfigDialogProps {
-	image: ImageData;
-	file: File;
+	image: InputImage;
 	onStart: (config: AnalyzeConfig) => void;
 	onClose: () => void;
 	onSelectFile: () => void;
@@ -33,14 +33,14 @@ interface ConfigDialogProps {
 const panels = ["Information", "Encoding", "Measure"];
 
 export default function ConfigDialog(props: ConfigDialogProps) {
-	const { file, image, onStart, onClose, onSelectFile } = props;
+	const { image, onStart, onClose, onSelectFile } = props;
 
 	const [index, setIndex] = useState(0);
-	const [data, setData] = useState(initEncoderConfig);
+	const [config, setConfig] = useState(initEncoderConfig);
 
 	function start() {
-		onStart(data);
-		localStorage.setItem("Config", JSON.stringify(data));
+		onStart(config);
+		localStorage.setItem("Config", JSON.stringify(config));
 	}
 
 	const tabs = panels.map((name, i) =>
@@ -58,26 +58,23 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 
 	switch (index) {
 		case 0:
-			panel = <ImageInfoPanel
-				file={file}
-				image={image}
-			/>;
+			panel = <ImageInfoPanel image={image}/>;
 			break;
 		case 1:
 			panel = <EncoderPanel
-				value={data.encoders}
-				onChange={v => setData({ ...data, encoders: v })}
+				value={config.encoders}
+				onChange={v => setConfig({ ...config, encoders: v })}
 			/>;
 			break;
 		case 2:
 			panel = <MetricsPanel
-				value={data.measure}
-				onChange={v => setData({ ...data, measure: v })}
+				value={config.measure}
+				onChange={v => setConfig({ ...config, measure: v })}
 			/>;
 			break;
 	}
 
-	const ready = file && Object.values(data.encoders).some(e => e.enable);
+	const ready = image && Object.values(config.encoders).some(e => e.enable);
 
 	return (
 		<Dialog

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { Dispatch, useRef, useState } from "react";
 import largePhoto from "../assets/demo/large-photo.jpg";
 import largePhotoIcon from "../assets/demo/large-photo-icon.jpg";
 import artwork from "../assets/demo/artwork.jpg";
@@ -10,6 +10,7 @@ import { getFileFromUrl } from "../utils";
 import { decode } from "../decode";
 import DemoButton from "./DemoButton";
 import styles from "./SelectFileDialog.scss";
+import { InputImage } from "./index";
 
 const demos = [
 	{
@@ -31,18 +32,18 @@ const demos = [
 
 interface SelectFileDialogProps {
 	onCancel: () => void;
-	onFileChange: (file: File, image: ImageData) => void;
+	onChange: Dispatch<InputImage>;
 }
 
 export default function SelectFileDialog(props: SelectFileDialogProps) {
-	const { onCancel, onFileChange } = props;
+	const { onCancel, onChange } = props;
 
 	const abortController = useRef(new AbortController());
 	const [error, setError] = useState("");
 
 	function accept(file: File) {
 		decode(file)
-			.then(image => onFileChange(file, image))
+			.then(data => onChange({ file, data }))
 			.catch(() => setError("Can not decode file as image."));
 	}
 

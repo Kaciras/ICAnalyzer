@@ -1,14 +1,14 @@
 import { bytes } from "../utils";
+import { InputImage } from "./index";
 import styles from "./ImageInfoPanel.scss";
 
-interface Props {
-	file: File;
-	image: ImageData;
+interface ImageInfoPanelProps {
+	image: InputImage;
 }
 
-export default function ImageInfoPanel(props: Props) {
-	const { file } = props;
-	const { width, height, data } = props.image;
+export default function ImageInfoPanel(props: ImageInfoPanelProps) {
+	const { file } = props.image;
+	const { width, height, data } = props.image.data;
 
 	const ratio = (file.size / data.byteLength * 100).toFixed(2);
 
@@ -17,7 +17,7 @@ export default function ImageInfoPanel(props: Props) {
 			return;
 		}
 		const ctx = el.getContext("2d");
-		ctx?.putImageData(props.image, 0, 0);
+		ctx?.putImageData(props.image.data, 0, 0);
 	}
 
 	return (

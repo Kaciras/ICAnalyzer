@@ -1,7 +1,6 @@
 import { Dispatch, useState } from "react";
-import { decode } from "../decode";
 import { BatchEncodeAnalyzer, ConvertOutput, newWorker, ObjectKeyMap } from "../encode";
-import type { Result } from ".";
+import type { InputImage, Result } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
@@ -38,32 +37,27 @@ export default function CompressSession(props: CompressSessionProps) {
 	const { open, onClose, onChange } = props;
 
 	const [selectFile, setSelectFile] = useState(true);
-
-	const [file, setFile] = useState<File>();
-	const [image, setImage] = useState<ImageData>();
-
+	const [image, setImage] = useState<InputImage>();
 	const [encoder, setEncoder] = useState<WorkerPool<WorkerApi>>();
 
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
 
 	function cancelSelectFile() {
-		file ? setSelectFile(false) : onClose();
+		image ? setSelectFile(false) : onClose();
 	}
 
-	async function handleFileChange(newFile: File) {
-		const image = await decode(newFile);
-		setFile(newFile);
+	async function handleInputChange(image: InputImage) {
 		setImage(image);
 		setSelectFile(false);
 	}
 
 	async function handleStart(config: AnalyzeConfig) {
-		if (!file) {
+		if (!image) {
 			throw new Error("File is null");
 		}
+		const { data } = image;
 		const { encoders, measure } = config;
-		const image = await decode(file);
 
 		let outputSize = 0;
 		const queue: Array<[ImageEncoder, OptionsKeyPair[]]> = [];
@@ -99,7 +93,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 		// noinspection ES6MissingAwait
 		try {
-			await pool.runOnEach(r => r.setImageToEncode(image));
+			await pool.runOnEach(r => r.setImageToEncode(data));
 
 			// Warmup workers to avoid disturbance of initialize time
 			if (measure.time) {
@@ -126,7 +120,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
-				onChange({ config: { controlsMap }, outputMap, original: { file, data: image! } });
+				onChange({ config: { controlsMap }, outputMap, original: image });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
@@ -156,14 +150,13 @@ export default function CompressSession(props: CompressSessionProps) {
 		return (
 			<SelectFileDialog
 				onCancel={cancelSelectFile}
-				onFileChange={handleFileChange}
+				onChange={handleInputChange}
 			/>
 		);
 	} else {
 		return (
 			<ConfigDialog
 				image={image!}
-				file={file!}
 				onStart={handleStart}
 				onClose={onClose}
 				onSelectFile={() => setSelectFile(true)}
