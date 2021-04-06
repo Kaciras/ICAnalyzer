@@ -41,9 +41,11 @@ interface ImageViewProps {
 export default function ImageView(props: ImageViewProps) {
 	const { original, output } = props;
 	const { width, height } = original.data;
+	const { butteraugli } = output.metrics;
 
 	const [type, setType] = useState(ViewType.Compressed);
 	const [picking, setPicking] = useState(false);
+	const [inRegion, setInRegion] = useState(false);
 	const [brightness, setBrightness] = useState(1);
 
 	const [mousePos, setMousePos] = useState({ clientX: 0, clientY: 0 });
@@ -57,30 +59,27 @@ export default function ImageView(props: ImageViewProps) {
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
+	const topImage = (type === ViewType.HeatMap) ? butteraugli!.heatMap : output.data;
+
 	function refreshBottomCanvas() {
 		resetPinchZoom();
 		drawDataToCanvas(original.data, backCanvas);
 	}
 
 	function refreshTopCanvas() {
-		const { metrics, data } = output;
-
-		const image = type === ViewType.HeatMap ? metrics.butteraugli!.heatMap : data;
-		drawDataToCanvas(image, topCanvas);
+		drawDataToCanvas(topImage, topCanvas);
 	}
 
 	useEffect(refreshBottomCanvas, [original]);
-	useEffect(refreshTopCanvas, [type, output]);
+	useEffect(refreshTopCanvas, [topImage]);
 
-	function handlePinchZoomChange(newValue: PinchZoomState) {
-		if (newValue.scale > 0.01) {
-			setPinchZoom(newValue);
-		}
-	}
-
-	function handleMouseOver(event: MouseEvent) {
+	function handleMouseMove(event: MouseEvent) {
 		const { clientX, clientY } = event;
 		setMousePos({ clientX, clientY });
+	}
+
+	function setZoom(value: number) {
+		setPinchZoom(prev => ({ ...prev, scale: value / 100 }));
 	}
 
 	interface ImageViewTabProps extends ButtonProps {
@@ -144,25 +143,21 @@ export default function ImageView(props: ImageViewProps) {
 	};
 
 	const mixBlendMode = type === ViewType.AbsDiff ? "difference" : undefined;
-
-	const noHeatMap = !output.metrics.butteraugli;
-	const heatMapTitle = noHeatMap ? "Require enable butteraugli" : undefined;
-
-	function setZoom(value: number) {
-		setPinchZoom(prev => ({ ...prev, scale: value / 100 }));
-	}
+	const heatMapTitle = butteraugli ? undefined : "Require enable butteraugli";
 
 	return (
 		<div className={styles.container}>
 			<PinchZoom
 				className={styles.imageView}
 				state={pinchZoom}
-				onChange={handlePinchZoomChange}
+				onChange={v => v.scale > 0.01 && setPinchZoom(v)}
 			>
 				<div
 					className={styles.wrapper}
 					style={wrapperCSS}
-					onMouseOver={handleMouseOver}
+					onMouseOver={() => setInRegion(true)}
+					onMouseMove={handleMouseMove}
+					onMouseOut={() => setInRegion(false)}
 				>
 					<canvas
 						className={styles.canvas}
@@ -199,7 +194,7 @@ export default function ImageView(props: ImageViewProps) {
 						Difference
 					</ImageViewTab>
 					<ImageViewTab
-						disabled={noHeatMap}
+						disabled={!butteraugli}
 						title={heatMapTitle}
 						target={ViewType.HeatMap}
 					>
@@ -242,7 +237,8 @@ export default function ImageView(props: ImageViewProps) {
 			</div>
 
 			{
-				picking && <ColorPicker
+				picking && inRegion &&
+				<ColorPicker
 					style={pickerCSS}
 					x={px}
 					y={py}

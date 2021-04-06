@@ -49,7 +49,7 @@ export default function ColorPicker(props: PickColorPopupProps) {
 	const pixelDiff = pixelA.map((n, i) => Math.abs(n - pixelB[i]));
 
 	return (
-		<div className={styles.popup} style={style}>
+		<div className={styles.container} style={style}>
 			<div>x: {x}, y: {y}</div>
 			<ColorItem name="Origin" value={pixelA}/>
 			<ColorItem name="Output" value={pixelB}/>

@@ -1,13 +1,17 @@
-.popup {
+.container {
 	position: absolute;
 	padding: 6px;
 
 	font-size: .875em;
-	font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
-
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+	white-space: nowrap;
 	transform: translateY(-100%);
 
-	background: black;
+	// Allow moving when the mouse moves to the box.
+	// this also prevents user select, which needs pin the box.
+	pointer-events: none;
+
+	background: #222;
 	color: white;
 	border: solid 1px white;
 }
