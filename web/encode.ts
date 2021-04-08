@@ -2,7 +2,7 @@ import { Remote } from "comlink";
 import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
-import { SSIMOptions } from "../lib/similarity";
+import * as SSIM from "ssim.js";
 
 export interface ButteraugliConfig {
 	hfAsymmetry: number;
@@ -20,11 +20,11 @@ export interface MeasureOptions {
 	workerCount: number;
 	time: boolean;
 	PSNR: boolean;
-	SSIM: Optional<SSIMOptions>;
+	SSIM: Optional<SSIM.Options>;
 	butteraugli: Optional<ButteraugliConfig>;
 }
 
-interface Metrics {
+export interface Metrics {
 	SSIM?: number;
 	PSNR?: number;
 	butteraugli?: {
@@ -38,6 +38,20 @@ export interface ConvertOutput {
 	buffer: ArrayBuffer;
 	data: ImageData;
 	metrics: Metrics;
+}
+
+// JSON.stringify is not deterministic, be careful with the properties order.
+export class ObjectKeyMap<K, V> {
+
+	private readonly table: Record<string, V> = {};
+
+	get(key: K) {
+		return this.table[JSON.stringify(key)];
+	}
+
+	set(key: K, value: V) {
+		this.table[JSON.stringify(key)] = value;
+	}
 }
 
 export function newWorker() {

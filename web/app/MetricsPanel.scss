@@ -8,6 +8,12 @@
 	align-content: start;
 }
 
+.subfields {
+	display: flex;
+	align-items: center;
+	padding: 10px 0 0 30px;
+}
+
 .field {
 	display: inline-block;
 	margin-right: 20px;
@@ -24,4 +30,9 @@
 	font-weight: 600;
 	color: #444;
 	margin-bottom: 5px;
+}
+
+.select {
+	padding: 5px;
+	font-size: 1rem;
 }
