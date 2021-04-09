@@ -1,6 +1,6 @@
 import { Dispatch, useRef, useState } from "react";
-import largePhoto from "../assets/demo/large-photo.jpg";
-import largePhotoIcon from "../assets/demo/large-photo-icon.jpg";
+import photo from "../assets/demo/photo.jpg";
+import photoIcon from "../assets/demo/photo-icon.jpg";
 import artwork from "../assets/demo/artwork.jpg";
 import artworkIcon from "../assets/demo/artwork-icon.jpg";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
@@ -14,9 +14,9 @@ import { InputImage } from "./index";
 
 const demos = [
 	{
-		description: "Large photo (2.8MB)",
-		url: largePhoto,
-		icon: largePhotoIcon,
+		description: "Large photo (488KB)",
+		url: photo,
+		icon: photoIcon,
 	},
 	{
 		description: "Artwork (408KB)",

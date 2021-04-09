@@ -47,7 +47,7 @@ export default function FileDrop(props: FileDropProps) {
 		boundary.reset();
 
 		const { items } = event.dataTransfer;
-		const file = items[0].getAsFile();
+		const file = items[0]?.getAsFile();
 
 		if (file) {
 			onChange(file);
