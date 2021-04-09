@@ -99,7 +99,7 @@ export default function CompressSession(props: CompressSessionProps) {
 			if (measure.time) {
 				for (const [encoder, optionsList] of queue) {
 					const { options } = optionsList[0];
-					await pool.runOnEach(async r => encoder.encode(r, options).then(progress.increase));
+					await pool.runOnEach(async r => encoder.encode(options, r).then(progress.increase));
 				}
 			}
 
@@ -133,6 +133,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 	function stop() {
 		encoder!.terminate();
+		setEncoder(undefined);
 	}
 
 	if (!open) {

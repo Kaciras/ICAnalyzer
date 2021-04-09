@@ -15,6 +15,7 @@ export class BoolControl implements ControlType<boolean> {
 
 	constructor(data: Metadata) {
 		this.data = data;
+		this.Input = this.Input.bind(this);
 	}
 
 	get id() {

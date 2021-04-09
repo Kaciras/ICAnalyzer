@@ -23,6 +23,7 @@ export class EnumControl implements ControlType<string> {
 
 	constructor(data: ControlData) {
 		this.data = data;
+		this.Input = this.Input.bind(this);
 	}
 
 	get id() {
@@ -77,7 +78,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 
 	createControl(names: Array<keyof T>) {
 		const { id, label } = this.data;
-		return new EnumControl({ id, label, names });
+		return new EnumControl({ id, label, names: (names as string[]) });
 	}
 
 	createState() {
