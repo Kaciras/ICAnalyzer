@@ -23,8 +23,10 @@ interface RangeInputCSS extends CSSProperties {
 }
 
 export default function RangeInput(props: RangeInputProps) {
-	const { className, name, value, min, max, step, disabled,
-		onClick, onChange = NOOP, onValueChange = NOOP } = props;
+	const {
+		className, name, value, min, max, step, disabled,
+		onClick, onChange = NOOP, onValueChange = NOOP,
+	} = props;
 
 	const percent = (value - min) / (max - min);
 	const cssVariables: RangeInputCSS = {

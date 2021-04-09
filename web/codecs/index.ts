@@ -24,20 +24,8 @@ export interface OptionListProps {
 	onChange: Dispatch<EncoderState>;
 }
 
-export interface ControlProps {
-	state: EncoderState;
-	variableName: string | false;
-	onChange: Dispatch<Record<string, unknown>>;
-	onVariableChange: Dispatch<string>;
-}
-
-export interface ControlStateMap {
-	values: Record<string, unknown>;
-	labels: Record<string, string[]>;
-}
-
 export interface EncodeConfig {
-	controls: Array<ControlType<any>>;
+	controls: ControlType[];
 	optionsList: OptionsKeyPair[];
 }
 
