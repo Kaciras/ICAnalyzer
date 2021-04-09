@@ -17,7 +17,8 @@ $border-active-color: rgb(0, 128, 255, .8);
 }
 
 .input {
-	-moz-appearance: textfield;
+	composes: no-spinner from global;
+
 	width: var(--input-width, 60px);
 	min-width: 0;
 	padding: 5px 10px;
@@ -32,12 +33,6 @@ $border-active-color: rgb(0, 128, 255, .8);
 
 	&:focus {
 		outline: none;
-	}
-
-	&::-webkit-outer-spin-button,
-	&::-webkit-inner-spin-button {
-		margin: 0;
-		-webkit-appearance: none;
 	}
 }
 

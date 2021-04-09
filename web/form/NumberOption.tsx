@@ -1,5 +1,6 @@
-import type { ControlType, FieldProps, OptionFieldProps, OptionType } from ".";
+import { Dispatch } from "react";
 import { CheckBox, ControlField, NumberInput, RangeInput } from "../ui";
+import type { ControlType, FieldProps, OptionFieldProps, OptionType } from ".";
 import styles from "./NumberOption.scss";
 
 interface NumberRange {
@@ -13,6 +14,16 @@ function sequence(range: NumberRange) {
 	return new Array<number>(Math.ceil((max + 1 - min) / step))
 		.fill(min)
 		.map((v, i) => v + i * step);
+}
+
+interface RangePartProps {
+	name: keyof NumberRange;
+	range: NumberRange;
+	onRangeChange: Dispatch<NumberRange>;
+
+	min?: number;
+	max?: number;
+	step?: number;
 }
 
 interface Metadata extends NumberRange {
@@ -72,6 +83,7 @@ export class NumberOption implements OptionType<number, NumberRange> {
 		this.VariableMode = this.VariableMode.bind(this);
 		this.ConstMode = this.ConstMode.bind(this);
 		this.OptionField = this.OptionField.bind(this);
+		this.RangePart = this.RangePart.bind(this);
 	}
 
 	get id() {
@@ -105,52 +117,46 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	VariableMode(props: OptionFieldProps<number, NumberRange>) {
+		const { RangePart } = this;
 		const { step } = this.data;
 		const { range, onRangeChange } = props;
 
-		function handleChange(name: keyof NumberRange, valueAsNumber: number) {
+		return (
+			<div className={styles.body}>
+				<RangePart range={range} onRangeChange={onRangeChange} name="min" max={range.max}/>
+				<RangePart range={range} onRangeChange={onRangeChange} name="max" min={range.min}/>
+				<RangePart range={range} onRangeChange={onRangeChange} name="step" min={step}/>
+			</div>
+		);
+	}
+
+	RangePart(props: RangePartProps) {
+		const { name, min, max, step, range, onRangeChange } = { ...this.data, ...props };
+
+		function handleChange(valueAsNumber: number) {
 			onRangeChange({ ...range, [name]: valueAsNumber });
 		}
 
-		interface FieldProps {
-			name: keyof NumberRange;
-			min?: number;
-			max?: number;
-			step?: number;
-		}
-
-		const Field = (props: FieldProps) => {
-			const { name, min, max, step } = { ...this.data, ...props };
-
-			return (
-				<label className={styles.spinner}>
-					<span>{name}</span>
-					<NumberInput
-						className={styles.numberInput}
-						name={name}
-						value={range[name]}
-						min={min}
-						max={max}
-						step={step}
-						onValueChange={v => handleChange(name, v)}
-					/>
-				</label>
-			);
-		};
-
 		return (
-			<div className={styles.body}>
-				<Field name="min" max={range.max}/>
-				<Field name="max" min={range.min}/>
-				<Field name="step" min={step}/>
-			</div>
+			<label className={styles.spinner}>
+				<span>{name}</span>
+				<NumberInput
+					className={styles.numberInput}
+					name={name}
+					value={range[name]}
+					min={min}
+					max={max}
+					step={step}
+					onValueChange={handleChange}
+				/>
+			</label>
 		);
 	}
 
 	OptionField(props: OptionFieldProps<number, NumberRange>) {
 		const { VariableMode, ConstMode } = this;
-		const { label } = this.data;
-		const { isVariable, value, onVariabilityChange } = props;
+		const { label, min, max, step } = this.data;
+		const { isVariable, value, onVariabilityChange, onValueChange } = props;
 
 		return (
 			<fieldset className={styles.fieldset}>
@@ -162,7 +168,18 @@ export class NumberOption implements OptionType<number, NumberRange> {
 					>
 						{label}
 					</CheckBox>
-					{!isVariable && value}
+					{
+						!isVariable &&
+						<input
+							className={styles.input}
+							type="number"
+							min={min}
+							max={max}
+							step={step}
+							value={value}
+							onChange={e => onValueChange(e.target.valueAsNumber)}
+						/>
+					}
 				</div>
 				{isVariable ? <VariableMode {...props}/> : <ConstMode {...props}/>}
 			</fieldset>

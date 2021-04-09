@@ -33,3 +33,13 @@
 .body {
 	margin-left: 30px;
 }
+
+.input {
+	composes: no-spinner from global;
+
+	width: 3em;
+	padding: 2px 4px;
+	border: 0;
+	font-size: inherit;
+	text-align: right;
+}
