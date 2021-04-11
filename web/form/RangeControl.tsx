@@ -1,5 +1,6 @@
-import { ControlType, FieldProps } from "./index";
+import { ChangeEvent, useState } from "react";
 import { ControlField, RangeInput } from "../ui";
+import { ControlType, FieldProps } from "./index";
 import styles from "./RangeControl.scss";
 
 export interface NumberRange {
@@ -41,13 +42,37 @@ export default class RangeControl implements ControlType<number> {
 		const { id, label, min, max, step } = this.data;
 		const { value, onChange } = props;
 
+		// This is not a class component, just a render function in a class.
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		const [tempValue, setTempValue] = useState(value);
+
+		function handleRangeInput(newValue: number) {
+			onChange(newValue);
+			setTempValue(newValue);
+		}
+
+		function handleNumberInput(event: ChangeEvent<HTMLInputElement>) {
+			const { target } = event;
+			if (target.checkValidity()) {
+				onChange(target.valueAsNumber);
+			}
+			setTempValue(target.valueAsNumber);
+		}
+
 		return (
 			<ControlField {...props}>
 				<div className={styles.header}>
-					<span className={styles.label}>
-						{label}
-					</span>
-					{value}
+					{label}
+					<input
+						className={styles.input}
+						type="number"
+						min={min}
+						max={max}
+						step={step}
+						value={tempValue}
+						required={true}
+						onChange={handleNumberInput}
+					/>
 				</div>
 				<RangeInput
 					name={id}
@@ -56,7 +81,7 @@ export default class RangeControl implements ControlType<number> {
 					max={max}
 					step={step}
 					onClick={e => e.stopPropagation()}
-					onValueChange={onChange}
+					onValueChange={handleRangeInput}
 				/>
 			</ControlField>
 		);
