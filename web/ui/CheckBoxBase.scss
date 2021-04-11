@@ -1,5 +1,4 @@
 $color-checked: #069AF9;
-
 $size: 24px;
 
 .container {
@@ -28,8 +27,6 @@ $size: 24px;
 }
 
 .mark {
-	display: inline-flex;
-	height: $size;
 	font-size: $size;
 	color: #777;
 	vertical-align: middle;

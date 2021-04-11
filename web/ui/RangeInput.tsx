@@ -1,7 +1,7 @@
 import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch, MouseEventHandler } from "react";
+import clsx from "clsx";
 import { NOOP } from "../utils";
 import styles from "./RangeInput.scss";
-import clsx from "clsx";
 
 interface RangeInputProps {
 	value: number;

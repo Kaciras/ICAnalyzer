@@ -1,4 +1,12 @@
-import { ChangeEvent, ChangeEventHandler, ComponentType, Dispatch, MouseEventHandler, ReactNode } from "react";
+import {
+	ChangeEvent,
+	ChangeEventHandler,
+	ComponentType,
+	Dispatch,
+	MouseEventHandler,
+	ReactNode,
+	SVGProps,
+} from "react";
 import clsx from "clsx";
 import { NOOP } from "../utils";
 import styles from "./CheckBoxBase.scss";
@@ -20,8 +28,8 @@ export interface CheckBoxProps {
 
 interface InternalProps extends CheckBoxProps {
 	type: string;
-	Icon: ComponentType;
-	IconChecked: ComponentType;
+	Icon: ComponentType<SVGProps<SVGSVGElement>>;
+	IconChecked: ComponentType<SVGProps<SVGSVGElement>>;
 }
 
 export default function CheckBoxBase(props: InternalProps) {
@@ -35,6 +43,8 @@ export default function CheckBoxBase(props: InternalProps) {
 		onValueChange(e.currentTarget.checked);
 	}
 
+	const CheckMark = checked ? IconChecked : Icon;
+
 	return (
 		<label className={clsx(styles.container, className)} onClick={onClick}>
 			<input
@@ -46,9 +56,7 @@ export default function CheckBoxBase(props: InternalProps) {
 				checked={checked}
 				onChange={handleChange}
 			/>
-			<span className={styles.mark}>
-				{checked ? <IconChecked/> : <Icon/>}
-			</span>
+			<CheckMark className={styles.mark}/>
 			{children && <span className={styles.label}>{children}</span>}
 		</label>
 	);

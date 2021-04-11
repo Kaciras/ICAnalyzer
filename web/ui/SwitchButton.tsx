@@ -1,7 +1,7 @@
+import { ChangeEvent } from "react";
 import clsx from "clsx";
 import { CheckBoxProps } from "./CheckBoxBase";
 import { NOOP } from "../utils";
-import { ChangeEvent } from "react";
 import styles from "./SwitchButton.scss";
 
 export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
