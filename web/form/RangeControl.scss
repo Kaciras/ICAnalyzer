@@ -37,9 +37,13 @@
 .input {
 	composes: no-spinner from global;
 
+	margin-left: auto;
 	width: 3em;
 	padding: 2px 4px;
+
 	border: 0;
 	font-size: inherit;
 	text-align: right;
+	color: inherit;
+	background: none;
 }

@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
-import { NumberControl } from "./NumberOption";
-import { BoolControl } from "./BoolOption";
-import { EnumControl } from "./EnumOption";
+import RangeControl from "./RangeControl";
+import EnumControl from "./EnumControl";
+import SwitchControl from "./SwitchControl";
 
 export interface OptionFieldProps<T, V> {
 	isVariable: boolean;
@@ -21,7 +21,7 @@ export interface FieldProps<T> {
 	onFocus: () => void;
 }
 
-export interface ControlType<T =any> {
+export interface ControlType<T = any> {
 
 	id: string;
 
@@ -56,7 +56,7 @@ export { NumberOption } from "./NumberOption";
 export { PresetOption } from "./PresetOption";
 
 export const controlMap = {
-	bool: BoolControl,
-	number: NumberControl,
+	bool: SwitchControl,
 	enum: EnumControl,
+	number: RangeControl,
 };

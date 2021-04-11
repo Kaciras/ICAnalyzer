@@ -1,53 +1,19 @@
-import type { FieldProps, OptionFieldProps, OptionType } from ".";
-import { ControlType } from ".";
-import { CheckBox, ControlField, SwitchButton } from "../ui";
-import styles from "./BoolOption.scss";
+import { CheckBox, SwitchButton } from "../ui";
+import { OptionFieldProps, OptionType } from "./index";
+import SwitchControl from "./SwitchControl";
+import styles from "./SwitchControl.scss";
 
-interface Metadata {
+export interface BoolVariableConfig {
 	id: string;
 	label: string;
 	defaultValue: boolean | number;
 }
 
-export class BoolControl implements ControlType<boolean> {
+export class BoolOption implements OptionType<boolean, never> {
 
-	private readonly data: Metadata;
+	private readonly data: BoolVariableConfig;
 
-	constructor(data: Metadata) {
-		this.data = data;
-		this.Input = this.Input.bind(this);
-	}
-
-	get id() {
-		return this.data.id;
-	}
-
-	createState() {
-		return [false, true];
-	}
-
-	Input(props: FieldProps<boolean>) {
-		const { value, onChange } = props;
-		const { label } = this.data;
-
-		return (
-			<ControlField {...props} className={styles.control}>
-				{label}
-				<SwitchButton
-					checked={value}
-					onValueChange={onChange}
-					onClick={e => e.stopPropagation()}
-				/>
-			</ControlField>
-		);
-	}
-}
-
-export class BoolOption implements OptionType<boolean, undefined> {
-
-	private readonly data: Metadata;
-
-	constructor(data: Metadata) {
+	constructor(data: BoolVariableConfig) {
 		this.data = data;
 		this.OptionField = this.OptionField.bind(this);
 	}
@@ -57,14 +23,14 @@ export class BoolOption implements OptionType<boolean, undefined> {
 	}
 
 	createControl(range: undefined) {
-		return new BoolControl(this.data);
+		return new SwitchControl(this.data);
 	}
 
 	createState() {
 		return [Boolean(this.data.defaultValue), undefined] as [boolean, never];
 	}
 
-	OptionField(props: OptionFieldProps<boolean, undefined>) {
+	OptionField(props: OptionFieldProps<boolean, never>) {
 		const { id, label } = this.data;
 		const { isVariable, value, onValueChange, onVariabilityChange } = props;
 

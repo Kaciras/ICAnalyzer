@@ -1,66 +1,14 @@
-import type { FieldProps, OptionFieldProps, OptionType } from ".";
-import { ControlType } from ".";
 import { ChangeEvent } from "react";
-import { CheckBox, ControlField, RadioBox } from "../ui";
-import styles from "./EnumOption.scss";
-
-interface ControlData {
-	id: string;
-	label: string;
-	names: string[];
-}
+import type { OptionFieldProps, OptionType } from ".";
+import { CheckBox, RadioBox } from "../ui";
+import styles from "./EnumControl.scss";
+import EnumControl from "./EnumControl";
 
 export interface EnumOptionConfig<T extends Record<string, any>> {
 	id: string;
 	label: string;
 	enumObject: T;
 	defaultValue: keyof T;
-}
-
-export class EnumControl implements ControlType<string> {
-
-	private readonly data: ControlData;
-
-	constructor(data: ControlData) {
-		this.data = data;
-		this.Input = this.Input.bind(this);
-	}
-
-	get id() {
-		return this.data.id;
-	}
-
-	createState() {
-		return this.data.names;
-	}
-
-	Input(props: FieldProps<string>) {
-		const { id, label, names } = this.data;
-		const { value, onChange } = props;
-
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			onChange(e.currentTarget.name);
-		}
-
-		const items = names.map(name =>
-			<RadioBox
-				key={name}
-				className={styles.item}
-				checked={name === value}
-				name={id}
-				onChange={handleChange}
-			>
-				{name}
-			</RadioBox>,
-		);
-
-		return (
-			<ControlField {...props}>
-				{label}
-				<div>{items}</div>
-			</ControlField>
-		);
-	}
 }
 
 export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
