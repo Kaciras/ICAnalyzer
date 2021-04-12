@@ -1,6 +1,7 @@
 import { ChangeEvent, Dispatch, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
+import { NOOP } from "../utils";
 import styles from "./FileDrop.scss";
 
 /**
@@ -28,18 +29,35 @@ function useBoundaryCounter() {
 
 export interface FileDropProps {
 	className?: string;
+	onStart?: () => void;
 	onChange: Dispatch<File>;
 	onError: Dispatch<string>;
 }
 
 export default function FileDrop(props: FileDropProps) {
-	const { className, onChange, onError } = props;
+	const { className, onStart = NOOP, onChange, onError } = props;
 
 	const boundary = useBoundaryCounter();
+	const dragStarted = useRef(false);
 
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
 		const { files } = event.currentTarget;
 		if (files?.length) onChange(files[0]);
+	}
+
+	function handleDragEnter() {
+		boundary.enter();
+
+		function handleDragEnd() {
+			document.removeEventListener("dragend", handleDragEnd);
+			dragStarted.current = false;
+		}
+
+		if (!dragStarted.current) {
+			dragStarted.current = true;
+			onStart();
+			document.addEventListener("dragend", handleDragEnd);
+		}
 	}
 
 	function handleDrop(event: React.DragEvent) {
@@ -65,7 +83,7 @@ export default function FileDrop(props: FileDropProps) {
 	return (
 		<label
 			className={classes}
-			onDragEnter={boundary.enter}
+			onDragEnter={handleDragEnter}
 			onDragOver={e => e.preventDefault()}
 			onDrop={handleDrop}
 			onDragLeave={boundary.leave}
@@ -84,6 +102,7 @@ export default function FileDrop(props: FileDropProps) {
 				name="file"
 				type="file"
 				accept="image/*"
+				onClick={onStart}
 				onChange={handleFileChange}
 			/>
 		</label>
