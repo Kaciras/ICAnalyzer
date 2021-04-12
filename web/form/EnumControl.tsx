@@ -1,5 +1,4 @@
 import { ControlType, FieldProps } from "./index";
-import { ChangeEvent } from "react";
 import { ControlField, RadioBox } from "../ui";
 import styles from "./EnumControl.scss";
 
@@ -30,17 +29,13 @@ export default class EnumControl implements ControlType<string> {
 		const { id, label, names } = this.data;
 		const { value, onChange } = props;
 
-		function handleChange(e: ChangeEvent<HTMLInputElement>) {
-			onChange(e.currentTarget.name);
-		}
-
 		const items = names.map(name =>
 			<RadioBox
 				key={name}
 				className={styles.item}
 				checked={name === value}
 				name={id}
-				onChange={handleChange}
+				onChange={() => onChange(name)}
 			>
 				{name}
 			</RadioBox>,

@@ -12,8 +12,8 @@ import styles from "./ImageView.scss";
 
 export enum ViewType {
 	Original,
-	Compressed,
-	AbsDiff,
+	Output,
+	Difference,
 	HeatMap,
 }
 
@@ -43,7 +43,7 @@ export default function ImageView(props: ImageViewProps) {
 	const { width, height } = original.data;
 	const { butteraugli } = output.metrics;
 
-	const [type, setType] = useState(ViewType.Compressed);
+	const [type, setType] = useState(ViewType.Output);
 	const [picking, setPicking] = useState(false);
 	const [inRegion, setInRegion] = useState(false);
 	const [brightness, setBrightness] = useState(1);
@@ -83,28 +83,38 @@ export default function ImageView(props: ImageViewProps) {
 	}
 
 	interface ImageViewTabProps extends ButtonProps {
-		target: ViewType;
+		target: string;
 	}
 
-	function ImageViewTab(props: ImageViewTabProps) {
-		const { children, target, disabled, title } = props;
+	const tabData = ["Original", "Output", "Difference", "HeatMap"]
+		.map<ImageViewTabProps>(target => ({ target }));
+
+	if (!butteraugli) {
+		tabData[3].disabled = true;
+		tabData[3].title = "Require enable butteraugli";
+	}
+
+	const imageViewTabs = tabData.map(data => {
+		const { target, disabled, title } = data;
+		const value = ViewType[target as keyof typeof ViewType];
 		return (
 			<Button
+				key={value}
 				type="text"
-				active={type === target}
+				active={type === value}
 				disabled={disabled}
 				title={title}
-				onClick={() => setType(target)}
+				onClick={() => setType(value)}
 			>
-				{children}
+				{target}
 			</Button>
 		);
-	}
+	});
 
 	let brightnessInput = null;
 	let brightnessVal = 1;
 
-	if (type === ViewType.AbsDiff) {
+	if (type === ViewType.Difference) {
 		brightnessVal = brightness;
 		brightnessInput = (
 			<label
@@ -142,8 +152,7 @@ export default function ImageView(props: ImageViewProps) {
 		top: mousePos.clientY,
 	};
 
-	const mixBlendMode = type === ViewType.AbsDiff ? "difference" : undefined;
-	const heatMapTitle = butteraugli ? undefined : "Require enable butteraugli";
+	const mixBlendMode = type === ViewType.Difference ? "difference" : undefined;
 
 	return (
 		<div className={styles.container}>
@@ -177,30 +186,7 @@ export default function ImageView(props: ImageViewProps) {
 			</PinchZoom>
 
 			<div className={styles.inputs}>
-				<div>
-					<ImageViewTab
-						target={ViewType.Original}
-					>
-						Original
-					</ImageViewTab>
-					<ImageViewTab
-						target={ViewType.Compressed}
-					>
-						Output
-					</ImageViewTab>
-					<ImageViewTab
-						target={ViewType.AbsDiff}
-					>
-						Difference
-					</ImageViewTab>
-					<ImageViewTab
-						disabled={!butteraugli}
-						title={heatMapTitle}
-						target={ViewType.HeatMap}
-					>
-						HeatMap
-					</ImageViewTab>
-				</div>
+				<div>{imageViewTabs}</div>
 
 				<div
 					className={styles.option}
