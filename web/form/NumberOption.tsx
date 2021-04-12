@@ -38,7 +38,9 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	createControl(range: NumberRange) {
-		return new RangeControl({ ...this.data, ...range });
+		const { min, max, step } = range;
+		const reachableMax = Math.floor((max - min) / step) * step + min;
+		return new RangeControl({ ...this.data, ...range, max: reachableMax });
 	}
 
 	createState() {
