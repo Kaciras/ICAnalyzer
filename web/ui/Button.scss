@@ -40,7 +40,7 @@ $stripeWidth: 32px;
 
 	--color: #0776df;
 	--color-light: #2596ff;
-	--color-outline: rgba(0, 105, 204, .4);
+	--color-outline: rgba(0, 112, 217, 0.5);
 
 	color: white;
 	background-color: var(--color);
@@ -85,7 +85,7 @@ $stripeWidth: 32px;
 :global(.second) {
 	--color: #e10199;
 	--color-light: #f525af;
-	--color-outline: rgba(242, 0, 166, .4);
+	--color-outline: rgba(242, 0, 166, .45);
 }
 
 .button.active {
