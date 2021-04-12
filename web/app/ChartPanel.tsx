@@ -37,7 +37,7 @@ class SeriesMapper {
 		define("Encode Time (s)", v => v.time);
 		define("SSIM", v => v.metrics.SSIM);
 		define("PSNR (db)", v => v.metrics.PSNR);
-		define("Butteraugli Source", v => v.metrics.butteraugli?.source);
+		define("Butteraugli Score", v => v.metrics.butteraugli?.source);
 	}
 
 	convert(outputs: ConvertOutput[]) {

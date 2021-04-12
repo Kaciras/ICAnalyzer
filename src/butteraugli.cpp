@@ -154,11 +154,11 @@ public:
 		vector<uint8_t> heatMap;
 		CreateHeatMapImage(diffMap, options.goodQualitySeek, options.badQualitySeek, &heatMap);
 
-		auto jsSource = val(score);
+		auto jsScore = val(score);
 		auto jsHeatMap = Uint8Array.new_(typed_memory_view(heatMap.size(), heatMap.data()));
 
 		auto rv = val::array();
-		rv.call<void>("push", jsSource);
+		rv.call<void>("push", jsScore);
 		rv.call<void>("push", jsHeatMap);
 		return rv;
 	}
