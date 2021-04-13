@@ -3,14 +3,14 @@ import photo from "../assets/demo/photo.jpg";
 import photoIcon from "../assets/demo/photo-icon.jpg";
 import artwork from "../assets/demo/artwork.jpg";
 import artworkIcon from "../assets/demo/artwork-icon.jpg";
-import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import colorfulText from "../assets/demo/colorful-text.png";
+import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import { Button, Dialog, FileDrop } from "../ui";
 import { getFileFromUrl } from "../utils";
 import { decode } from "../decode";
 import DemoButton from "./DemoButton";
-import styles from "./SelectFileDialog.scss";
 import { InputImage } from "./index";
+import styles from "./SelectFileDialog.scss";
 
 const demos = [
 	{
@@ -39,7 +39,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 	const { onCancel, onChange } = props;
 
 	const abortController = useRef(new AbortController());
-	const [error, setError] = useState("");
+	const [error, setError] = useState<string>();
 
 	function accept(file: File) {
 		decode(file)
@@ -76,6 +76,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 					className={styles.drop}
 					onChange={acceptUpload}
 					onError={setError}
+					onStart={() => setError(undefined)}
 				/>
 				<span className={styles.demoLabel}>
 					Or try one of these:
