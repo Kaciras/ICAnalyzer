@@ -221,7 +221,7 @@ export default function ChartPanel(props: ChartProps) {
 	}
 
 	// High cost of rendering chart, so keep the element
-	const display = visible ? {} : { display: "none" };
+	const display = visible ? undefined : { display: "none" };
 
 	return (
 		<section className={styles.container} style={display}>

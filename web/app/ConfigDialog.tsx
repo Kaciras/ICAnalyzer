@@ -58,7 +58,7 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 
 	switch (index) {
 		case 0:
-			panel = <ImageInfoPanel image={image}/>;
+			panel = <ImageInfoPanel value={image}/>;
 			break;
 		case 1:
 			panel = <EncoderPanel

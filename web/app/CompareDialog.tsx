@@ -19,7 +19,7 @@ function UploadBox(props: UploadBoxProps) {
 
 	function onFileChange(file: File) {
 		return decode(file)
-			.then(data => onChange({ file, data }))
+			.then(raw => onChange({ file, raw }))
 			.catch(e => onError(e.message));
 	}
 
@@ -46,10 +46,10 @@ interface PreviewBoxProps {
 
 const PreviewBox = memo((props: PreviewBoxProps) => {
 	const { value, name, onChange } = props;
-	const { file, data } = value;
+	const { file, raw } = value;
 
-	function drawImage(el: HTMLCanvasElement) {
-		el?.getContext("2d")!.putImageData(data, 0, 0);
+	function drawImage(el: HTMLCanvasElement | null) {
+		el?.getContext("2d")!.putImageData(raw, 0, 0);
 	}
 
 	return (
@@ -68,8 +68,8 @@ const PreviewBox = memo((props: PreviewBoxProps) => {
 			<canvas
 				className={styles.canvas}
 				ref={drawImage}
-				width={data.width}
-				height={data.height}
+				width={raw.width}
+				height={raw.height}
 			/>
 			<div className={styles.info}>{file.name}</div>
 		</section>
@@ -87,12 +87,12 @@ export interface CompareDialogProps {
 export default function CompareDialog(props: CompareDialogProps) {
 	const { data, onAccept, onCancel } = props;
 
-	const [origin, setOrigin] = useState<InputState>(data?.origin);
-	const [output, setOutput] = useState<InputState>(data?.output);
 	const [error, setError] = useState<string>();
+	const [original, setOriginal] = useState<InputState>(data?.original);
+	const [changed, setChanged] = useState<InputState>(data?.changed);
 
 	function handleAccept() {
-		onAccept({ origin: origin!, output: output! });
+		onAccept({ original: original!, changed: changed! });
 	}
 
 	function section(name: string, value: InputState, setValue: Dispatch<InputState>) {
@@ -101,13 +101,13 @@ export default function CompareDialog(props: CompareDialogProps) {
 			: <UploadBox name={name} onChange={setValue} onError={setError}/>;
 	}
 
-	const isValid = origin && output && !error;
+	const isValid = original && changed && !error;
 
 	return (
 		<Dialog onClose={onCancel}>
 			<div className={styles.body}>
-				{section("Origin image", origin, setOrigin)}
-				{section("Changed image", output, setOutput)}
+				{section("Origin image", original, setOriginal)}
+				{section("Changed image", changed, setChanged)}
 			</div>
 			<div className="dialog-actions">
 				<span className={styles.error}>{error}</span>

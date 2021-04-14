@@ -3,21 +3,17 @@ import { InputImage } from "./index";
 import styles from "./ImageInfoPanel.scss";
 
 interface ImageInfoPanelProps {
-	image: InputImage;
+	value: InputImage;
 }
 
 export default function ImageInfoPanel(props: ImageInfoPanelProps) {
-	const { file } = props.image;
-	const { width, height, data } = props.image.data;
+	const { file, raw } = props.value;
+	const { width, height, data } = raw;
 
 	const ratio = (file.size / data.byteLength * 100).toFixed(2);
 
-	function draw(el: HTMLCanvasElement | null) {
-		if (!el) {
-			return;
-		}
-		const ctx = el.getContext("2d");
-		ctx?.putImageData(props.image.data, 0, 0);
+	function drawImage(el: HTMLCanvasElement | null) {
+		el?.getContext("2d")!.putImageData(raw, 0, 0);
 	}
 
 	return (
@@ -25,7 +21,7 @@ export default function ImageInfoPanel(props: ImageInfoPanelProps) {
 			<canvas
 				className={styles.canvas}
 				aria-label="Preview"
-				ref={draw}
+				ref={drawImage}
 				width={width}
 				height={height}
 			/>

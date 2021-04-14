@@ -126,6 +126,10 @@ function NumberOptions<T>(props: NumberOptionProps<T>) {
 	);
 }
 
+export interface QualityFormPros {
+	// value:
+}
+
 interface MetricsPanelProps {
 	value: MeasureOptions;
 	onChange: Dispatch<MeasureOptions>;
@@ -176,54 +180,56 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 				Peak signal-to-noise ratio
 			</CheckBox>
 
-			<CheckBox
-				checked={SSIM.enabled}
-				name="SSIM.enabled"
-				onChange={e => onChange(deepSet(value, "SSIM.enabled", e.target.checked))}
-			>
-				Structural similarity index measure
-			</CheckBox>
-			<div className={styles.subfields}>
-				<label className={styles.field}>
+			<div>
+				<CheckBox
+					checked={SSIM.enabled}
+					name="SSIM.enabled"
+					onChange={e => onChange(deepSet(value, "SSIM.enabled", e.target.checked))}
+				>
+					Structural similarity index measure
+				</CheckBox>
+				<div className={styles.subfields}>
+					<label className={styles.field}>
 					<span className={styles.label}>
 						Algorithm
 					</span>
-					<select
-						className={styles.select}
-						value={SSIM.options.ssim}
-						onChange={e => onChange(deepSet(value, "SSIM.options.ssim", e.target.value))}
-					>
-						<option>fast</option>
-						<option>original</option>
-						<option>bezkrovny</option>
-						<option>weber</option>
-					</select>
-				</label>
+						<select
+							className={styles.select}
+							value={SSIM.options.ssim}
+							onChange={e => onChange(deepSet(value, "SSIM.options.ssim", e.target.value))}
+						>
+							<option>fast</option>
+							<option>original</option>
+							<option>bezkrovny</option>
+							<option>weber</option>
+						</select>
+					</label>
 
-				<NumberOptions
-					name="k1"
-					path="SSIM.options.k1"
-					min={0}
-					step={0.01}
-					data={value}
-					onChange={onChange}
-				/>
-				<NumberOptions
-					name="K2"
-					path="SSIM.options.k2"
-					min={0}
-					step={0.01}
-					data={value}
-					onChange={onChange}
-				/>
-				<NumberOptions
-					name="window size"
-					path="SSIM.options.windowSize"
-					min={0}
-					step={1}
-					data={value}
-					onChange={onChange}
-				/>
+					<NumberOptions
+						name="k1"
+						path="SSIM.options.k1"
+						min={0}
+						step={0.01}
+						data={value}
+						onChange={onChange}
+					/>
+					<NumberOptions
+						name="K2"
+						path="SSIM.options.k2"
+						min={0}
+						step={0.01}
+						data={value}
+						onChange={onChange}
+					/>
+					<NumberOptions
+						name="window size"
+						path="SSIM.options.windowSize"
+						min={0}
+						step={1}
+						data={value}
+						onChange={onChange}
+					/>
+				</div>
 			</div>
 
 			<ButteraugliFields value={butteraugli} onChange={handleBgChange}/>

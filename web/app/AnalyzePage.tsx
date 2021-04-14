@@ -76,7 +76,7 @@ interface AnalyzePageProps {
 
 export default function AnalyzePage(props: AnalyzePageProps) {
 	const { result, onStart, onClose } = props;
-	const { original, config, outputMap } = result;
+	const { input, config, outputMap } = result;
 
 	function createControlState(): ControlState {
 		const { controlsMap } = config;
@@ -115,12 +115,6 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const encoder = ENCODER_MAP[encoderName];
 	const key = encoderState[encoderName];
 
-	// const [options] = encoder.getOptionsList({
-	// 	varNames: [],
-	// 	values: encoderState[encoderName].values,
-	// 	ranges: encoderState[encoderName].ranges,
-	// });
-
 	const output = outputMap.get({ encoder: encoderName, key });
 
 	const [labels, series] = useMemo(() => {
@@ -133,14 +127,6 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			});
 			return [encodings.map(e => e.name), s];
 		} else if (variableType === Step.Options) {
-			// const { values, ranges } = encoderState[encoderName];
-
-			// ranges[variableName]
-			// const list = encoder.getOptionsList({
-			// 	varNames: [variableName],
-			// 	values: encoderState[encoderName].values,
-			// 	ranges: encoderState[encoderName].ranges,
-			// });
 			const control = config.controlsMap[encoderName].find(c => c.id === variableName);
 			const allValues = control!.createState();
 			const s = allValues.map(v => outputMap
@@ -156,11 +142,11 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 	return (
 		<>
-			<ImageView original={original} output={output}/>
+			<ImageView original={input} output={output}/>
 
 			<ChartPanel
 				visible={showChart}
-				original={original}
+				original={input}
 				index={index}
 				values={labels}
 				outputs={series}
@@ -194,7 +180,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</Button>
 				<DownloadButton
 					title="Download compressed image"
-					filename={original.file.name}
+					filename={input.file.name}
 					codec={encoder}
 					buffer={output.buffer}
 				>

@@ -43,8 +43,8 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 
 	function accept(file: File) {
 		decode(file)
-			.then(data => onChange({ file, data }))
-			.catch(() => setError("Can not decode file as image."));
+			.then(raw => onChange({ file, raw }))
+			.catch(e => setError(e.message));
 	}
 
 	function acceptUpload(file: File) {

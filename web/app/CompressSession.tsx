@@ -26,7 +26,7 @@ function useProgress(initialMax = 1) {
 }
 
 interface CompressSessionProps {
-	open: boolean;
+	isOpen: boolean;
 	onChange: Dispatch<Result>;
 	onClose: () => void;
 }
@@ -34,29 +34,29 @@ interface CompressSessionProps {
 export type OutputMap = ObjectKeyMap<any, ConvertOutput>;
 
 export default function CompressSession(props: CompressSessionProps) {
-	const { open, onClose, onChange } = props;
+	const { isOpen, onClose, onChange } = props;
 
 	const [selectFile, setSelectFile] = useState(true);
-	const [image, setImage] = useState<InputImage>();
+	const [input, setInput] = useState<InputImage>();
 	const [encoder, setEncoder] = useState<WorkerPool<WorkerApi>>();
 
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
 
 	function cancelSelectFile() {
-		image ? setSelectFile(false) : onClose();
+		input ? setSelectFile(false) : onClose();
 	}
 
 	async function handleInputChange(image: InputImage) {
-		setImage(image);
+		setInput(image);
 		setSelectFile(false);
 	}
 
 	async function handleStart(config: AnalyzeConfig) {
-		if (!image) {
+		if (!input) {
 			throw new Error("File is null");
 		}
-		const { data } = image;
+		const { raw } = input;
 		const { encoders, measure } = config;
 
 		let outputSize = 0;
@@ -93,7 +93,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 		// noinspection ES6MissingAwait
 		try {
-			await pool.runOnEach(r => r.setImageToEncode(data));
+			await pool.runOnEach(r => r.setImageToEncode(raw));
 
 			// Warmup workers to avoid disturbance of initialize time
 			if (measure.time) {
@@ -120,7 +120,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
-				onChange({ config: { controlsMap }, outputMap, original: image });
+				onChange({ config: { controlsMap }, outputMap, input });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
@@ -136,7 +136,7 @@ export default function CompressSession(props: CompressSessionProps) {
 		setEncoder(undefined);
 	}
 
-	if (!open) {
+	if (!isOpen) {
 		return null;
 	} else if (encoder) {
 		return (
@@ -157,7 +157,7 @@ export default function CompressSession(props: CompressSessionProps) {
 	} else {
 		return (
 			<ConfigDialog
-				image={image!}
+				image={input!}
 				onStart={handleStart}
 				onClose={onClose}
 				onSelectFile={() => setSelectFile(true)}

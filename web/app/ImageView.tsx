@@ -17,6 +17,10 @@ export enum ViewType {
 	HeatMap,
 }
 
+interface ImageViewTabProps extends ButtonProps {
+	target: string;
+}
+
 function useResettable<T>(initialState: T): [T, Dispatch<SetStateAction<T>>, () => void] {
 	const [value, setValue] = useState(initialState);
 	return [value, setValue, () => setValue(initialState)];
@@ -40,7 +44,7 @@ interface ImageViewProps {
 
 export default function ImageView(props: ImageViewProps) {
 	const { original, output } = props;
-	const { width, height } = original.data;
+	const { width, height } = original.raw;
 	const { butteraugli } = output.metrics;
 
 	const [type, setType] = useState(ViewType.Output);
@@ -63,7 +67,7 @@ export default function ImageView(props: ImageViewProps) {
 
 	function refreshBottomCanvas() {
 		resetPinchZoom();
-		drawDataToCanvas(original.data, backCanvas);
+		drawDataToCanvas(original.raw, backCanvas);
 	}
 
 	function refreshTopCanvas() {
@@ -80,10 +84,6 @@ export default function ImageView(props: ImageViewProps) {
 
 	function setZoom(value: number) {
 		setPinchZoom(prev => ({ ...prev, scale: value / 100 }));
-	}
-
-	interface ImageViewTabProps extends ButtonProps {
-		target: string;
 	}
 
 	const tabData = ["Original", "Output", "Difference", "HeatMap"]
@@ -148,8 +148,8 @@ export default function ImageView(props: ImageViewProps) {
 	const py = Math.floor((clientY - pinchZoom.y - (window.innerHeight - height * pinchZoom.scale) / 2) / pinchZoom.scale);
 
 	const pickerCSS = {
-		left: mousePos.clientX,
-		top: mousePos.clientY,
+		top: clientY,
+		left: clientX,
 	};
 
 	const mixBlendMode = type === ViewType.Difference ? "difference" : undefined;
@@ -228,7 +228,7 @@ export default function ImageView(props: ImageViewProps) {
 					style={pickerCSS}
 					x={px}
 					y={py}
-					imageA={original.data}
+					imageA={original.raw}
 					imageB={output.data}
 				/>
 			}

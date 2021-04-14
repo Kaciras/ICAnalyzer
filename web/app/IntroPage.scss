@@ -5,7 +5,7 @@
 	padding: 80px;
 
 	color: white;
-	background: #252829;
+	background: #1F1F20;
 }
 
 .banner {
@@ -16,12 +16,27 @@
 
 .title {
 	font-size: 3em;
+	margin: 0;
+}
+
+.subTitle {
+	margin-bottom: 50px;
 }
 
 .bigButton {
-	width: 180px;
-	height: 45px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 200px;
+	height: 46px;
+	margin: 20px 0;
 	font-size: 20px;
+}
+
+.github {
+	font-size: 28px;
+	margin-right: 8px;
 }
 
 .unsplash {
@@ -33,14 +48,9 @@
 
 .link {
 	margin: 0 5px;
-	text-decoration: none;
 
 	&, &:visited {
 		color: #ff3ba3;
-	}
-
-	&:hover, &:active {
-		text-decoration: underline;
 	}
 }
 

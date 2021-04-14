@@ -7,7 +7,7 @@ import { ControlType } from "../form";
 
 export interface InputImage {
 	file: File;
-	data: ImageData;
+	raw: ImageData;
 }
 
 export interface AnalyzeContext {
@@ -15,7 +15,7 @@ export interface AnalyzeContext {
 }
 
 export interface Result {
-	original: InputImage;
+	input: InputImage;
 	config: AnalyzeContext;
 	outputMap: OutputMap;
 }
@@ -24,8 +24,15 @@ interface ResultWithId extends Result {
 	id: number;
 }
 
+enum Mode {
+	None,
+	Compress,
+	Compare,
+}
+
 export default function App() {
-	const [isOpen, setOpen] = useState(false);
+	const [mode, setMode] = useState(Mode.None);
+	const [isOpen, setOpen] = useState(true);
 	const [result, setResult] = useState<ResultWithId>();
 
 	function handleChange(value: Result) {
@@ -34,7 +41,20 @@ export default function App() {
 		setResult(value as ResultWithId);
 	}
 
-	const showDialog = () => setOpen(true);
+	function createSession(mode: Mode) {
+		setMode(mode);
+		setOpen(true);
+	}
+
+	let Session: any;
+	switch (mode) {
+		case Mode.Compare:
+			Session = CompareSession;
+			break;
+		case Mode.Compress:
+			Session = CompressSession;
+			break;
+	}
 
 	return (
 		<>
@@ -42,16 +62,21 @@ export default function App() {
 				? <AnalyzePage
 					key={result.id} // avoid reuse of control state
 					result={result}
-					onStart={showDialog}
+					onStart={() => setOpen(true)}
 					onClose={() => setResult(undefined)}
 				/>
-				: <IntroPage onStart={showDialog}/>
+				: <IntroPage
+					onEncode={() => createSession(Mode.Compress)}
+					onCompare={() => createSession(Mode.Compare)}
+				/>
 			}
-			<CompressSession
-				open={isOpen}
-				onChange={handleChange}
-				onClose={() => setOpen(false)}
-			/>
+			{
+				Session && <Session
+					isOpen={isOpen}
+					onChange={handleChange}
+					onClose={() => setOpen(false)}
+				/>
+			}
 		</>
 	);
 }
