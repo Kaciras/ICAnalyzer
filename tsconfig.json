@@ -5,6 +5,7 @@
 		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"jsx": "react-jsx",
+		"resolveJsonModule": true,
 
 		"newLine": "LF",
 		"strict": true,

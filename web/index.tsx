@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
+import packageJson from "../package.json";
 import "./index.scss";
 import App from "./app";
 
@@ -20,14 +21,14 @@ if (!detectBrowserSupport()) {
 	alert("ICAnalyze does not support this browser, please switch to a modern one");
 }
 
-if (process.env.NODE_ENV === "production") {
+if (typeof process.env.SENTRY_DSN !== "undefined") {
 	Sentry.init({
+		dsn: process.env.SENTRY_DSN,
 		integrations: [
 			new Integrations.BrowserTracing(),
 		],
 		tracesSampleRate: 0.2,
-		release: `${process.env.npm_package_name}@${process.env.npm_package_version}`,
-		dsn: "https://d101904fac2c486ea6f8563c2cf054af@o253601.ingest.sentry.io/5499968",
+		release: `${packageJson.name}@${packageJson.version}`,
 	});
 }
 
