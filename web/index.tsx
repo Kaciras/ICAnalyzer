@@ -21,7 +21,9 @@ if (!detectBrowserSupport()) {
 	alert("ICAnalyze does not support this browser, please switch to a modern one");
 }
 
-if (typeof process.env.SENTRY_DSN !== "undefined") {
+// Can't use { name, version } = packageJson, because webpack doesn't support tree shaking for object destructuring.
+// SENTRY_DSN is only defined on web build.
+if (process.env.SENTRY_DSN !== null) {
 	Sentry.init({
 		dsn: process.env.SENTRY_DSN,
 		integrations: [

@@ -93,7 +93,7 @@ module.exports = function webpackConfig(env) {
 	];
 
 	const plugins = [
-		new EnvironmentPlugin(["SENTRY_DSN"]),
+		new EnvironmentPlugin({ SENTRY_DSN: null }),
 
 		new HtmlPlugin({
 			filename: "index.html",
