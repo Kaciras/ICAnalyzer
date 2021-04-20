@@ -1,3 +1,5 @@
+const jestConfig = require("./jest.config");
+
 module.exports = {
 	root: true,
 	extends: [
@@ -12,7 +14,7 @@ module.exports = {
 		"react-hooks/exhaustive-deps": "off",
 	},
 	overrides: [{
-		files: require("./jest.config").testMatch,
+		files: jestConfig.testMatch,
 		extends: ["@kaciras/jest"],
 	}],
 };

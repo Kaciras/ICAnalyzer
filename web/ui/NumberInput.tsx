@@ -21,6 +21,13 @@ export interface NumberInputProps {
 	min?: number;
 	max?: number;
 	step?: number;
+
+	/**
+	 * Set the stepping interval to use when using up and down arrows to adjust the value,
+	 * The difference with step is that this attribute is not used for validation.
+	 *
+	 * @default same as step
+	 */
 	increment?: number;
 
 	minMaxButton?: boolean;

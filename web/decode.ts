@@ -21,6 +21,13 @@ export async function decodeImageNative(blob: Blob) {
 	return ctx.getImageData(0, 0, width, height);
 }
 
+/**
+ * Firefox throws if you try to draw an SVG to canvas that doesn't have width/height.
+ * In Chrome it loads, but drawImage behaves weirdly.
+ * This function sets width/height if it isn't already set.
+ *
+ * @param svgXml The SVG image with width/height attributes
+ */
 function ensureSVGSize(svgXml: string) {
 	const parser = new DOMParser();
 	const document = parser.parseFromString(svgXml, "image/svg+xml");

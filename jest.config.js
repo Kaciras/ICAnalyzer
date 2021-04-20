@@ -1,9 +1,9 @@
 module.exports = {
 	testMatch: [
-		"**/test/*.spec.[jt]s",
+		"**/test/*.spec.[jt]s?(x)",
 	],
 	moduleFileExtensions: [
-		"ts", "js", "mjs", "node", "json",
+		"ts", "tsx", "mjs", "js", "jsx", "node",
 	],
 	preset: "ts-jest",
 	testEnvironment: "node",

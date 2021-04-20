@@ -5,7 +5,8 @@ import { NOOP } from "../utils";
 import styles from "./FileDrop.scss";
 
 /**
- * dragenter & dragleave can be triggered on crossing children element boundary,
+ * Since dragenter & dragleave can be triggered on crossing children element boundary,
+ * we count the number of entries and leaves to determine whether it is within the drag area.
  */
 function useBoundaryCounter() {
 	const [isInArea, setInArea] = useState(false);
@@ -42,7 +43,9 @@ export default function FileDrop(props: FileDropProps) {
 
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
 		const { files } = event.currentTarget;
-		if (files?.length) onChange(files[0]);
+		if (files?.length) {
+			onChange(files[0]);
+		}
 	}
 
 	function handleDragEnter() {

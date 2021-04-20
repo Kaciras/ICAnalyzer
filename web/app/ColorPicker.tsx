@@ -1,6 +1,11 @@
 import { CSSProperties } from "react";
 import styles from "./ColorPicker.scss";
 
+/**
+ * Get the RGBA data at position in the image.
+ *
+ * @return the [R, G, B, A] array
+ */
 function getPixel(image: ImageData, x: number, y: number) {
 	const { width, data } = image;
 	const i = (x + y * width) * 4;
