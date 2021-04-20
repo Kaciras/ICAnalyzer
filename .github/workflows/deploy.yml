@@ -25,10 +25,12 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Build webpack bundle
+      - name: Build
         run: pnpm run build
+        env:
+          SENTRY_DSN: https://d101904fac2c486ea6f8563c2cf054af@o253601.ingest.sentry.io/5499968
 
-      - name: Enable custom domain
+      - name: Use custom domain
         run: echo "ic-analyze.kaciras.com" > dist/CNAME
 
       - name: Deploy 🚀
