@@ -25,23 +25,6 @@ export function bytes(value: number, fraction = 1024) {
 	return `${v.toFixed(2)} ${SIZE_UNITS[i]}B`;
 }
 
-/** A generic replacement for Function */
-type Fn<T, A extends any[], R> = (this: T, ...args: A) => R;
-
-export function debounce<T, A extends any[], R>(wait: number, func: Fn<T, A, R>) {
-	let disallow = false;
-	let result: R;
-
-	return function debouncedFn(this: T, ...args: A) {
-		if (disallow) {
-			return result;
-		}
-		disallow = true;
-		setTimeout(() => disallow = false, wait);
-		return result = func.apply(this, args);
-	};
-}
-
 export async function getFileFromUrl(url: string, signal?: AbortSignal) {
 	const response = await fetch(url, { signal });
 	const blob = await response.blob();

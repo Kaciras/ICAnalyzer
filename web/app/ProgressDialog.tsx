@@ -1,9 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Dialog } from "../ui";
-import { debounce } from "../utils";
 import styles from "./ProgressDialog.scss";
-
-const formatter = new Intl.RelativeTimeFormat("en");
 
 interface ProgressPanelProps {
 	error?: string;
@@ -12,21 +9,24 @@ interface ProgressPanelProps {
 	onCancel: () => void;
 }
 
-function calcTime(start: number, value: number, max: number) {
-	const duration = performance.now() - start;
-	return (max - value) / value * duration;
-}
-
 export default function ProgressDialog(props: ProgressPanelProps) {
 	const { error, value, max, onCancel } = props;
 
-	const [start] = useState(() => performance.now());
-	const debounced = useMemo(() => debounce(500, calcTime), []);
+	const startTime = useRef(performance.now());
+	const [timeUsage, setTimeUsage] = useState("--:--:--");
 
-	const ms = debounced(start, value, max);
-	const remaining = Number.isNaN(ms)
-		? "----"
-		: formatter.format(~~(ms / 1000), "seconds");
+	function scheduleRefreshTask() {
+		function refreshTime() {
+			const ms = performance.now() - startTime.current;
+			const date = new Date(ms);
+			setTimeUsage(date.toISOString().substr(11, 8));
+		}
+
+		const timer = setInterval(refreshTime, 1000);
+		return () => clearInterval(timer);
+	}
+
+	useEffect(scheduleRefreshTask, []);
 
 	return (
 		<Dialog>
@@ -37,7 +37,7 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 
 				<div className={styles.text}>
 					<span>{value} / {max}</span>
-					<span>{remaining}</span>
+					<span>Elapsed time: {timeUsage}</span>
 				</div>
 
 				<progress
@@ -47,7 +47,7 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 				/>
 			</div>
 			<div className={styles.buttons}>
-				<Button color="second" onClick={onCancel}> Cancel </Button>
+				<Button className="second" onClick={onCancel}>Cancel</Button>
 			</div>
 		</Dialog>
 	);
