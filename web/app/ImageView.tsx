@@ -45,7 +45,7 @@ interface ImageViewProps {
 export default function ImageView(props: ImageViewProps) {
 	const { original, output } = props;
 	const { width, height } = original.raw;
-	const { butteraugli } = output.metrics;
+	const { heatMap } = output;
 
 	const [type, setType] = useState(ViewType.Output);
 	const [picking, setPicking] = useState(false);
@@ -63,7 +63,7 @@ export default function ImageView(props: ImageViewProps) {
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
-	const topImage = (type === ViewType.HeatMap) ? butteraugli!.heatMap : output.data;
+	const topImage = (type === ViewType.HeatMap) ? heatMap! : output.data;
 
 	function refreshBottomCanvas() {
 		resetPinchZoom();
@@ -89,7 +89,7 @@ export default function ImageView(props: ImageViewProps) {
 	const tabData = ["Original", "Output", "Difference", "HeatMap"]
 		.map<ImageViewTabProps>(target => ({ target }));
 
-	if (!butteraugli) {
+	if (!heatMap) {
 		tabData[3].disabled = true;
 		tabData[3].title = "Require enable butteraugli";
 	}

@@ -58,6 +58,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 					onFocus={() => handleVarChange(Step.Encoder, "Encoder")}
 				>
 					<SelectBox
+						title="Codec name"
 						value={encoderName}
 						onChange={handleCodecChange}
 					>

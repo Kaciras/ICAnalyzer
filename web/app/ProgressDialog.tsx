@@ -29,7 +29,7 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 	useEffect(scheduleRefreshTask, []);
 
 	return (
-		<Dialog>
+		<Dialog onClose={onCancel}>
 			<div className={styles.content}>
 				<h1>Encoding...</h1>
 

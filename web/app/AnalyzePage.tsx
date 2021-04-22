@@ -182,7 +182,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					<ChartIcon/>
 				</Button>
 				<DownloadButton
-					title="Download compressed image"
+					title="Download output image"
 					filename={input.file.name}
 					codec={encoder}
 					buffer={output.buffer}
