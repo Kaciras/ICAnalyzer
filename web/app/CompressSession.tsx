@@ -10,13 +10,30 @@ import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
 
+export type OutputMap = ObjectKeyMap<any, ConvertOutput>;
+
+/**
+ * Create a new object compatible with ImageData type from an ImageData,
+ * with convert the data to SharedArrayBuffer.
+ *
+ * NOTE: the returned value is not an ImageData and can't put into canvas.
+ *
+ * @param image original image data
+ * @return the image data with shared
+ */
+function share(image: ImageData): ImageData {
+	const { width, height, data } = image;
+	const buffer = new SharedArrayBuffer(data.byteLength);
+	const view = new Uint8ClampedArray(buffer);
+	view.set(data);
+	return { width: width, height: height, data: view };
+}
+
 interface CompressSessionProps {
 	isOpen: boolean;
 	onChange: Dispatch<Result>;
 	onClose: () => void;
 }
-
-export type OutputMap = ObjectKeyMap<any, ConvertOutput>;
 
 export default function CompressSession(props: CompressSessionProps) {
 	const { isOpen, onClose, onChange } = props;
@@ -82,7 +99,12 @@ export default function CompressSession(props: CompressSessionProps) {
 
 		// noinspection ES6MissingAwait
 		try {
-			await pool.runOnEach(r => r.setImageToEncode(raw));
+			if ("SharedArrayBuffer" in window) {
+				const shared = share(raw);
+				await pool.runOnEach(r => r.setImageToEncode(shared));
+			} else {
+				await pool.runOnEach(r => r.setImageToEncode(raw));
+			}
 
 			// Warmup workers to avoid disturbance of initialize time
 			if (measure.time) {

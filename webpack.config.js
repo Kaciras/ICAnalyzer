@@ -137,6 +137,10 @@ module.exports = function webpackConfig(env) {
 		},
 		devtool: isProd ? "source-map" : "inline-source-map",
 		devServer: {
+			headers: {
+				"Cross-Origin-Opener-Policy": "same-origin",
+				"Cross-Origin-Embedder-Policy": "require-corp",
+			},
 			compress: true,
 			hot: true,
 			stats: "minimal",
