@@ -3,12 +3,9 @@ import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
 import * as SSIM from "ssim.js";
-
-export interface ButteraugliConfig {
-	hfAsymmetry: number;
-	goodQualitySeek: number;
-	badQualitySeek: number;
-}
+import { FullButteraugliOptions } from "../lib/diff";
+import { MetricMeta } from "./app/ChartPanel";
+import WorkerPool, { TaskFn } from "./WorkerPool";
 
 export interface Optional<T> {
 	options: T;
@@ -21,23 +18,28 @@ export interface MeasureOptions {
 	time: boolean;
 	PSNR: boolean;
 	SSIM: Optional<SSIM.Options>;
-	butteraugli: Optional<ButteraugliConfig>;
+	butteraugli: Optional<FullButteraugliOptions>;
 }
 
-export interface Metrics {
+export interface InternalMetrics {
+	time: number;
+	ratio: number;
 	SSIM?: number;
 	PSNR?: number;
-	butteraugli?: {
-		source: number;
-		heatMap: ImageData;
-	};
+	butteraugli?: number;
 }
 
-export interface ConvertOutput {
+interface EncodeResult {
 	time: number;
 	buffer: ArrayBuffer;
 	data: ImageData;
-	metrics: Metrics;
+}
+
+export interface ConvertOutput {
+	buffer: ArrayBuffer;
+	data: ImageData;
+	heatMap?: ImageData;
+	metrics: Record<string, number>;
 }
 
 // JSON.stringify is not deterministic, be careful with the properties order.
@@ -59,6 +61,58 @@ export function newWorker() {
 	return new Worker(new URL("./worker", import.meta.url));
 }
 
+export function getMetricsMeta(options: MeasureOptions) {
+	let calculations = 0;
+	const metricsMeta: MetricMeta[] = [
+		// { key: "ratio", name: "Compression Ratio %" },
+	];
+
+	// if (options.time) {
+	// 	series.push({ key: "time", name: "Encode Time (s)" });
+	// }
+
+	if (options.PSNR) {
+		calculations++;
+		metricsMeta.push({ key: "psnr", name: "PSNR (db)" });
+	}
+	if (options.SSIM.enabled) {
+		calculations++;
+		metricsMeta.push({ key: "ssim", name: "SSIM" });
+	}
+	if (options.butteraugli.enabled) {
+		calculations++;
+		metricsMeta.push({ key: "butteraugli", name: "Butteraugli Score" });
+	}
+
+	return { calculations, metricsMeta };
+}
+
+export function measureFor(pool: WorkerPool<WorkerApi>, options: MeasureOptions, onProgress: () => void) {
+	const { SSIM, PSNR, butteraugli } = options;
+
+	function queueTask(func: TaskFn<WorkerApi, any>) {
+		pool.run(async remote => func(remote).then(onProgress));
+	}
+
+	return (output: ConvertOutput) => {
+		const { data, metrics }= output;
+
+		if (butteraugli.enabled) {
+			queueTask(async r => {
+				const [source, raw] = await r.calcButteraugli(data, butteraugli.options);
+				metrics.butteraugli = source;
+				output.heatMap = rgbaToImage(raw, data.width, data.height);
+			});
+		}
+		if (PSNR) {
+			queueTask(async r => metrics.psnr = await r.calcPSNR(data));
+		}
+		if (SSIM.enabled) {
+			queueTask(async r => metrics.ssim = await r.calcSSIM(data, SSIM.options));
+		}
+	};
+}
+
 export class BatchEncodeAnalyzer {
 
 	onProgress() {}
@@ -68,12 +122,15 @@ export class BatchEncodeAnalyzer {
 		this.onProgress();
 
 		const blob = new Blob([buffer], { type: encoder.mimeType });
-		return { time, buffer, data: await decode(blob, remote) };
+		return { time, buffer, data: await decode(blob, remote) } as EncodeResult;
 	}
 
-	async measure(remote: Remote<WorkerApi>, data: ImageData, options: MeasureOptions) {
+	async measure(remote: Remote<WorkerApi>, result: EncodeResult, options: MeasureOptions) {
+		const { time, buffer, data } = result;
 		const { SSIM, PSNR, butteraugli } = options;
-		const metrics: Metrics = {};
+
+		const metrics: InternalMetrics = { time };
+		let heatMap: ImageData | undefined = undefined;
 
 		if (PSNR) {
 			metrics.PSNR = await remote.calcPSNR(data);
@@ -87,11 +144,11 @@ export class BatchEncodeAnalyzer {
 			const [source, raw] = await remote.calcButteraugli(data, butteraugli.options);
 			this.onProgress();
 
-			const heatMap = rgbaToImage(raw, data.width, data.height);
-			metrics.butteraugli = { source, heatMap };
+			heatMap = rgbaToImage(raw, data.width, data.height);
+			metrics.butteraugli = source;
 		}
 
-		return metrics;
+		return { buffer, data, heatMap, metrics };
 	}
 }
 

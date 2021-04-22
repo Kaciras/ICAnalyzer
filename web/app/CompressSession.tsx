@@ -1,29 +1,14 @@
 import { Dispatch, useState } from "react";
-import { BatchEncodeAnalyzer, ConvertOutput, newWorker, ObjectKeyMap } from "../encode";
-import type { InputImage, Result } from ".";
-import SelectFileDialog from "./SelectFileDialog";
-import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
-import ProgressDialog from "./ProgressDialog";
+import { BatchEncodeAnalyzer, ConvertOutput, getMetricsMeta, measureFor, newWorker, ObjectKeyMap } from "../encode";
 import { ENCODERS, ImageEncoder } from "../codecs";
 import WorkerPool from "../WorkerPool";
 import { WorkerApi } from "../worker";
 import { ControlType, OptionsKeyPair } from "../form";
-
-function useProgress(initialMax = 1) {
-	const [max, setMax] = useState(initialMax);
-	const [value, setValue] = useState(0);
-
-	function reset(value: number) {
-		setValue(0);
-		setMax(value);
-	}
-
-	function increase() {
-		setValue(v => v + 1);
-	}
-
-	return { value, max, increase, reset };
-}
+import { useProgress } from "../utils";
+import type { InputImage, Result } from ".";
+import SelectFileDialog from "./SelectFileDialog";
+import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
+import ProgressDialog from "./ProgressDialog";
 
 interface CompressSessionProps {
 	isOpen: boolean;
@@ -56,10 +41,10 @@ export default function CompressSession(props: CompressSessionProps) {
 		if (!input) {
 			throw new Error("File is null");
 		}
-		const { raw } = input;
+		const { file, raw } = input;
 		const { encoders, measure } = config;
 
-		let outputSize = 0;
+		let taskCount = 0;
 		const queue: Array<[ImageEncoder, OptionsKeyPair[]]> = [];
 		const controlsMap: Record<string, ControlType[]> = {};
 
@@ -72,22 +57,26 @@ export default function CompressSession(props: CompressSessionProps) {
 			const { controls, optionsList } = getOptionsList(config.state);
 			controlsMap[name] = controls;
 			queue.push([enc, optionsList]);
-			outputSize += optionsList.length;
+			taskCount += optionsList.length;
 		}
 
-		let calculations = 1;
-		if (measure.butteraugli.enabled) calculations++;
-		if (measure.PSNR) calculations++;
-		if (measure.SSIM.enabled) calculations++;
+		const seriesMeta = [{ key: "ratio", name: "Compression Ratio %" }];
 
-		const warmup = measure.time ? measure.workerCount : 0;
+		const { calculations, metricsMeta } = getMetricsMeta(measure);
+		taskCount *= (1 + calculations);
+		seriesMeta.push(...metricsMeta);
 
-		progress.reset(outputSize * calculations + warmup);
+		if (measure.time) {
+			seriesMeta.push({ key: "time", name: "Encode Time (s)" });
+			taskCount += measure.workerCount;
+		}
 
 		const outputMap = new ObjectKeyMap<any, ConvertOutput>();
 		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
 		const worker = new BatchEncodeAnalyzer();
+		const measureFn = measureFor(pool, measure, progress.increase);
 
+		progress.reset(taskCount);
 		setEncoder(pool);
 		worker.onProgress = progress.increase;
 
@@ -108,11 +97,15 @@ export default function CompressSession(props: CompressSessionProps) {
 
 					// noinspection ES6MissingAwait
 					pool.run(async r => {
-						const info = await worker.encode(r, encoder, options);
-						const metrics = await worker.measure(r, info.data, measure);
-
-						const config = { encoder: encoder.name, key };
-						outputMap.set(config, { ...info, metrics });
+						const { buffer, data, time } = await worker.encode(r, encoder, options);
+						const ratio = buffer.byteLength / file.size * 100;
+						const output: ConvertOutput = {
+							buffer,
+							data,
+							metrics: { time, ratio },
+						};
+						measureFn(output);
+						outputMap.set({ encoder: encoder.name, key }, output);
 					});
 				}
 			}
@@ -120,7 +113,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
-				onChange({ config: { controlsMap }, outputMap, input });
+				onChange({ controlsMap, seriesMeta, outputMap, input });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.

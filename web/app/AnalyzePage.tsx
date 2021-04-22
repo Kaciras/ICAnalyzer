@@ -76,10 +76,9 @@ interface AnalyzePageProps {
 
 export default function AnalyzePage(props: AnalyzePageProps) {
 	const { result, onStart, onClose } = props;
-	const { input, config, outputMap } = result;
+	const { input, controlsMap, outputMap, seriesMeta } = result;
 
 	function createControlState(): ControlState {
-		const { controlsMap } = config;
 		let variableType = Step.None;
 		let variableName = "";
 
@@ -127,7 +126,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			});
 			return [encodings.map(e => e.name), s];
 		} else if (variableType === Step.Options) {
-			const control = config.controlsMap[encoderName].find(c => c.id === variableName);
+			const control = controlsMap[encoderName].find(c => c.id === variableName);
 			const allValues = control!.createState();
 			const s = allValues.map(v => outputMap
 				.get({ encoder: encoderName, key: { ...key, [variableName]: v } }));
@@ -140,13 +139,17 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 	const index = series.indexOf(output);
 
+	if (index < 0) {
+		throw new Error("Can't find current index in series");
+	}
+
 	return (
 		<>
 			<ImageView original={input} output={output}/>
 
 			<ChartPanel
 				visible={showChart}
-				original={input}
+				seriesMeta={seriesMeta}
 				index={index}
 				values={labels}
 				outputs={series}
@@ -188,7 +191,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</DownloadButton>
 			</div>
 
-			<ControlPanel value={state} onChange={setState} config={config}/>
+			<ControlPanel value={state} onChange={setState} controlsMap={controlsMap}/>
 		</>
 	);
 }

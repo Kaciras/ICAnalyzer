@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 /**
  * No effect function with a clear name.
  */
@@ -53,4 +55,20 @@ export async function getFileFromUrl(url: string, signal?: AbortSignal) {
 	const lastModified = timeHeader ? new Date(timeHeader).getTime() : undefined;
 
 	return new File([blob], name, { type, lastModified });
+}
+
+export function useProgress(initialMax = 1) {
+	const [max, setMax] = useState(initialMax);
+	const [value, setValue] = useState(0);
+
+	function reset(value: number) {
+		setValue(0);
+		setMax(value);
+	}
+
+	function increase() {
+		setValue(v => v + 1);
+	}
+
+	return { value, max, increase, reset };
 }

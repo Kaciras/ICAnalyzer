@@ -50,12 +50,9 @@ export default function IntroPage(props: IntroPageProps) {
 
 				<div className={styles.unsplash}>
 					Photo by
-					<a className={styles.link}
-					   href="https://unsplash.com/@veverkolog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Dušan
-						veverkolog</a>
+					<a className={styles.link} href="https://unsplash.com/@veverkolog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Dušan veverkolog</a>
 					on
-					<a className={styles.link}
-					   href="https://unsplash.com/s/photos/eagle?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+					<a className={styles.link} href="https://unsplash.com/s/photos/eagle?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 				</div>
 			</section>
 			<section className={styles.section}>

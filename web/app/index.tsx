@@ -4,20 +4,20 @@ import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import CompareSession from "./CompareSession";
 import { ControlType } from "../form";
+import { MetricMeta } from "./ChartPanel";
 
 export interface InputImage {
 	file: File;
 	raw: ImageData;
 }
 
-export interface AnalyzeContext {
-	controlsMap: Record<string, ControlType[]>;
-}
+export type ControlsMap = Record<string, ControlType[]>;
 
 export interface Result {
 	input: InputImage;
-	config: AnalyzeContext;
+	controlsMap: ControlsMap;
 	outputMap: OutputMap;
+	seriesMeta: MetricMeta[];
 }
 
 interface ResultWithId extends Result {

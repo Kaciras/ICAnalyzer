@@ -2,17 +2,17 @@ import { ChangeEvent, Dispatch } from "react";
 import { ControlField, SelectBox } from "../ui";
 import { ENCODERS } from "../codecs";
 import { ControlState, Step } from "./AnalyzePage";
+import { ControlsMap } from "./index";
 import styles from "./ControlPanel.scss";
-import { AnalyzeContext } from "./index";
 
 export interface ControlPanelProps {
-	config: AnalyzeContext;
+	controlsMap: ControlsMap;
 	value: ControlState
 	onChange: Dispatch<Partial<ControlState>>;
 }
 
 export default function ControlPanel(props: ControlPanelProps) {
-	const { config, value, onChange } = props;
+	const { controlsMap, value, onChange } = props;
 	const { variableType, variableName, encoderName, encoderState } = value;
 
 	if (variableType === Step.None) {
@@ -34,11 +34,11 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	const selectOptions = ENCODERS
-		.filter(e => e.name in config.controlsMap)
+		.filter(e => e.name in controlsMap)
 		.map(({ name }) => <option key={name} value={name}>{name}</option>);
 
 	const state = encoderState[encoderName];
-	const controls = config.controlsMap[encoderName].map(C =>
+	const controls = controlsMap[encoderName].map(C =>
 		<C.Input
 			value={state[C.id]}
 			active={variableType === Step.Options && variableName === C.id}

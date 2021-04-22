@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import { ConvertOutput } from "../encode";
-import { InputImage } from "./index";
 import styles from "./ChartPanel.scss";
 import { Button } from "../ui";
 import LockIcon from "../assets/lock.svg";
@@ -11,38 +10,9 @@ import LockIcon from "../assets/lock.svg";
 Export(Highcharts);
 ExportOffline(Highcharts);
 
-type MapFn = (output: ConvertOutput) => number | undefined;
-
-class SeriesMapper {
-
-	private readonly mapping: MapFn[] = [];
-	private readonly divisor: number;
-
-	readonly labels: string[] = [];
-
-	constructor(original: InputImage, outputs: ConvertOutput[]) {
-		this.divisor = original.file.size / 100;
-
-		const { labels, mapping, divisor } = this;
-		const [output] = outputs;
-
-		function define(name: string, fn: MapFn) {
-			if (fn(output) !== undefined) {
-				mapping.push(fn);
-				labels.push(name);
-			}
-		}
-
-		define("Compression Ratio %", v => v.buffer.byteLength / divisor);
-		define("Encode Time (s)", v => v.time);
-		define("SSIM", v => v.metrics.SSIM);
-		define("PSNR (db)", v => v.metrics.PSNR);
-		define("Butteraugli Score", v => v.metrics.butteraugli?.source);
-	}
-
-	convert(outputs: ConvertOutput[]) {
-		return this.mapping.map(fn => outputs.map(output => fn(output)!));
-	}
+export interface MetricMeta {
+	key: string;
+	name: string;
 }
 
 function handleMouseover(chart: Chart, i: number) {
@@ -69,43 +39,40 @@ function addLegendListener(chart: Chart) {
 
 export interface ChartProps {
 	visible: boolean;
-	original: InputImage;
+	seriesMeta: MetricMeta[];
 	index: number;
 	values: string[];
 	outputs: ConvertOutput[];
 }
 
 export default function ChartPanel(props: ChartProps) {
-	const { visible, original, outputs, index, values } = props;
+	const { visible, seriesMeta, outputs, index, values } = props;
 
 	const [chart, setChart] = useState<Chart>();
 	const [locked, setLocked] = useState<boolean>(false);
-
-	const mapper = useMemo(() => new SeriesMapper(original, outputs), [original]);
 
 	function initHighcharts(el: HTMLDivElement | null) {
 		if (!el || chart) {
 			return;
 		}
 
-		const data = mapper.convert(outputs);
-		const series = new Array<SeriesLineOptions>(data.length);
-		const yAxis = new Array<YAxisOptions>(data.length);
+		const series = new Array<SeriesLineOptions>(seriesMeta.length);
+		const yAxis = new Array<YAxisOptions>(seriesMeta.length);
 
-		for (let i = 0; i < data.length; i++) {
-			const name = mapper.labels[i];
-			series[i] = {
-				name,
-				type: "line",
-				data: data[i],
-				yAxis: i,
-			};
+		for (let i = 0; i < seriesMeta.length; i++) {
+			const { key, name } = seriesMeta[i];
 			yAxis[i] = {
 				title: {
 					text: name,
 				},
 				visible: false,
 				opposite: true,
+			};
+			series[i] = {
+				name,
+				type: "line",
+				yAxis: i,
+				data: outputs.map(output => output.metrics[key]),
 			};
 		}
 
@@ -168,9 +135,11 @@ export default function ChartPanel(props: ChartProps) {
 	}
 
 	function updateSeriesData(chart: Chart) {
-		const data = mapper.convert(outputs);
 		chart.xAxis[0].setCategories(values, false);
-		chart.series.forEach((s, i) => s.setData(data[i], false));
+		chart.series.forEach((s, i) => {
+			const { key } = seriesMeta[i];
+			s.setData(outputs.map(output => output.metrics[key]), false);
+		});
 	}
 
 	function updatePlotLine(chart: Chart) {
