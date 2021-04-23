@@ -137,6 +137,7 @@ module.exports = function webpackConfig(env) {
 		},
 		devtool: isProd ? "source-map" : "inline-source-map",
 		devServer: {
+			// Required to use SharedArrayBuffer
 			headers: {
 				"Cross-Origin-Opener-Policy": "same-origin",
 				"Cross-Origin-Embedder-Policy": "require-corp",
