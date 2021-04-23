@@ -1,5 +1,6 @@
 import { OptionsKeyPair, OptionType } from "../form";
 import { EncoderState } from "./index";
+import * as Comlink from "comlink";
 
 export function buildOptions(templates: OptionType[], state: EncoderState) {
 	const { varNames, values, ranges } = state;
@@ -50,10 +51,10 @@ export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
 			module = loader();
 		}
 		const result = (await module).encode(data, width, height, options);
-		if (result) {
-			return result.buffer;
+		if (!result) {
+			throw new Error("Encoding error");
 		}
-		throw new Error("Encoding error");
+		return Comlink.transfer(result.buffer, [result.buffer]);
 	};
 }
 
@@ -71,9 +72,9 @@ export function wasmDecodeFn(loader: DecodeModuleLoader) {
 			module = loader();
 		}
 		const result = (await module).decode(data);
-		if (result) {
-			return result;
+		if (!result) {
+			throw new Error("Decoding error");
 		}
-		throw new Error("Decoding error");
+		return Comlink.transfer(result, [result.data.buffer]);
 	};
 }

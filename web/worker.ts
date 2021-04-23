@@ -10,6 +10,7 @@ import * as WebP2 from "./codecs/webp2/codec";
 
 // A worker can only convert one image at the same time, so use global variable for more simplify code.
 let data: ImageData;
+
 let butteraugli: Butteraugli;
 
 interface CodecModule<T> {
@@ -57,7 +58,11 @@ const workerApi = {
 		if (!butteraugli) {
 			butteraugli = new Butteraugli(data);
 		}
-		return butteraugli.diff(image, options);
+		const [score, heatMap] = butteraugli.diff(image, options);
+		return {
+			score,
+			heatMap: Comlink.transfer(heatMap, [heatMap.buffer]),
+		};
 	},
 };
 

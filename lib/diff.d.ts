@@ -4,11 +4,12 @@ export interface FullButteraugliOptions {
 	badQualitySeek: number;
 }
 
-export type ButteraugliResult = [number, Uint8Array];
+// [score, heatMap]
+export type ButteraugliTuple = [number, Uint8Array];
 
 export interface ButteraugliDiff {
 	delete(): void;
-	Diff(data: ArrayBuffer, options: FullButteraugliOptions): ButteraugliResult;
+	Diff(data: ArrayBuffer, options: FullButteraugliOptions): ButteraugliTuple;
 }
 
 interface ButteraugliDiffConstructor {
