@@ -77,7 +77,7 @@ export function getMetricsMeta(options: MeasureOptions) {
 	}
 	if (options.SSIM.enabled) {
 		calculations++;
-		metricsMeta.push({ key: "ssim", name: "SSIM" });
+		metricsMeta.push({ key: "ssim", name: "SSIM %" });
 	}
 	if (options.butteraugli.enabled) {
 		calculations++;
@@ -108,7 +108,7 @@ export function measureFor(pool: WorkerPool<WorkerApi>, options: MeasureOptions,
 			queueTask(async r => metrics.psnr = await r.calcPSNR(data));
 		}
 		if (SSIM.enabled) {
-			queueTask(async r => metrics.ssim = await r.calcSSIM(data, SSIM.options));
+			queueTask(async r => metrics.ssim = await r.calcSSIM(data, SSIM.options) * 100);
 		}
 	};
 }
