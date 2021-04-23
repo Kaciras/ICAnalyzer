@@ -1,12 +1,12 @@
 {
-	"name": "ic-analyze",
+	"name": "ic-analyzer",
 	"version": "0.1.0",
 	"description": "Analyze the effect of image convertors",
 	"author": "Kaciras <Kaciras@protonmail.com>",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Kaciras/ICAnalyze.git"
+		"url": "git+https://github.com/Kaciras/ICAnalyzer.git"
 	},
 	"scripts": {
 		"lint": "eslint --fix .",

@@ -18,7 +18,7 @@ export default function IntroPage(props: IntroPageProps) {
 
 				<div>
 					<h1 className={styles.title}>
-						ICAnalyze
+						ICAnalyzer
 					</h1>
 					<h2 className={styles.subTitle}>
 						Image Codec & Quality analyze tool
@@ -41,7 +41,7 @@ export default function IntroPage(props: IntroPageProps) {
 					<Button
 						className={styles.bigButton + " second"}
 						type="outline"
-						href="https://github.com/Kaciras/ICAnalyze"
+						href="https://github.com/Kaciras/ICAnalyzer"
 					>
 						<GitHubIcon className={styles.github}/>
 						Source Code

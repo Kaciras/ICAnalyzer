@@ -18,7 +18,7 @@ function detectBrowserSupport() {
 }
 
 if (!detectBrowserSupport()) {
-	alert("ICAnalyze does not support this browser, please switch to a modern one");
+	alert("ICAnalyzer does not support this browser, please switch to a modern one");
 }
 
 // Can't use { name, version } = packageJson, because webpack doesn't support tree shaking for object destructuring.
