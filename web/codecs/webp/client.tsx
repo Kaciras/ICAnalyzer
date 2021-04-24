@@ -4,7 +4,7 @@ import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType, PresetOption } from "../../form";
 import { EncodeOptions } from "./codec";
 import { EncoderState, OptionListProps } from "../index";
-import { buildOptions, mergeOptions } from "../common";
+import { buildOptions, createState, mergeOptions } from "../common";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -140,14 +140,7 @@ export function getState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
 	}
-	const values: Record<string, any> = {};
-	const ranges: Record<string, any> = {};
-
-	for (const t of templates) {
-		const [value, range] = t.createState();
-		values[t.id] = value;
-		ranges[t.id] = range;
-	}
+	const { values, ranges } = createState(templates);
 	(ranges.quality as any).step = 5;
 	return { varNames: ["quality"], values, ranges };
 }

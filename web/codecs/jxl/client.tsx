@@ -2,7 +2,7 @@ import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/jxl/shared/meta";
 import { WorkerApi } from "../../worker";
 import { BoolOption, NumberOption, OptionType } from "../../form";
-import { buildOptions, mergeOptions } from "../common";
+import { buildOptions, createState, mergeOptions } from "../common";
 import { EncoderState, OptionListProps } from "../index";
 import { EncodeOptions } from "./codec";
 
@@ -47,19 +47,8 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function getState(saved?: EncoderState): EncoderState {
-	if (saved) {
-		return saved;
-	}
-	const values: Record<string, any> = {};
-	const ranges: Record<string, any> = {};
-
-	for (const t of templates) {
-		const [value, range] = t.createState();
-		values[t.id] = value;
-		ranges[t.id] = range;
-	}
-	return { varNames: [], values, ranges };
+export function getState(saved?: EncoderState) {
+	return saved ?? createState(templates);
 }
 
 export function OptionsPanel(props: OptionListProps) {

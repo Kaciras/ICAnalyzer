@@ -8,7 +8,6 @@ import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import { Button, Dialog, FileDrop } from "../ui";
 import { getFileFromUrl } from "../utils";
 import { decode } from "../decode";
-import DemoButton from "./DemoButton";
 import { InputImage } from "./index";
 import styles from "./SelectFileDialog.scss";
 
@@ -29,6 +28,43 @@ const demos = [
 		icon: colorfulTextIcon,
 	},
 ];
+
+interface DemoButtonProps {
+	description: string;
+	url: string;
+	icon: string;
+	onClick: (url: string) => Promise<void>;
+}
+
+function DemoButton(props: DemoButtonProps) {
+	const { description, url, icon, onClick } = props;
+
+	const [loading, setLoading] = useState(false);
+
+	async function handleClick() {
+		if (loading) {
+			return;
+		}
+		setLoading(true);
+		try {
+			await onClick(url);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	return (
+		<button key={url} className={styles.card} onClick={handleClick}>
+			<img
+				src={icon}
+				alt="icon"
+				className={styles.demoIcon}
+			/>
+			{loading && <div className={styles.loading}/>}
+			<span className={styles.demoDescription}>{description}</span>
+		</button>
+	);
+}
 
 interface SelectFileDialogProps {
 	onCancel: () => void;

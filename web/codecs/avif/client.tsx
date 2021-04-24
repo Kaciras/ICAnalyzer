@@ -3,7 +3,7 @@ import { defaultOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
 import { EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionListProps } from "../index";
-import { buildOptions } from "../common";
+import { buildOptions, createState } from "../common";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";
@@ -81,19 +81,8 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function getState(saved?: EncoderState): EncoderState {
-	if (saved) {
-		return saved;
-	}
-	const values: Record<string, any> = {};
-	const ranges: Record<string, any> = {};
-
-	for (const t of templates) {
-		const [value, range] = t.createState();
-		values[t.id] = value;
-		ranges[t.id] = range;
-	}
-	return { varNames: [], values, ranges };
+export function getState(saved?: EncoderState) {
+	return saved ?? createState(templates);
 }
 
 export function OptionsPanel(props: OptionListProps) {

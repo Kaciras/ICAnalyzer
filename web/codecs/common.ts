@@ -2,6 +2,18 @@ import { OptionsKeyPair, OptionType } from "../form";
 import { EncoderState } from "./index";
 import * as Comlink from "comlink";
 
+export function createState(templates: OptionType[]) {
+	const values: Record<string, any> = {};
+	const ranges: Record<string, any> = {};
+
+	for (const t of templates) {
+		const [value, range] = t.createState();
+		values[t.id] = value;
+		ranges[t.id] = range;
+	}
+	return { varNames: [], values, ranges } as EncoderState;
+}
+
 export function buildOptions(templates: OptionType[], state: EncoderState) {
 	const { varNames, values, ranges } = state;
 
