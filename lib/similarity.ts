@@ -1,11 +1,10 @@
-import metrics, { ButteraugliDiff, FullButteraugliOptions, MetricsModule } from "./diff";
+import metrics, { ButteraugliDiff, ButteraugliOptions, MetricsModule } from "./diff";
 import ssim, { Options } from "ssim.js";
 
-export type ButteraugliOptions = Partial<FullButteraugliOptions>;
-
 export type SSIMOptions = Partial<Options>;
+export type { ButteraugliOptions };
 
-export const defaultButteraugliOptions: FullButteraugliOptions = {
+export const defaultButteraugliOptions: ButteraugliOptions = {
 	hfAsymmetry: 1.0,
 	goodQualitySeek: 1.5,
 	badQualitySeek: 0.5,
@@ -63,7 +62,7 @@ export class Butteraugli {
 		this.native.delete();
 	}
 
-	diff(image: ImageData, options?: ButteraugliOptions) {
+	diff(image: ImageData, options?: Partial<ButteraugliOptions>) {
 		if (!loadPromise) {
 			throw new Error("Wasm module not load");
 		}

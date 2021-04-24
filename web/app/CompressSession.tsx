@@ -16,7 +16,7 @@ export type OutputMap = ObjectKeyMap<any, ConvertOutput>;
  * Create a new object compatible with ImageData type from an ImageData,
  * with convert the data to SharedArrayBuffer.
  *
- * NOTE: the returned value is not an ImageData and can't put into canvas.
+ * NOTE: the returned value is not an ImageData and can't be put into canvas.
  *
  * @param image original image data
  * @return the image data with shared
@@ -59,7 +59,7 @@ export default function CompressSession(props: CompressSessionProps) {
 			throw new Error("File is null");
 		}
 		const { file, raw } = input;
-		const { encoders, measure } = config;
+		const { encoding, measure } = config;
 
 		let taskCount = 0;
 		const queue: Array<[ImageEncoder, OptionsKeyPair[]]> = [];
@@ -67,7 +67,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 		for (const enc of ENCODERS) {
 			const { name, getOptionsList } = enc;
-			const config = encoders[name];
+			const config = encoding[name];
 			if (!config.enable) {
 				continue;
 			}
@@ -97,7 +97,6 @@ export default function CompressSession(props: CompressSessionProps) {
 		setEncoder(pool);
 		worker.onProgress = progress.increase;
 
-		// noinspection ES6MissingAwait
 		try {
 			if ("SharedArrayBuffer" in window) {
 				const shared = share(raw);

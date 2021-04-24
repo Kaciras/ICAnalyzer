@@ -11,11 +11,12 @@ export interface EncoderConfig {
 
 export type EncodingConfig = Record<string, EncoderConfig>;
 
-export function createEncodingConfig(saved?: EncodingConfig): EncodingConfig {
+export function createEncodingConfig() {
+	const saved = localStorage.getItem("EncodingConfig");
 	if (saved) {
-		return saved;
+		return JSON.parse(saved) as EncodingConfig;
 	}
-	const encoders: Record<string, EncoderConfig> = {};
+	const encoders: EncodingConfig = {};
 	for (const e of ENCODERS) {
 		encoders[e.name] = {
 			enable: false,

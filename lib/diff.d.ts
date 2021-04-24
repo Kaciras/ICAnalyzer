@@ -1,4 +1,4 @@
-export interface FullButteraugliOptions {
+export interface ButteraugliOptions {
 	hfAsymmetry: number;
 	goodQualitySeek: number;
 	badQualitySeek: number;
@@ -9,7 +9,7 @@ export type ButteraugliTuple = [number, Uint8Array];
 
 export interface ButteraugliDiff {
 	delete(): void;
-	Diff(data: ArrayBuffer, options: FullButteraugliOptions): ButteraugliTuple;
+	Diff(data: ArrayBuffer, options: ButteraugliOptions): ButteraugliTuple;
 }
 
 interface ButteraugliDiffConstructor {

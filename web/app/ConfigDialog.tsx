@@ -8,22 +8,11 @@ import EncoderPanel, { createEncodingConfig, EncodingConfig } from "./EncoderPan
 import styles from "./ConfigDialog.scss";
 
 export interface AnalyzeConfig {
-	encoders: EncodingConfig;
 	measure: MeasureOptions;
+	encoding: EncodingConfig;
 }
 
-function initEncoderConfig(): AnalyzeConfig {
-	const saved = localStorage.getItem("Config");
-	if (saved) {
-		return JSON.parse(saved);
-	}
-	return {
-		encoders: createEncodingConfig(),
-		measure: createMeasureState(),
-	};
-}
-
-interface ConfigDialogProps {
+export interface ConfigDialogProps {
 	image: InputImage;
 	onStart: (config: AnalyzeConfig) => void;
 	onClose: () => void;
@@ -36,11 +25,13 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 	const { image, onStart, onClose, onSelectFile } = props;
 
 	const [index, setIndex] = useState(0);
-	const [config, setConfig] = useState(initEncoderConfig);
+	const [encoding, setEncoding] = useState(createEncodingConfig);
+	const [measure, setMeasure] = useState(createMeasureState);
 
 	function start() {
-		onStart(config);
-		localStorage.setItem("Config", JSON.stringify(config));
+		onStart({ encoding, measure });
+		localStorage.setItem("EncodingConfig", JSON.stringify(encoding));
+		localStorage.setItem("MeasureConfig", JSON.stringify(measure));
 	}
 
 	const tabs = panels.map((name, i) =>
@@ -62,19 +53,20 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			break;
 		case 1:
 			panel = <EncoderPanel
-				value={config.encoders}
-				onChange={v => setConfig({ ...config, encoders: v })}
+				value={encoding}
+				onChange={setEncoding}
 			/>;
 			break;
 		case 2:
 			panel = <MetricsPanel
-				value={config.measure}
-				onChange={v => setConfig({ ...config, measure: v })}
+				value={measure}
+				encodeTime={true}
+				onChange={setMeasure}
 			/>;
 			break;
 	}
 
-	const ready = image && Object.values(config.encoders).some(e => e.enable);
+	const ready = image && Object.values(encoding).some(e => e.enable);
 
 	return (
 		<Dialog

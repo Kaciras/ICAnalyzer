@@ -1,21 +1,43 @@
-import React, { ChangeEvent, Dispatch } from "react";
+import React, { ChangeEvent, ComponentProps, Dispatch, JSXElementConstructor } from "react";
 import * as ssimJs from "ssim.js";
-import { defaultButteraugliOptions } from "../../lib/similarity";
+import { ButteraugliOptions, defaultButteraugliOptions } from "../../lib/similarity";
 import { CheckBox, NumberInput } from "../ui";
-import { ButteraugliConfig, MeasureOptions, Optional } from "../encode";
+import { MeasureOptions, Optional } from "../encode";
 import styles from "./MetricsPanel.scss";
 
-export function createMeasureState(saved?: MeasureOptions): MeasureOptions {
+type ElementType = keyof JSX.IntrinsicElements | JSXElementConstructor<any>;
+
+interface LabeledHOCProps<T> {
+	Component: T;
+	label: string;
+}
+
+type LabeledInputProps<T extends ElementType> = LabeledHOCProps<T> & ComponentProps<T>;
+
+function LabeledInput<T extends ElementType>(props: LabeledInputProps<T>) {
+	const { Component, label, children, ...others } = props;
+	return (
+		<label className={styles.field}>
+			<span className={styles.label}>
+				{label}
+			</span>
+			<Component {...others}>{children}</Component>
+		</label>
+	);
+}
+
+export function createMeasureState(): MeasureOptions {
+	const saved = localStorage.getItem("MeasureConfig");
 	if (saved) {
-		return saved;
+		return JSON.parse(saved);
 	}
 	return {
 		version: 1,
 		workerCount: navigator.hardwareConcurrency,
 		time: true,
-		PSNR: true,
+		PSNR: false,
 		SSIM: {
-			enabled: false,
+			enabled: true,
 			options: ssimJs.getOptions(),
 		},
 		butteraugli: {
@@ -26,8 +48,8 @@ export function createMeasureState(saved?: MeasureOptions): MeasureOptions {
 }
 
 interface ButteraugliProps {
-	value: Optional<ButteraugliConfig>;
-	onChange: Dispatch<Optional<ButteraugliConfig>>;
+	value: Optional<ButteraugliOptions>;
+	onChange: Dispatch<Optional<ButteraugliOptions>>;
 }
 
 function ButteraugliFields(props: ButteraugliProps) {
@@ -69,7 +91,7 @@ function ButteraugliFields(props: ButteraugliProps) {
 			</CheckBox>
 
 			<fieldset className={styles.subfields}>
-				{value.enabled && inputs}
+				{inputs}
 			</fieldset>
 		</div>
 	);
@@ -96,7 +118,7 @@ function deepGet(target: any, path: string) {
 
 interface NumberOptionProps<T> {
 	name: string;
-	path: string
+	path: string;
 	data: T;
 	min?: number;
 	max?: number;
@@ -112,31 +134,26 @@ function NumberOptions<T>(props: NumberOptionProps<T>) {
 	}
 
 	return (
-		<label className={styles.field}>
-			<span className={styles.label}>{name}</span>
-			<NumberInput
-				className={styles.value}
-				min={min}
-				max={max}
-				step={step}
-				value={deepGet(data, path)}
-				onValueChange={handleChange}
-			/>
-		</label>
+		<LabeledInput
+			Component={NumberInput}
+			label={name}
+			min={min}
+			max={max}
+			step={step}
+			value={deepGet(data, path)}
+			onValueChange={handleChange}
+		/>
 	);
 }
 
-export interface QualityFormPros {
-	// value:
-}
-
 interface MetricsPanelProps {
+	encodeTime?: boolean;
 	value: MeasureOptions;
 	onChange: Dispatch<MeasureOptions>;
 }
 
 export default function MetricsPanel(props: MetricsPanelProps) {
-	const { value, onChange } = props;
+	const { encodeTime, value, onChange } = props;
 	const { workerCount, time, SSIM, PSNR, butteraugli } = value;
 
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -148,7 +165,7 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 		onChange({ ...value, workerCount: count });
 	}
 
-	function handleBgChange(newValue: Optional<ButteraugliConfig>) {
+	function handleBgChange(newValue: Optional<ButteraugliOptions>) {
 		onChange({ ...value, butteraugli: newValue });
 	}
 
@@ -165,13 +182,18 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 					onValueChange={handleWorkerCountChange}
 				/>
 			</label>
-			<CheckBox
-				checked={time}
-				name="time"
-				onChange={handleChange}
-			>
-				Encode time (Not very accurate)
-			</CheckBox>
+
+			{
+				encodeTime &&
+				<CheckBox
+					checked={time}
+					name="time"
+					onChange={handleChange}
+				>
+					Encode time (Not very accurate)
+				</CheckBox>
+			}
+
 			<CheckBox
 				checked={PSNR}
 				name="PSNR"
@@ -188,22 +210,19 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 				>
 					Structural similarity index measure
 				</CheckBox>
-				<div className={styles.subfields}>
-					<label className={styles.field}>
-					<span className={styles.label}>
-						Algorithm
-					</span>
-						<select
-							className={styles.select}
-							value={SSIM.options.ssim}
-							onChange={e => onChange(deepSet(value, "SSIM.options.ssim", e.target.value))}
-						>
-							<option>fast</option>
-							<option>original</option>
-							<option>bezkrovny</option>
-							<option>weber</option>
-						</select>
-					</label>
+				<fieldset className={styles.subfields}>
+					<LabeledInput
+						Component={"select" as const}
+						label="Algorithm"
+						className={styles.select}
+						value={SSIM.options.ssim}
+						onChange={e => onChange(deepSet(value, "SSIM.options.ssim", e.target.value))}
+					>
+						<option>fast</option>
+						<option>original</option>
+						<option>bezkrovny</option>
+						<option>weber</option>
+					</LabeledInput>
 
 					<NumberOptions
 						name="k1"
@@ -229,7 +248,7 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 						data={value}
 						onChange={onChange}
 					/>
-				</div>
+				</fieldset>
 			</div>
 
 			<ButteraugliFields value={butteraugli} onChange={handleBgChange}/>

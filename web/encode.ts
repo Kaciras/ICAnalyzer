@@ -3,7 +3,7 @@ import type { WorkerApi } from "./worker";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
 import * as SSIM from "ssim.js";
-import { FullButteraugliOptions } from "../lib/diff";
+import { ButteraugliOptions } from "../lib/diff";
 import { MetricMeta } from "./app/ChartPanel";
 import WorkerPool, { TaskFn } from "./WorkerPool";
 
@@ -18,15 +18,7 @@ export interface MeasureOptions {
 	time: boolean;
 	PSNR: boolean;
 	SSIM: Optional<SSIM.Options>;
-	butteraugli: Optional<FullButteraugliOptions>;
-}
-
-export interface InternalMetrics {
-	time: number;
-	ratio: number;
-	SSIM?: number;
-	PSNR?: number;
-	butteraugli?: number;
+	butteraugli: Optional<ButteraugliOptions>;
 }
 
 interface EncodeResult {
@@ -63,13 +55,7 @@ export function newWorker() {
 
 export function getMetricsMeta(options: MeasureOptions) {
 	let calculations = 0;
-	const metricsMeta: MetricMeta[] = [
-		// { key: "ratio", name: "Compression Ratio %" },
-	];
-
-	// if (options.time) {
-	// 	series.push({ key: "time", name: "Encode Time (s)" });
-	// }
+	const metricsMeta: MetricMeta[] = [];
 
 	if (options.PSNR) {
 		calculations++;
@@ -95,13 +81,13 @@ export function measureFor(pool: WorkerPool<WorkerApi>, options: MeasureOptions,
 	}
 
 	return (output: ConvertOutput) => {
-		const { data, metrics }= output;
+		const { data, metrics } = output;
 
 		if (butteraugli.enabled) {
 			queueTask(async r => {
-				const [source, raw] = await r.calcButteraugli(data, butteraugli.options);
-				metrics.butteraugli = source;
-				output.heatMap = rgbaToImage(raw, data.width, data.height);
+				const { score, heatMap } = await r.calcButteraugli(data, butteraugli.options);
+				metrics.butteraugli = score;
+				output.heatMap = rgbaToImage(heatMap, data.width, data.height);
 			});
 		}
 		if (PSNR) {
@@ -123,32 +109,6 @@ export class BatchEncodeAnalyzer {
 
 		const blob = new Blob([buffer], { type: encoder.mimeType });
 		return { time, buffer, data: await decode(blob, remote) } as EncodeResult;
-	}
-
-	async measure(remote: Remote<WorkerApi>, result: EncodeResult, options: MeasureOptions) {
-		const { time, buffer, data } = result;
-		const { SSIM, PSNR, butteraugli } = options;
-
-		const metrics: InternalMetrics = { time };
-		let heatMap: ImageData | undefined = undefined;
-
-		if (PSNR) {
-			metrics.PSNR = await remote.calcPSNR(data);
-			this.onProgress();
-		}
-		if (SSIM.enabled) {
-			metrics.SSIM = await remote.calcSSIM(data, SSIM.options);
-			this.onProgress();
-		}
-		if (butteraugli.enabled) {
-			const [source, raw] = await remote.calcButteraugli(data, butteraugli.options);
-			this.onProgress();
-
-			heatMap = rgbaToImage(raw, data.width, data.height);
-			metrics.butteraugli = source;
-		}
-
-		return { buffer, data, heatMap, metrics };
 	}
 }
 
