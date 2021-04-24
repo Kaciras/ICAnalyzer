@@ -37,7 +37,7 @@ function ColorItem(props: ColorItemProps) {
 	return <div className={styles.color} style={cssVariables}>{name}: {color}</div>;
 }
 
-export interface PickColorPopupProps {
+export interface ColorPickerProps {
 	style?: CSSProperties;
 
 	x: number;
@@ -46,7 +46,7 @@ export interface PickColorPopupProps {
 	imageB: ImageData;
 }
 
-export default function ColorPicker(props: PickColorPopupProps) {
+export default function ColorPicker(props: ColorPickerProps) {
 	const { style, x, y, imageA, imageB } = props;
 
 	const pixelA = getPixel(imageA, x, y);

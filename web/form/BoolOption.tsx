@@ -9,7 +9,7 @@ export interface BoolVariableConfig {
 	defaultValue: boolean | number;
 }
 
-export class BoolOption implements OptionType<boolean, never> {
+export class BoolOption implements OptionType<boolean> {
 
 	private readonly data: BoolVariableConfig;
 
@@ -30,7 +30,7 @@ export class BoolOption implements OptionType<boolean, never> {
 		return [Boolean(this.data.defaultValue), undefined] as [boolean, never];
 	}
 
-	OptionField(props: OptionFieldProps<boolean, never>) {
+	OptionField(props: OptionFieldProps<boolean, any>) {
 		const { id, label } = this.data;
 		const { isVariable, value, onValueChange, onVariabilityChange } = props;
 
