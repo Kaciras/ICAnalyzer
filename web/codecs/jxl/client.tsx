@@ -47,7 +47,7 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function initOptionsState(saved?: EncoderState): EncoderState {
+export function getState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
 	}

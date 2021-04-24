@@ -3,13 +3,13 @@ import { MeasureOptions } from "../encode";
 import { Button, Dialog } from "../ui";
 import { InputImage } from "./index";
 import ImageInfoPanel from "./ImageInfoPanel";
-import MetricsPanel, { createMeasureState } from "./MetricsPanel";
-import EncoderPanel, { createEncodingConfig, EncodingConfig } from "./EncoderPanel";
+import MetricsPanel, { getMeasureOptions } from "./MetricsPanel";
+import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel";
 import styles from "./ConfigDialog.scss";
 
 export interface AnalyzeConfig {
 	measure: MeasureOptions;
-	encoding: EncodingConfig;
+	encoding: EncodingOptions;
 }
 
 export interface ConfigDialogProps {
@@ -19,19 +19,26 @@ export interface ConfigDialogProps {
 	onSelectFile: () => void;
 }
 
+function loadOptions<T>(key: string, processor: (saved?: T) => T) {
+	return () => {
+		const saved = localStorage.getItem(key);
+		return processor(saved ? JSON.parse(saved) : undefined);
+	};
+}
+
 const panels = ["Information", "Encoding", "Measure"];
 
 export default function ConfigDialog(props: ConfigDialogProps) {
 	const { image, onStart, onClose, onSelectFile } = props;
 
 	const [index, setIndex] = useState(0);
-	const [encoding, setEncoding] = useState(createEncodingConfig);
-	const [measure, setMeasure] = useState(createMeasureState);
+	const [encoding, setEncoding] = useState(loadOptions("Encoding", getEncodingOptions));
+	const [measure, setMeasure] = useState(loadOptions("Measure", getMeasureOptions));
 
 	function start() {
 		onStart({ encoding, measure });
-		localStorage.setItem("EncodingConfig", JSON.stringify(encoding));
-		localStorage.setItem("MeasureConfig", JSON.stringify(measure));
+		localStorage.setItem("Encoding", JSON.stringify(encoding));
+		localStorage.setItem("Measure", JSON.stringify(measure));
 	}
 
 	const tabs = panels.map((name, i) =>

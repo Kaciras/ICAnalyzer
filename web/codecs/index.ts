@@ -34,7 +34,7 @@ export interface ImageEncoder {
 	extension: string;
 	mimeType: string;
 
-	initOptionsState(saved?: EncoderState): any;
+	getState(saved?: EncoderState): EncoderState;
 
 	OptionsPanel(props: OptionListProps): JSX.Element;
 

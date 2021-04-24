@@ -26,10 +26,9 @@ function LabeledInput<T extends ElementType>(props: LabeledInputProps<T>) {
 	);
 }
 
-export function createMeasureState(): MeasureOptions {
-	const saved = localStorage.getItem("MeasureConfig");
+export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
 	if (saved) {
-		return JSON.parse(saved);
+		return saved;
 	}
 	return {
 		version: 1,
@@ -146,7 +145,7 @@ function NumberOptions<T>(props: NumberOptionProps<T>) {
 	);
 }
 
-interface MetricsPanelProps {
+export interface MetricsPanelProps {
 	encodeTime?: boolean;
 	value: MeasureOptions;
 	onChange: Dispatch<MeasureOptions>;
@@ -212,7 +211,7 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 				</CheckBox>
 				<fieldset className={styles.subfields}>
 					<LabeledInput
-						Component={"select" as const}
+						Component={"select" as "select"}
 						label="Algorithm"
 						className={styles.select}
 						value={SSIM.options.ssim}
@@ -233,7 +232,7 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 						onChange={onChange}
 					/>
 					<NumberOptions
-						name="K2"
+						name="k2"
 						path="SSIM.options.k2"
 						min={0}
 						step={0.01}

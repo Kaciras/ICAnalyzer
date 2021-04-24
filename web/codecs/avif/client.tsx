@@ -1,5 +1,5 @@
 import { Remote } from "comlink";
-import { defaultOptions, EncodeOptions } from "squoosh/src/features/encoders/avif/shared/meta";
+import { defaultOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
 import { EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionListProps } from "../index";
@@ -81,7 +81,7 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function initOptionsState(saved: EncodeOptions) {
+export function getState(saved?: EncoderState): EncoderState {
 	if (saved) {
 		return saved;
 	}

@@ -9,22 +9,22 @@ export interface EncoderConfig {
 	state: EncoderState;
 }
 
-export type EncodingConfig = Record<string, EncoderConfig>;
+export type EncodingOptions = Record<string, EncoderConfig>;
 
-export function createEncodingConfig() {
-	const saved = localStorage.getItem("EncodingConfig");
-	if (saved) {
-		return JSON.parse(saved) as EncodingConfig;
+export function getEncodingOptions(saved?: EncodingOptions) {
+	const config = saved ?? {};
+
+	for (const { name, getState } of ENCODERS) {
+		if (config[name]) {
+			config[name].state = getState(config[name].state);
+		} else {
+			config[name] = { enable: false, state: getState() };
+		}
 	}
-	const encoders: EncodingConfig = {};
-	for (const e of ENCODERS) {
-		encoders[e.name] = {
-			enable: false,
-			state: e.initOptionsState(),
-		};
+	if (!saved) {
+		config.WebP.enable = true;
 	}
-	encoders.WebP.enable = true;
-	return encoders;
+	return config;
 }
 
 export interface EncoderPanelProps {
