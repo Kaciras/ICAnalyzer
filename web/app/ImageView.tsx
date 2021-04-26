@@ -1,12 +1,13 @@
 import { Dispatch, MouseEvent, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
-import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
+import clsx from "clsx";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
-import { PinchZoomState } from "../ui/PinchZoom";
-import { Button, NumberInput, PinchZoom, SwitchButton } from "../ui";
-import { ConvertOutput } from "../encode";
-import { InputImage } from "./index";
+import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
 import { ButtonProps } from "../ui/Button";
+import { PinchZoomState } from "../ui/PinchZoom";
+import { ConvertOutput } from "../encode";
+import { Button, NumberInput, PinchZoom, SwitchButton } from "../ui";
+import { InputImage } from "./index";
 import ColorPicker from "./ColorPicker";
 import styles from "./ImageView.scss";
 
@@ -16,6 +17,8 @@ export enum ViewType {
 	Difference,
 	HeatMap,
 }
+
+const viewTypeNames = ["Original", "Output", "Difference", "HeatMap"];
 
 interface ImageViewTabProps extends ButtonProps {
 	target: string;
@@ -40,10 +43,12 @@ function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>)
 interface ImageViewProps {
 	original: InputImage;
 	output: ConvertOutput;
+
+	className?: string;
 }
 
 export default function ImageView(props: ImageViewProps) {
-	const { original, output } = props;
+	const { original, output, className } = props;
 	const { width, height } = original.raw;
 	const { heatMap } = output;
 
@@ -86,8 +91,7 @@ export default function ImageView(props: ImageViewProps) {
 		setPinchZoom(prev => ({ ...prev, scale: value / 100 }));
 	}
 
-	const tabData = ["Original", "Output", "Difference", "HeatMap"]
-		.map<ImageViewTabProps>(target => ({ target }));
+	const tabData = viewTypeNames.map<ImageViewTabProps>(target => ({ target }));
 
 	if (!heatMap) {
 		tabData[3].disabled = true;
@@ -155,9 +159,9 @@ export default function ImageView(props: ImageViewProps) {
 	const mixBlendMode = type === ViewType.Difference ? "difference" : undefined;
 
 	return (
-		<div className={styles.container}>
+		<div className={clsx(styles.container, className)}>
 			<PinchZoom
-				className={styles.imageView}
+				className={styles.main}
 				state={pinchZoom}
 				onChange={v => v.scale > 0.01 && setPinchZoom(v)}
 			>
@@ -185,7 +189,7 @@ export default function ImageView(props: ImageViewProps) {
 				</div>
 			</PinchZoom>
 
-			<div className={styles.inputs}>
+			<div className={styles.tabPanel}>
 				<div>{imageViewTabs}</div>
 
 				<div

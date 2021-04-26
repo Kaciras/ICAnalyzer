@@ -155,7 +155,11 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 	return (
 		<>
-			<ImageView original={input} output={output}/>
+			<ImageView
+				className={styles.imageView}
+				original={input}
+				output={output}
+			/>
 
 			<ChartPanel
 				visible={showChart}
@@ -165,7 +169,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				outputs={series}
 			/>
 
-			<div className={styles.buttonGroup}>
+			<div className={styles.buttonPanel}>
 				<Button
 					title="Back"
 					type="text"

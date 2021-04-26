@@ -1,11 +1,8 @@
 .container {
 	position: relative;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
 }
 
-.inputs {
+.tabPanel {
 	composes: controls from global;
 
 	position: absolute;
@@ -25,7 +22,7 @@
 	margin-right: auto;
 }
 
-.imageView {
+.main {
 	$tile-color: #eee;
 
 	display: flex;
@@ -34,6 +31,7 @@
 
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 
 	background-image:
 			linear-gradient(45deg, $tile-color 25%, transparent 0),

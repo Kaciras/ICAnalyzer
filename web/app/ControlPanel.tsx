@@ -7,7 +7,7 @@ import styles from "./ControlPanel.scss";
 
 export interface ControlPanelProps {
 	controlsMap: ControlsMap;
-	value: ControlState
+	value: ControlState;
 	onChange: Dispatch<Partial<ControlState>>;
 }
 

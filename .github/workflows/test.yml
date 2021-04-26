@@ -26,5 +26,3 @@ jobs:
 
       - name: Test
         run: pnpm run test
-        env:
-          CI: true
