@@ -5,11 +5,12 @@ import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button } from "../ui";
 import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs";
-import { Result } from "./index";
+import { ControlsMap, Result } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import styles from "./AnalyzePage.scss";
+import { ConvertOutput } from "../encode";
 
 interface DownloadButtonProps {
 	title?: string;
@@ -68,6 +69,70 @@ export interface ControlState {
 	variableName: string;
 }
 
+function createControlState(controlsMap: ControlsMap): ControlState {
+	let variableType = Step.None;
+	let variableName = "";
+
+	const kvs = Object.entries(controlsMap);
+	if (kvs.length > 1) {
+		variableType = Step.Encoder;
+		variableName = "";
+	}
+
+	const [encoderName, controls] = kvs[0];
+	if (controls.length > 0) {
+		variableType = Step.Options;
+		variableName = controls[0].id;
+	}
+
+	// encoder name -> option id -> values
+	const encoderState: Record<string, Record<string, any>> = {};
+	for (const [k, v] of kvs) {
+		encoderState[k] = Object.fromEntries(v.map(c => [c.id, c.createState()[0]]));
+	}
+
+	return { variableType, variableName, encoderName, encoderState };
+}
+
+function updateControlState(state: ControlState, action: Partial<ControlState>) {
+	return { ...state, ...action };
+}
+
+function getSeries(result: Result, state: ControlState) {
+	const { controlsMap, outputMap } = result;
+	const { variableType, variableName, encoderName, encoderState } = state;
+
+	const key = encoderState[encoderName];
+	const output = outputMap.get({ encoder: encoderName, key });
+
+	let labels: string[];
+	let series: ConvertOutput[];
+
+	if (variableType === Step.None) {
+		labels = [""];
+		series = [output];
+	} else if (variableType === Step.Encoder) {
+		labels = ENCODERS.filter(e => e.name in encoderState).map(e => e.name);
+		series = labels.map(encoder => outputMap.get({
+			encoder,
+			key: encoderState[encoder],
+		}));
+	} else if (variableType === Step.Options) {
+		const values = controlsMap[encoderName]
+			.find(c => c.id === variableName)!.createState();
+
+		labels = values.map(v => v.toString());
+		series = values.map(v => outputMap.get({
+			encoder: encoderName,
+			key: { ...key, [variableName]: v },
+		}));
+	} else {
+		throw new Error("Missing handle of variableType: " + variableType);
+	}
+
+	return { output, labels, series };
+}
+
 interface AnalyzePageProps {
 	result: Result;
 	onStart: () => void;
@@ -76,69 +141,14 @@ interface AnalyzePageProps {
 
 export default function AnalyzePage(props: AnalyzePageProps) {
 	const { result, onStart, onClose } = props;
-	const { input, controlsMap, outputMap, seriesMeta } = result;
-
-	function createControlState(): ControlState {
-		let variableType = Step.None;
-		let variableName = "";
-
-		const kvs = Object.entries(controlsMap);
-		if (kvs.length > 1) {
-			variableType = Step.Encoder;
-			variableName = "";
-		}
-
-		// encoder name -> option id -> values
-		const encoderState: Record<string, Record<string, any>> = {};
-		for (const [k, v] of kvs) {
-			encoderState[k] = Object.fromEntries(v.map(c => [c.id, c.createState()[0]]));
-		}
-
-		const [encoderName, controls] = kvs[0];
-		if (controls.length > 0) {
-			variableType = Step.Options;
-			variableName = controls[0].id;
-		}
-
-		return { variableType, variableName, encoderName, encoderState };
-	}
-
-	function updateControlState(state: ControlState, action: Partial<ControlState>) {
-		return { ...state, ...action };
-	}
+	const { input, controlsMap, seriesMeta } = result;
 
 	const [showChart, setShowChart] = useState(true);
-	const [state, setState] = useReducer(updateControlState, null, createControlState);
+	const [state, setState] = useReducer(updateControlState, controlsMap, createControlState);
 
-	const { variableType, variableName, encoderName, encoderState } = state;
-	const encoder = ENCODER_MAP[encoderName];
-	const key = encoderState[encoderName];
-
-	const output = outputMap.get({ encoder: encoderName, key });
-
-	const [labels, series] = useMemo(() => {
-		if (variableType === Step.Encoder) {
-			const encodings = ENCODERS.filter(e => e.name in encoderState);
-			const s = encodings.map(e => {
-				const key = encoderState[e.name];
-
-				return outputMap.get({ encoder: e.name, key });
-			});
-			return [encodings.map(e => e.name), s];
-		} else if (variableType === Step.Options) {
-			const control = controlsMap[encoderName].find(c => c.id === variableName);
-			const allValues = control!.createState();
-			const s = allValues.map(v => outputMap
-				.get({ encoder: encoderName, key: { ...key, [variableName]: v } }));
-
-			return [allValues.map(v => v.toString()), s];
-		} else {
-			return [[""], [output]];
-		}
-	}, [key, result, variableType, variableName]);
+	const { labels, series, output } = useMemo(() => getSeries(result, state), [result, state]);
 
 	const index = series.indexOf(output);
-
 	if (index < 0) {
 		throw new Error("Can't find current index in series");
 	}
@@ -184,7 +194,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				<DownloadButton
 					title="Download output image"
 					filename={input.file.name}
-					codec={encoder}
+					codec={ENCODER_MAP[state.encoderName]}
 					buffer={output.buffer}
 				>
 					<DownloadIcon/>
