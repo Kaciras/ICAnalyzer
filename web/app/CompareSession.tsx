@@ -1,11 +1,15 @@
 import { Dispatch, useState } from "react";
-import { wrap } from "comlink";
 import { builtinResize } from "squoosh/src/client/lazy-app/util";
 import { InputImage, Result } from "./index";
 import CompareDialog from "./CompareDialog";
-import { BatchEncodeAnalyzer, MeasureOptions, newWorker } from "../encode";
+import { ConvertOutput, getMetricsMeta, measureFor, newWorker, ObjectKeyMap } from "../encode";
 import { Button, Dialog } from "../ui";
 import { WorkerApi } from "../worker";
+import { useProgress } from "../utils";
+import ProgressDialog from "./ProgressDialog";
+import WorkerPool from "../WorkerPool";
+import MetricsPanel, { getMeasureOptions } from "./MetricsPanel";
+import styles from "./ConfigDialog.scss";
 
 export interface CompareData {
 	original: InputImage;
@@ -23,7 +27,10 @@ export default function CompareSession(props: CompareSessionProps) {
 
 	const [selectFile, setSelectFile] = useState(true);
 	const [data, setData] = useState<CompareData>();
-	const [measure, setMeasure] = useState<MeasureOptions>();
+	const [measure, setMeasure] = useState(getMeasureOptions);
+	const [workers, setWorkers] = useState<WorkerPool<WorkerApi>>();
+	const progress = useProgress();
+	const [error, setError] = useState<string>();
 
 	function handleAccept(data: CompareData) {
 		setData(data);
@@ -35,27 +42,53 @@ export default function CompareSession(props: CompareSessionProps) {
 	}
 
 	async function handleStart() {
-		const imageA = data!.original.raw;
-		let imageB = data!.changed.raw;
+		if (!data || !measure) {
+			throw new Error("Missing required data");
+		}
+		const imageA = data.original.raw;
+		let imageB = data.changed.raw;
+
+		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
+		setWorkers(pool);
+
+		const seriesMeta = [{ key: "ratio", name: "Compression Ratio %" }];
+		const { calculations, metricsMeta } = getMetricsMeta(measure);
+		seriesMeta.push(...metricsMeta);
+		progress.reset(1 + calculations);
 
 		if (imageA.width !== imageB.width || imageA.height !== imageB.height) {
 			imageB = await builtinResize(imageB, 0, 0,
 				imageB.width, imageB.height, imageA.width, imageA.height, "high");
 		}
 
-		const remote = wrap<WorkerApi>(newWorker());
-		const worker = new BatchEncodeAnalyzer();
-		await remote.setImageToEncode(imageA);
-		const metrics = await worker.measure(remote, imageB, measure);
+		await pool.runOnEach(r => r.setImageToEncode(imageA));
+		const measureFn = measureFor(pool, measure, progress.increase);
 
-		onChange({
-			input: data!.original,
-			config: {
-				measure,
-				encoders: {},
-			},
-			outputMap: {},
-		});
+		const buffer = await data.changed.file.arrayBuffer();
+		const outputMap = new ObjectKeyMap<any, ConvertOutput>();
+
+		const ratio = buffer.byteLength / data.original.file.size * 100;
+		const output: ConvertOutput = {
+			buffer,
+			data: imageB,
+			metrics: { ratio },
+		};
+		measureFn(output);
+		outputMap.set({}, output);
+
+		await pool.join();
+
+		if (!pool.terminated) {
+			setWorkers(undefined);
+			onChange({ input: data.original, outputMap, seriesMeta, controlsMap: {} });
+		}
+
+		pool.terminate();
+	}
+
+	function stop() {
+		workers!.terminate();
+		setWorkers(undefined);
 	}
 
 	if (!isOpen) {
@@ -70,11 +103,24 @@ export default function CompareSession(props: CompareSessionProps) {
 		/>;
 	}
 
-	return (
-		<Dialog name="Compare config" onClose={onClose}>
-			<div>
+	if (workers) {
+		return (
+			<ProgressDialog
+				value={progress.value}
+				max={progress.max}
+				error={error}
+				onCancel={stop}
+			/>
+		);
+	}
 
-			</div>
+	return (
+		<Dialog name="Compare config" className={styles.dialog} onClose={onClose}>
+			<h2>Measure Options</h2>
+			<MetricsPanel
+				value={measure}
+				onChange={setMeasure}
+			/>
 			<div className="dialog-actions">
 				<Button
 					onClick={() => setSelectFile(true)}

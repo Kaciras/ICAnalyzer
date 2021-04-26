@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
-import { ConvertOutput } from "../encode";
-import styles from "./ChartPanel.scss";
-import { Button } from "../ui";
 import LockIcon from "../assets/lock.svg";
+import { Button } from "../ui";
+import { ConvertOutput } from "../encode";
+import { MetricMeta } from "./index";
+import styles from "./ChartPanel.scss";
 
 Export(Highcharts);
 ExportOffline(Highcharts);
-
-export interface MetricMeta {
-	key: string;
-	name: string;
-}
 
 function handleMouseover(chart: Chart, i: number) {
 	chart.yAxis.forEach((axis, j) => {
@@ -38,7 +35,9 @@ function addLegendListener(chart: Chart) {
 }
 
 export interface ChartProps {
+	className?: string;
 	visible: boolean;
+
 	seriesMeta: MetricMeta[];
 	index: number;
 	values: string[];
@@ -46,7 +45,7 @@ export interface ChartProps {
 }
 
 export default function ChartPanel(props: ChartProps) {
-	const { visible, seriesMeta, outputs, index, values } = props;
+	const { className, visible, seriesMeta, outputs, index, values } = props;
 
 	const [chart, setChart] = useState<Chart>();
 	const [locked, setLocked] = useState<boolean>(false);
@@ -193,7 +192,10 @@ export default function ChartPanel(props: ChartProps) {
 	const display = visible ? undefined : { display: "none" };
 
 	return (
-		<section className={styles.container} style={display}>
+		<section
+			className={clsx(styles.container, className)}
+			style={display}
+		>
 			<Button
 				title="Lock Y axis range"
 				type="text"

@@ -133,7 +133,7 @@ function getSeries(result: Result, state: ControlState) {
 	return { output, labels, series };
 }
 
-interface AnalyzePageProps {
+export interface AnalyzePageProps {
 	result: Result;
 	onStart: () => void;
 	onClose: () => void;
@@ -162,6 +162,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			/>
 
 			<ChartPanel
+				className={styles.metricsPanel}
 				visible={showChart}
 				seriesMeta={seriesMeta}
 				index={index}
@@ -187,7 +188,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					<UploadIcon/>
 				</Button>
 				<Button
-					title="Show chart"
+					title="Show metrics"
 					type="text"
 					className={styles.iconButton}
 					active={showChart}

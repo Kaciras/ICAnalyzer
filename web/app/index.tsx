@@ -2,9 +2,9 @@ import { useState } from "react";
 import CompressSession, { OutputMap } from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
+import ComparePage from "./ComparePage";
 import CompareSession from "./CompareSession";
 import { ControlType } from "../form";
-import { MetricMeta } from "./ChartPanel";
 
 export interface InputImage {
 	file: File;
@@ -12,6 +12,11 @@ export interface InputImage {
 }
 
 export type ControlsMap = Record<string, ControlType[]>;
+
+export interface MetricMeta {
+	key: string;
+	name: string;
+}
 
 export interface Result {
 	input: InputImage;
@@ -47,19 +52,23 @@ export default function App() {
 	}
 
 	let Session: any;
+	let Page: any;
+
 	switch (mode) {
 		case Mode.Compare:
 			Session = CompareSession;
+			Page = ComparePage;
 			break;
 		case Mode.Compress:
 			Session = CompressSession;
+			Page = AnalyzePage;
 			break;
 	}
 
 	return (
 		<>
 			{result
-				? <AnalyzePage
+				? <Page
 					key={result.id} // avoid reuse of control state
 					result={result}
 					onStart={() => setOpen(true)}
