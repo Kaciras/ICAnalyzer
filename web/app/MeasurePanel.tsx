@@ -69,21 +69,22 @@ function ButteraugliFields(props: ButteraugliProps) {
 		</LabelWrapper>,
 	);
 
-	return (
-		<div>
-			<CheckBox
-				checked={value.enabled}
-				name="butteraugli"
-				onValueChange={v => onChange({ ...value, enabled: v })}
-			>
-				Butteraugli
-			</CheckBox>
+	return <fieldset className={styles.subfields}>{inputs}</fieldset>;
+}
 
-			<fieldset className={styles.subfields}>
-				{inputs}
-			</fieldset>
-		</div>
-	);
+function createModel<T, R>(value: T, onChange: Dispatch<T>, ...path: string[]) {
+
+	function deepSet(current: any, index: number, newValue: any) {
+		const key = path[index];
+		if (index < path.length - 1) {
+			newValue = deepSet(current[key], index + 1, newValue);
+		}
+		return { ...current, ...newValue };
+	}
+
+	const subValue = path.reduce((parent, key) => parent[key], value as any);
+
+	return { value: subValue, onChange: v => deepSet(value, 0, v) } as Model<R>;
 }
 
 function deepSet(target: any, path: string, value: any) {
@@ -204,6 +205,18 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 			}
 
 			<CheckBox
+				checked={SSIM.enabled}
+				name="SSIM.enabled"
+				onChange={e => onChange(deepSet(value, "SSIM.enabled", e.target.checked))}
+			>
+				Structural similarity index measure
+			</CheckBox>
+			<SSIMOptionsSet
+				value={SSIM.options}
+				onChange={v => onChange(deepSet(value, "SSIM.options", v))}
+			/>
+
+			<CheckBox
 				checked={PSNR}
 				name="PSNR"
 				onChange={handleChange}
@@ -211,20 +224,13 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 				Peak signal-to-noise ratio
 			</CheckBox>
 
-			<div>
-				<CheckBox
-					checked={SSIM.enabled}
-					name="SSIM.enabled"
-					onChange={e => onChange(deepSet(value, "SSIM.enabled", e.target.checked))}
-				>
-					Structural similarity index measure
-				</CheckBox>
-				<SSIMOptionsSet
-					value={SSIM.options}
-					onChange={v => onChange(deepSet(value, "SSIM.options", v))}
-				/>
-			</div>
-
+			<CheckBox
+				checked={butteraugli.enabled}
+				name="butteraugli"
+				onValueChange={v => onChange({ ...value, butteraugli: { ...butteraugli, enabled: v } })}
+			>
+				Butteraugli
+			</CheckBox>
 			<ButteraugliFields value={butteraugli} onChange={handleBgChange}/>
 		</form>
 	);

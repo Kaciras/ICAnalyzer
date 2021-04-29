@@ -8,6 +8,8 @@ $border-active-color: rgb(0, 128, 255, .8);
 	display: inline-flex;
 	border-radius: var(--border-radius);
 
+	vertical-align: middle;
+
 	color: black;
 	background: var(--background-input);
 

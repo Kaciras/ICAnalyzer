@@ -11,7 +11,7 @@
 .subfields {
 	display: flex;
 	align-items: center;
-	padding: 8px 0 0 30px;
+	padding-left: 30px;
 }
 
 .field {
@@ -20,8 +20,9 @@
 }
 
 .inlineLabel {
-	margin-right: 8px;
+	margin-right: 10px;
 	margin-left: 30px;
+	vertical-align: middle;
 }
 
 .label {

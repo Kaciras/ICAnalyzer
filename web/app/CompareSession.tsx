@@ -116,8 +116,14 @@ export default function CompareSession(props: CompareSessionProps) {
 	}
 
 	return (
-		<Dialog name="Compare config" className={styles.dialog} onClose={onClose}>
-			<h2>Measure Options</h2>
+		<Dialog
+			name="Compare config"
+			className={styles.dialog}
+			onClose={onClose}
+		>
+			<h2 className={styles.title}>
+				Measure Options
+			</h2>
 			<MeasurePanel
 				value={measure}
 				onChange={setMeasure}
