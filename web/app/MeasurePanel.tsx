@@ -1,30 +1,9 @@
-import React, { ChangeEvent, ComponentProps, Dispatch, JSXElementConstructor } from "react";
+import React, { ChangeEvent, Dispatch, ReactNode } from "react";
 import * as ssimJs from "ssim.js";
 import { ButteraugliOptions, defaultButteraugliOptions } from "../../lib/similarity";
 import { CheckBox, NumberInput } from "../ui";
 import { MeasureOptions, Optional } from "../encode";
-import styles from "./MetricsPanel.scss";
-
-type ElementType = keyof JSX.IntrinsicElements | JSXElementConstructor<any>;
-
-interface LabeledHOCProps<T> {
-	Component: T;
-	label: string;
-}
-
-type LabeledInputProps<T extends ElementType> = LabeledHOCProps<T> & ComponentProps<T>;
-
-function LabeledInput<T extends ElementType>(props: LabeledInputProps<T>) {
-	const { Component, label, children, ...others } = props;
-	return (
-		<label className={styles.field}>
-			<span className={styles.label}>
-				{label}
-			</span>
-			<Component {...others}>{children}</Component>
-		</label>
-	);
-}
+import styles from "./MeasurePanel.scss";
 
 export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
 	if (saved) {
@@ -46,6 +25,23 @@ export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
 	};
 }
 
+interface LabelWrapperProps {
+	label: string;
+	children: ReactNode;
+}
+
+function LabelWrapper(props: LabelWrapperProps) {
+	const { label, children } = props;
+	return (
+		<label className={styles.field}>
+			<span className={styles.label}>
+				{label}
+			</span>
+			{children}
+		</label>
+	);
+}
+
 interface ButteraugliProps {
 	value: Optional<ButteraugliOptions>;
 	onChange: Dispatch<Optional<ButteraugliOptions>>;
@@ -60,13 +56,7 @@ function ButteraugliFields(props: ButteraugliProps) {
 	}
 
 	const inputs = Object.entries(value.options).map(([name, value]) =>
-		<label
-			className={styles.field}
-			key={name}
-		>
-			<span className={styles.label}>
-				{name}
-			</span>
+		<LabelWrapper key={name} label={name}>
 			<NumberInput
 				className={styles.value}
 				name={name}
@@ -76,7 +66,7 @@ function ButteraugliFields(props: ButteraugliProps) {
 				value={value}
 				onValueChange={v => handleChange(name, v)}
 			/>
-		</label>,
+		</LabelWrapper>,
 	);
 
 	return (
@@ -115,43 +105,63 @@ function deepGet(target: any, path: string) {
 	return path.split(".").reduce((parent, key) => parent[key], target);
 }
 
-interface NumberOptionProps<T> {
-	name: string;
-	path: string;
-	data: T;
-	min?: number;
-	max?: number;
-	step?: number;
-	onChange: Dispatch<T>;
+interface Model<T> {
+	value: T;
+	onChange: Dispatch<Partial<T>>;
 }
 
-function NumberOptions<T>(props: NumberOptionProps<T>) {
-	const { name, path, data, min, max, step, onChange } = props;
-
-	function handleChange(value: number) {
-		onChange(deepSet(data, path, value));
-	}
+function SSIMOptionsSet(props: Model<ssimJs.Options>) {
+	const { value, onChange } = props;
 
 	return (
-		<LabeledInput
-			Component={NumberInput}
-			label={name}
-			min={min}
-			max={max}
-			step={step}
-			value={deepGet(data, path)}
-			onValueChange={handleChange}
-		/>
+		<fieldset className={styles.subfields}>
+			<LabelWrapper label="Algorithm">
+				<select
+					className={styles.select}
+					value={value.ssim}
+					onChange={e => onChange({ ssim: e.target.value as any })}
+				>
+					<option>fast</option>
+					<option>original</option>
+					<option>bezkrovny</option>
+					<option>weber</option>
+				</select>
+			</LabelWrapper>
+			<LabelWrapper label="k1">
+				<NumberInput
+					value={value.k1}
+					min={0}
+					step={0.01}
+					onValueChange={k1 => onChange({ k1 })}
+				/>
+			</LabelWrapper>
+			<LabelWrapper label="k2">
+				<NumberInput
+					value={value.k2}
+					min={0}
+					step={0.01}
+					onValueChange={k2 => onChange({ k2 })}
+				/>
+			</LabelWrapper>
+			<LabelWrapper label="window size">
+				<NumberInput
+					value={value.windowSize}
+					min={0}
+					step={0.01}
+					onValueChange={windowSize => onChange({ windowSize })}
+				/>
+			</LabelWrapper>
+		</fieldset>
 	);
 }
 
-export interface MetricsPanelProps {
+export interface MeasurePanelProps {
 	encodeTime?: boolean;
 	value: MeasureOptions;
 	onChange: Dispatch<MeasureOptions>;
 }
 
-export default function MetricsPanel(props: MetricsPanelProps) {
+export default function MeasurePanel(props: MeasurePanelProps) {
 	const { encodeTime, value, onChange } = props;
 	const { workerCount, time, SSIM, PSNR, butteraugli } = value;
 
@@ -172,7 +182,7 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 		<form className={styles.form} role="tabpanel">
 			<label>
 				<span className={styles.inlineLabel}>
-					Worker count:
+					Thread count:
 				</span>
 				<NumberInput
 					value={workerCount}
@@ -209,45 +219,10 @@ export default function MetricsPanel(props: MetricsPanelProps) {
 				>
 					Structural similarity index measure
 				</CheckBox>
-				<fieldset className={styles.subfields}>
-					<LabeledInput
-						Component={"select" as "select"}
-						label="Algorithm"
-						className={styles.select}
-						value={SSIM.options.ssim}
-						onChange={e => onChange(deepSet(value, "SSIM.options.ssim", e.target.value))}
-					>
-						<option>fast</option>
-						<option>original</option>
-						<option>bezkrovny</option>
-						<option>weber</option>
-					</LabeledInput>
-
-					<NumberOptions
-						name="k1"
-						path="SSIM.options.k1"
-						min={0}
-						step={0.01}
-						data={value}
-						onChange={onChange}
-					/>
-					<NumberOptions
-						name="k2"
-						path="SSIM.options.k2"
-						min={0}
-						step={0.01}
-						data={value}
-						onChange={onChange}
-					/>
-					<NumberOptions
-						name="window size"
-						path="SSIM.options.windowSize"
-						min={0}
-						step={1}
-						data={value}
-						onChange={onChange}
-					/>
-				</fieldset>
+				<SSIMOptionsSet
+					value={SSIM.options}
+					onChange={v => onChange(deepSet(value, "SSIM.options", v))}
+				/>
 			</div>
 
 			<ButteraugliFields value={butteraugli} onChange={handleBgChange}/>

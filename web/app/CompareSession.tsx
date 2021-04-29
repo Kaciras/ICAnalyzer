@@ -8,7 +8,7 @@ import { WorkerApi } from "../worker";
 import { useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
 import WorkerPool from "../WorkerPool";
-import MetricsPanel, { getMeasureOptions } from "./MetricsPanel";
+import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import styles from "./ConfigDialog.scss";
 
 export interface CompareData {
@@ -47,6 +47,7 @@ export default function CompareSession(props: CompareSessionProps) {
 		}
 		const imageA = data.original.raw;
 		let imageB = data.changed.raw;
+		localStorage.setItem("Measure", JSON.stringify(measure));
 
 		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
 		setWorkers(pool);
@@ -117,7 +118,7 @@ export default function CompareSession(props: CompareSessionProps) {
 	return (
 		<Dialog name="Compare config" className={styles.dialog} onClose={onClose}>
 			<h2>Measure Options</h2>
-			<MetricsPanel
+			<MeasurePanel
 				value={measure}
 				onChange={setMeasure}
 			/>

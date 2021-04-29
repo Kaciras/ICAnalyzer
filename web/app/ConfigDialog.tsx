@@ -3,7 +3,7 @@ import { MeasureOptions } from "../encode";
 import { Button, Dialog } from "../ui";
 import { InputImage } from "./index";
 import ImageInfoPanel from "./ImageInfoPanel";
-import MetricsPanel, { getMeasureOptions } from "./MetricsPanel";
+import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel";
 import styles from "./ConfigDialog.scss";
 
@@ -65,7 +65,7 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			/>;
 			break;
 		case 2:
-			panel = <MetricsPanel
+			panel = <MeasurePanel
 				value={measure}
 				encodeTime={true}
 				onChange={setMeasure}

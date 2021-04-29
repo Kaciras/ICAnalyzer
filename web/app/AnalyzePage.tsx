@@ -180,7 +180,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					<CloseIcon/>
 				</Button>
 				<Button
-					title="Select an image"
+					title="Try it again"
 					type="text"
 					className={styles.iconButton}
 					onClick={onStart}

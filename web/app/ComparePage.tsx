@@ -62,7 +62,7 @@ export default function ComparePage(props: AnalyzePageProps) {
 					<CloseIcon/>
 				</Button>
 				<Button
-					title="Select an image"
+					title="Try it again"
 					type="text"
 					className={styles.iconButton}
 					onClick={onStart}

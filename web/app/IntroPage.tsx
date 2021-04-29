@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Button } from "../ui";
 import styles from "./IntroPage.scss";
 import GitHubIcon from "../assets/github-logo.svg";
@@ -29,7 +30,7 @@ export default function IntroPage(props: IntroPageProps) {
 						type="outline"
 						onClick={onEncode}
 					>
-						Try it!
+						Convert
 					</Button>
 					<Button
 						className={styles.bigButton}
@@ -39,7 +40,7 @@ export default function IntroPage(props: IntroPageProps) {
 						Compare images
 					</Button>
 					<Button
-						className={styles.bigButton + " second"}
+						className={clsx(styles.bigButton, "second")}
 						type="outline"
 						href="https://github.com/Kaciras/ICAnalyzer"
 					>
@@ -50,9 +51,19 @@ export default function IntroPage(props: IntroPageProps) {
 
 				<div className={styles.unsplash}>
 					Photo by
-					<a className={styles.link} href="https://unsplash.com/@veverkolog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Dušan veverkolog</a>
+					<a
+						className={styles.link}
+						href="https://unsplash.com/@veverkolog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+					>
+						Dušan veverkolog
+					</a>
 					on
-					<a className={styles.link} href="https://unsplash.com/s/photos/eagle?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+					<a
+						className={styles.link}
+						href="https://unsplash.com/s/photos/eagle?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+					>
+						Unsplash
+					</a>
 				</div>
 			</section>
 			<section className={styles.section}>
