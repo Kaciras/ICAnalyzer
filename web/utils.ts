@@ -5,6 +5,8 @@ import { useState } from "react";
  */
 export const NOOP = () => {};
 
+export const IDENTITY = (v: any) => v;
+
 const SIZE_UNITS = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
 /**

@@ -3,6 +3,7 @@ import { CheckBox, NumberInput, RangeInput } from "../ui";
 import type { OptionFieldProps, OptionType } from ".";
 import RangeControl, { NumberRange, sequence } from "./RangeControl";
 import styles from "./RangeControl.scss";
+import { IDENTITY } from "../utils";
 
 interface RangePartProps {
 	name: keyof NumberRange;
@@ -17,7 +18,7 @@ interface RangePartProps {
 interface Metadata extends NumberRange {
 	id: string;
 	label: string;
-	offset?: number;
+	mapFn?: (index: number) => number;
 	defaultValue: number;
 }
 
@@ -136,16 +137,15 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	populate(value: number, options: any) {
-		const { id, offset = 0 } = this.data;
-		options[id] = offset + value;
+		const { id, mapFn = IDENTITY } = this.data;
+		options[id] = mapFn(value);
 	}
 
 	generate(range: NumberRange, key: any, options: any) {
-		const { id, offset = 0 } = this.data;
+		const { id,  mapFn = IDENTITY } = this.data;
 
 		return sequence(range).map(value => {
-			value += offset;
-			const newOpts = { ...options, [id]: value };
+			const newOpts = { ...options, [id]: mapFn(value) };
 			const newKey = { ...key, [id]: value };
 			return { key: newKey, options: newOpts };
 		});

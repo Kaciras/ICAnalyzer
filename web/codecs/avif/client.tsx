@@ -1,7 +1,7 @@
 import { Remote } from "comlink";
 import { defaultOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
-import { EnumOption, NumberOption, OptionType } from "../../form";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionListProps } from "../index";
 import { buildOptions, createState } from "../common";
 
@@ -18,36 +18,43 @@ export const Subsampling = {
 
 const templates: OptionType[] = [
 	new NumberOption({
-		id: "minQuantizer",
-		label: "Min quality",
+		id: "cqLevel",
+		label: "Quality",
 		min: 0,
 		max: 63,
 		step: 1,
-		defaultValue: defaultOptions.minQuantizer,
+		mapFn: i => 63 - i,
+		defaultValue: defaultOptions.cqLevel,
 	}),
 	new NumberOption({
-		id: "maxQuantizer",
-		label: "Max quality",
+		id: "cqAlphaLevel",
+		label: "Alpha quality",
 		min: 0,
 		max: 63,
 		step: 1,
-		defaultValue: defaultOptions.maxQuantizer,
+		mapFn: i => 63 - i,
+		defaultValue: defaultOptions.cqAlphaLevel,
 	}),
 	new NumberOption({
-		id: "minQuantizerAlpha",
-		label: "Min alpha quality",
+		id: "sharpness",
+		label: "Sharpness",
 		min: 0,
-		max: 63,
+		max: 7,
 		step: 1,
-		defaultValue: defaultOptions.minQuantizerAlpha,
+		defaultValue: defaultOptions.sharpness,
 	}),
 	new NumberOption({
-		id: "maxQuantizerAlpha",
-		label: "Max alpha quality",
+		id: "denoiseLevel",
+		label: "Noise synthesis",
 		min: 0,
-		max: 63,
+		max: 50,
 		step: 1,
-		defaultValue: defaultOptions.maxQuantizerAlpha,
+		defaultValue: defaultOptions.denoiseLevel,
+	}),
+	new BoolOption({
+		id: "chromaDeltaQ",
+		label: "Extra chroma compression",
+		defaultValue: defaultOptions.chromaDeltaQ,
 	}),
 	new NumberOption({
 		id: "tileRowsLog2",
@@ -70,7 +77,7 @@ const templates: OptionType[] = [
 		label: "Speed",
 		min: 0,
 		max: 10,
-		step: 8,
+		step: 1,
 		defaultValue: defaultOptions.speed,
 	}),
 	new EnumOption({
