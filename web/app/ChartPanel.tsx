@@ -13,25 +13,25 @@ Export(Highcharts);
 ExportOffline(Highcharts);
 
 function handleMouseover(chart: Chart, i: number) {
-	chart.yAxis.forEach((axis, j) => {
-		if (j === 0) return;
-		axis.update({ visible: i === j }, false);
-	});
+	const { yAxis } = chart;
+	for (let j = 1; j < yAxis.length; j++) {
+		yAxis[j].update({ visible: i === j }, false);
+	}
 	chart.redraw();
 }
 
 function addSeriesListener(chart: Chart) {
-	chart.legend.allItems.forEach((s, i) => {
-		if (i === 0) return;
-		s.onMouseOver = () => handleMouseover(chart, i);
-	});
+	const { allItems } = chart.legend;
+	for (let i = 1; i < allItems.length; i++) {
+		allItems[i].onMouseOver = () => handleMouseover(chart, i);
+	}
 }
 
 function addLegendListener(chart: Chart) {
-	chart.series.forEach((s, i) => {
-		if (i === 0) return;
-		(s as any).legendItem.on("mouseover", () => handleMouseover(chart, i));
-	});
+	const { series } = chart;
+	for (let i = 1; i < series.length; i++) {
+		(series[i] as any).legendItem.on("mouseover", () => handleMouseover(chart, i));
+	}
 }
 
 export interface ChartProps {
@@ -149,7 +149,6 @@ export default function ChartPanel(props: ChartProps) {
 			value: index,
 			dashStyle: "Dash",
 		});
-
 		chart.legend.update({
 			labelFormatter() {
 				const { name, options } = this as any;
