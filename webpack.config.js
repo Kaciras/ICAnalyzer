@@ -137,7 +137,7 @@ module.exports = function webpackConfig(env) {
 		},
 		devtool: isProd ? "source-map" : "inline-source-map",
 		devServer: {
-			// Required to use SharedArrayBuffer
+			// Required by SharedArrayBuffer
 			headers: {
 				"Cross-Origin-Opener-Policy": "same-origin",
 				"Cross-Origin-Embedder-Policy": "require-corp",
@@ -153,10 +153,8 @@ module.exports = function webpackConfig(env) {
 				squoosh: join(__dirname, "deps/squoosh"),
 			},
 			fallback: {
-				path: false,
-				fs: false,
-				crypto: false,
-				worker_threads: false, // required by wasm-feature-detect
+				// Required by wasm-feature-detect
+				worker_threads: false,
 			},
 		},
 		cache: {
