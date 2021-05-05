@@ -4,25 +4,30 @@ import styles from "./ColorPicker.scss";
 /**
  * Get the RGBA data at position in the image.
  *
- * @return the [R, G, B, A] array
+ * @return the Uint8ClampedArray slice contains [R, G, B, A] values
  */
 function getPixel(image: ImageData, x: number, y: number) {
 	const { width, data } = image;
 	const i = (x + y * width) * 4;
-	return Array.from(data.slice(i, i + 4));
+	return data.slice(i, i + 4);
 }
 
 function pad(n: string) {
 	return n.length < 2 ? "0" + n : n;
 }
 
-function pixelToHex(pixel: number[]) {
-	return "#" + pixel.map(n => pad(n.toString(16))).join("").toUpperCase();
+/**
+ * Convert the pixel data to hex color string.
+ */
+function pixelToHex(pixel: Uint8ClampedArray) {
+	return pixel
+		.reduce((s, n) => s + pad(n.toString(16)), "#")
+		.toUpperCase();
 }
 
 interface ColorItemProps {
 	name: string;
-	value: number[];
+	value: Uint8ClampedArray;
 }
 
 function ColorItem(props: ColorItemProps) {

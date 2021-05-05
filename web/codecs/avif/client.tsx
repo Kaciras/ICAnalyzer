@@ -3,7 +3,7 @@ import { defaultOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionListProps } from "../index";
-import { buildOptions, createState } from "../common";
+import { buildOptions, createState, renderOption } from "../common";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";
@@ -29,7 +29,7 @@ const templates: OptionType[] = [
 	new NumberOption({
 		id: "cqAlphaLevel",
 		label: "Alpha quality",
-		min: 0,
+		min: -1,
 		max: 63,
 		step: 1,
 		mapFn: i => 63 - i,
@@ -93,40 +93,7 @@ export function getState(saved?: EncoderState) {
 }
 
 export function OptionsPanel(props: OptionListProps) {
-	const { state, onChange } = props;
-	const { varNames, values, ranges } = state;
-
-	function handleVarChange(id: string, value: boolean) {
-		let { varNames } = state;
-		if (value) {
-			varNames.push(id);
-		} else {
-			varNames = varNames.filter(v => v !== id);
-		}
-		onChange({ ...state, varNames });
-	}
-
-	function handleValueChange(id: string, value: any) {
-		onChange({ ...state, values: { ...values, [id]: value } });
-	}
-
-	function handleRangeChange(id: string, range: any) {
-		onChange({ ...state, ranges: { ...ranges, [id]: range } });
-	}
-
-	const items = templates.map(({ id, OptionField }) =>
-		<OptionField
-			key={id}
-			isVariable={varNames.includes(id)}
-			value={values[id]}
-			range={ranges[id]}
-			onValueChange={v => handleValueChange(id, v)}
-			onRangeChange={v => handleRangeChange(id, v)}
-			onVariabilityChange={v => handleVarChange(id, v)}
-		/>,
-	);
-
-	return <>{items}</>;
+	return <>{templates.map(t => renderOption(t, props))}</>;
 }
 
 export function getOptionsList(state: EncoderState) {

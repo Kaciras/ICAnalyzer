@@ -1,6 +1,6 @@
-import { OptionsKeyPair, OptionType } from "../form";
-import { EncoderState } from "./index";
 import * as Comlink from "comlink";
+import { OptionsKeyPair, OptionType } from "../form";
+import { EncoderState, OptionListProps } from "./index";
 
 export function createState(templates: OptionType[]) {
 	const values: Record<string, any> = {};
@@ -12,6 +12,40 @@ export function createState(templates: OptionType[]) {
 		ranges[t.id] = range;
 	}
 	return { varNames: [], values, ranges } as EncoderState;
+}
+
+export function renderOption(template: OptionType, props: OptionListProps) {
+	const { id, OptionField } = template;
+	const { state, onChange } = props;
+	const { varNames, values, ranges } = state;
+
+	function handleTypeChange(value: boolean) {
+		let { varNames } = state;
+		if (value) {
+			varNames.push(id);
+		} else {
+			varNames = varNames.filter(v => v !== id);
+		}
+		onChange({ ...state, varNames });
+	}
+
+	function handleValueChange(value: any) {
+		onChange({ ...state, values: { ...values, [id]: value } });
+	}
+
+	function handleRangeChange(range: any) {
+		onChange({ ...state, ranges: { ...ranges, [id]: range } });
+	}
+
+	return <OptionField
+		key={id}
+		isVariable={varNames.includes(id)}
+		value={values[id]}
+		range={ranges[id]}
+		onValueChange={handleValueChange}
+		onRangeChange={handleRangeChange}
+		onVariabilityChange={handleTypeChange}
+	/>;
 }
 
 export function buildOptions(templates: OptionType[], state: EncoderState) {

@@ -30,21 +30,21 @@ function useResettable<T>(initialState: T): [T, Dispatch<SetStateAction<T>>, () 
 }
 
 function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>) {
-	if (canvas.current === null) {
+	const { current } = canvas;
+	if (current === null) {
 		throw new Error("Canvas is null");
 	}
-	const ctx = canvas.current.getContext("2d");
+	const ctx = current.getContext("2d");
 	if (!ctx) {
 		throw new Error("Canvas not initialized");
 	}
 	ctx.putImageData(data, 0, 0);
 }
 
-interface ImageViewProps {
+export interface ImageViewProps {
+	className?: string;
 	original: InputImage;
 	output: ConvertOutput;
-
-	className?: string;
 }
 
 export default function ImageView(props: ImageViewProps) {
