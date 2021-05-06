@@ -16,7 +16,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 // css-minimizer-webpack-plugin is ineffective (index.css 27898 bytes -> 27540 bytes), so we not use it.
 
-module.exports = function webpackConfig(env) {
+module.exports = (env) => {
 	const isProd = Boolean(env?.production);
 	const isDevelopment = !isProd;
 
@@ -105,12 +105,7 @@ module.exports = function webpackConfig(env) {
 	const plugins = [
 		new EnvironmentPlugin({ SENTRY_DSN: null }),
 
-		new HtmlPlugin({
-			filename: "index.html",
-			template: "web/index.html",
-			inject: "head",
-			scriptLoading: "defer",
-		}),
+		new HtmlPlugin({ template: "web/index.html" }),
 
 		isProd && new BundleAnalyzerPlugin({
 			openAnalyzer: false,
@@ -127,7 +122,6 @@ module.exports = function webpackConfig(env) {
 	return {
 		mode: isProd ? "production" : "development",
 		context: __dirname,
-		performance: false,
 		entry: {
 			index: "./web/index",
 		},
@@ -135,18 +129,7 @@ module.exports = function webpackConfig(env) {
 			assetModuleFilename: "[name].[hash:5][ext][query]",
 			clean: true,
 		},
-		devtool: isProd ? "source-map" : "inline-source-map",
-		devServer: {
-			// Required to use SharedArrayBuffer
-			headers: {
-				"Cross-Origin-Opener-Policy": "same-origin",
-				"Cross-Origin-Embedder-Policy": "require-corp",
-			},
-			compress: true,
-			hot: true,
-			stats: "minimal",
-			clientLogLevel: "none",
-		},
+		devtool: isProd ? "source-map" : "cheap-module-source-map",
 		resolve: {
 			extensions: [".tsx", ".ts", ".js", ".json"],
 			alias: {
@@ -156,7 +139,18 @@ module.exports = function webpackConfig(env) {
 				path: false,
 				fs: false,
 				crypto: false,
-				worker_threads: false, // required by wasm-feature-detect
+
+				// Required by wasm-feature-detect
+				worker_threads: false,
+			},
+		},
+		module: {
+			rules: loaders,
+		},
+		plugins: plugins.filter(Boolean),
+		optimization: {
+			splitChunks: {
+				chunks: "all",
 			},
 		},
 		cache: {
@@ -165,14 +159,18 @@ module.exports = function webpackConfig(env) {
 				config: [__filename],
 			},
 		},
-		optimization: {
-			splitChunks: {
-				chunks: "all",
+		performance: false,
+		devServer: {
+			compress: true,
+			clientLogLevel: "none",
+			hot: true,
+			stats: "minimal",
+
+			// Required by SharedArrayBuffer
+			headers: {
+				"Cross-Origin-Opener-Policy": "same-origin",
+				"Cross-Origin-Embedder-Policy": "require-corp",
 			},
 		},
-		module: {
-			rules: loaders,
-		},
-		plugins: plugins.filter(Boolean),
 	};
 };
