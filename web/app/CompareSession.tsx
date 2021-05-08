@@ -1,13 +1,14 @@
 import { Dispatch, useState } from "react";
 import { builtinResize } from "squoosh/src/client/lazy-app/util";
-import { InputImage, Result } from "./index";
-import CompareDialog from "./CompareDialog";
-import { ConvertOutput, getMetricsMeta, measureFor, newWorker, ObjectKeyMap } from "../encode";
+import { AnalyzeContext, InputImage } from "./index";
+import { Analyzer, AnalyzeResult, newWorker, ObjectKeyMap } from "../analyzing";
 import { Button, Dialog } from "../ui";
 import { WorkerApi } from "../worker";
+import { OptionsKey } from "../form";
 import { useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
 import WorkerPool from "../WorkerPool";
+import CompareDialog from "./CompareDialog";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import styles from "./ConfigDialog.scss";
 
@@ -18,7 +19,7 @@ export interface CompareData {
 
 interface CompareSessionProps {
 	isOpen: boolean;
-	onChange: Dispatch<Result>;
+	onChange: Dispatch<AnalyzeContext>;
 	onClose: () => void;
 }
 
@@ -45,15 +46,17 @@ export default function CompareSession(props: CompareSessionProps) {
 		if (!data || !measure) {
 			throw new Error("Missing required data");
 		}
-		const imageA = data.original.raw;
-		let imageB = data.changed.raw;
+		const { original, changed } = data;
+		const imageA = original.raw;
+		let imageB = changed.raw;
+
 		localStorage.setItem("Measure", JSON.stringify(measure));
 
 		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
-		setWorkers(pool);
+		const analyzer = new Analyzer(pool,  measure);
 
 		const seriesMeta = [{ key: "ratio", name: "Compression Ratio %" }];
-		const { calculations, metricsMeta } = getMetricsMeta(measure);
+		const { calculations, metricsMeta } = analyzer.getMetricsMeta();
 		seriesMeta.push(...metricsMeta);
 		progress.reset(1 + calculations);
 
@@ -62,26 +65,25 @@ export default function CompareSession(props: CompareSessionProps) {
 				imageB.width, imageB.height, imageA.width, imageA.height, "high");
 		}
 
-		await pool.runOnEach(r => r.setImageToEncode(imageA));
-		const measureFn = measureFor(pool, measure, progress.increase);
+		const buffer = await changed.file.arrayBuffer();
+		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 
-		const buffer = await data.changed.file.arrayBuffer();
-		const outputMap = new ObjectKeyMap<any, ConvertOutput>();
+		await analyzer.setOriginalImage(original);
 
-		const ratio = buffer.byteLength / data.original.file.size * 100;
-		const output: ConvertOutput = {
+		const ratio = buffer.byteLength / original.file.size * 100;
+		const output: AnalyzeResult = {
 			buffer,
 			data: imageB,
 			metrics: { ratio },
 		};
-		measureFn(output);
+		analyzer.measure(output);
 		outputMap.set({}, output);
 
 		await pool.join();
 
 		if (!pool.terminated) {
 			setWorkers(undefined);
-			onChange({ input: data.original, outputMap, seriesMeta, controlsMap: {} });
+			onChange({ input: original, outputMap, seriesMeta, controlsMap: {} });
 		}
 
 		pool.terminate();

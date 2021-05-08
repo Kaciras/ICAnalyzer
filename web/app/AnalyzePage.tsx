@@ -5,12 +5,12 @@ import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button } from "../ui";
 import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs";
-import { ControlsMap, Result } from "./index";
+import { AnalyzeResult } from "../analyzing";
+import { AnalyzeContext, ControlsMap } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import styles from "./AnalyzePage.scss";
-import { ConvertOutput } from "../encode";
 
 interface DownloadButtonProps {
 	title?: string;
@@ -98,7 +98,7 @@ function updateControlState(state: ControlState, action: Partial<ControlState>) 
 	return { ...state, ...action };
 }
 
-function getSeries(result: Result, state: ControlState) {
+function getSeries(result: AnalyzeContext, state: ControlState) {
 	const { controlsMap, outputMap } = result;
 	const { variableType, variableName, encoderName, encoderState } = state;
 
@@ -106,7 +106,7 @@ function getSeries(result: Result, state: ControlState) {
 	const output = outputMap.get({ encoder: encoderName, key });
 
 	let labels: string[];
-	let series: ConvertOutput[];
+	let series: AnalyzeResult[];
 
 	if (variableType === Step.None) {
 		labels = [""];
@@ -134,7 +134,7 @@ function getSeries(result: Result, state: ControlState) {
 }
 
 export interface AnalyzePageProps {
-	result: Result;
+	result: AnalyzeContext;
 	onStart: () => void;
 	onClose: () => void;
 }

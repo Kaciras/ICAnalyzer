@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MeasureOptions } from "../encode";
+import { MeasureOptions } from "../analyzing";
 import { Button, Dialog } from "../ui";
 import { InputImage } from "./index";
 import ImageInfoPanel from "./ImageInfoPanel";

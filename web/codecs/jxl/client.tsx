@@ -3,7 +3,7 @@ import { defaultOptions } from "squoosh/src/features/encoders/jxl/shared/meta";
 import { WorkerApi } from "../../worker";
 import { BoolOption, NumberOption, OptionType } from "../../form";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
-import { EncoderState, OptionListProps } from "../index";
+import { EncoderState, OptionPanelProps } from "../index";
 import { EncodeOptions } from "./codec";
 
 export const name = "JPEG XL";
@@ -51,15 +51,19 @@ export function getState(saved?: EncoderState) {
 	return saved ?? createState(templates);
 }
 
-export function OptionsPanel(props: OptionListProps) {
+export function OptionsPanel(props: OptionPanelProps) {
 	return <>{templates.map(t => renderOption(t, props))}</>;
 }
 
 export function getOptionsList(state: EncoderState) {
+	return buildOptions(templates, state);
+}
+
+export function getControls(state: EncoderState) {
 	const { varNames, ranges } = state;
-	const optionsList = buildOptions(templates, state);
-	const controls = templates.filter(t => varNames.includes(t.id)).map(t => t.createControl(ranges[t.id]));
-	return { controls, optionsList };
+	return templates
+		.filter(t => varNames.includes(t.id))
+		.map(t => t.createControl(ranges[t.id]));
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {

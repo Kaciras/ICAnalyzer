@@ -1,10 +1,11 @@
 import { useState } from "react";
-import CompressSession, { OutputMap } from "./CompressSession";
+import CompressSession from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import ComparePage from "./ComparePage";
 import CompareSession from "./CompareSession";
-import { ControlType } from "../form";
+import { ControlType, OptionsKey } from "../form";
+import { AnalyzeResult, ObjectKeyMap } from "../analyzing";
 
 export interface InputImage {
 	file: File;
@@ -18,14 +19,14 @@ export interface MetricMeta {
 	name: string;
 }
 
-export interface Result {
+export interface AnalyzeContext {
 	input: InputImage;
 	controlsMap: ControlsMap;
-	outputMap: OutputMap;
+	outputMap: ObjectKeyMap<OptionsKey, AnalyzeResult>;
 	seriesMeta: MetricMeta[];
 }
 
-interface ResultWithId extends Result {
+interface ContextWithId extends AnalyzeContext {
 	id: number;
 }
 
@@ -38,12 +39,12 @@ enum Mode {
 export default function App() {
 	const [mode, setMode] = useState(Mode.None);
 	const [isOpen, setOpen] = useState(true);
-	const [result, setResult] = useState<ResultWithId>();
+	const [result, setResult] = useState<ContextWithId>();
 
-	function handleChange(value: Result) {
+	function handleChange(value: AnalyzeContext) {
 		setOpen(false);
-		(value as ResultWithId).id = (result?.id || 1) + 1;
-		setResult(value as ResultWithId);
+		(value as ContextWithId).id = (result?.id || 1) + 1;
+		setResult(value as ContextWithId);
 	}
 
 	function createSession(mode: Mode) {

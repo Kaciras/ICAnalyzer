@@ -5,7 +5,7 @@ import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
 import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
 import { ButtonProps } from "../ui/Button";
 import { PinchZoomState } from "../ui/PinchZoom";
-import { ConvertOutput } from "../encode";
+import { AnalyzeResult } from "../analyzing";
 import { Button, NumberInput, PinchZoom, SwitchButton } from "../ui";
 import { InputImage } from "./index";
 import ColorPicker from "./ColorPicker";
@@ -44,7 +44,7 @@ function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>)
 export interface ImageViewProps {
 	className?: string;
 	original: InputImage;
-	output: ConvertOutput;
+	output: AnalyzeResult;
 }
 
 export default function ImageView(props: ImageViewProps) {

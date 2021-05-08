@@ -1,7 +1,7 @@
 import { Remote, wrap } from "comlink";
 import { blobToImg, canDecodeImageType, drawableToImageData } from "squoosh/src/client/lazy-app/util";
 import { WorkerApi } from "./worker";
-import { newWorker } from "./encode";
+import { newWorker } from "./analyzing";
 
 export async function decodeImageNative(blob: Blob) {
 	const bitmap = "createImageBitmap" in self

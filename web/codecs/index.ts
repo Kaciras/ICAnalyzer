@@ -19,14 +19,9 @@ export interface EncodeResult {
 	buffer: ArrayBuffer;
 }
 
-export interface OptionListProps {
+export interface OptionPanelProps {
 	state: EncoderState;
 	onChange: Dispatch<EncoderState>;
-}
-
-export interface EncodeConfig {
-	controls: ControlType[];
-	optionsList: OptionsKeyPair[];
 }
 
 export interface ImageEncoder {
@@ -36,9 +31,11 @@ export interface ImageEncoder {
 
 	getState(saved?: EncoderState): EncoderState;
 
-	OptionsPanel(props: OptionListProps): JSX.Element;
+	OptionsPanel(props: OptionPanelProps): JSX.Element;
 
-	getOptionsList(state: EncoderState): EncodeConfig;
+	getOptionsList(state: EncoderState): OptionsKeyPair[];
+
+	getControls(state: EncoderState): ControlType[];
 
 	encode(options: any, worker: Remote<WorkerApi>): Promise<EncodeResult>;
 }

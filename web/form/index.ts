@@ -30,9 +30,11 @@ export interface ControlType<T = any> {
 	Input(props: FieldProps<T>): JSX.Element;
 }
 
+export type OptionsKey = Record<string, any>;
+
 export interface OptionsKeyPair {
-	key: any;
 	options: any;
+	key: OptionsKey;
 }
 
 export interface OptionType<T = any, V = any> {
@@ -47,7 +49,7 @@ export interface OptionType<T = any, V = any> {
 
 	populate(value: T, options: any): void;
 
-	generate(range: V, key: any, options: any): OptionsKeyPair[];
+	generate(range: V, key: OptionsKey, options: any): OptionsKeyPair[];
 }
 
 export { BoolOption } from "./BoolOption";

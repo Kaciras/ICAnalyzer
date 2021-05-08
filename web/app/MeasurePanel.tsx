@@ -2,7 +2,7 @@ import React, { ChangeEvent, Dispatch, ReactNode } from "react";
 import * as ssimJs from "ssim.js";
 import { ButteraugliOptions, defaultButteraugliOptions } from "../../lib/similarity";
 import { CheckBox, NumberInput } from "../ui";
-import { MeasureOptions, Optional } from "../encode";
+import { MeasureOptions, Optional } from "../analyzing";
 import styles from "./MeasurePanel.scss";
 
 export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
@@ -72,21 +72,6 @@ function ButteraugliFields(props: ButteraugliProps) {
 	return <fieldset className={styles.subfields}>{inputs}</fieldset>;
 }
 
-function createModel<T, R>(value: T, onChange: Dispatch<T>, ...path: string[]) {
-
-	function deepSet(current: any, index: number, newValue: any) {
-		const key = path[index];
-		if (index < path.length - 1) {
-			newValue = deepSet(current[key], index + 1, newValue);
-		}
-		return { ...current, ...newValue };
-	}
-
-	const subValue = path.reduce((parent, key) => parent[key], value as any);
-
-	return { value: subValue, onChange: v => deepSet(value, 0, v) } as Model<R>;
-}
-
 function deepSet(target: any, path: string, value: any) {
 	const parts = path.split(".");
 
@@ -100,10 +85,6 @@ function deepSet(target: any, path: string, value: any) {
 	}
 
 	return recurs(target, 0);
-}
-
-function deepGet(target: any, path: string) {
-	return path.split(".").reduce((parent, key) => parent[key], target);
 }
 
 interface Model<T> {

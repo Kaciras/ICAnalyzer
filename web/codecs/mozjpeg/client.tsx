@@ -2,7 +2,7 @@ import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncodeOptions } from "./codec";
-import { EncoderState, OptionListProps } from "../index";
+import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
 
 export const name = "MozJPEG";
@@ -146,15 +146,19 @@ export function getState(saved?: EncoderState) {
 	return saved ?? createState(templates);
 }
 
-export function OptionsPanel(props: OptionListProps) {
+export function OptionsPanel(props: OptionPanelProps) {
 	return <>{templates.map(t => renderOption(t, props))}</>;
 }
 
 export function getOptionsList(state: EncoderState) {
+	return buildOptions(templates, state);
+}
+
+export function getControls(state: EncoderState) {
 	const { varNames, ranges } = state;
-	const optionsList = buildOptions(templates, state);
-	const controls = templates.filter(t => varNames.includes(t.id)).map(t => t.createControl(ranges[t.id]));
-	return { controls, optionsList };
+	return templates
+		.filter(t => varNames.includes(t.id))
+		.map(t => t.createControl(ranges[t.id]));
 }
 
 export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {

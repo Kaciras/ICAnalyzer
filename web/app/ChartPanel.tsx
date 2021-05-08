@@ -5,7 +5,7 @@ import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import LockIcon from "../assets/lock.svg";
 import { Button } from "../ui";
-import { ConvertOutput } from "../encode";
+import { AnalyzeResult } from "../analyzing";
 import { MetricMeta } from "./index";
 import styles from "./ChartPanel.scss";
 
@@ -41,7 +41,7 @@ export interface ChartProps {
 	seriesMeta: MetricMeta[];
 	index: number;
 	values: string[];
-	outputs: ConvertOutput[];
+	outputs: AnalyzeResult[];
 }
 
 export default function ChartPanel(props: ChartProps) {

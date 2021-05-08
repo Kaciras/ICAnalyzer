@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import { OptionsKeyPair, OptionType } from "../form";
-import { EncoderState, OptionListProps } from "./index";
+import { EncoderState, OptionPanelProps } from "./index";
 
 export function createState(templates: OptionType[]) {
 	const values: Record<string, any> = {};
@@ -14,7 +14,7 @@ export function createState(templates: OptionType[]) {
 	return { varNames: [], values, ranges } as EncoderState;
 }
 
-export function renderOption(template: OptionType, props: OptionListProps) {
+export function renderOption(template: OptionType, props: OptionPanelProps) {
 	const { id, OptionField } = template;
 	const { state, onChange } = props;
 	const { varNames, values, ranges } = state;

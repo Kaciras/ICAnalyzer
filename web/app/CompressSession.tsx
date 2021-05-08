@@ -1,37 +1,42 @@
 import { Dispatch, useState } from "react";
-import { BatchEncodeAnalyzer, ConvertOutput, getMetricsMeta, measureFor, newWorker, ObjectKeyMap } from "../encode";
+import { Analyzer, AnalyzeResult, newWorker, ObjectKeyMap } from "../analyzing";
 import { ENCODERS, ImageEncoder } from "../codecs";
 import WorkerPool from "../WorkerPool";
 import { WorkerApi } from "../worker";
-import { ControlType, OptionsKeyPair } from "../form";
+import { OptionsKey, OptionsKeyPair } from "../form";
 import { useProgress } from "../utils";
-import type { InputImage, Result } from ".";
+import { AnalyzeContext, ControlsMap, InputImage } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
+import { EncodingOptions } from "./EncoderPanel";
 
-export type OutputMap = ObjectKeyMap<any, ConvertOutput>;
+interface EncodeTask {
+	encoder: ImageEncoder;
+	optionsList: OptionsKeyPair[];
+}
 
-/**
- * Create a new object compatible with ImageData type from an ImageData,
- * with convert the data to SharedArrayBuffer.
- *
- * NOTE: the returned value is not an ImageData and can't be put into canvas.
- *
- * @param image original image data
- * @return the image data with shared
- */
-function share(image: ImageData): ImageData {
-	const { width, height, data } = image;
-	const buffer = new SharedArrayBuffer(data.byteLength);
-	const view = new Uint8ClampedArray(buffer);
-	view.set(data);
-	return { width: width, height: height, data: view };
+function getTasks(encoding: EncodingOptions) {
+	const controlsMap: ControlsMap = {};
+	const taskQueue: EncodeTask[] = [];
+
+	for (const encoder of ENCODERS) {
+		const { name } = encoder;
+		const { enable, state } = encoding[name];
+		if (!enable) {
+			continue;
+		}
+		controlsMap[name] = encoder.getControls(state);
+		const optionsList = encoder.getOptionsList(state);
+		taskQueue.push({ encoder, optionsList });
+	}
+
+	return { controlsMap, taskQueue };
 }
 
 interface CompressSessionProps {
 	isOpen: boolean;
-	onChange: Dispatch<Result>;
+	onChange: Dispatch<AnalyzeContext>;
 	onClose: () => void;
 }
 
@@ -58,28 +63,19 @@ export default function CompressSession(props: CompressSessionProps) {
 		if (!input) {
 			throw new Error("File is null");
 		}
-		const { file, raw } = input;
+		const { file } = input;
 		const { encoding, measure } = config;
 
-		let taskCount = 0;
-		const queue: Array<[ImageEncoder, OptionsKeyPair[]]> = [];
-		const controlsMap: Record<string, ControlType[]> = {};
+		const { controlsMap, taskQueue } = getTasks(encoding);
 
-		for (const enc of ENCODERS) {
-			const { name, getOptionsList } = enc;
-			const config = encoding[name];
-			if (!config.enable) {
-				continue;
-			}
-			const { controls, optionsList } = getOptionsList(config.state);
-			controlsMap[name] = controls;
-			queue.push([enc, optionsList]);
-			taskCount += optionsList.length;
-		}
+		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
+		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
+		const analyzer = new Analyzer(pool, measure);
 
 		const seriesMeta = [{ key: "ratio", name: "Compression Ratio %" }];
 
-		const { calculations, metricsMeta } = getMetricsMeta(measure);
+		const { calculations, metricsMeta } = analyzer.getMetricsMeta();
+		let taskCount = taskQueue.reduce((s, c) => s + c.optionsList.length, 0);
 		taskCount *= (1 + calculations);
 		seriesMeta.push(...metricsMeta);
 
@@ -88,44 +84,34 @@ export default function CompressSession(props: CompressSessionProps) {
 			taskCount += measure.workerCount;
 		}
 
-		const outputMap = new ObjectKeyMap<any, ConvertOutput>();
-		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
-		const worker = new BatchEncodeAnalyzer();
-		const measureFn = measureFor(pool, measure, progress.increase);
-
 		progress.reset(taskCount);
 		setEncoder(pool);
-		worker.onProgress = progress.increase;
+		analyzer.onProgress = progress.increase;
 
 		try {
-			if ("SharedArrayBuffer" in window) {
-				const shared = share(raw);
-				await pool.runOnEach(r => r.setImageToEncode(shared));
-			} else {
-				await pool.runOnEach(r => r.setImageToEncode(raw));
-			}
+			await analyzer.setOriginalImage(input);
 
 			// Warmup workers to avoid disturbance of initialize time
 			if (measure.time) {
-				for (const [encoder, optionsList] of queue) {
+				for (const { encoder, optionsList } of taskQueue) {
 					const { options } = optionsList[0];
-					await pool.runOnEach(async r => encoder.encode(options, r).then(progress.increase));
+					await pool.runOnEach(r => encoder.encode(options, r).then(progress.increase));
 				}
 			}
 
-			for (const [encoder, optionsList] of queue) {
+			for (const { encoder, optionsList } of taskQueue) {
 				for (const { key, options } of optionsList) {
 
 					// noinspection ES6MissingAwait
 					pool.run(async r => {
-						const { buffer, data, time } = await worker.encode(r, encoder, options);
+						const { buffer, data, time } = await analyzer.encode(r, encoder, options);
 						const ratio = buffer.byteLength / file.size * 100;
-						const output: ConvertOutput = {
+						const output: AnalyzeResult = {
 							buffer,
 							data,
 							metrics: { time, ratio },
 						};
-						measureFn(output);
+						analyzer.measure(output);
 						outputMap.set({ encoder: encoder.name, key }, output);
 					});
 				}
@@ -134,7 +120,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
-				onChange({ controlsMap, seriesMeta, outputMap, input });
+				onChange({ input, controlsMap, seriesMeta, outputMap });
 			}
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
