@@ -1,20 +1,21 @@
 {
 	"compilerOptions": {
-		"target": "ES2019",
-		"lib": ["ESNext", "DOM", "WebWorker"],
+		"target": "ESNext",
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable",
+			"WebWorker"
+		],
 		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"jsx": "react-jsx",
 		"resolveJsonModule": true,
-
 		"newLine": "LF",
+		"sourceMap": true,
 		"strict": true,
-
 		"esModuleInterop": true,
 		"removeComments": true,
-		"sourceMap": true,
-		"experimentalDecorators": true,
-
 		"paths": {
 			"squoosh/*": ["./deps/squoosh/*"]
 		}
