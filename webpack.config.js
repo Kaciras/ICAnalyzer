@@ -11,7 +11,6 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
  *
  * Although the value is not used at runtime, it leaks sensitive data.
  * I saw Squoosh converts them to new URL('/c/features-worker-1ff98a60.js', location).href
- * https://github.com/webpack/webpack/issues/6719
  */
 
 // css-minimizer-webpack-plugin is ineffective (index.css 27898 bytes -> 27540 bytes), so we not use it.
@@ -160,11 +159,12 @@ module.exports = (env) => {
 			},
 		},
 		performance: false,
+		stats: "minimal",
 		devServer: {
+			stats: "errors-warnings",
 			compress: true,
 			clientLogLevel: "none",
 			hot: true,
-			stats: "minimal",
 
 			// Required by SharedArrayBuffer
 			headers: {
