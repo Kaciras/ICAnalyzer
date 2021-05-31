@@ -1,4 +1,8 @@
 {
+	"github": {
+		"autoJobCancelation": true,
+		"silent": true
+	},
 	"headers": [
 		{
 			"source": "/(.*)",
