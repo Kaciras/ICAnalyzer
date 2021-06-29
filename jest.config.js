@@ -3,7 +3,7 @@ module.exports = {
 		"**/test/*.spec.[jt]s?(x)",
 	],
 	moduleFileExtensions: [
-		"ts", "tsx", "mjs", "js", "jsx", "node",
+		"ts", "tsx", "mjs", "js",
 	],
 	preset: "ts-jest",
 	clearMocks: true,

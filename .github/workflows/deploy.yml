@@ -13,8 +13,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16.x
-          check-latest: true
+          node-version: 16
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -30,11 +29,11 @@ jobs:
         env:
           SENTRY_DSN: https://d101904fac2c486ea6f8563c2cf054af@o253601.ingest.sentry.io/5499968
 
-      - name: Use custom domain
+      - name: Configure domain
         run: echo "ic-analyzer.kaciras.com" > dist/CNAME
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+        uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           silent: true
           clean: true
