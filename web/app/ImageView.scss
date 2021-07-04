@@ -44,6 +44,7 @@
 
 .wrapper {
 	position: relative;
+	flex-shrink: 0;
 
 	// Disable image smoothing when scaling, see https://stackoverflow.com/a/14068216
 	image-rendering: crisp-edges;          		// Firefox
