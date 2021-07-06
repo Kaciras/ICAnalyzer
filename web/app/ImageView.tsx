@@ -163,6 +163,7 @@ export default function ImageView(props: ImageViewProps) {
 			<PinchZoom
 				className={styles.main}
 				state={pinchZoom}
+				// Can't zoom by mouse wheel if scale = 0
 				onChange={v => v.scale > 0.01 && setPinchZoom(v)}
 			>
 				<div
@@ -209,9 +210,9 @@ export default function ImageView(props: ImageViewProps) {
 			<div className={styles.controls}>
 				<NumberInput
 					title="Zoom scale"
-					min={1}
+					min={25}
 					step={1}
-					increment={50}
+					increment={25}
 					className={styles.zoomInput}
 					value={Math.round(pinchZoom.scale * 100)}
 					onValueChange={setZoom}
