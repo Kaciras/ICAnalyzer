@@ -1,5 +1,5 @@
 import { Dispatch, useState } from "react";
-import { builtinResize } from "squoosh/src/client/lazy-app/util";
+import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas";
 import { AnalyzeContext, InputImage } from "./index";
 import { Analyzer, AnalyzeResult, newWorker, ObjectKeyMap } from "../analyzing";
 import { Button, Dialog } from "../ui";

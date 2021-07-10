@@ -1,5 +1,6 @@
 import { Remote, wrap } from "comlink";
-import { blobToImg, canDecodeImageType, drawableToImageData } from "squoosh/src/client/lazy-app/util";
+import { blobToImg, canDecodeImageType } from "squoosh/src/client/lazy-app/util";
+import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas";
 import { WorkerApi } from "./worker";
 import { newWorker } from "./analyzing";
 

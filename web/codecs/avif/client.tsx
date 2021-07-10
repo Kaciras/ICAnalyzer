@@ -1,15 +1,34 @@
 import { Remote } from "comlink";
-import { defaultOptions } from "squoosh/src/features/encoders/avif/shared/meta";
 import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, renderOption } from "../common";
+import { EncodeOptions } from "../../../deps/squoosh/codecs/avif/enc/avif_enc";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";
 export const extension = "avif";
 
-export const Subsampling = {
+const AVIFTune = {
+	auto: 0,
+	psnr: 1,
+	ssim: 3,
+};
+
+const defaultOptions: EncodeOptions = {
+	cqLevel: 33,
+	cqAlphaLevel: -1,
+	denoiseLevel: 0,
+	tileColsLog2: 0,
+	tileRowsLog2: 0,
+	speed: 6,
+	subsample: 1,
+	chromaDeltaQ: false,
+	sharpness: 0,
+	tune: AVIFTune.auto,
+};
+
+const Subsampling = {
 	YUV400: 0,
 	YUV420: 1,
 	YUV422: 2,
@@ -28,11 +47,11 @@ const templates: OptionType[] = [
 	}),
 	new NumberOption({
 		id: "cqAlphaLevel",
-		label: "Alpha quality",
+		label: "Alpha quality (-1 to same with the quality)",
 		min: -1,
 		max: 63,
 		step: 1,
-		mapFn: i => 63 - i,
+		mapFn: i => (i === -1) ? -1 : 63 - i,
 		defaultValue: defaultOptions.cqAlphaLevel,
 	}),
 	new NumberOption({
@@ -80,7 +99,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.speed,
 	}),
-	new EnumOption({
+	new EnumOption({ // TODO: lossless
 		id: "subsample",
 		label: "Subsample",
 		enumObject: Subsampling,
