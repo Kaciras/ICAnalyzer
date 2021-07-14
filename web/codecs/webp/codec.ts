@@ -1,7 +1,9 @@
-import { simd } from "wasm-feature-detect";
 import type { EncodeOptions } from "squoosh/codecs/webp/enc/webp_enc";
+import { simd } from "wasm-feature-detect";
 import { initEmscriptenModule } from "squoosh/src/features/worker-utils";
 import { wasmDecodeFn, wasmEncodeFn } from "../common";
+
+export { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 
 export { EncodeOptions };
 

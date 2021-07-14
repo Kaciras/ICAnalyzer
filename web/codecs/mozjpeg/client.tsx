@@ -1,50 +1,13 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
-import { EncodeOptions } from "./codec";
+import { ColorSpace, defaultOptions, EncodeOptions, Quantization } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
 
 export const name = "MozJPEG";
 export const mimeType = "image/jpeg";
 export const extension = "jpg";
-
-const ColorSpace = {
-	GRAYSCALE: 1,
-	RGB: 2,
-	YCbCr: 3,
-};
-
-const Quantization = {
-	"JPEG Annex K": 0,
-	"Flat": 1,
-	"MSSIM-tuned Kodak": 2,
-	"ImageMagick": 3,
-	"PSNR-HVS-M-tuned Kodak": 4,
-	"Klein et al": 5,
-	"Watson et al": 6,
-	"Ahumada et al": 7,
-	"Peterson et al": 8,
-};
-
-const defaultOptions: EncodeOptions = {
-	quality: 75,
-	baseline: false,
-	arithmetic: false,
-	progressive: true,
-	optimize_coding: true,
-	smoothing: 0,
-	color_space: ColorSpace.YCbCr,
-	quant_table: Quantization.ImageMagick,
-	trellis_multipass: false,
-	trellis_opt_zero: false,
-	trellis_opt_table: false,
-	trellis_loops: 1,
-	auto_subsample: true,
-	chroma_subsample: 2,
-	separate_chroma_quality: false,
-	chroma_quality: 75,
-};
 
 const templates: OptionType[] = [
 	new NumberOption({

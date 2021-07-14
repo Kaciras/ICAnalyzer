@@ -3,37 +3,11 @@ import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, renderOption } from "../common";
-import { EncodeOptions } from "../../../deps/squoosh/codecs/avif/enc/avif_enc";
+import { defaultOptions, EncodeOptions, Subsampling } from "./codec";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";
 export const extension = "avif";
-
-const AVIFTune = {
-	auto: 0,
-	psnr: 1,
-	ssim: 3,
-};
-
-const defaultOptions: EncodeOptions = {
-	cqLevel: 33,
-	cqAlphaLevel: -1,
-	denoiseLevel: 0,
-	tileColsLog2: 0,
-	tileRowsLog2: 0,
-	speed: 6,
-	subsample: 1,
-	chromaDeltaQ: false,
-	sharpness: 0,
-	tune: AVIFTune.auto,
-};
-
-const Subsampling = {
-	YUV400: 0,
-	YUV420: 1,
-	YUV422: 2,
-	YUV444: 3,
-};
 
 const templates: OptionType[] = [
 	new NumberOption({
@@ -99,7 +73,7 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.speed,
 	}),
-	new EnumOption({ // TODO: lossless
+	new EnumOption({
 		id: "subsample",
 		label: "Subsample",
 		enumObject: Subsampling,
@@ -126,6 +100,6 @@ export function getControls(state: EncoderState) {
 		.map(t => t.createControl(ranges[t.id]));
 }
 
-export function encode(options: any, worker: Remote<WorkerApi>) {
+export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {
 	return worker.avifEncode({ ...defaultOptions, ...options });
 }

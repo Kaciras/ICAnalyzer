@@ -1,39 +1,13 @@
 import { Remote } from "comlink";
 import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
-import { EncodeOptions } from "./codec";
+import { Csp, defaultOptions, EncodeOptions, UVMode } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
 
 export const name = "WebP v2";
 export const mimeType = "image/webp2";
 export const extension = "wp2";
-
-export const UVMode = {
-	"Adapt": 0,
-	"420": 1,
-	"444": 2,
-	"Auto": 3,
-};
-
-export const Csp = {
-	YCoCg: 0,
-	YCbCr: 1,
-	Custom: 2,
-	YIQ: 3,
-};
-
-const defaultOptions: EncodeOptions = {
-	quality: 75,
-	alpha_quality: 75,
-	effort: 5,
-	pass: 1,
-	sns: 50,
-	uv_mode: UVMode.Adapt,
-	csp_type: Csp.YCoCg,
-	error_diffusion: 0,
-	use_random_matrix: false,
-};
 
 const templates: OptionType[] = [
 	// new BoolOption({

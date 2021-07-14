@@ -1,8 +1,7 @@
 import { Remote } from "comlink";
-import { defaultOptions } from "squoosh/src/features/encoders/webP/shared/meta";
 import { WorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType, PresetOption } from "../../form";
-import { EncodeOptions } from "./codec";
+import { defaultOptions, EncodeOptions } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
 
