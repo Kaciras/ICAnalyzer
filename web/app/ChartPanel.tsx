@@ -12,6 +12,48 @@ import styles from "./ChartPanel.scss";
 Export(Highcharts);
 ExportOffline(Highcharts);
 
+const baseOptions: Options = {
+	chart: {
+		animation: false,
+		styledMode: true,
+	},
+	title: {
+		text: "",
+	},
+	tooltip: {
+		borderRadius: 0,
+	},
+	legend: {
+		verticalAlign: "top",
+		width: 450,
+
+		// Since legend item vary widely in width, disable align to use space more efficiently
+		alignColumns: false,
+	},
+	xAxis: {
+		// Avoid layout shift on Y axis changes
+		width: 430,
+	},
+	exporting: {
+		buttons: {
+			contextButton: {
+				y: 5,
+				x: -5,
+				height: 32,
+				width: 32,
+				symbolSize: 16,
+				symbolX: 17,
+				symbolY: 16,
+			},
+		},
+		chartOptions: {
+			chart: {
+				className: "exporting_chart_class",
+			},
+		},
+	},
+};
+
 function handleMouseover(chart: Chart, i: number) {
 	const { yAxis } = chart;
 	for (let j = 1; j < yAxis.length; j++) {
@@ -44,93 +86,57 @@ export interface ChartProps {
 	outputs: AnalyzeResult[];
 }
 
+function toChartData(props: ChartProps) {
+	const { seriesMeta, outputs, values } = props;
+
+	const { length } = seriesMeta;
+	const series = new Array<SeriesLineOptions>(length);
+	const yAxis = new Array<YAxisOptions>(length);
+
+	for (let i = 0; i < length; i++) {
+		const { key, name } = seriesMeta[i];
+		yAxis[i] = {
+			title: {
+				text: name,
+			},
+			visible: false,
+			opposite: true,
+		};
+		series[i] = {
+			name,
+			type: "line",
+			yAxis: i,
+			data: outputs.map(output => output.metrics[key]),
+		};
+	}
+
+	const [left, initialRight] = yAxis;
+	left.visible = true;
+	left.opposite = false;
+	if (initialRight) {
+		initialRight.visible = true;
+	}
+
+	return { series, yAxis, xAxis: { categories: values } };
+}
+
 export default function ChartPanel(props: ChartProps) {
 	const { className, visible, seriesMeta, outputs, index, values } = props;
 
 	const [chart, setChart] = useState<Chart>();
-	const [locked, setLocked] = useState<boolean>(false);
+	const [locked, setLocked] = useState(false);
 
 	function initHighcharts(el: HTMLDivElement | null) {
 		if (!el || chart) {
 			return;
 		}
+		const dataPart = toChartData(props);
+		const options = Highcharts.merge(baseOptions, dataPart);
 
-		const series = new Array<SeriesLineOptions>(seriesMeta.length);
-		const yAxis = new Array<YAxisOptions>(seriesMeta.length);
-
-		for (let i = 0; i < seriesMeta.length; i++) {
-			const { key, name } = seriesMeta[i];
-			yAxis[i] = {
-				title: {
-					text: name,
-				},
-				visible: false,
-				opposite: true,
-			};
-			series[i] = {
-				name,
-				type: "line",
-				yAxis: i,
-				data: outputs.map(output => output.metrics[key]),
-			};
-		}
-
-		const [left, firstRight] = yAxis;
-		left.visible = true;
-		left.opposite = false;
-		if (firstRight) {
-			firstRight.visible = true;
-		}
-
-		const options: Options = {
-			series,
-			yAxis,
-			chart: {
-				animation: false,
-				styledMode: true,
-			},
-			title: {
-				text: "",
-			},
-			tooltip: {
-				borderRadius: 0,
-			},
-			legend: {
-				verticalAlign: "top",
-				width: 450,
-
-				// Since legend item vary widely in width, disable align to use space more efficiently
-				alignColumns: false,
-			},
-			xAxis: {
-				categories: values,
-
-				// Avoid layout shift on Y axis changes
-				width: 430,
-			},
-			exporting: {
-				buttons: {
-					contextButton: {
-						y: 5,
-						x: -5,
-						height: 32,
-						width: 32,
-						symbolSize: 16,
-						symbolX: 17,
-						symbolY: 16,
-					},
-				},
-				chartOptions: {
-					chart: {
-						className: "exporting_chart_class",
-					},
-				},
-			},
-		};
-		setChart(Highcharts.chart(el, options, instance => {
-			addSeriesListener(instance);
-			addLegendListener(instance);
-		}));
+		const newChart = Highcharts.chart(el, options);
+		setChart(newChart);
+		addSeriesListener(newChart);
+		addLegendListener(newChart);
 	}
 
 	function updateSeriesData(chart: Chart) {
