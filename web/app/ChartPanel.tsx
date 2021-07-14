@@ -35,6 +35,28 @@ const baseOptions: Options = {
 		width: 430,
 	},
 	exporting: {
+		menuItemDefinitions: {
+			downloadExpand: {
+				text: "Download with full Axis",
+				onclick() {
+					const yAxis = new Array(this.yAxis.length);
+					yAxis.fill({ visible: true });
+
+					const optionsMixin = {
+						yAxis,
+						xAxis: {
+							plotLines: [],
+						},
+						legend: {
+							labelFormat: "{name}",
+							labelFormatter: undefined,
+						},
+					};
+
+					this.exportChartLocal({ type: "image/svg+xml" }, optionsMixin);
+				},
+			},
+		},
 		buttons: {
 			contextButton: {
 				y: 5,
@@ -44,9 +66,24 @@ const baseOptions: Options = {
 				symbolSize: 16,
 				symbolX: 17,
 				symbolY: 16,
+				menuItems: [
+					"viewFullscreen",
+					"downloadSVG",
+					"downloadExpand",
+				],
 			},
 		},
+		sourceWidth: 800,
+		sourceHeight: 400,
 		chartOptions: {
+			legend: {
+				// @ts-ignore According to the document, null is acceptable
+				width: null,
+			},
+			// @ts-ignore According to the document, null is acceptable
+			xAxis: {
+				width: null,
+			},
 			chart: {
 				className: "exporting_chart_class",
 			},
