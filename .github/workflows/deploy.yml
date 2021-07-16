@@ -39,3 +39,4 @@ jobs:
           clean: true
           branch: gh-pages
           folder: dist
+          single-commit: true
