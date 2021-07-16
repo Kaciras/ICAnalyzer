@@ -1,3 +1,5 @@
+$stripeWidth: 32px;
+
 .text {
 	display: inline-flex;
 	padding: 10px;
@@ -32,8 +34,6 @@
 	}
 }
 
-$stripeWidth: 32px;
-
 .button {
 	padding: 8px 16px;
 	border-radius: 4px;
@@ -49,6 +49,7 @@ $stripeWidth: 32px;
 	letter-spacing: .5px;
 
 	text-decoration: none;
+	transition: .15s;
 
 	&:hover {
 		text-decoration: none;
@@ -94,13 +95,15 @@ $stripeWidth: 32px;
 		background-size: $stripeWidth $stripeWidth;
 	}
 
-	background-image: linear-gradient(-45deg,
-			var(--color-light) 25%,
-			transparent 25%,
-			transparent 50%,
-			var(--color-light) 50%,
-			var(--color-light) 75%,
-			transparent 75%);
+	background-image: linear-gradient(
+					-45deg,
+					var(--color-light) 25%,
+					transparent 25%,
+					transparent 50%,
+					var(--color-light) 50%,
+					var(--color-light) 75%,
+					transparent 75%
+	);
 
 	animation: busy linear .4s infinite;
 }
