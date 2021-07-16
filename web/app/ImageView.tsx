@@ -6,9 +6,8 @@ import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
 import { ButtonProps } from "../ui/Button";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { AnalyzeResult } from "../analyzing";
-import { Button, NumberInput, PinchZoom, SwitchButton } from "../ui";
+import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton } from "../ui";
 import { InputImage } from "./index";
-import ColorPicker from "./ColorPicker";
 import styles from "./ImageView.scss";
 
 export enum ViewType {

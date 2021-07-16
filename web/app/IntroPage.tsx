@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import { Button } from "../ui";
-import styles from "./IntroPage.scss";
 import GitHubIcon from "../assets/github-logo.svg";
 import banner from "../assets/intro-banner.png";
+import { Button } from "../ui";
+import styles from "./IntroPage.scss";
 
 interface IntroPageProps {
 	onEncode: () => void;
@@ -37,7 +37,7 @@ export default function IntroPage(props: IntroPageProps) {
 						type="outline"
 						onClick={onCompare}
 					>
-						Compare images
+						Compare
 					</Button>
 					<Button
 						className={clsx(styles.bigButton, "second")}

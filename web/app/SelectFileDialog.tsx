@@ -110,6 +110,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 			<div className="dialog-content">
 				<FileDrop
 					className={styles.drop}
+					accept="image/*"
 					onChange={acceptUpload}
 					onError={setError}
 					onStart={() => setError(undefined)}

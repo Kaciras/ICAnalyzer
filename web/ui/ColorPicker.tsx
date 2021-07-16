@@ -18,6 +18,7 @@ function pad(n: string) {
 
 /**
  * Convert the pixel data to hex color string.
+ * e.g. [50, 186, 52, 0.5] -> "#32BA347F"
  */
 function pixelToHex(pixel: Uint8ClampedArray) {
 	return pixel
@@ -44,7 +45,6 @@ function ColorItem(props: ColorItemProps) {
 
 export interface ColorPickerProps {
 	style?: CSSProperties;
-
 	x: number;
 	y: number;
 	imageA: ImageData;

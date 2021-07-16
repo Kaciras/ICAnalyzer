@@ -30,13 +30,14 @@ function useBoundaryCounter() {
 
 export interface FileDropProps {
 	className?: string;
+	accept?: string;
 	onStart?: () => void;
 	onChange: Dispatch<File>;
 	onError: Dispatch<string>;
 }
 
 export default function FileDrop(props: FileDropProps) {
-	const { className, onStart = NOOP, onChange, onError } = props;
+	const { className, accept = "*/*", onStart = NOOP, onChange, onError } = props;
 
 	const boundary = useBoundaryCounter();
 	const dragStarted = useRef(false);
@@ -78,7 +79,7 @@ export default function FileDrop(props: FileDropProps) {
 	}
 
 	const classes = clsx(
-		styles.uploadFile,
+		styles.fileDropBox,
 		className,
 		{ [styles.dragging]: boundary.isInArea },
 	);
@@ -104,7 +105,7 @@ export default function FileDrop(props: FileDropProps) {
 				className={styles.fileInput}
 				name="file"
 				type="file"
-				accept="image/*"
+				accept={accept}
 				onClick={onStart}
 				onChange={handleFileChange}
 			/>

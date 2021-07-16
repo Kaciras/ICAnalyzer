@@ -30,6 +30,7 @@ function UploadBox(props: UploadBoxProps) {
 			</div>
 			<FileDrop
 				className={styles.fileDrop}
+				accept="image/*"
 				onChange={onFileChange}
 				onError={onError}
 				onStart={() => onError(undefined)}

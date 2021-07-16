@@ -21,3 +21,4 @@ export { default as SelectBox } from "./SelectBox";
 export { default as SwitchButton } from "./SwitchButton";
 export { default as ControlField } from "./ControlField";
 export { default as FileDrop } from "./FileDrop";
+export { default as ColorPicker } from "./ColorPicker";
