@@ -1,9 +1,7 @@
 .container {
-	// Don't use composes that changes import order.
-	//composes: controls from global;
+	composes: controls from global;
 
 	position: relative;
-	background: rgba(0, 0, 0, .8);
 }
 
 .chart {

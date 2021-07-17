@@ -58,7 +58,7 @@ function DownloadButton(props: DownloadButtonProps) {
 export enum Step {
 	None,
 	Encoder,
-	Options,
+	Option,
 }
 
 export interface ControlState {
@@ -81,7 +81,7 @@ function createControlState(controlsMap: ControlsMap): ControlState {
 
 	const [encoderName, controls] = kvs[0];
 	if (controls.length > 0) {
-		variableType = Step.Options;
+		variableType = Step.Option;
 		variableName = controls[0].id;
 	}
 
@@ -107,30 +107,34 @@ function getSeries(result: AnalyzeContext, state: ControlState) {
 
 	let labels: string[];
 	let series: AnalyzeResult[];
+	let xLabel: string;
 
 	if (variableType === Step.None) {
 		labels = [""];
 		series = [output];
+		xLabel = "";
 	} else if (variableType === Step.Encoder) {
 		labels = ENCODERS.filter(e => e.name in encoderState).map(e => e.name);
 		series = labels.map(encoder => outputMap.get({
 			encoder,
 			key: encoderState[encoder],
 		}));
-	} else if (variableType === Step.Options) {
-		const values = controlsMap[encoderName]
-			.find(c => c.id === variableName)!.createState();
+		xLabel = "Encoding";
+	} else if (variableType === Step.Option) {
+		const control = controlsMap[encoderName].find(c => c.id === variableName)!;
+		const values = control.createState();
 
 		labels = values.map(v => v.toString());
 		series = values.map(v => outputMap.get({
 			encoder: encoderName,
 			key: { ...key, [variableName]: v },
 		}));
+		xLabel = control.label;
 	} else {
 		throw new Error("Missing handle of variableType: " + variableType);
 	}
 
-	return { output, labels, series };
+	return { output, labels, series, xLabel };
 }
 
 export interface AnalyzePageProps {
@@ -146,7 +150,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const [showChart, setShowChart] = useState(true);
 	const [state, setState] = useReducer(updateControlState, controlsMap, createControlState);
 
-	const { labels, series, output } = useMemo(() => getSeries(result, state), [result, state]);
+	const { labels, series, output, xLabel } = useMemo(() => getSeries(result, state), [result, state]);
 
 	const index = series.indexOf(output);
 	if (index < 0) {
@@ -166,6 +170,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				visible={showChart}
 				seriesMeta={seriesMeta}
 				index={index}
+				xLabel={xLabel}
 				values={labels}
 				outputs={series}
 			/>

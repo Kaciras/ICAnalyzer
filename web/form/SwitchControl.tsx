@@ -20,6 +20,10 @@ export default class SwitchControl implements ControlType<boolean> {
 		return this.data.id;
 	}
 
+	get label() {
+		return this.data.label;
+	}
+
 	createState() {
 		return [false, true];
 	}

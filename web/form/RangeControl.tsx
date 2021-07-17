@@ -34,6 +34,10 @@ export default class RangeControl implements ControlType<number> {
 		return this.data.id;
 	}
 
+	get label() {
+		return this.data.label;
+	}
+
 	createState() {
 		return sequence(this.data);
 	}

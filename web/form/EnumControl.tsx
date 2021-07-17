@@ -21,6 +21,10 @@ export default class EnumControl implements ControlType<string> {
 		return this.data.id;
 	}
 
+	get label() {
+		return this.data.label;
+	}
+
 	createState() {
 		return this.data.names;
 	}

@@ -41,10 +41,10 @@ export default function ControlPanel(props: ControlPanelProps) {
 	const controls = controlsMap[encoderName].map(C =>
 		<C.Input
 			value={state[C.id]}
-			active={variableType === Step.Options && variableName === C.id}
+			active={variableType === Step.Option && variableName === C.id}
 			key={C.id}
 			onChange={v => handleValueChange(C.id, v)}
-			onFocus={() => handleVarChange(Step.Options, C.id)}
+			onFocus={() => handleVarChange(Step.Option, C.id)}
 		/>,
 	);
 

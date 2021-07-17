@@ -25,6 +25,8 @@ export interface ControlType<T = any> {
 
 	id: string;
 
+	label: string;
+
 	createState(): T[];
 
 	Input(props: FieldProps<T>): JSX.Element;

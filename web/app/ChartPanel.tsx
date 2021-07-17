@@ -12,6 +12,13 @@ import styles from "./ChartPanel.scss";
 Export(Highcharts);
 ExportOffline(Highcharts);
 
+declare module "highcharts" {
+
+	interface Options {
+		xLabel?: string;
+	}
+}
+
 const baseOptions: Options = {
 	chart: {
 		animation: false,
@@ -45,6 +52,9 @@ const baseOptions: Options = {
 					const optionsMixin = {
 						yAxis,
 						xAxis: {
+							title: {
+								text: this.options.xLabel,
+							},
 							plotLines: [],
 						},
 						legend: {
@@ -73,8 +83,8 @@ const baseOptions: Options = {
 				],
 			},
 		},
-		sourceWidth: 800,
-		sourceHeight: 400,
+		sourceWidth: 720,
+		sourceHeight: 405,
 		chartOptions: {
 			legend: {
 				// @ts-ignore According to the document, null is acceptable
@@ -119,12 +129,13 @@ export interface ChartProps {
 
 	seriesMeta: MetricMeta[];
 	index: number;
+	xLabel: string;
 	values: string[];
 	outputs: AnalyzeResult[];
 }
 
 function toChartData(props: ChartProps) {
-	const { seriesMeta, outputs, values } = props;
+	const { seriesMeta, outputs, values, xLabel } = props;
 
 	const { length } = seriesMeta;
 	const series = new Array<SeriesLineOptions>(length);
@@ -143,7 +154,7 @@ function toChartData(props: ChartProps) {
 			name,
 			type: "line",
 			yAxis: i,
-			data: outputs.map(output => output.metrics[key]),
+			data: outputs.map(o => o.metrics[key]),
 		};
 	}
 
@@ -154,11 +165,15 @@ function toChartData(props: ChartProps) {
 		initialRight.visible = true;
 	}
 
-	return { series, yAxis, xAxis: { categories: values } };
+	const xAxis = {
+		categories: values,
+	};
+
+	return { series, yAxis, xAxis, xLabel } as Options;
 }
 
 export default function ChartPanel(props: ChartProps) {
-	const { className, visible, seriesMeta, outputs, index, values } = props;
+	const { className, visible, seriesMeta, outputs, index, xLabel, values } = props;
 
 	const [chart, setChart] = useState<Chart>();
 	const [locked, setLocked] = useState(false);
@@ -177,7 +192,9 @@ export default function ChartPanel(props: ChartProps) {
 	}
 
 	function updateSeriesData(chart: Chart) {
+		chart.options.xLabel = xLabel;
 		chart.xAxis[0].setCategories(values, false);
+
 		chart.series.forEach((s, i) => {
 			const { key } = seriesMeta[i];
 			s.setData(outputs.map(output => output.metrics[key]), false);
