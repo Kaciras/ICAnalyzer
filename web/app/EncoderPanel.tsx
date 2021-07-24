@@ -37,9 +37,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 
 	const [current, setCurrent] = useState("WebP");
 
-	const tabs = ENCODERS.map(e => {
-		const { name } = e;
-
+	const tabs = ENCODERS.map(({ name }) => {
 		const classes = clsx(
 			styles.tab,
 			{ [styles.active]: name === current },

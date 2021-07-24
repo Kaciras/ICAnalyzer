@@ -4,7 +4,7 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button } from "../ui";
-import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs";
+import { ENCODER_MAP, getEncoderNames, ImageEncoder } from "../codecs";
 import { AnalyzeResult } from "../analyzing";
 import { AnalyzeContext, ControlsMap } from "./index";
 import ImageView from "./ImageView";
@@ -65,35 +65,30 @@ export enum VariableType {
 type EncodeOptions = Record<string, any>;
 type StateMap = Record<string, EncodeOptions>;
 
-export interface EncodeConfig {
-	encoder: string;
-	options: Record<string, any>;
-}
-
 export interface ControlState {
 	varType: VariableType;
-	varName: string;
-	encoderName: string;
+	varId: string;
+	codec: string;
 	stateMap: StateMap;
 }
 
 function createControlState(controlsMap: ControlsMap): ControlState {
 	let varType = VariableType.None;
-	let varName = "";
+	let varId = "";
 
 	const kvs = Object.entries(controlsMap);
 	if (kvs.length > 1) {
 		varType = VariableType.Encoder;
-		varName = "";
+		varId = "";
 	}
 
-	const [encoderName, controls] = kvs[0];
+	const [codec, controls] = kvs[0];
 	if (controls.length > 0) {
 		varType = VariableType.Option;
-		varName = controls[0].id;
+		varId = controls[0].id;
 	}
 
-	// encoder name -> option id -> values
+	// codec -> option id -> values
 	const stateMap: StateMap = {};
 	for (const [k, v] of kvs) {
 		const options: EncodeOptions = {};
@@ -103,7 +98,7 @@ function createControlState(controlsMap: ControlsMap): ControlState {
 		stateMap[k] = options;
 	}
 
-	return { varType, varName, encoderName, stateMap };
+	return { varType, varId, codec, stateMap };
 }
 
 function updateControlState(state: ControlState, action: Partial<ControlState>) {
@@ -112,41 +107,41 @@ function updateControlState(state: ControlState, action: Partial<ControlState>) 
 
 function getSeries(result: AnalyzeContext, state: ControlState) {
 	const { controlsMap, outputMap } = result;
-	const { varType, varName, encoderName, stateMap } = state;
+	const { varType, varId, codec, stateMap } = state;
 
-	const key = stateMap[encoderName];
-	const output = outputMap.get({ encoder: encoderName, key });
+	const key = stateMap[codec];
+	const output = outputMap.get({ codec, key });
 
 	let labels: string[];
 	let series: AnalyzeResult[];
-	let xLabel: string;
+	let varName: string;
 
 	if (varType === VariableType.None) {
 		labels = [""];
 		series = [output];
-		xLabel = "";
+		varName = "";
 	} else if (varType === VariableType.Encoder) {
-		labels = ENCODERS.filter(e => e.name in stateMap).map(e => e.name);
-		series = labels.map(encoder => outputMap.get({
-			encoder,
-			key: stateMap[encoder],
+		labels = getEncoderNames(stateMap);
+		series = labels.map(codec => outputMap.get({
+			codec,
+			key: stateMap[codec],
 		}));
-		xLabel = "Encoding";
+		varName = "Encoding";
 	} else if (varType === VariableType.Option) {
-		const control = controlsMap[encoderName].find(c => c.id === varName)!;
+		const control = controlsMap[codec].find(c => c.id === varId)!;
 		const values = control.createState();
 
 		labels = values.map(v => v.toString());
 		series = values.map(v => outputMap.get({
-			encoder: encoderName,
-			key: { ...key, [varName]: v },
+			codec,
+			key: { ...key, [varId]: v },
 		}));
-		xLabel = control.label;
+		varName = control.label;
 	} else {
-		throw new Error("Missing handle of variableType: " + varType);
+		throw new Error("Missing handle of variable type: " + varType);
 	}
 
-	return { output, labels, series, xLabel };
+	return { output, labels, series, varName };
 }
 
 export interface AnalyzePageProps {
@@ -162,7 +157,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const [showChart, setShowChart] = useState(true);
 	const [state, setState] = useReducer(updateControlState, controlsMap, createControlState);
 
-	const { labels, series, output, xLabel } = useMemo(() => getSeries(result, state), [result, state]);
+	const { labels, series, output, varName } = useMemo(() => getSeries(result, state), [result, state]);
 
 	const index = series.indexOf(output);
 	if (index < 0) {
@@ -182,7 +177,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				visible={showChart}
 				seriesMeta={seriesMeta}
 				index={index}
-				xLabel={xLabel}
+				xLabel={varName}
 				values={labels}
 				outputs={series}
 			/>
@@ -216,7 +211,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				<DownloadButton
 					title="Download output image"
 					filename={input.file.name}
-					codec={ENCODER_MAP[state.encoderName]}
+					codec={ENCODER_MAP[state.codec]}
 					buffer={output.buffer}
 				>
 					<DownloadIcon/>

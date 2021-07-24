@@ -43,3 +43,9 @@ export interface ImageEncoder {
 export const ENCODERS: ImageEncoder[] = [MozJPEG, JXL, WebP, AVIF, WebP2];
 
 export const ENCODER_MAP = Object.fromEntries(ENCODERS.map(e => [e.name, e]));
+
+const names = ENCODERS.map(e => e.name);
+
+export function getEncoderNames(object: Record<string, unknown>) {
+	return names.filter(name => name in object);
+}

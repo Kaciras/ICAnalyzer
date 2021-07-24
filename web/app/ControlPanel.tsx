@@ -1,7 +1,7 @@
-import { ChangeEvent, Dispatch, ReactNode } from "react";
+import { Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { SelectBox } from "../ui";
-import { ENCODERS } from "../codecs";
+import { getEncoderNames } from "../codecs";
 import { ControlState, VariableType } from "./AnalyzePage";
 import { ControlsMap } from "./index";
 import styles from "./ControlPanel.scss";
@@ -9,8 +9,8 @@ import styles from "./ControlPanel.scss";
 interface WrapperProps {
 	type: VariableType;
 	targetType: VariableType;
-	name: string;
-	targetName: string;
+	id: string;
+	targetId: string;
 
 	children?: ReactNode;
 
@@ -18,15 +18,15 @@ interface WrapperProps {
 }
 
 function FieldWrapper(props: WrapperProps) {
-	const { type, name, targetType, targetName, children, onChange } = props;
+	const { type, id, targetType, targetId, children, onChange } = props;
 
 	function handleClick() {
-		onChange({ varType: targetType, varName: targetName });
+		onChange({ varType: targetType, varId: targetId });
 	}
 
 	const clazz = clsx(
 		styles.field,
-		{ [styles.active]: targetType === type && targetName === name },
+		{ [styles.active]: targetType === type && targetId === id },
 	);
 
 	return <div className={clazz} onClick={handleClick}>{children}</div>;
@@ -40,34 +40,29 @@ export interface ControlPanelProps {
 
 export default function ControlPanel(props: ControlPanelProps) {
 	const { controlsMap, value, onChange } = props;
-	const { varType, varName, encoderName, stateMap } = value;
+	const { varType, varId, codec, stateMap } = value;
 
 	if (varType === VariableType.None) {
 		return null;
 	}
 
-	function handleCodecChange(e: ChangeEvent<HTMLSelectElement>) {
-		onChange({ encoderName: e.currentTarget.value });
+	const state = stateMap[codec];
+
+	function handleValueChange(id: string, value: any) {
+		const newStateMap = {
+			...stateMap,
+			[codec]: { ...state, [id]: value },
+		};
+		onChange({ stateMap: newStateMap });
 	}
 
-	function handleValueChange(id: string, newValue: any) {
-		const key = stateMap[encoderName];
-		const es = { ...stateMap, [encoderName]: { ...key, [id]: newValue } };
-		onChange({ stateMap: es });
-	}
-
-	const selectOptions = ENCODERS
-		.filter(e => e.name in controlsMap)
-		.map(({ name }) => <option key={name} value={name}>{name}</option>);
-
-	const state = stateMap[encoderName];
-	const controls = controlsMap[encoderName].map(C =>
+	const controls = controlsMap[codec].map(C =>
 		<FieldWrapper
 			key={C.id}
 			type={varType}
-			name={varName}
+			id={varId}
 			targetType={VariableType.Option}
-			targetName={C.id}
+			targetId={C.id}
 			onChange={onChange}
 		>
 			<C.Input
@@ -77,19 +72,26 @@ export default function ControlPanel(props: ControlPanelProps) {
 		</FieldWrapper>,
 	);
 
+	function handleCodecChange(newCodec: string) {
+		onChange({ codec: newCodec });
+	}
+
+	const selectOptions = getEncoderNames(controlsMap)
+		.map(name => <option key={name} value={name}>{name}</option>);
+
 	if (selectOptions.length > 1) {
 		controls.push(
 			<FieldWrapper
 				type={varType}
-				name={varName}
+				id={varId}
 				targetType={VariableType.Encoder}
-				targetName=""
+				targetId=""
 				onChange={onChange}
 			>
 				<SelectBox
 					title="Codec name"
-					value={encoderName}
-					onChange={handleCodecChange}
+					value={codec}
+					onValueChange={handleCodecChange}
 				>
 					{selectOptions}
 				</SelectBox>

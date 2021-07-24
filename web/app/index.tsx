@@ -4,7 +4,7 @@ import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import ComparePage from "./ComparePage";
 import CompareSession from "./CompareSession";
-import { ControlType, OptionsKey } from "../form";
+import { ControlType } from "../form";
 import { AnalyzeResult, ObjectKeyMap } from "../analyzing";
 
 export interface InputImage {
@@ -19,10 +19,15 @@ export interface MetricMeta {
 	name: string;
 }
 
+export interface EncodeConfig {
+	codec: string;
+	key: Record<string, any>;
+}
+
 export interface AnalyzeContext {
 	input: InputImage;
 	controlsMap: ControlsMap;
-	outputMap: ObjectKeyMap<OptionsKey, AnalyzeResult>;
+	outputMap: ObjectKeyMap<EncodeConfig, AnalyzeResult>;
 	seriesMeta: MetricMeta[];
 }
 

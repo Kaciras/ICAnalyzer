@@ -5,7 +5,7 @@ import WorkerPool from "../WorkerPool";
 import { WorkerApi } from "../worker";
 import { OptionsKey, OptionsKeyPair } from "../form";
 import { useProgress } from "../utils";
-import { AnalyzeContext, ControlsMap, InputImage } from ".";
+import { AnalyzeContext, ControlsMap, InputImage, MetricMeta } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
@@ -72,7 +72,9 @@ export default function CompressSession(props: CompressSessionProps) {
 		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
 		const analyzer = new Analyzer(pool, measure);
 
-		const seriesMeta = [{ key: "ratio", name: "Compression Ratio %" }];
+		const seriesMeta: MetricMeta[] = [
+			{ key: "ratio", name: "Compression Ratio %" },
+		];
 
 		const { calculations, metricsMeta } = analyzer.getMetricsMeta();
 		let taskCount = taskQueue.reduce((s, c) => s + c.optionsList.length, 0);
@@ -112,7 +114,7 @@ export default function CompressSession(props: CompressSessionProps) {
 							metrics: { time, ratio },
 						};
 						analyzer.measure(output);
-						outputMap.set({ encoder: encoder.name, key }, output);
+						outputMap.set({ codec: encoder.name, key }, output);
 					});
 				}
 			}

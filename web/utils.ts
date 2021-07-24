@@ -5,7 +5,7 @@ import { useState } from "react";
  */
 export const NOOP = () => {};
 
-export const IDENTITY = (v: any) => v;
+export const IDENTITY = <T>(v: T) => v;
 
 const SIZE_UNITS = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
@@ -31,15 +31,12 @@ export async function getFileFromUrl(url: string, signal?: AbortSignal) {
 	const response = await fetch(url, { signal });
 	const blob = await response.blob();
 
-	// Firefox doesn't like content types like 'image/png; charset=UTF-8', which Webpack's dev
-	// server returns. https://bugzilla.mozilla.org/show_bug.cgi?id=1497925.
-	const type = /[^;]*/.exec(blob.type)![0];
 	const name = new URL(url).pathname.split("/").pop() || "image";
 
 	const timeHeader = response.headers.get("last-modified");
 	const lastModified = timeHeader ? new Date(timeHeader).getTime() : undefined;
 
-	return new File([blob], name, { type, lastModified });
+	return new File([blob], name, { type: blob.type, lastModified });
 }
 
 export function useProgress(initialMax = 1) {
