@@ -16,9 +16,6 @@ export interface OptionFieldProps<T, V> {
 export interface FieldProps<T> {
 	value: T;
 	onChange: Dispatch<T>;
-
-	active: boolean;
-	onFocus: () => void;
 }
 
 export interface ControlType<T = any> {

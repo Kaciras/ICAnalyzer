@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { ControlField, RangeInput } from "../ui";
+import { RangeInput } from "../ui";
 import { ControlType, FieldProps } from "./index";
 import styles from "./RangeControl.scss";
 
@@ -23,19 +23,16 @@ interface Metadata extends NumberRange {
 
 export default class RangeControl implements ControlType<number> {
 
+	readonly id: string;
+	readonly label: string;
+
 	private readonly data: Metadata;
 
 	constructor(data: Metadata) {
 		this.data = data;
+		this.id = data.id;
+		this.label = data.label;
 		this.Input = this.Input.bind(this);
-	}
-
-	get id() {
-		return this.data.id;
-	}
-
-	get label() {
-		return this.data.label;
 	}
 
 	createState() {
@@ -64,7 +61,7 @@ export default class RangeControl implements ControlType<number> {
 		}
 
 		return (
-			<ControlField {...props}>
+			<>
 				<div className={styles.header}>
 					{label}
 					<input
@@ -87,7 +84,7 @@ export default class RangeControl implements ControlType<number> {
 					onClick={e => e.stopPropagation()}
 					onValueChange={handleRangeInput}
 				/>
-			</ControlField>
+			</>
 		);
 	}
 }

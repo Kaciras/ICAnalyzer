@@ -1,5 +1,5 @@
 import type { ControlType, FieldProps } from ".";
-import { ControlField, SwitchButton } from "../ui";
+import { SwitchButton } from "../ui";
 import styles from "./SwitchControl.scss";
 
 export interface SwitchControlConfig {
@@ -9,19 +9,16 @@ export interface SwitchControlConfig {
 
 export default class SwitchControl implements ControlType<boolean> {
 
+	readonly id: string;
+	readonly label: string;
+
 	private readonly data: SwitchControlConfig;
 
 	constructor(data: SwitchControlConfig) {
 		this.data = data;
+		this.id = data.id;
+		this.label = data.label;
 		this.Input = this.Input.bind(this);
-	}
-
-	get id() {
-		return this.data.id;
-	}
-
-	get label() {
-		return this.data.label;
 	}
 
 	createState() {
@@ -33,14 +30,14 @@ export default class SwitchControl implements ControlType<boolean> {
 		const { label } = this.data;
 
 		return (
-			<ControlField {...props} className={styles.control}>
+			<div className={styles.control}>
 				{label}
 				<SwitchButton
 					checked={value}
 					onValueChange={onChange}
 					onClick={e => e.stopPropagation()}
 				/>
-			</ControlField>
+			</div>
 		);
 	}
 }

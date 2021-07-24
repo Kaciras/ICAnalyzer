@@ -1,5 +1,5 @@
+import { RadioBox } from "../ui";
 import { ControlType, FieldProps } from "./index";
-import { ControlField, RadioBox } from "../ui";
 import styles from "./EnumControl.scss";
 
 interface ControlData {
@@ -10,19 +10,16 @@ interface ControlData {
 
 export default class EnumControl implements ControlType<string> {
 
+	readonly id: string;
+	readonly label: string;
+
 	private readonly data: ControlData;
 
 	constructor(data: ControlData) {
 		this.data = data;
+		this.id = data.id;
+		this.label = data.label;
 		this.Input = this.Input.bind(this);
-	}
-
-	get id() {
-		return this.data.id;
-	}
-
-	get label() {
-		return this.data.label;
 	}
 
 	createState() {
@@ -45,11 +42,6 @@ export default class EnumControl implements ControlType<string> {
 			</RadioBox>,
 		);
 
-		return (
-			<ControlField {...props}>
-				{label}
-				<div>{items}</div>
-			</ControlField>
-		);
+		return <>{label}<div>{items}</div></>;
 	}
 }

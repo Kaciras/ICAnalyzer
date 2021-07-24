@@ -55,43 +55,55 @@ function DownloadButton(props: DownloadButtonProps) {
 	);
 }
 
-export enum Step {
+export enum VariableType {
 	None,
 	Encoder,
 	Option,
 }
 
-export interface ControlState {
-	encoderName: string;
-	encoderState: Record<string, Record<string, any>>;
+// TODO: name
+type EncodeOptions = Record<string, any>;
+type StateMap = Record<string, EncodeOptions>;
 
-	variableType: Step;
-	variableName: string;
+export interface EncodeConfig {
+	encoder: string;
+	options: Record<string, any>;
+}
+
+export interface ControlState {
+	varType: VariableType;
+	varName: string;
+	encoderName: string;
+	stateMap: StateMap;
 }
 
 function createControlState(controlsMap: ControlsMap): ControlState {
-	let variableType = Step.None;
-	let variableName = "";
+	let varType = VariableType.None;
+	let varName = "";
 
 	const kvs = Object.entries(controlsMap);
 	if (kvs.length > 1) {
-		variableType = Step.Encoder;
-		variableName = "";
+		varType = VariableType.Encoder;
+		varName = "";
 	}
 
 	const [encoderName, controls] = kvs[0];
 	if (controls.length > 0) {
-		variableType = Step.Option;
-		variableName = controls[0].id;
+		varType = VariableType.Option;
+		varName = controls[0].id;
 	}
 
 	// encoder name -> option id -> values
-	const encoderState: Record<string, Record<string, any>> = {};
+	const stateMap: StateMap = {};
 	for (const [k, v] of kvs) {
-		encoderState[k] = Object.fromEntries(v.map(c => [c.id, c.createState()[0]]));
+		const options: EncodeOptions = {};
+		for (const c of v) {
+			options[c.id] = c.createState()[0];
+		}
+		stateMap[k] = options;
 	}
 
-	return { variableType, variableName, encoderName, encoderState };
+	return { varType, varName, encoderName, stateMap };
 }
 
 function updateControlState(state: ControlState, action: Partial<ControlState>) {
@@ -100,38 +112,38 @@ function updateControlState(state: ControlState, action: Partial<ControlState>) 
 
 function getSeries(result: AnalyzeContext, state: ControlState) {
 	const { controlsMap, outputMap } = result;
-	const { variableType, variableName, encoderName, encoderState } = state;
+	const { varType, varName, encoderName, stateMap } = state;
 
-	const key = encoderState[encoderName];
+	const key = stateMap[encoderName];
 	const output = outputMap.get({ encoder: encoderName, key });
 
 	let labels: string[];
 	let series: AnalyzeResult[];
 	let xLabel: string;
 
-	if (variableType === Step.None) {
+	if (varType === VariableType.None) {
 		labels = [""];
 		series = [output];
 		xLabel = "";
-	} else if (variableType === Step.Encoder) {
-		labels = ENCODERS.filter(e => e.name in encoderState).map(e => e.name);
+	} else if (varType === VariableType.Encoder) {
+		labels = ENCODERS.filter(e => e.name in stateMap).map(e => e.name);
 		series = labels.map(encoder => outputMap.get({
 			encoder,
-			key: encoderState[encoder],
+			key: stateMap[encoder],
 		}));
 		xLabel = "Encoding";
-	} else if (variableType === Step.Option) {
-		const control = controlsMap[encoderName].find(c => c.id === variableName)!;
+	} else if (varType === VariableType.Option) {
+		const control = controlsMap[encoderName].find(c => c.id === varName)!;
 		const values = control.createState();
 
 		labels = values.map(v => v.toString());
 		series = values.map(v => outputMap.get({
 			encoder: encoderName,
-			key: { ...key, [variableName]: v },
+			key: { ...key, [varName]: v },
 		}));
 		xLabel = control.label;
 	} else {
-		throw new Error("Missing handle of variableType: " + variableType);
+		throw new Error("Missing handle of variableType: " + varType);
 	}
 
 	return { output, labels, series, xLabel };

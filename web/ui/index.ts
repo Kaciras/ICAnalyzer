@@ -19,6 +19,5 @@ export { default as Dialog } from "./Dialog";
 export { default as PinchZoom } from "./PinchZoom";
 export { default as SelectBox } from "./SelectBox";
 export { default as SwitchButton } from "./SwitchButton";
-export { default as ControlField } from "./ControlField";
 export { default as FileDrop } from "./FileDrop";
 export { default as ColorPicker } from "./ColorPicker";
