@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MeasureOptions } from "../analyzing";
-import { Button, Dialog } from "../ui";
+import { Button, Dialog, TabList, TabSwitch } from "../ui";
 import { InputImage } from "./index";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
@@ -26,8 +26,6 @@ function loadOptions<T>(key: string, processor: (saved?: T) => T) {
 	};
 }
 
-const panels = ["Information", "Encoding", "Measure"];
-
 export default function ConfigDialog(props: ConfigDialogProps) {
 	const { image, onStart, onClose, onSelectFile } = props;
 
@@ -41,38 +39,6 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 		localStorage.setItem("Measure", JSON.stringify(measure));
 	}
 
-	const tabs = panels.map((name, i) =>
-		<div
-			className={styles.tab}
-			key={i}
-			role="tab"
-			aria-selected={i === index}
-			onClick={() => setIndex(i)}
-		>
-			{name}
-		</div>);
-
-	let panel;
-
-	switch (index) {
-		case 0:
-			panel = <ImageInfoPanel value={image}/>;
-			break;
-		case 1:
-			panel = <EncoderPanel
-				value={encoding}
-				onChange={setEncoding}
-			/>;
-			break;
-		case 2:
-			panel = <MeasurePanel
-				value={measure}
-				encodeTime={true}
-				onChange={setMeasure}
-			/>;
-			break;
-	}
-
 	const ready = image && Object.values(encoding).some(e => e.enable);
 
 	return (
@@ -81,8 +47,31 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 			className={styles.dialog}
 			onClose={onClose}
 		>
-			<div className={styles.header} role="tablist">{tabs}</div>
-			{panel}
+			<TabList
+				className={styles.header}
+				index={index}
+				onChange={setIndex}
+			>
+				<div className={styles.tab}>Information</div>
+				<div className={styles.tab}>Encoding</div>
+				<div className={styles.tab}>Measure</div>
+			</TabList>
+
+			<TabSwitch index={index}>
+				<ImageInfoPanel
+					value={image}
+				/>
+				<EncoderPanel
+					value={encoding}
+					onChange={setEncoding}
+				/>
+				<MeasurePanel
+					value={measure}
+					encodeTime={true}
+					onChange={setMeasure}
+				/>
+			</TabSwitch>
+
 			<div className="dialog-actions">
 				<Button onClick={onSelectFile}>Select file...</Button>
 				<Button className="second" onClick={onClose}>Cancel</Button>

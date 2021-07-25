@@ -1,14 +1,20 @@
+import { TabPanelBase } from "../ui/TabSwitch";
 import { bytes } from "../utils";
 import { InputImage } from "./index";
 import styles from "./ImageInfoPanel.scss";
 
-interface ImageInfoPanelProps {
+interface ImageInfoPanelProps extends TabPanelBase{
 	value: InputImage;
 }
 
 export default function ImageInfoPanel(props: ImageInfoPanelProps) {
+	const { isActive } = props;
 	const { file, raw } = props.value;
 	const { width, height, data } = raw;
+
+	if (isActive === false) {
+		return null;
+	}
 
 	const ratio = (file.size / data.byteLength * 100).toFixed(2);
 

@@ -4,6 +4,7 @@ import { ButteraugliOptions, defaultButteraugliOptions } from "../../lib/similar
 import { CheckBox, NumberInput } from "../ui";
 import { MeasureOptions, Optional } from "../analyzing";
 import styles from "./MeasurePanel.scss";
+import { TabPanelBase } from "../ui/TabSwitch";
 
 export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
 	if (saved) {
@@ -137,15 +138,19 @@ function SSIMOptionsSet(props: Model<ssimJs.Options>) {
 	);
 }
 
-export interface MeasurePanelProps {
+export interface MeasurePanelProps extends TabPanelBase {
 	encodeTime?: boolean;
 	value: MeasureOptions;
 	onChange: Dispatch<MeasureOptions>;
 }
 
 export default function MeasurePanel(props: MeasurePanelProps) {
-	const { encodeTime, value, onChange } = props;
+	const { isActive, encodeTime, value, onChange } = props;
 	const { workerCount, time, SSIM, PSNR, butteraugli } = value;
+
+	if (isActive === false) {
+		return null;
+	}
 
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
 		const { name, checked } = event.currentTarget;

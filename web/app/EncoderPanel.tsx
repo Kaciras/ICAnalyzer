@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { CheckBox } from "../ui";
 import { ENCODER_MAP, ENCODERS, EncoderState } from "../codecs";
 import styles from "./EncoderPanel.scss";
+import { TabPanelBase } from "../ui/TabSwitch";
 
 export interface EncoderConfig {
 	enable: boolean;
@@ -27,15 +28,19 @@ export function getEncodingOptions(saved?: EncodingOptions) {
 	return config;
 }
 
-export interface EncoderPanelProps {
+export interface EncoderPanelProps extends TabPanelBase {
 	value: Record<string, EncoderConfig>;
 	onChange: Dispatch<Record<string, EncoderConfig>>;
 }
 
 export default function EncoderPanel(props: EncoderPanelProps) {
-	const { value, onChange } = props;
+	const { isActive, value, onChange } = props;
 
 	const [current, setCurrent] = useState("WebP");
+
+	if (isActive === false) {
+		return null;
+	}
 
 	const tabs = ENCODERS.map(({ name }) => {
 		const classes = clsx(
