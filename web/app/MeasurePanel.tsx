@@ -77,12 +77,12 @@ function deepSet(target: any, path: string, value: any) {
 	const parts = path.split(".");
 
 	function recurs(current: any, index: number) {
-		const key = parts[index];
-		let localValue = value;
+		const k = parts[index];
+		let changes = value;
 		if (index < parts.length - 1) {
-			localValue = recurs(current[key], index + 1);
+			changes = recurs(current[k], index + 1);
 		}
-		return { ...current, [key]: localValue };
+		return { ...current, [k]: { ...current[k], ...changes } };
 	}
 
 	return recurs(target, 0);
@@ -130,7 +130,7 @@ function SSIMOptionsSet(props: Model<ssimJs.Options>) {
 				<NumberInput
 					value={value.windowSize}
 					min={0}
-					step={0.01}
+					step={1}
 					onValueChange={windowSize => onChange({ windowSize })}
 				/>
 			</LabelWrapper>
