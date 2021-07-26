@@ -52,9 +52,9 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 				index={index}
 				onChange={setIndex}
 			>
-				<div className={styles.tab}>Information</div>
-				<div className={styles.tab}>Encoding</div>
-				<div className={styles.tab}>Measure</div>
+				<button className={styles.tab}>Information</button>
+				<button className={styles.tab}>Encoding</button>
+				<button className={styles.tab}>Measure</button>
 			</TabList>
 
 			<TabSwitch index={index}>

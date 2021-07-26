@@ -15,9 +15,11 @@
 }
 
 .tab {
-	flex: 1;
 	position: relative;
-	padding: 12px;
+	flex: 1;
+	padding: 10px;
+	border: dotted 2px transparent;
+	text-align: left;
 
 	&[aria-selected="false"] {
 		transition: background-color .1s;
@@ -28,5 +30,9 @@
 		&:hover, &:focus-visible {
 			background: #999;
 		}
+	}
+
+	&:focus-visible {
+		border-color: #0061e0;
 	}
 }

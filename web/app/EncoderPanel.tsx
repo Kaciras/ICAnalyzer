@@ -1,9 +1,9 @@
-import { ChangeEvent, Dispatch, useState } from "react";
+import { Dispatch, useState } from "react";
 import clsx from "clsx";
+import { TabPanelBase } from "../ui/TabSwitch";
 import { CheckBox } from "../ui";
 import { ENCODER_MAP, ENCODERS, EncoderState } from "../codecs";
 import styles from "./EncoderPanel.scss";
-import { TabPanelBase } from "../ui/TabSwitch";
 
 export interface EncoderConfig {
 	enable: boolean;
@@ -48,8 +48,8 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 			{ [styles.active]: name === current },
 		);
 
-		function handleEnableChange(e: ChangeEvent<HTMLInputElement>) {
-			const x = { ...value[name], enable: e.currentTarget.checked };
+		function handleEnableChange(enable: boolean) {
+			const x = { ...value[name], enable };
 			onChange({ ...value, [name]: x });
 		}
 
@@ -62,7 +62,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 				<CheckBox
 					checked={value[name].enable}
 					onClick={e => e.stopPropagation()}
-					onChange={handleEnableChange}
+					onValueChange={handleEnableChange}
 				/>
 				<span className={styles.name}>{name}</span>
 			</button>
