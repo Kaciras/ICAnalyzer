@@ -1,8 +1,8 @@
 import { Dispatch, useRef, useState } from "react";
 import photo from "../assets/demo/photo.jpg";
 import photoIcon from "../assets/demo/photo-icon.jpg";
-import artwork from "../assets/demo/artwork.jpg";
-import artworkIcon from "../assets/demo/artwork-icon.jpg";
+import artwork from "../assets/demo/artwork.png";
+import artworkIcon from "../assets/demo/artwork-icon.png";
 import colorfulText from "../assets/demo/colorful-text.png";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import { Button, Dialog, FileDrop } from "../ui";
@@ -18,7 +18,7 @@ const demos = [
 		icon: photoIcon,
 	},
 	{
-		description: "Artwork (408KB)",
+		description: "Artwork (894KB)",
 		url: artwork,
 		icon: artworkIcon,
 	},
