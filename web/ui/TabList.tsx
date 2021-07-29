@@ -47,10 +47,16 @@ export default function TabList(props: TabListProps) {
 	const count = tabButtons!.length;
 	localRef.current.length = count;
 
-	function handleKeyUp(event: KeyboardEvent) {
+	function handleKeyDown(event: KeyboardEvent) {
 		let i = index;
 
 		switch (event.key) {
+			case "Home":
+				i = 0;
+				break;
+			case "End":
+				i = count - 1;
+				break;
 			case "ArrowLeft":
 			case "ArrowUp":
 				i -= 1;
@@ -63,8 +69,8 @@ export default function TabList(props: TabListProps) {
 				return;
 		}
 
-		const last = count - 1;
-		i = i > last ? 0 : i < 0 ? last : i;
+		event.preventDefault();
+		i = (i + count) % count;
 		onChange(i);
 		localRef.current[i].focus();
 	}
@@ -73,7 +79,7 @@ export default function TabList(props: TabListProps) {
 		<div
 			className={className}
 			role="tablist"
-			onKeyUp={handleKeyUp}
+			onKeyDown={handleKeyDown}
 		>
 			{tabButtons}
 		</div>
