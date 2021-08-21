@@ -1,4 +1,4 @@
-import { Dispatch, MouseEvent } from "react";
+import { ChangeEvent, ChangeEventHandler, Dispatch, MouseEvent, useRef } from "react";
 import clsx from "clsx";
 import PlusIcon from "../assets/add.svg";
 import MinusIcon from "../assets/remove.svg";
@@ -17,27 +17,35 @@ function getPrecision(value: number) {
 }
 
 export interface NumberInputProps {
-	value: number;
+	value?: number;
 	min?: number;
 	max?: number;
 	step?: number;
 
 	/**
-	 * Set the stepping interval to use when using up and down arrows to adjust the value,
-	 * The difference with step is that this attribute is not used for validation.
+	 * Set the stepping when using buttons to adjust the value,
+	 * The difference with the step is that it is not used for validation.
 	 *
 	 * @default same as step
 	 */
 	increment?: number;
 
+	/**
+	 * Should add buttons to quickly set value to minimum / maximum.
+	 */
 	minMaxButton?: boolean;
 
+	/**
+	 * Set the id attribute for input element.
+	 */
 	inputId?: string;
+
 	title?: string;
 	name?: string;
 	className?: string;
 	disabled?: boolean;
 
+	onChange?: ChangeEventHandler<HTMLInputElement>;
 	onValueChange?: Dispatch<number>;
 }
 
@@ -54,8 +62,21 @@ export default function NumberInput(props: NumberInputProps) {
 		max = Number.MAX_SAFE_INTEGER,
 		step = 1,
 		increment = step,
+		onChange = NOOP,
 		onValueChange = NOOP,
 	} = props;
+
+	/**
+	 * NumberInput hides browser default spinners and use custom buttons to adjust value,
+	 * to support the onChange event, we dispatch input event from the native element.
+	 */
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	function updateValue(value: number) {
+		const input = inputRef.current!;
+		input.valueAsNumber = value;
+		input.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+	}
 
 	function handleMouseDown(event: MouseEvent, diff: number) {
 		if (event.button !== 0) {
@@ -71,10 +92,10 @@ export default function NumberInput(props: NumberInputProps) {
 			return Math.round(n * q) / q;
 		}
 
-		function update(current: number) {
+		function increment(current: number) {
 			const newValue = next(current);
-			onValueChange(newValue);
-			timer = window.setTimeout(() => update(newValue), UPDATE_SPEED);
+			updateValue(newValue);
+			timer = window.setTimeout(() => increment(newValue), UPDATE_SPEED);
 		}
 
 		function onMouseUp() {
@@ -82,10 +103,15 @@ export default function NumberInput(props: NumberInputProps) {
 			document.removeEventListener("mouseup", onMouseUp);
 		}
 
-		const newValue = next(value);
-		onValueChange(newValue);
-		timer = window.setTimeout(() => update(newValue), UPDATE_DELAY);
+		const newValue = next(inputRef.current!.valueAsNumber);
+		updateValue(newValue);
+		timer = window.setTimeout(() => increment(newValue), UPDATE_DELAY);
 		document.addEventListener("mouseup", onMouseUp);
+	}
+
+	function handleChange(event: ChangeEvent<HTMLInputElement>) {
+		onChange(event);
+		onValueChange(event.currentTarget.valueAsNumber);
 	}
 
 	return (
@@ -98,7 +124,7 @@ export default function NumberInput(props: NumberInputProps) {
 					className={styles.button}
 					tabIndex={-1}
 					disabled={disabled}
-					onClick={() => onValueChange(min)}
+					onClick={() => updateValue(min)}
 				>
 					<ArrowDownIcon/>
 				</button>
@@ -116,6 +142,7 @@ export default function NumberInput(props: NumberInputProps) {
 			<input
 				type="number"
 				id={inputId}
+				ref={inputRef}
 				className={styles.input}
 				disabled={disabled}
 				name={name}
@@ -123,7 +150,7 @@ export default function NumberInput(props: NumberInputProps) {
 				max={max}
 				step={step}
 				value={value}
-				onChange={e => onValueChange(e.currentTarget.valueAsNumber)}
+				onChange={handleChange}
 			/>
 			<button
 				title="Increase"
@@ -143,7 +170,7 @@ export default function NumberInput(props: NumberInputProps) {
 					className={styles.button}
 					tabIndex={-1}
 					disabled={disabled}
-					onClick={() => onValueChange(max)}
+					onClick={() => updateValue(max)}
 				>
 					<ArrowUpIcon/>
 				</button>
