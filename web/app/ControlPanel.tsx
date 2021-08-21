@@ -82,6 +82,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 	if (selectOptions.length > 1) {
 		controls.push(
 			<FieldWrapper
+				key="codec"
 				type={varType}
 				id={varId}
 				targetType={VariableType.Encoder}

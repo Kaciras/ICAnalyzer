@@ -1,8 +1,5 @@
 import { useState } from "react";
 
-/**
- * No effect function with a clear name.
- */
 export const NOOP = () => {};
 
 export const IDENTITY = <T>(v: T) => v;

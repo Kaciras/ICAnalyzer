@@ -11,6 +11,9 @@ export interface TabListProps {
 export default function TabList(props: TabListProps) {
 	const { className, index, onChange, children } = props;
 
+	/**
+	 * To handle focus changing, we need to track elements.
+	 */
 	const localRef = useRef<HTMLElement[]>([]);
 
 	const tabButtons = Children.map(children, (child, i) => {

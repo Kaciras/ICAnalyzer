@@ -1,11 +1,11 @@
-import { Dispatch, MouseEvent, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import { MouseEvent, RefObject, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
 import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
+import { AnalyzeResult } from "../analyzing";
 import { ButtonProps } from "../ui/Button";
 import { PinchZoomState } from "../ui/PinchZoom";
-import { AnalyzeResult } from "../analyzing";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton } from "../ui";
 import { InputImage } from "./index";
 import styles from "./ImageView.scss";
@@ -17,16 +17,17 @@ export enum ViewType {
 	HeatMap,
 }
 
-const viewTypeNames = ["Original", "Output", "Difference", "HeatMap"];
-
 interface ImageViewTabProps extends ButtonProps {
 	target: string;
 }
 
-function useResettable<T>(initialState: T): [T, Dispatch<SetStateAction<T>>, () => void] {
-	const [value, setValue] = useState(initialState);
-	return [value, setValue, () => setValue(initialState)];
-}
+const viewTypeNames = ["Original", "Output", "Difference", "HeatMap"];
+
+const pinchZoomInit: PinchZoomState = {
+	x: 0,
+	y: 0,
+	scale: 1,
+};
 
 function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>) {
 	const { current } = canvas;
@@ -58,11 +59,7 @@ export default function ImageView(props: ImageViewProps) {
 
 	const [mousePos, setMousePos] = useState({ clientX: 0, clientY: 0 });
 
-	const [pinchZoom, setPinchZoom, resetPinchZoom] = useResettable<PinchZoomState>({
-		x: 0,
-		y: 0,
-		scale: 1,
-	});
+	const [pinchZoom, setPinchZoom] = useState(pinchZoomInit);
 
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
@@ -70,7 +67,7 @@ export default function ImageView(props: ImageViewProps) {
 	const topImage = (type === ViewType.HeatMap) ? heatMap! : output.data;
 
 	function refreshBottomCanvas() {
-		resetPinchZoom();
+		setPinchZoom(pinchZoomInit);
 		drawDataToCanvas(original.raw, backCanvas);
 	}
 
@@ -220,7 +217,7 @@ export default function ImageView(props: ImageViewProps) {
 					title="Reset view"
 					type="text"
 					className={styles.button}
-					onClick={resetPinchZoom}
+					onClick={() => setPinchZoom(pinchZoomInit)}
 				>
 					<ResetIcon/>
 				</Button>

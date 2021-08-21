@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
 import { NOOP } from "../utils";
@@ -64,7 +64,7 @@ export default function FileDrop(props: FileDropProps) {
 		}
 	}
 
-	function handleDrop(event: React.DragEvent) {
+	function handleDrop(event: DragEvent) {
 		event.preventDefault();
 		boundary.reset();
 
@@ -99,7 +99,7 @@ export default function FileDrop(props: FileDropProps) {
 				</span>
 			</div>
 			<div className={styles.text}>
-				Or select an image
+				Or select a file
 			</div>
 			<input
 				className={styles.fileInput}

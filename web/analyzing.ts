@@ -60,9 +60,9 @@ export class ObjectKeyMap<K, V> {
 export function share(image: ImageData): ImageData {
 	const { width, height, data } = image;
 	const buffer = new SharedArrayBuffer(data.byteLength);
-	const view = new Uint8ClampedArray(buffer);
-	view.set(data);
-	return { width: width, height: height, data: view };
+	const uint8Array = new Uint8ClampedArray(buffer);
+	uint8Array.set(data);
+	return { width, height, data: uint8Array };
 }
 
 function rgbaToImage(buffer: ArrayBufferLike, width: number, height: number) {

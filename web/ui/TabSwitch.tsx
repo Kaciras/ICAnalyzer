@@ -1,6 +1,11 @@
 import { Children, cloneElement, Fragment, isValidElement, ReactNode } from "react";
 
 export interface TabPanelBase {
+
+	/**
+	 * Is this component the current tab panel.
+	 * If it is not set, means the component is not controlled by TabList.
+	 */
 	isActive?: boolean;
 }
 

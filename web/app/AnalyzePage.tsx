@@ -4,6 +4,7 @@ import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button } from "../ui";
+import { OptionsKey } from "../form";
 import { ENCODER_MAP, getEncoderNames, ImageEncoder } from "../codecs";
 import { AnalyzeResult } from "../analyzing";
 import { AnalyzeContext, ControlsMap } from "./index";
@@ -61,9 +62,7 @@ export enum VariableType {
 	Option,
 }
 
-// TODO: name
-type EncodeOptions = Record<string, any>;
-type StateMap = Record<string, EncodeOptions>;
+type StateMap = Record<string, OptionsKey>;
 
 export interface ControlState {
 	varType: VariableType;
@@ -91,7 +90,7 @@ function createControlState(controlsMap: ControlsMap): ControlState {
 	// codec -> option id -> values
 	const stateMap: StateMap = {};
 	for (const [k, v] of kvs) {
-		const options: EncodeOptions = {};
+		const options: OptionsKey = {};
 		for (const c of v) {
 			options[c.id] = c.createState()[0];
 		}

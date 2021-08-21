@@ -62,6 +62,7 @@ export default function CompareSession(props: CompareSessionProps) {
 	const [selectFile, setSelectFile] = useState(true);
 	const [data, setData] = useState<CompareData>();
 	const [measure, setMeasure] = useState(getMeasureOptions);
+
 	const [workers, setWorkers] = useState<WorkerPool<WorkerApi>>();
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
