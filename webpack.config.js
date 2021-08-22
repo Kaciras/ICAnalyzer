@@ -161,11 +161,11 @@ module.exports = (env) => {
 		performance: false,
 		stats: "minimal",
 		devServer: {
-			stats: "errors-warnings",
-			compress: true,
-			clientLogLevel: "none",
+			static: false,
 			hot: true,
-
+			client: {
+				logging: "none",
+			},
 			// Required by SharedArrayBuffer
 			headers: {
 				"Cross-Origin-Opener-Policy": "same-origin",

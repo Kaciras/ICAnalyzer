@@ -6,11 +6,11 @@ $padding: 4px;
 	display: inline-block;
 	position: relative;
 
+	padding: $padding;
 	width: $width;
 	height: $height;
-	padding: $padding;
-	border-radius: $height / 2;
 
+	border-radius: $height * 0.5;
 	cursor: pointer;
 	background: #999;
 

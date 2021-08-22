@@ -80,8 +80,8 @@ $loading-size: 40px;
 
 @keyframes lds-ripple {
 	0% {
-		top: $loading-size / 2;
-		left: $loading-size / 2;
+		top: $loading-size * 0.5;
+		left: $loading-size * 0.5;
 		width: 0;
 		height: 0;
 		opacity: 1;
