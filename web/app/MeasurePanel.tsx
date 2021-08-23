@@ -100,6 +100,7 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 					Thread count:
 				</span>
 				<NumberInput
+					name="workerCount"
 					value={workerCount}
 					min={1}
 					step={1}
