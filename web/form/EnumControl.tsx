@@ -1,4 +1,4 @@
-import { RadioBox } from "../ui";
+import { RadioBox, RadioGroup } from "../ui";
 import { ControlType, FieldProps } from "./index";
 import styles from "./EnumControl.scss";
 
@@ -30,18 +30,27 @@ export default class EnumControl implements ControlType<string> {
 		const { id, label, names } = this.data;
 		const { value, onChange } = props;
 
-		const items = names.map(name =>
+		const radios = names.map(name =>
 			<RadioBox
 				key={name}
 				className={styles.item}
-				checked={name === value}
-				name={id}
-				onChange={() => onChange(name)}
+				value={name}
 			>
 				{name}
 			</RadioBox>,
 		);
 
-		return <>{label}<div>{items}</div></>;
+		return (
+			<>
+				{label}
+				<RadioGroup
+					value={value}
+					name={id}
+					onChange={onChange}
+				>
+					{radios}
+				</RadioGroup>
+			</>
+		);
 	}
 }

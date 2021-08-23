@@ -12,7 +12,7 @@ import { NOOP } from "../utils";
 import styles from "./CheckBoxBase.scss";
 
 export interface CheckBoxProps {
-	checked: boolean;
+	checked?: boolean;
 
 	className?: string;
 	name?: string;
