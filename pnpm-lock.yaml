@@ -6,7 +6,7 @@ specifiers:
   '@kaciras/eslint-config-jest': ^1.6.0
   '@kaciras/eslint-config-react': ^1.6.0
   '@kaciras/eslint-config-typescript': ^1.6.0
-  '@pmmmwh/react-refresh-webpack-plugin': ^0.4.3
+  '@pmmmwh/react-refresh-webpack-plugin': next
   '@sentry/react': ^6.11.0
   '@sentry/tracing': ^6.11.0
   '@svgr/webpack': ^5.5.0
@@ -60,7 +60,7 @@ devDependencies:
   '@kaciras/eslint-config-jest': 1.6.0_eslint@7.32.0+typescript@4.3.5
   '@kaciras/eslint-config-react': 1.6.0_eslint@7.32.0
   '@kaciras/eslint-config-typescript': 1.6.0_eslint@7.32.0+typescript@4.3.5
-  '@pmmmwh/react-refresh-webpack-plugin': 0.4.3_5beabfc7b86e47016d82cf6516307c31
+  '@pmmmwh/react-refresh-webpack-plugin': 0.5.0-rc.5_5beabfc7b86e47016d82cf6516307c31
   '@svgr/webpack': 5.5.0
   '@types/emscripten': 1.39.5
   '@types/jest': 27.0.1
@@ -1841,16 +1841,16 @@ packages:
       fastq: 1.11.1
     dev: true
 
-  /@pmmmwh/react-refresh-webpack-plugin/0.4.3_5beabfc7b86e47016d82cf6516307c31:
-    resolution: {integrity: sha512-br5Qwvh8D2OQqSXpd1g/xqXKnK0r+Jz6qVKBbWmpUcrbGOxUrf39V5oZ1876084CGn18uMdR5uvPqBv9UqtBjQ==}
-    engines: {node: '>= 10.x'}
+  /@pmmmwh/react-refresh-webpack-plugin/0.5.0-rc.5_5beabfc7b86e47016d82cf6516307c31:
+    resolution: {integrity: sha512-u9W23sWcG9xUklyI4x+hhrR9YtfSdPTLWx6tVSJV8RjOxpzs73+s38e/aI94ywRAZwRLbLJ8mx6X98xGxRHaZw==}
+    engines: {node: '>= 10.13'}
     peerDependencies:
-      '@types/webpack': 4.x
-      react-refresh: '>=0.8.3 <0.10.0'
+      '@types/webpack': 4.x || 5.x
+      react-refresh: ^0.10.0
       sockjs-client: ^1.4.0
-      type-fest: ^0.13.1
+      type-fest: 1.x
       webpack: '>=4.43.0 <6.0.0'
-      webpack-dev-server: 3.x
+      webpack-dev-server: 3.x || >=4.0.0-beta.0
       webpack-hot-middleware: 2.x
       webpack-plugin-serve: 0.x || 1.x
     peerDependenciesMeta:
@@ -1868,11 +1868,12 @@ packages:
         optional: true
     dependencies:
       ansi-html: 0.0.7
+      core-js-pure: 3.16.2
       error-stack-parser: 2.0.6
-      html-entities: 1.4.0
-      native-url: 0.2.6
+      html-entities: 2.3.2
+      loader-utils: 2.0.0
       react-refresh: 0.10.0
-      schema-utils: 2.7.1
+      schema-utils: 3.1.1
       source-map: 0.7.3
       webpack: 5.51.1_webpack-cli@4.8.0
       webpack-dev-server: 4.0.0_webpack-cli@4.8.0+webpack@5.51.1
@@ -3340,6 +3341,11 @@ packages:
       semver: 7.0.0
     dev: true
 
+  /core-js-pure/3.16.2:
+    resolution: {integrity: sha512-oxKe64UH049mJqrKkynWp6Vu0Rlm/BTXO/bJZuN2mmR3RtOFNepLlSWDd1eo16PzHpQAoNG97rLU1V/YxesJjw==}
+    requiresBuild: true
+    dev: true
+
   /core-util-is/1.0.2:
     resolution: {integrity: sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=}
     dev: true
@@ -4494,10 +4500,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       whatwg-encoding: 1.0.5
-    dev: true
-
-  /html-entities/1.4.0:
-    resolution: {integrity: sha512-8nxjcBcd8wovbeKx7h3wTji4e6+rhaVuPNpMqwWgnHh+N9ToqsCs6XztWRBPQ+UtzsoMAdKZtUENoVzU/EMtZA==}
     dev: true
 
   /html-entities/2.3.2:
@@ -5909,12 +5911,6 @@ packages:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
     dev: true
 
-  /native-url/0.2.6:
-    resolution: {integrity: sha512-k4bDC87WtgrdD362gZz6zoiXQrl40kYlBmpfmSjwRO1VU0V5ccwJTlxuE72F6m3V0vc1xOf6n3UCP9QyerRqmA==}
-    dependencies:
-      querystring: 0.2.1
-    dev: true
-
   /natural-compare/1.4.0:
     resolution: {integrity: sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=}
     dev: true
@@ -6494,11 +6490,6 @@ packages:
     resolution: {integrity: sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=}
     engines: {node: '>=0.4.x'}
     deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
-    dev: true
-
-  /querystring/0.2.1:
-    resolution: {integrity: sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==}
-    engines: {node: '>=0.4.x'}
     dev: true
 
   /queue-microtask/1.2.3:

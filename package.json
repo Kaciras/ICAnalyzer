@@ -33,7 +33,7 @@
 		"@kaciras/eslint-config-jest": "^1.6.0",
 		"@kaciras/eslint-config-react": "^1.6.0",
 		"@kaciras/eslint-config-typescript": "^1.6.0",
-		"@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+		"@pmmmwh/react-refresh-webpack-plugin": "next",
 		"@svgr/webpack": "^5.5.0",
 		"@types/emscripten": "^1.39.5",
 		"@types/jest": "^27.0.1",
