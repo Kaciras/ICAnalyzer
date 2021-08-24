@@ -21,7 +21,6 @@ declare module "highcharts" {
 
 const baseOptions: Options = {
 	chart: {
-		animation: false,
 		styledMode: true,
 	},
 	title: {
@@ -77,7 +76,6 @@ const baseOptions: Options = {
 				symbolX: 17,
 				symbolY: 16,
 				menuItems: [
-					"viewFullscreen",
 					"downloadSVG",
 					"downloadExpand",
 				],
