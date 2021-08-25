@@ -1,60 +1,17 @@
-import { ReactNode, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useMemo, useReducer, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
-import { Button } from "../ui";
+import { Button, DownloadButton } from "../ui";
 import { OptionsKey } from "../form";
-import { ENCODER_MAP, getEncoderNames, ImageEncoder } from "../codecs";
+import { ENCODER_MAP, getEncoderNames } from "../codecs";
 import { AnalyzeResult } from "../analyzing";
 import { AnalyzeContext, ControlsMap } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import styles from "./AnalyzePage.scss";
-
-interface DownloadButtonProps {
-	title?: string;
-	buffer: ArrayBuffer;
-	filename: string;
-	codec: ImageEncoder;
-	children: ReactNode;
-}
-
-function DownloadButton(props: DownloadButtonProps) {
-	const { title, buffer, filename, children } = props;
-	const { mimeType, extension } = props.codec;
-
-	const url = useRef("");
-
-	useEffect(() => () => URL.revokeObjectURL(url.current), []);
-
-	function downloadImage() {
-		const blob = new Blob([buffer], { type: mimeType });
-
-		URL.revokeObjectURL(url.current);
-		const newUrl = URL.createObjectURL(blob);
-		url.current = newUrl;
-
-		const a = document.createElement("a");
-		a.href = newUrl;
-		a.download = filename.replace(/.[^.]*$/, `.${extension}`);
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-	}
-
-	return (
-		<Button
-			className={styles.iconButton}
-			type="text"
-			title={title}
-			onClick={downloadImage}
-		>
-			{children}
-		</Button>
-	);
-}
 
 export enum VariableType {
 	None,
@@ -163,6 +120,8 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		throw new Error("Can't find current index in series");
 	}
 
+	const { mimeType, extension } = ENCODER_MAP[state.codec];
+
 	return (
 		<>
 			<ImageView
@@ -209,9 +168,11 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</Button>
 				<DownloadButton
 					title="Download output image"
-					filename={input.file.name}
-					codec={ENCODER_MAP[state.codec]}
+					type="text"
+					className={styles.iconButton}
 					buffer={output.buffer}
+					mime={mimeType}
+					filename={input.file.name.replace(/.[^.]*$/, `.${extension}`)}
 				>
 					<DownloadIcon/>
 				</DownloadButton>
