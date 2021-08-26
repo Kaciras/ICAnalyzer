@@ -120,8 +120,6 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		throw new Error("Can't find current index in series");
 	}
 
-	const { mimeType, extension } = ENCODER_MAP[state.codec];
-
 	return (
 		<>
 			<ImageView
@@ -170,9 +168,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					title="Download output image"
 					type="text"
 					className={styles.iconButton}
-					buffer={output.buffer}
-					mime={mimeType}
-					filename={input.file.name.replace(/.[^.]*$/, `.${extension}`)}
+					file={output.file}
 				>
 					<DownloadIcon/>
 				</DownloadButton>

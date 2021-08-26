@@ -40,7 +40,7 @@ async function compare(data: CompareData, analyzer: Analyzer, pool: WorkerPool<W
 
 	const ratio = buffer.byteLength / original.file.size * 100;
 	const output: AnalyzeResult = {
-		buffer,
+		file: changed.file,
 		data: imageB,
 		metrics: { ratio },
 	};

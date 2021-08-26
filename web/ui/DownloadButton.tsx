@@ -2,32 +2,28 @@ import { ReactNode, useEffect, useRef } from "react";
 import Button, { ButtonProps } from "./Button";
 
 export interface DownloadButtonProps extends ButtonProps {
-	buffer: ArrayBuffer;
-	mime: string;
-	filename: string;
+	file: File;
 	children: ReactNode;
 }
 
 export default function DownloadButton(props: DownloadButtonProps) {
-	const { buffer, filename, mime, children, ...others } = props;
+	const { file, children, ...others } = props;
 
 	const url = useRef("");
 
 	useEffect(() => () => URL.revokeObjectURL(url.current), []);
 
-	function download() {
-		const blob = new Blob([buffer], { type: mime });
-
+	function handleClick() {
 		URL.revokeObjectURL(url.current);
-		const newUrl = URL.createObjectURL(blob);
+		const newUrl = URL.createObjectURL(file);
 		url.current = newUrl;
 
 		const a = document.createElement("a");
 		a.href = newUrl;
-		a.download = filename;
+		a.download = file.name;
 
 		a.click(); // It seems no need to mount to document.
 	}
 
-	return <Button {...others} onClick={download}>{children}</Button>;
+	return <Button {...others} onClick={handleClick}>{children}</Button>;
 }

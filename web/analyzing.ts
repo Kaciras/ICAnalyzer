@@ -28,8 +28,8 @@ interface EncodeOutput {
 }
 
 export interface AnalyzeResult {
-	buffer: ArrayBuffer;
 	data: ImageData;
+	file: File;
 	heatMap?: ImageData;
 	metrics: Record<string, number>;
 }
@@ -37,14 +37,18 @@ export interface AnalyzeResult {
 // JSON.stringify is not deterministic, be careful with the properties order.
 export class ObjectKeyMap<K, V> {
 
-	private readonly table: Record<string, V> = {};
+	private readonly table = new Map<string, V>();
+
+	get size() {
+		return this.table.size;
+	}
 
 	get(key: K) {
-		return this.table[JSON.stringify(key)];
+		return this.table.get(JSON.stringify(key))!;
 	}
 
 	set(key: K, value: V) {
-		this.table[JSON.stringify(key)] = value;
+		this.table.set(JSON.stringify(key), value);
 	}
 }
 

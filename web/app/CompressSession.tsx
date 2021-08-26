@@ -102,14 +102,17 @@ export default function CompressSession(props: CompressSessionProps) {
 			}
 
 			for (const { encoder, optionsList } of taskQueue) {
+				const filename = file.name.replace(/.[^.]*$/, `.${encoder.extension}`);
+
 				for (const { key, options } of optionsList) {
 
 					// noinspection ES6MissingAwait
 					pool.run(async r => {
 						const { buffer, data, time } = await analyzer.encode(r, encoder, options);
 						const ratio = buffer.byteLength / file.size * 100;
+
 						const output: AnalyzeResult = {
-							buffer,
+							file: new File([buffer], filename, { type: encoder.mimeType }),
 							data,
 							metrics: { time, ratio },
 						};
