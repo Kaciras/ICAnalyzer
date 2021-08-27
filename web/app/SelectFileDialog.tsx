@@ -75,12 +75,12 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 	const { onCancel, onChange } = props;
 
 	const abortController = useRef(new AbortController());
-	const [error, setError] = useState<string>();
+	const [error, setError] = useState<Error>();
 
 	function accept(file: File) {
 		decode(file)
 			.then(raw => onChange({ file, raw }))
-			.catch(e => setError(e.message));
+			.catch(setError);
 	}
 
 	function acceptUpload(files: File[]) {
@@ -97,7 +97,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 		try {
 			accept(await getFileFromUrl(url, signal));
 		} catch (e) {
-			if (e.name !== "AbortError") throw e;
+			if (e.name !== "AbortError") setError(e);
 		}
 	}
 

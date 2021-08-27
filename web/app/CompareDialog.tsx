@@ -63,7 +63,7 @@ export interface CompareDialogProps {
 export default function CompareDialog(props: CompareDialogProps) {
 	const { data, onAccept, onCancel } = props;
 
-	const [error, setError] = useState<string>();
+	const [error, setError] = useState<Error>();
 	const [images, setImages] = useState(() => data ? [data.original, ...data.changed] : []);
 
 	function handleFileChange(files: File[]) {
@@ -73,7 +73,7 @@ export default function CompareDialog(props: CompareDialogProps) {
 		}
 		Promise.all(tasks)
 			.then(v => setImages([...images, ...v]))
-			.catch(err => setError(err.message));
+			.catch(setError);
 	}
 
 	function handleAccept() {
@@ -116,7 +116,7 @@ export default function CompareDialog(props: CompareDialogProps) {
 					onError={setError}
 					onSelectStart={() => setError(undefined)}
 				/>
-				<div className={styles.error}>{error}</div>
+				<div className={styles.error}>{error?.message}</div>
 				<div className={styles.actions}>
 					<Button className="second" onClick={onCancel}>Back</Button>
 					<Button disabled={invalid} onClick={handleAccept}>Next</Button>

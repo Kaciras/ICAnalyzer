@@ -35,7 +35,7 @@ export interface FileDropProps {
 
 	onSelectStart?: () => void;
 	onChange: Dispatch<File[]>;
-	onError: Dispatch<string>;
+	onError: Dispatch<Error>;
 }
 
 export default function FileDrop(props: FileDropProps) {
@@ -77,7 +77,7 @@ export default function FileDrop(props: FileDropProps) {
 		if (files.length === items.length) {
 			onChange(files as File[]);
 		} else {
-			onError("Non-file item in the list");
+			onError(new Error("Non-file item in the list"));
 		}
 	}
 
