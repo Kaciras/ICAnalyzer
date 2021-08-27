@@ -83,8 +83,8 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 			.catch(e => setError(e.message));
 	}
 
-	function acceptUpload(file: File) {
-		accept(file);
+	function acceptUpload(files: File[]) {
+		accept(files[0]);
 		abortController.current.abort();
 	}
 
@@ -113,7 +113,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 					accept="image/*"
 					onChange={acceptUpload}
 					onError={setError}
-					onStart={() => setError(undefined)}
+					onSelectStart={() => setError(undefined)}
 				/>
 				<span className={styles.demoLabel}>
 					Or try one of these:

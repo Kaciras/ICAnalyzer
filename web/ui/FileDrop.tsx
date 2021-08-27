@@ -31,13 +31,15 @@ function useBoundaryCounter() {
 export interface FileDropProps {
 	className?: string;
 	accept?: string;
-	onStart?: () => void;
-	onChange: Dispatch<File>;
+	multiple?: boolean;
+
+	onSelectStart?: () => void;
+	onChange: Dispatch<File[]>;
 	onError: Dispatch<string>;
 }
 
 export default function FileDrop(props: FileDropProps) {
-	const { className, accept = "*/*", onStart = NOOP, onChange, onError } = props;
+	const { className, accept = "*/*", multiple, onSelectStart = NOOP, onChange, onError } = props;
 
 	const boundary = useBoundaryCounter();
 	const dragStarted = useRef(false);
@@ -45,7 +47,7 @@ export default function FileDrop(props: FileDropProps) {
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
 		const { files } = event.currentTarget;
 		if (files?.length) {
-			onChange(files[0]);
+			onChange(Array.from(files));
 		}
 	}
 
@@ -59,7 +61,7 @@ export default function FileDrop(props: FileDropProps) {
 
 		if (!dragStarted.current) {
 			dragStarted.current = true;
-			onStart();
+			onSelectStart();
 			document.addEventListener("dragend", handleDragEnd);
 		}
 	}
@@ -69,12 +71,13 @@ export default function FileDrop(props: FileDropProps) {
 		boundary.reset();
 
 		const { items } = event.dataTransfer;
-		const file = items[0]?.getAsFile();
 
-		if (file) {
-			onChange(file);
+		const files = Array.from(items).map(e => e.getAsFile()).filter(Boolean);
+
+		if (files.length === items.length) {
+			onChange(files as File[]);
 		} else {
-			onError("The dropped item is not a file");
+			onError("Non-file item in the list");
 		}
 	}
 
@@ -106,7 +109,8 @@ export default function FileDrop(props: FileDropProps) {
 				name="file"
 				type="file"
 				accept={accept}
-				onClick={onStart}
+				multiple={multiple}
+				onClick={onSelectStart}
 				onChange={handleFileChange}
 			/>
 		</label>

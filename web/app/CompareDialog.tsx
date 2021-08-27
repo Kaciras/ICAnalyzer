@@ -17,7 +17,8 @@ interface UploadBoxProps {
 function UploadBox(props: UploadBoxProps) {
 	const { name, onChange, onError } = props;
 
-	function onFileChange(file: File) {
+	function onFileChange(files: File[]) {
+		const file = files[0];
 		return decode(file)
 			.then(raw => onChange({ file, raw }))
 			.catch(e => onError(e.message));
@@ -33,7 +34,7 @@ function UploadBox(props: UploadBoxProps) {
 				accept="image/*"
 				onChange={onFileChange}
 				onError={onError}
-				onStart={() => onError(undefined)}
+				onSelectStart={() => onError(undefined)}
 			/>
 		</section>
 	);
