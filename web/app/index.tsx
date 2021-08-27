@@ -2,7 +2,6 @@ import { useState } from "react";
 import CompressSession from "./CompressSession";
 import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
-import ComparePage from "./ComparePage";
 import CompareSession from "./CompareSession";
 import { ControlType } from "../form";
 import { AnalyzeResult, ObjectKeyMap } from "../analyzing";
@@ -58,29 +57,27 @@ export default function App() {
 	}
 
 	let Session: any;
-	let Page: any;
 
 	switch (mode) {
 		case Mode.Compare:
 			Session = CompareSession;
-			Page = ComparePage;
 			break;
 		case Mode.Compress:
 			Session = CompressSession;
-			Page = AnalyzePage;
 			break;
 	}
 
 	return (
 		<>
-			{result
-				? <Page
+			{result ?
+				<AnalyzePage
 					key={result.id} // avoid reuse of control state
 					result={result}
 					onStart={() => setOpen(true)}
 					onClose={() => setResult(undefined)}
 				/>
-				: <IntroPage
+				:
+				<IntroPage
 					onEncode={() => createSession(Mode.Compress)}
 					onCompare={() => createSession(Mode.Compare)}
 				/>

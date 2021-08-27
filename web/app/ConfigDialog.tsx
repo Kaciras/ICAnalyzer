@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, useState } from "react";
 import { MeasureOptions } from "../analyzing";
 import { Button, Dialog, TabList, TabSwitch } from "../ui";
 import { InputImage } from "./index";
@@ -14,7 +14,7 @@ export interface AnalyzeConfig {
 
 export interface ConfigDialogProps {
 	image: InputImage;
-	onStart: (config: AnalyzeConfig) => void;
+	onStart: Dispatch<AnalyzeConfig>;
 	onClose: () => void;
 	onSelectFile: () => void;
 }
@@ -66,8 +66,8 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 					onChange={setEncoding}
 				/>
 				<MeasurePanel
-					value={measure}
 					encodeTime={true}
+					value={measure}
 					onChange={setMeasure}
 				/>
 			</TabSwitch>

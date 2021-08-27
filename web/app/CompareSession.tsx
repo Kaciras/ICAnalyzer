@@ -45,7 +45,7 @@ async function compare(data: CompareData, analyzer: Analyzer, pool: WorkerPool<W
 		metrics: { ratio },
 	};
 	analyzer.measure(output);
-	outputMap.set({}, output);
+	outputMap.set({ codec: "_", key: {} }, output);
 
 	return pool.join().then(() => outputMap);
 }
@@ -97,10 +97,11 @@ export default function CompareSession(props: CompareSessionProps) {
 		progress.reset(1 + calculations);
 		try {
 			const outputMap = await compare(data, analyzer, pool);
+			const controlsMap = { _: [] };
 
 			if (!pool.terminated) {
 				setWorkers(undefined);
-				onChange({ input: original, outputMap, seriesMeta, controlsMap: {} });
+				onChange({ input: original, outputMap, seriesMeta, controlsMap });
 			}
 		} catch (e) {
 			console.error(e);

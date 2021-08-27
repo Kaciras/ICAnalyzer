@@ -5,13 +5,35 @@ import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button, DownloadButton } from "../ui";
 import { OptionsKey } from "../form";
-import { ENCODER_MAP, getEncoderNames } from "../codecs";
+import { getEncoderNames } from "../codecs";
 import { AnalyzeResult } from "../analyzing";
-import { AnalyzeContext, ControlsMap } from "./index";
+import { AnalyzeContext, ControlsMap, MetricMeta } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import styles from "./AnalyzePage.scss";
+
+interface SimplePanelProps {
+	visible: boolean;
+	metas: MetricMeta[];
+	metrics: Record<string, number>;
+}
+
+function SimplePanel(props: SimplePanelProps) {
+	const { visible, metas, metrics } = props;
+
+	if (!visible) {
+		return null;
+	}
+
+	const items = [];
+	for (const { key, name } of metas) {
+		items.push(<dt>{name}:</dt>);
+		items.push(<dd>{metrics[key].toFixed(3)}</dd>);
+	}
+
+	return <dl className={styles.simpleMetrics}>{items}</dl>;
+}
 
 export enum VariableType {
 	None,
@@ -44,7 +66,6 @@ function createControlState(controlsMap: ControlsMap): ControlState {
 		varId = controls[0].id;
 	}
 
-	// codec -> option id -> values
 	const stateMap: StateMap = {};
 	for (const [k, v] of kvs) {
 		const options: OptionsKey = {};
@@ -128,15 +149,24 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				output={output}
 			/>
 
-			<ChartPanel
-				className={styles.metricsPanel}
-				visible={showChart}
-				seriesMeta={seriesMeta}
-				index={index}
-				xLabel={varName}
-				values={labels}
-				outputs={series}
-			/>
+			{
+				result.outputMap.size === 1 ?
+					<SimplePanel
+						visible={showChart}
+						metas={seriesMeta}
+						metrics={output.metrics}
+					/>
+					:
+					<ChartPanel
+						className={styles.metricsPanel}
+						visible={showChart}
+						seriesMeta={seriesMeta}
+						index={index}
+						xLabel={varName}
+						values={labels}
+						outputs={series}
+					/>
+			}
 
 			<div className={styles.buttonPanel}>
 				<Button
