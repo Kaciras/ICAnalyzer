@@ -5,83 +5,57 @@ import { Button, Dialog, FileDrop } from "../ui";
 import { InputImage } from "./index";
 import { CompareData } from "./CompareSession";
 import styles from "./CompareDialog.scss";
-
-type InputState = InputImage | undefined;
-
-interface UploadBoxProps {
-	name: string;
-	onChange: Dispatch<InputState>;
-	onError: Dispatch<string | undefined>;
-}
-
-function UploadBox(props: UploadBoxProps) {
-	const { name, onChange, onError } = props;
-
-	function onFileChange(files: File[]) {
-		const file = files[0];
-		return decode(file)
-			.then(raw => onChange({ file, raw }))
-			.catch(e => onError(e.message));
-	}
-
-	return (
-		<section className={styles.section}>
-			<div className={styles.header}>
-				<h3 className={styles.title}>{name}</h3>
-			</div>
-			<FileDrop
-				className={styles.fileDrop}
-				accept="image/*"
-				onChange={onFileChange}
-				onError={onError}
-				onSelectStart={() => onError(undefined)}
-			/>
-		</section>
-	);
-}
+import { bytes, uniqueKey } from "../utils";
 
 interface PreviewBoxProps {
 	value: InputImage;
-	name: string;
-	onChange: Dispatch<InputState>;
+	index: number;
+	onRemove: () => void;
 }
 
 const PreviewBox = memo((props: PreviewBoxProps) => {
-	const { value, name, onChange } = props;
+	const { value, index, onRemove } = props;
 	const { file, raw } = value;
+	const { type, size } = file;
+	const { width, height } = raw;
 
 	function drawImage(el: HTMLCanvasElement | null) {
 		el?.getContext("2d")!.putImageData(raw, 0, 0);
 	}
 
 	return (
-		<section className={styles.section}>
+		<li className={styles.listitem}>
+			<canvas
+				className={styles.canvas}
+				ref={drawImage}
+				width={width}
+				height={height}
+			/>
 			<div className={styles.header}>
-				<h3 className={styles.title}>{name}</h3>
+				{
+					index === 0
+						? <span>Original</span>
+						: <span>#{index - 1}</span>
+				}
 				<Button
 					className={styles.reset}
 					type="text"
-					title="Reset"
-					onClick={() => onChange(undefined)}
+					title="Remove"
+					onClick={onRemove}
 				>
 					<CloseIcon/>
 				</Button>
 			</div>
-			<canvas
-				className={styles.canvas}
-				ref={drawImage}
-				width={raw.width}
-				height={raw.height}
-			/>
-			<div className={styles.info}>{file.name}</div>
-		</section>
+			<div className={styles.filename}>{file.name}</div>
+			<div>{type} ({width} x {height},{bytes(size)})</div>
+		</li>
 	);
 });
 
 PreviewBox.displayName = "PreviewBox";
 
 export interface CompareDialogProps {
-	data?: CompareData;
+	data: CompareData | undefined;
 	onAccept: Dispatch<CompareData>;
 	onCancel: () => void;
 }
@@ -90,31 +64,63 @@ export default function CompareDialog(props: CompareDialogProps) {
 	const { data, onAccept, onCancel } = props;
 
 	const [error, setError] = useState<string>();
-	const [original, setOriginal] = useState<InputState>(data?.original);
-	const [changed, setChanged] = useState<InputState>(data?.changed);
+	const [images, setImages] = useState(() => data ? [data.original, ...data.changed] : []);
+
+	function handleFileChange(files: File[]) {
+		const tasks = [];
+		for (const file of files) {
+			tasks.push(decode(file).then(raw => ({ file, raw, id: uniqueKey() })));
+		}
+		Promise.all(tasks)
+			.then(v => setImages([...images, ...v]))
+			.catch(err => setError(err.message));
+	}
 
 	function handleAccept() {
-		onAccept({ original: original!, changed: changed! });
+		onAccept({ original: images[0], changed: images.slice(1) });
 	}
 
-	function section(name: string, value: InputState, setValue: Dispatch<InputState>) {
-		return value
-			? <PreviewBox name={name} value={value} onChange={setValue}/>
-			: <UploadBox name={name} onChange={setValue} onError={setError}/>;
+	function removeAt(index: number) {
+		const copy = Array.from(images);
+		copy.splice(index, 1);
+		setImages(copy);
 	}
 
-	const isValid = original && changed && !error;
+	const items = images.map((v, i) => (
+		<PreviewBox
+			key={(v as any).id}
+			value={v}
+			index={i}
+			onRemove={() => removeAt(i)}
+		/>
+	));
+
+	const invalid = images.length < 2 || Boolean(error);
 
 	return (
-		<Dialog onClose={onCancel}>
-			<div className={styles.body}>
-				{section("Origin image", original, setOriginal)}
-				{section("Changed image", changed, setChanged)}
-			</div>
-			<div className="dialog-actions">
-				<span className={styles.error}>{error}</span>
-				<Button className="second" onClick={onCancel}>Back</Button>
-				<Button disabled={!isValid} onClick={handleAccept}>Next</Button>
+		<Dialog className={styles.dialog} onClose={onCancel}>
+			{
+				images.length > 0 ?
+					<ol className={styles.list}>{items}</ol>
+					:
+					<div className={styles.placeholder}>
+						<p>Add at least two images</p>
+						<p>The first will be the original</p>
+					</div>
+			}
+			<div className={styles.aside}>
+				<FileDrop
+					className={styles.fileDrop}
+					accept="image/*"
+					onChange={handleFileChange}
+					onError={setError}
+					onSelectStart={() => setError(undefined)}
+				/>
+				<div className={styles.error}>{error}</div>
+				<div className={styles.actions}>
+					<Button className="second" onClick={onCancel}>Back</Button>
+					<Button disabled={invalid} onClick={handleAccept}>Next</Button>
+				</div>
 			</div>
 		</Dialog>
 	);

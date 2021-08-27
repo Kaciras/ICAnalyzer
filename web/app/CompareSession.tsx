@@ -11,10 +11,11 @@ import WorkerPool from "../WorkerPool";
 import CompareDialog from "./CompareDialog";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import styles from "./ConfigDialog.scss";
+import RangeControl from "../form/RangeControl";
 
 export interface CompareData {
 	original: InputImage;
-	changed: InputImage;
+	changed: InputImage[];
 }
 
 function resizeToFit(image: ImageData, target: ImageData) {
@@ -29,23 +30,25 @@ function resizeToFit(image: ImageData, target: ImageData) {
 
 async function compare(data: CompareData, analyzer: Analyzer, pool: WorkerPool<WorkerApi>) {
 	const { original, changed } = data;
-
 	const imageA = original.raw;
-	const imageB = resizeToFit(changed.raw, imageA);
-
-	const buffer = await changed.file.arrayBuffer();
 	const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 
-	await analyzer.setOriginalImage(original);
+	for (let i = 0; i < changed.length; i++) {
+		const { raw, file } = changed[i];
+		const imageB = resizeToFit(raw, imageA);
 
-	const ratio = buffer.byteLength / original.file.size * 100;
-	const output: AnalyzeResult = {
-		file: changed.file,
-		data: imageB,
-		metrics: { ratio },
-	};
-	analyzer.measure(output);
-	outputMap.set({ codec: "_", key: {} }, output);
+		// const buffer = await file.arrayBuffer();
+		await analyzer.setOriginalImage(original);
+
+		const ratio = file.size / original.file.size * 100;
+		const output: AnalyzeResult = {
+			file,
+			data: imageB,
+			metrics: { ratio },
+		};
+		analyzer.measure(output);
+		outputMap.set({ codec: "_", key: { i } }, output);
+	}
 
 	return pool.join().then(() => outputMap);
 }
@@ -97,7 +100,17 @@ export default function CompareSession(props: CompareSessionProps) {
 		progress.reset(1 + calculations);
 		try {
 			const outputMap = await compare(data, analyzer, pool);
-			const controlsMap = { _: [] };
+			const controlsMap = {
+				_: [
+					new RangeControl({
+						id: "i",
+						label: "Index",
+						min: 0,
+						max: data.changed.length-1,
+						step: 1,
+					}),
+				],
+			};
 
 			if (!pool.terminated) {
 				setWorkers(undefined);

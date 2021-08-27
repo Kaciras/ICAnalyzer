@@ -4,6 +4,15 @@ export const NOOP = () => {};
 
 export const IDENTITY = <T>(v: T) => v;
 
+let uniqueKeyCounter = 1;
+
+/**
+ * Generate a unique number, it can be used as the key prop in React element.
+ */
+export function uniqueKey() {
+	return uniqueKeyCounter += 1;
+}
+
 const SIZE_UNITS = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
 /**
