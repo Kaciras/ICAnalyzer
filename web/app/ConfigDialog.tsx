@@ -1,5 +1,5 @@
 import { Dispatch, useState } from "react";
-import { MeasureOptions } from "../analyzing";
+import { MeasureOptions } from "../measurement";
 import { Button, Dialog, TabList, TabSwitch } from "../ui";
 import { InputImage } from "./index";
 import ImageInfoPanel from "./ImageInfoPanel";
@@ -66,7 +66,7 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 					onChange={setEncoding}
 				/>
 				<MeasurePanel
-					encodeTime={true}
+					hasEncodePhase={true}
 					value={measure}
 					onChange={setMeasure}
 				/>

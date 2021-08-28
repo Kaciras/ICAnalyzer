@@ -3,7 +3,7 @@ import * as ssimJs from "ssim.js";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import { CheckBox, NumberInput } from "../ui";
 import { TabPanelBase } from "../ui/TabSwitch";
-import { MeasureOptions } from "../analyzing";
+import { MeasureOptions } from "../measurement";
 import styles from "./MeasurePanel.scss";
 
 export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
@@ -13,11 +13,16 @@ export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
 	return {
 		version: 1,
 		workerCount: navigator.hardwareConcurrency,
-		time: true,
-		PSNR: false,
+
+		encodeTime: {
+			enabled: false,
+		},
 		SSIM: {
 			enabled: true,
 			options: ssimJs.getOptions(),
+		},
+		PSNR: {
+			enabled: false,
 		},
 		butteraugli: {
 			enabled: false,
@@ -74,14 +79,14 @@ function detectInputValue(el: any) {
 }
 
 export interface MeasurePanelProps extends TabPanelBase {
-	encodeTime?: boolean;
+	hasEncodePhase?: boolean;
 	value: MeasureOptions;
 	onChange: Dispatch<SetStateAction<MeasureOptions>>;
 }
 
 export default function MeasurePanel(props: MeasurePanelProps) {
-	const { isActive, encodeTime, value, onChange } = props;
-	const { workerCount, time, SSIM, PSNR, butteraugli } = value;
+	const { isActive, hasEncodePhase, value, onChange } = props;
+	const { workerCount, encodeTime, SSIM, PSNR, butteraugli } = value;
 
 	if (isActive === false) {
 		return null;
@@ -109,10 +114,10 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 			</label>
 
 			{
-				encodeTime &&
+				hasEncodePhase &&
 				<CheckBox
-					checked={time}
-					name="time"
+					checked={encodeTime.enabled}
+					name="encodeTime.enabled"
 					onChange={handleChange}
 				>
 					Encode time (Not very accurate)
@@ -170,8 +175,8 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 			</fieldset>
 
 			<CheckBox
-				checked={PSNR}
-				name="PSNR"
+				checked={PSNR.enabled}
+				name="PSNR.enabled"
 				onChange={handleChange}
 			>
 				Peak signal-to-noise ratio

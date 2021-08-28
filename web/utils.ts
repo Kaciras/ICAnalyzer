@@ -60,3 +60,21 @@ export function useProgress(initialMax = 1) {
 
 	return { value, max, increase, reset };
 }
+
+// JSON.stringify is not deterministic, be careful with the properties order.
+export class ObjectKeyMap<K, V> {
+
+	private readonly table = new Map<string, V>();
+
+	get size() {
+		return this.table.size;
+	}
+
+	get(key: K) {
+		return this.table.get(JSON.stringify(key))!;
+	}
+
+	set(key: K, value: V) {
+		this.table.set(JSON.stringify(key), value);
+	}
+}

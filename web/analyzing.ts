@@ -1,25 +1,10 @@
 import { Remote } from "comlink";
-import * as SSIM from "ssim.js";
-import { ButteraugliOptions } from "../lib/diff";
 import { ImageEncoder } from "./codecs";
 import { decode } from "./decode";
 import type { WorkerApi } from "./worker";
-import { InputImage, MetricMeta } from "./app";
+import { InputImage } from "./app";
 import WorkerPool, { TaskFn } from "./WorkerPool";
-
-export interface Optional<T> {
-	options: T;
-	enabled: boolean;
-}
-
-export interface MeasureOptions {
-	version: number;
-	workerCount: number;
-	time: boolean;
-	PSNR: boolean;
-	SSIM: Optional<SSIM.Options>;
-	butteraugli: Optional<ButteraugliOptions>;
-}
+import { MeasureOptions } from "./measurement";
 
 interface EncodeOutput {
 	time: number;
@@ -32,24 +17,6 @@ export interface AnalyzeResult {
 	file: File;
 	heatMap?: ImageData;
 	metrics: Record<string, number>;
-}
-
-// JSON.stringify is not deterministic, be careful with the properties order.
-export class ObjectKeyMap<K, V> {
-
-	private readonly table = new Map<string, V>();
-
-	get size() {
-		return this.table.size;
-	}
-
-	get(key: K) {
-		return this.table.get(JSON.stringify(key))!;
-	}
-
-	set(key: K, value: V) {
-		this.table.set(JSON.stringify(key), value);
-	}
 }
 
 /**
@@ -94,6 +61,10 @@ export class Analyzer {
 	private readonly pool: WorkerPool<WorkerApi>;
 	private readonly measureOpts: MeasureOptions;
 
+	private readonly beforeAll = [];
+	private readonly beforeEncode = [];
+	private readonly afterOutput = [];
+
 	constructor(pool: WorkerPool<WorkerApi>, measureOpts: MeasureOptions) {
 		this.pool = pool;
 		this.measureOpts = measureOpts;
@@ -110,27 +81,6 @@ export class Analyzer {
 		} else {
 			return this.pool.runOnEach(r => r.setImageToEncode(raw));
 		}
-	}
-
-	getMetricsMeta() {
-		const { SSIM, PSNR, butteraugli } = this.measureOpts;
-		let calculations = 0;
-		const metricsMeta: MetricMeta[] = [];
-
-		if (PSNR) {
-			calculations++;
-			metricsMeta.push({ key: "psnr", name: "PSNR (db)" });
-		}
-		if (SSIM.enabled) {
-			calculations++;
-			metricsMeta.push({ key: "ssim", name: "SSIM %" });
-		}
-		if (butteraugli.enabled) {
-			calculations++;
-			metricsMeta.push({ key: "butteraugli", name: "Butteraugli Score" });
-		}
-
-		return { calculations, metricsMeta };
 	}
 
 	async encode(remote: Remote<WorkerApi>, encoder: ImageEncoder, options: any) {

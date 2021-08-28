@@ -1,11 +1,12 @@
 import { Dispatch, useState } from "react";
 import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas";
 import { AnalyzeContext, InputImage } from "./index";
-import { Analyzer, AnalyzeResult, newWorker, ObjectKeyMap } from "../analyzing";
+import { Analyzer, AnalyzeResult, newWorker } from "../analyzing";
 import { Button, Dialog } from "../ui";
 import { WorkerApi } from "../worker";
 import { OptionsKey } from "../form";
-import { useProgress } from "../utils";
+import { getMetricsMeta } from "../measurement";
+import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
 import WorkerPool from "../WorkerPool";
 import CompareDialog from "./CompareDialog";
@@ -93,7 +94,7 @@ export default function CompareSession(props: CompareSessionProps) {
 		const seriesMeta = [
 			{ key: "ratio", name: "Compression Ratio %" },
 		];
-		const { calculations, metricsMeta } = analyzer.getMetricsMeta();
+		const { calculations, metricsMeta } = getMetricsMeta(measure);
 		seriesMeta.push(...metricsMeta);
 
 		setWorkers(pool);
@@ -106,7 +107,7 @@ export default function CompareSession(props: CompareSessionProps) {
 						id: "i",
 						label: "Index",
 						min: 0,
-						max: data.changed.length-1,
+						max: data.changed.length - 1,
 						step: 1,
 					}),
 				],

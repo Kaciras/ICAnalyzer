@@ -1,10 +1,11 @@
 import { Dispatch, useState } from "react";
-import { Analyzer, AnalyzeResult, newWorker, ObjectKeyMap } from "../analyzing";
+import { Analyzer, AnalyzeResult, newWorker } from "../analyzing";
 import { ENCODERS, ImageEncoder } from "../codecs";
 import WorkerPool from "../WorkerPool";
 import { WorkerApi } from "../worker";
 import { OptionsKey, OptionsKeyPair } from "../form";
-import { useProgress } from "../utils";
+import { getMetricsMeta } from "../measurement";
+import { ObjectKeyMap, useProgress } from "../utils";
 import { AnalyzeContext, ControlsMap, InputImage, MetricMeta } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
@@ -76,12 +77,12 @@ export default function CompressSession(props: CompressSessionProps) {
 			{ key: "ratio", name: "Compression Ratio %" },
 		];
 
-		const { calculations, metricsMeta } = analyzer.getMetricsMeta();
+		const { calculations, metricsMeta } = getMetricsMeta(measure);
 		let taskCount = taskQueue.reduce((s, c) => s + c.optionsList.length, 0);
 		taskCount *= (1 + calculations);
 		seriesMeta.push(...metricsMeta);
 
-		if (measure.time) {
+		if (measure.encodeTime.enabled) {
 			seriesMeta.push({ key: "time", name: "Encode Time (s)" });
 			taskCount += measure.workerCount;
 		}
@@ -94,7 +95,7 @@ export default function CompressSession(props: CompressSessionProps) {
 			await analyzer.setOriginalImage(input);
 
 			// Warmup workers to avoid disturbance of initialize time
-			if (measure.time) {
+			if (measure.encodeTime.enabled) {
 				for (const { encoder, optionsList } of taskQueue) {
 					const { options } = optionsList[0];
 					await pool.runOnEach(r => encoder.encode(options, r).then(progress.increase));
