@@ -13,7 +13,7 @@
 		"compile-wasm": "emcc -O3 --bind --closure 1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -I deps/butteraugli -I src src/butteraugli.cpp deps/butteraugli/butteraugli/butteraugli.cc -o lib/diff.js",
 		"dev": "webpack-cli serve",
 		"test": "jest",
-		"build": "webpack --env production"
+		"build": "webpack --env production --env report"
 	},
 	"dependencies": {
 		"@sentry/react": "^6.11.0",

@@ -16,6 +16,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 // css-minimizer-webpack-plugin is ineffective (index.css 27898 bytes -> 27540 bytes), so we not use it.
 
 module.exports = (env) => {
+	const shouldReport = Boolean(env?.report);
 	const isProd = Boolean(env?.production);
 	const isDevelopment = !isProd;
 
@@ -106,13 +107,13 @@ module.exports = (env) => {
 
 		new HtmlPlugin({ template: "web/index.html" }),
 
-		isProd && new BundleAnalyzerPlugin({
+		shouldReport && new BundleAnalyzerPlugin({
 			openAnalyzer: false,
 			analyzerMode: "static",
 		}),
 
 		isProd && new MiniCssExtractPlugin({
-			filename: "[name].[contenthash:5].css",
+			filename: "s/[name].css",
 		}),
 
 		isDevelopment && new ReactRefreshPlugin(),
@@ -125,7 +126,8 @@ module.exports = (env) => {
 			index: "./web/index",
 		},
 		output: {
-			assetModuleFilename: "[name].[hash:5][ext][query]",
+			filename: "s/[name].js",
+			assetModuleFilename: "s/[name][ext]",
 			clean: true,
 		},
 		devtool: isProd ? "source-map" : "cheap-module-source-map",
