@@ -8,8 +8,8 @@ import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPane
 import styles from "./ConfigDialog.scss";
 
 export interface AnalyzeConfig {
-	measure: MeasureOptions;
 	encoding: EncodingOptions;
+	measurement: MeasureOptions;
 }
 
 export interface ConfigDialogProps {
@@ -31,12 +31,12 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 
 	const [index, setIndex] = useState(0);
 	const [encoding, setEncoding] = useState(loadOptions("Encoding", getEncodingOptions));
-	const [measure, setMeasure] = useState(loadOptions("Measure", getMeasureOptions));
+	const [measurement, setMeasurement] = useState(loadOptions("Measure", getMeasureOptions));
 
 	function start() {
-		onStart({ encoding, measure });
+		onStart({ encoding, measurement });
 		localStorage.setItem("Encoding", JSON.stringify(encoding));
-		localStorage.setItem("Measure", JSON.stringify(measure));
+		localStorage.setItem("Measure", JSON.stringify(measurement));
 	}
 
 	const ready = image && Object.values(encoding).some(e => e.enable);
@@ -67,8 +67,8 @@ export default function ConfigDialog(props: ConfigDialogProps) {
 				/>
 				<MeasurePanel
 					hasEncodePhase={true}
-					value={measure}
-					onChange={setMeasure}
+					value={measurement}
+					onChange={setMeasurement}
 				/>
 			</TabSwitch>
 

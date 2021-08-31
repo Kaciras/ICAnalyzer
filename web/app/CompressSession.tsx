@@ -1,39 +1,16 @@
 import { Dispatch, useState } from "react";
-import { Analyzer, AnalyzeResult, newWorker } from "../analyzing";
-import { ENCODERS, ImageEncoder } from "../codecs";
+import { AnalyzeResult, initialize, newWorker } from "../analyzing";
+import { ENCODERS } from "../codecs";
 import WorkerPool from "../WorkerPool";
 import { WorkerApi } from "../worker";
-import { OptionsKey, OptionsKeyPair } from "../form";
-import { getMetricsMeta } from "../measurement";
+import { OptionsKey } from "../form";
+import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import { AnalyzeContext, ControlsMap, InputImage, MetricMeta } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
-import { EncodingOptions } from "./EncoderPanel";
-
-interface EncodeTask {
-	encoder: ImageEncoder;
-	optionsList: OptionsKeyPair[];
-}
-
-function getTasks(encoding: EncodingOptions) {
-	const controlsMap: ControlsMap = {};
-	const taskQueue: EncodeTask[] = [];
-
-	for (const encoder of ENCODERS) {
-		const { name } = encoder;
-		const { enable, state } = encoding[name];
-		if (!enable) {
-			continue;
-		}
-		controlsMap[name] = encoder.getControls(state);
-		const optionsList = encoder.getOptionsList(state);
-		taskQueue.push({ encoder, optionsList });
-	}
-
-	return { controlsMap, taskQueue };
-}
+import { decode } from "../decode";
 
 interface CompressSessionProps {
 	isOpen: boolean;
@@ -65,64 +42,66 @@ export default function CompressSession(props: CompressSessionProps) {
 			throw new Error("File is null");
 		}
 		const { file } = input;
-		const { encoding, measure } = config;
+		const { encoding, measurement } = config;
 
-		const { controlsMap, taskQueue } = getTasks(encoding);
+		const pool = new WorkerPool<WorkerApi>(newWorker, measurement.workerCount);
+		await initialize(pool, input);
 
+		const controlsMap: ControlsMap = {};
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
-		const analyzer = new Analyzer(pool, measure);
+		const tasks: Array<Promise<void>> = [];
+		const aTasks : Array<Promise<any>> = [];
 
-		const seriesMeta: MetricMeta[] = [
-			{ key: "ratio", name: "Compression Ratio %" },
-		];
+		for (const encoder of ENCODERS) {
+			const { name } = encoder;
+			const { enable, state } = encoding[name];
+			if (!enable) {
+				continue;
+			}
+			const filename = file.name.replace(/.[^.]*$/, `.${encoder.extension}`);
+			controlsMap[name] = encoder.getControls(state);
+			const optionsList = encoder.getOptionsList(state);
 
-		const { calculations, metricsMeta } = getMetricsMeta(measure);
-		let taskCount = taskQueue.reduce((s, c) => s + c.optionsList.length, 0);
+			// Warmup workers to reduce disturbance of initialize time
+			// if (measurement.encodeTime.enabled) {
+			// 	const { options } = optionsList[0];
+			// 	await pool.runOnEach(r => encoder.encode(options, r));
+			// }
+
+			for (const { key, options } of optionsList) {
+				tasks.push(pool.run(async worker => {
+					const { buffer, time } = await encoder.encode(options, worker);
+					const file = new File([buffer], filename, { type: encoder.mimeType });
+					progress.increase();
+
+					const output: AnalyzeResult = {
+						file,
+						data: await decode(file, worker),
+						metrics: { time },
+					};
+					aTasks.push(measure(measurement, pool, output, progress.increase));
+					outputMap.set({ codec: encoder.name, key }, output);
+				}));
+			}
+		}
+
+		const { calculations, metricsMeta } = getMetricsMeta(measurement);
+		let taskCount = tasks.length;
 		taskCount *= (1 + calculations);
+
+		const seriesMeta: MetricMeta[] = [];
 		seriesMeta.push(...metricsMeta);
 
-		if (measure.encodeTime.enabled) {
+		if (measurement.encodeTime.enabled) {
 			seriesMeta.push({ key: "time", name: "Encode Time (s)" });
-			taskCount += measure.workerCount;
+			taskCount += measurement.workerCount;
 		}
 
 		progress.reset(taskCount);
 		setEncoder(pool);
-		analyzer.onProgress = progress.increase;
-
 		try {
-			await analyzer.setOriginalImage(input);
-
-			// Warmup workers to avoid disturbance of initialize time
-			if (measure.encodeTime.enabled) {
-				for (const { encoder, optionsList } of taskQueue) {
-					const { options } = optionsList[0];
-					await pool.runOnEach(r => encoder.encode(options, r).then(progress.increase));
-				}
-			}
-
-			for (const { encoder, optionsList } of taskQueue) {
-				const filename = file.name.replace(/.[^.]*$/, `.${encoder.extension}`);
-
-				for (const { key, options } of optionsList) {
-
-					// noinspection ES6MissingAwait
-					pool.run(async r => {
-						const { buffer, data, time } = await analyzer.encode(r, encoder, options);
-						const ratio = buffer.byteLength / file.size * 100;
-
-						const output: AnalyzeResult = {
-							file: new File([buffer], filename, { type: encoder.mimeType }),
-							data,
-							metrics: { time, ratio },
-						};
-						analyzer.measure(output);
-						outputMap.set({ codec: encoder.name, key }, output);
-					});
-				}
-			}
-			await pool.join();
+			await Promise.all(tasks);
+			await Promise.all(aTasks);
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
