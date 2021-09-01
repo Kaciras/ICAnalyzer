@@ -1,6 +1,7 @@
+import { Remote } from "comlink";
+import { NOOP } from "./utils";
 import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
-import { Remote } from "comlink";
 
 export interface AnalyzeResult {
 	data: ImageData;
@@ -42,4 +43,39 @@ export function newImagePool(size: number, image: ImageData): Promise<ImagePool>
 		image = share(image);
 	}
 	return pool.runOnEach(r => r.setOriginal(image)).then(() => pool);
+}
+
+class PooledWorkerHandler<T extends Record<string, any>> implements ProxyHandler<T> {
+
+	private readonly workerPool: WorkerPool<T>;
+
+	constructor(workerPool: WorkerPool<T>) {
+		this.workerPool = workerPool;
+	}
+
+	get(target: T, property: string) {
+		return new Proxy(target, new InvokeHandler(this.workerPool, property));
+	}
+}
+
+class InvokeHandler<T extends Record<string, any>> implements ProxyHandler<T> {
+
+	private readonly workerPool: WorkerPool<T>;
+	private readonly method: string;
+
+	constructor(workerPool: WorkerPool<T>, method: string) {
+		this.workerPool = workerPool;
+		this.method = method;
+	}
+
+	apply(target: T, thisArg: any, argArray: any[]) {
+		const { workerPool, method } = this;
+		return workerPool.run(worker => worker[method](...argArray));
+	}
+}
+
+export function getPooledWorker<T>(workerPool: WorkerPool<T>) {
+
+	// The target must be a function, see https://stackoverflow.com/a/32360219
+	return new Proxy(NOOP as any, new PooledWorkerHandler(workerPool)) as Remote<T>;
 }

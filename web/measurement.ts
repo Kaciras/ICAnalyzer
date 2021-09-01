@@ -2,7 +2,7 @@ import * as SSIM from "ssim.js";
 import { ButteraugliOptions } from "../lib/diff";
 import { MetricMeta } from "./app";
 import { AnalyzeResult } from "./analyzing";
-import { ImagePool, ImageWorker } from "./image-worker";
+import { ImageWorker } from "./image-worker";
 
 interface SimpleField {
 	enabled: boolean;
@@ -65,7 +65,7 @@ export function getMetricsMeta(options: MeasureOptions) {
 
 export function measure(
 	config: MeasureOptions,
-	pool: ImagePool,
+	worker: ImageWorker,
 	result: AnalyzeResult,
 	onProgress: () => void,
 ) {
@@ -80,7 +80,7 @@ export function measure(
 		if (!enabled) {
 			continue;
 		}
-		const t = pool.run(w => handlers[id].calc(w, result, options));
+		const t = handlers[id].calc(worker, result, options);
 		if (t.then) {
 			tasks.push(t.then(onProgress));
 		}

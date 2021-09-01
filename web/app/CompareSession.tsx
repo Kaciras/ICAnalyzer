@@ -5,7 +5,7 @@ import { Button, Dialog } from "../ui";
 import { ImageWorkerApi } from "../worker";
 import { OptionsKey } from "../form";
 import RangeControl from "../form/RangeControl";
-import { AnalyzeResult, newImagePool } from "../image-worker";
+import { AnalyzeResult, getPooledWorker, newImagePool } from "../image-worker";
 import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
@@ -63,7 +63,20 @@ export default function CompareSession(props: CompareSessionProps) {
 
 		localStorage.setItem("Measure", JSON.stringify(measureOptions));
 
+		const controlsMap = {
+			_: [
+				new RangeControl({
+					id: "i",
+					label: "Index",
+					min: 0,
+					max: data.changed.length - 1,
+					step: 1,
+				}),
+			],
+		};
+
 		const pool = await newImagePool(measureOptions.workerCount, original.raw);
+		const worker = getPooledWorker(pool);
 
 		const seriesMeta = [];
 		const { calculations, metricsMeta } = getMetricsMeta(measureOptions);
@@ -76,13 +89,12 @@ export default function CompareSession(props: CompareSessionProps) {
 			const { raw, file } = changed[i];
 			const imageB = resizeToFit(raw, original.raw);
 
-			const ratio = file.size / original.file.size * 100;
 			const output: AnalyzeResult = {
 				file,
 				data: imageB,
-				metrics: { ratio },
+				metrics: {},
 			};
-			tasks.push(measure(measureOptions, pool, output, progress.increase));
+			tasks.push(measure(measureOptions, worker, output, progress.increase));
 			outputMap.set({ codec: "_", key: { i } }, output);
 		}
 
@@ -90,18 +102,6 @@ export default function CompareSession(props: CompareSessionProps) {
 		progress.reset(1 + calculations);
 		try {
 			await Promise.all(tasks);
-
-			const controlsMap = {
-				_: [
-					new RangeControl({
-						id: "i",
-						label: "Index",
-						min: 0,
-						max: data.changed.length - 1,
-						step: 1,
-					}),
-				],
-			};
 
 			if (!pool.terminated) {
 				setWorkers(undefined);

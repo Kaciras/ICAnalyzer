@@ -1,7 +1,7 @@
 import { Dispatch, useState } from "react";
 import { ENCODERS } from "../codecs";
 import { decode } from "../decode";
-import { AnalyzeResult, ImagePool, newImagePool } from "../image-worker";
+import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool } from "../image-worker";
 import { OptionsKey } from "../form";
 import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
@@ -43,11 +43,11 @@ export default function CompressSession(props: CompressSessionProps) {
 		const { encoding, measurement } = config;
 
 		const pool = await newImagePool(measurement.workerCount, input.raw);
+		const worker = getPooledWorker(pool);
 
 		const controlsMap: ControlsMap = {};
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 		const tasks: Array<Promise<void>> = [];
-		const aTasks : Array<Promise<any>> = [];
 
 		for (const encoder of ENCODERS) {
 			const { name } = encoder;
@@ -65,21 +65,23 @@ export default function CompressSession(props: CompressSessionProps) {
 			// 	await pool.runOnEach(r => encoder.encode(options, r));
 			// }
 
-			for (const { key, options } of optionsList) {
-				tasks.push(pool.run(async worker => {
-					const { buffer, time } = await encoder.encode(options, worker);
-					const file = new File([buffer], filename, { type: encoder.mimeType });
-					progress.increase();
+			const tasksForImage = optionsList.map(async item => {
+				const { key, options } = item;
+				const { buffer, time } = await encoder.encode(options, worker);
 
-					const output: AnalyzeResult = {
-						file,
-						data: await decode(file, worker),
-						metrics: { time },
-					};
-					aTasks.push(measure(measurement, pool, output, progress.increase));
-					outputMap.set({ codec: encoder.name, key }, output);
-				}));
-			}
+				const file = new File([buffer], filename, { type: encoder.mimeType });
+				progress.increase();
+
+				const output: AnalyzeResult = {
+					file,
+					data: await decode(file, worker),
+					metrics: { time },
+				};
+				await measure(measurement, worker, output, progress.increase);
+				outputMap.set({ codec: encoder.name, key }, output);
+			});
+
+			tasks.push(...tasksForImage);
 		}
 
 		const { calculations, metricsMeta } = getMetricsMeta(measurement);
@@ -98,7 +100,6 @@ export default function CompressSession(props: CompressSessionProps) {
 		setEncoder(pool);
 		try {
 			await Promise.all(tasks);
-			await Promise.all(aTasks);
 
 			if (!pool.terminated) {
 				setEncoder(undefined);
