@@ -3,9 +3,9 @@ import { ENCODERS } from "../codecs";
 import { decode } from "../decode";
 import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool, setOriginalImage } from "../image-worker";
 import { OptionsKey } from "../form";
-import { getMetricsMeta, measure } from "../measurement";
+import { prepareMeasure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
-import { AnalyzeContext, ControlsMap, InputImage, MetricMeta } from ".";
+import { AnalyzeContext, ControlsMap, InputImage } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
@@ -48,9 +48,14 @@ export default function CompressSession(props: CompressSessionProps) {
 		await setOriginalImage(pool, input);
 		const worker = getPooledWorker(pool);
 
+		const { calculations, metricsMeta, execute } = prepareMeasure(input, measurement);
+		if (measurement.encodeTime.enabled) {
+			metricsMeta.push({ key: "time", name: "Encode Time (s)" });
+		}
+
 		const controlsMap: ControlsMap = {};
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-		let encodeTaskCount = 0;
+		const tasks = [];
 
 		for (const encoder of ENCODERS) {
 			const { name } = encoder;
@@ -62,15 +67,8 @@ export default function CompressSession(props: CompressSessionProps) {
 			controlsMap[name] = encoder.getControls(state);
 			const optionsList = encoder.getOptionsList(state);
 
-			encodeTaskCount += optionsList.length;
-			// Warmup workers to reduce disturbance of initialize time
-			// if (measurement.encodeTime.enabled) {
-			// 	const { options } = optionsList[0];
-			// 	await pool.runOnEach(r => encoder.encode(options, r));
-			// }
 
-			// noinspection ES6MissingAwait
-			optionsList.forEach(async item => {
+			tasks.push(...optionsList.map(async item => {
 				const { key, options } = item;
 				const { buffer, time } = await encoder.encode(options, worker);
 
@@ -83,30 +81,19 @@ export default function CompressSession(props: CompressSessionProps) {
 					metrics: { time },
 				};
 				outputMap.set({ codec: encoder.name, key }, output);
-				measure(measurement, worker, output, progress.increase);
-			});
+				await execute(worker, output, progress.increase);
+			}));
 		}
 
-		const { calculations, metricsMeta } = getMetricsMeta(measurement);
-		let taskCount = encodeTaskCount;
-		taskCount *= (1 + calculations);
+		progress.reset(tasks.length * (1 + calculations));
 
-		const seriesMeta: MetricMeta[] = [];
-		seriesMeta.push(...metricsMeta);
-
-		if (measurement.encodeTime.enabled) {
-			seriesMeta.push({ key: "time", name: "Encode Time (s)" });
-			taskCount += measurement.workerCount;
-		}
-
-		progress.reset(taskCount);
 		try {
-			await pool.join();
+			await Promise.all(tasks);
 			setEncoder(undefined);
 			onChange({
 				input,
 				controlsMap,
-				seriesMeta,
+				seriesMeta: metricsMeta,
 				outputMap,
 			});
 		} catch (e) {

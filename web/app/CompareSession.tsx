@@ -6,7 +6,7 @@ import { ImageWorkerApi } from "../worker";
 import { OptionsKey } from "../form";
 import RangeControl from "../form/RangeControl";
 import { AnalyzeResult, getPooledWorker, newImagePool, setOriginalImage } from "../image-worker";
-import { getMetricsMeta, measure } from "../measurement";
+import { prepareMeasure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
 import WorkerPool from "../WorkerPool";
@@ -82,7 +82,7 @@ export default function CompareSession(props: CompareSessionProps) {
 		const worker = getPooledWorker(pool);
 
 		const seriesMeta = [];
-		const { calculations, metricsMeta } = getMetricsMeta(measureOptions);
+		const { calculations, metricsMeta, execute } = prepareMeasure(original, measureOptions);
 		seriesMeta.push(...metricsMeta);
 
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
@@ -99,7 +99,7 @@ export default function CompareSession(props: CompareSessionProps) {
 			outputMap.set({ codec: "_", key: { i } }, output);
 
 			// noinspection ES6MissingAwait
-			measure(measureOptions, worker, output, progress.increase);
+			execute(worker, output, progress.increase);
 		}
 
 		progress.reset(1 + calculations);

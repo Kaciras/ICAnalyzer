@@ -1,8 +1,7 @@
 import * as SSIM from "ssim.js";
 import { ButteraugliOptions } from "../lib/diff";
-import { MetricMeta } from "./app";
-import { AnalyzeResult } from "./analyzing";
-import { ImageWorker } from "./image-worker";
+import { AnalyzeResult, ImageWorker } from "./image-worker";
+import { InputImage } from "./app";
 
 interface SimpleField {
 	enabled: boolean;
@@ -40,92 +39,86 @@ function rgbaToImage(buffer: ArrayBufferLike, width: number, height: number) {
 	return imageData;
 }
 
-export function getMetricsMeta(options: MeasureOptions) {
-	const { SSIM, PSNR, butteraugli } = options;
-	let calculations = 0;
-
-	const metricsMeta: MetricMeta[] = [
-		// { key: "ratio", name: "Compression Ratio %" },
-	];
-	if (PSNR.enabled) {
-		calculations++;
-		metricsMeta.push({ key: "PSNR", name: "PSNR (db)" });
-	}
-	if (SSIM.enabled) {
-		calculations++;
-		metricsMeta.push({ key: "SSIM", name: "SSIM %" });
-	}
-	if (butteraugli.enabled) {
-		calculations++;
-		metricsMeta.push({ key: "butteraugli", name: "Butteraugli Score" });
-	}
-
-	return { calculations, metricsMeta };
+interface BoundCalc {
+	options: any;
+	calc: Handler["calc"];
 }
 
-export function measure(
-	config: MeasureOptions,
-	worker: ImageWorker,
-	result: AnalyzeResult,
-	onProgress: () => void,
-) {
-	const tasks = [];
+export function prepareMeasure(original: InputImage, config: MeasureOptions) {
+	const metricsMeta = [];
+	const used: BoundCalc[] = [];
 
-	for (const id of Object.keys(handlers)) {
-		const a = config[id];
-		if (typeof a !== "object") {
-			continue;
-		}
-		const { enabled, options } = a;
+	let calculations = 0;
+
+	for (const key of Object.keys(handlers)) {
+		const { enabled, options } = (config as any)[key] ?? { enabled: true };
 		if (!enabled) {
 			continue;
 		}
-		const t = handlers[id].calc(worker, result, options);
-		if (t.then) {
-			tasks.push(t.then(onProgress));
+		const { name, calc, immediately } = handlers[key];
+		if (!immediately) {
+			calculations++;
 		}
+		used.push({ calc, options });
+		metricsMeta.push({ key, name });
 	}
 
-	return Promise.all(tasks);
+	function execute(worker: ImageWorker, result: AnalyzeResult, onProgress: () => void) {
+		const tasks = used
+			.map(b => b.calc(worker, original, result, b.options))
+			.filter(Boolean)
+
+			// @ts-ignore
+			.map(promise => promise.then(onProgress));
+
+		return Promise.all(tasks);
+	}
+
+	return { calculations, metricsMeta, execute };
 }
 
 interface Handler {
 	name: string;
 	immediately?: boolean;
 
-	calc(worker: ImageWorker, result: AnalyzeResult, options: any): void | Promise<void>;
+	calc(
+		worker: ImageWorker,
+		original: InputImage,
+		result: AnalyzeResult,
+		options: any
+	): void | Promise<void>;
 }
 
 const handlers: Record<string, Handler> = {
 	ratio: {
 		name: "Compression Ratio %",
 		immediately: true,
-		calc(worker, result) {
-			const { metrics, data, file } = result;
-			metrics.ratio = data.data.byteLength / file.size * 100;
+		calc(worker, original, result) {
+			const { metrics, file } = result;
+			metrics.ratio = file.size / original.file.size * 100;
 		},
 	},
 	SSIM: {
 		name: "SSIM %",
-		async calc(worker, result, options) {
+		async calc(worker, original, result, options) {
 			const { data, metrics } = result;
 			metrics.SSIM = await worker.calcSSIM(data, options) * 100;
 		},
 	},
 	PSNR: {
 		name: "PSNR (db)",
-		async calc(worker, result) {
+		async calc(worker, original, result) {
 			const { data, metrics } = result;
 			metrics.PSNR = await worker.calcPSNR(data);
 		},
 	},
 	butteraugli: {
 		name: "Butteraugli Score",
-		async calc(r, result, options) {
+		async calc(worker, original, result, options) {
 			const { data, metrics } = result;
 			const { width, height } = data;
 
-			const { score, heatMap } = await r.calcButteraugli(data, options);
+			const { score, heatMap } = await worker.calcButteraugli(data, options);
 			metrics.butteraugli = score;
 			result.heatMap = rgbaToImage(heatMap, width, height);
 		},
