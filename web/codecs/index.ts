@@ -1,7 +1,8 @@
 import { Dispatch } from "react";
 import { Remote } from "comlink";
 import { ControlType, OptionsKeyPair } from "../form";
-import { WorkerApi } from "../worker";
+import { ImageWorkerApi } from "../worker";
+import { EncodeResult } from "./common";
 import * as MozJPEG from "./mozjpeg/client";
 import * as JXL from "./jxl/client";
 import * as WebP from "./webp/client";
@@ -12,11 +13,6 @@ export interface EncoderState {
 	varNames: string[];
 	values: Record<string, unknown>;
 	ranges: Record<string, unknown>;
-}
-
-export interface EncodeResult {
-	time: number;
-	buffer: ArrayBuffer;
 }
 
 export interface OptionPanelProps {
@@ -37,7 +33,7 @@ export interface ImageEncoder {
 
 	getControls(state: EncoderState): ControlType[];
 
-	encode(options: any, worker: Remote<WorkerApi>): Promise<EncodeResult>;
+	encode(options: any, worker: Remote<ImageWorkerApi>): Promise<EncodeResult>;
 }
 
 export const ENCODERS: ImageEncoder[] = [MozJPEG, JXL, WebP, AVIF, WebP2];

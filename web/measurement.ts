@@ -44,8 +44,8 @@ interface BoundCalc {
 	calc: Handler["calc"];
 }
 
-export function prepareMeasure(original: InputImage, config: MeasureOptions) {
-	const metricsMeta = [];
+export function createMeasurer(original: InputImage, config: MeasureOptions) {
+	const metrics = [];
 	const used: BoundCalc[] = [];
 
 	let calculations = 0;
@@ -60,7 +60,7 @@ export function prepareMeasure(original: InputImage, config: MeasureOptions) {
 			calculations++;
 		}
 		used.push({ calc, options });
-		metricsMeta.push({ key, name });
+		metrics.push({ key, name });
 	}
 
 	function execute(worker: ImageWorker, result: AnalyzeResult, onProgress: () => void) {
@@ -74,7 +74,7 @@ export function prepareMeasure(original: InputImage, config: MeasureOptions) {
 		return Promise.all(tasks);
 	}
 
-	return { calculations, metricsMeta, execute };
+	return { calculations, metrics, execute };
 }
 
 interface Handler {

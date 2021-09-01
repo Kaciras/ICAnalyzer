@@ -37,7 +37,7 @@ export async function getFileFromUrl(url: string, signal?: AbortSignal) {
 	const response = await fetch(url, { signal });
 	const blob = await response.blob();
 
-	const name = new URL(url).pathname.split("/").pop() || "image";
+	const name = new URL(url).pathname.split("/").pop() || "download";
 
 	const timeHeader = response.headers.get("last-modified");
 	const lastModified = timeHeader ? new Date(timeHeader).getTime() : undefined;

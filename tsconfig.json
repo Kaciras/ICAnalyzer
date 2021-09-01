@@ -1,8 +1,11 @@
 {
+	"exclude": [
+		"node_modules",
+		"deps"
+	],
 	"compilerOptions": {
 		"target": "ESNext",
 		"lib": [
-			"ESNext",
 			"DOM",
 			"DOM.Iterable",
 			"WebWorker"
@@ -14,14 +17,12 @@
 		"newLine": "LF",
 		"sourceMap": true,
 		"strict": true,
+		"useUnknownInCatchVariables": false,
 		"esModuleInterop": true,
 		"removeComments": true,
+		"baseUrl": ".",
 		"paths": {
 			"squoosh/*": ["./deps/squoosh/*"]
 		}
-	},
-	"exclude": [
-		"deps",
-		"node_modules"
-	]
+	}
 }

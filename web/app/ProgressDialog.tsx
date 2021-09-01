@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Dialog } from "../ui";
 import styles from "./ProgressDialog.scss";
 
-interface ProgressPanelProps {
+interface ProgressDialogProps {
 	error?: string;
 	max: number;
 	value: number;
 	onCancel: () => void;
 }
 
-export default function ProgressDialog(props: ProgressPanelProps) {
-	const { error, value, max, onCancel } = props;
+export default function ProgressDialog(props: ProgressDialogProps) {
+	const { value, max, error, onCancel } = props;
 
 	const startTime = useRef(performance.now());
 	const [timeUsage, setTimeUsage] = useState("--:--:--");
@@ -31,7 +31,7 @@ export default function ProgressDialog(props: ProgressPanelProps) {
 	return (
 		<Dialog onClose={onCancel}>
 			<div className={styles.content}>
-				<h1>Encoding...</h1>
+				<h1>Analyzing...</h1>
 
 				{error && <p className={styles.error}>Error: {error}</p>}
 

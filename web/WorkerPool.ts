@@ -22,14 +22,14 @@ interface WorkerJob<T> {
  */
 export default class WorkerPool<T> {
 
-	terminated = false;
-
 	private readonly workers: Worker[];
 	private readonly remotes: Array<Remote<T>>;
 
 	private readonly waiters: PromiseController[] = [];
 
 	private readonly queue: Array<WorkerJob<T>> = [];
+
+	terminated = false;
 
 	constructor(factory: WorkerFactory, size: number) {
 		if (size < 1) {
@@ -88,7 +88,7 @@ export default class WorkerPool<T> {
 	}
 
 	private async runJob(remote: Remote<T>, job: WorkerJob<T>): Promise<void> {
-		const { remotes, waiters } = this;
+		const { queue, remotes, waiters } = this;
 		const { task, resolve, reject } = job;
 
 		try {
@@ -98,7 +98,7 @@ export default class WorkerPool<T> {
 			waiters.splice(0, waiters.length).forEach(p => p.reject(e));
 		}
 
-		const next = this.queue.pop();
+		const next = queue.pop();
 		if (next) {
 			return this.runJob(remote, next);
 		}

@@ -6,7 +6,7 @@ import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button, DownloadButton } from "../ui";
 import { OptionsKey } from "../form";
 import { getEncoderNames } from "../codecs";
-import { AnalyzeResult } from "../analyzing";
+import { AnalyzeResult } from "../image-worker";
 import { AnalyzeContext, ControlsMap, MetricMeta } from "./index";
 import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";

@@ -3,7 +3,7 @@ import { ENCODERS } from "../codecs";
 import { decode } from "../decode";
 import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool, setOriginalImage } from "../image-worker";
 import { OptionsKey } from "../form";
-import { prepareMeasure } from "../measurement";
+import { createMeasurer } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import { AnalyzeContext, ControlsMap, InputImage } from ".";
 import SelectFileDialog from "./SelectFileDialog";
@@ -48,9 +48,9 @@ export default function CompressSession(props: CompressSessionProps) {
 		await setOriginalImage(pool, input);
 		const worker = getPooledWorker(pool);
 
-		const { calculations, metricsMeta, execute } = prepareMeasure(input, measurement);
+		const measurer = createMeasurer(input, measurement);
 		if (measurement.encodeTime.enabled) {
-			metricsMeta.push({ key: "time", name: "Encode Time (s)" });
+			measurer.metrics.push({ key: "time", name: "Encode Time (s)" });
 		}
 
 		const controlsMap: ControlsMap = {};
@@ -67,7 +67,6 @@ export default function CompressSession(props: CompressSessionProps) {
 			controlsMap[name] = encoder.getControls(state);
 			const optionsList = encoder.getOptionsList(state);
 
-
 			tasks.push(...optionsList.map(async item => {
 				const { key, options } = item;
 				const { buffer, time } = await encoder.encode(options, worker);
@@ -81,11 +80,11 @@ export default function CompressSession(props: CompressSessionProps) {
 					metrics: { time },
 				};
 				outputMap.set({ codec: encoder.name, key }, output);
-				await execute(worker, output, progress.increase);
+				await measurer.execute(worker, output, progress.increase);
 			}));
 		}
 
-		progress.reset(tasks.length * (1 + calculations));
+		progress.reset(tasks.length * (1 + measurer.calculations));
 
 		try {
 			await Promise.all(tasks);
@@ -93,7 +92,7 @@ export default function CompressSession(props: CompressSessionProps) {
 			onChange({
 				input,
 				controlsMap,
-				seriesMeta: metricsMeta,
+				seriesMeta: measurer.metrics,
 				outputMap,
 			});
 		} catch (e) {

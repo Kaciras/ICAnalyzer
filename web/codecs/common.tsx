@@ -88,6 +88,11 @@ export interface EncodeModule<T> {
 	encode(data: BufferSource, width: number, height: number, options: T): Uint8Array | null;
 }
 
+export interface EncodeResult {
+	time: number;
+	buffer: ArrayBufferLike;
+}
+
 export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
 	let loadModuleTask: Promise<EncodeModule<T>> | undefined;
 
@@ -103,7 +108,7 @@ export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
 			throw new Error("Encoding error");
 		}
 
-		const result = {
+		const result: EncodeResult = {
 			time: (end - start) / 1000,
 			buffer: output.buffer,
 		};

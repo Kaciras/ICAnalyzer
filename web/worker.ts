@@ -2,6 +2,7 @@ import * as Comlink from "comlink";
 import * as Similarity from "../lib/similarity";
 import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../lib/similarity";
 import wasmUrl from "../lib/diff.wasm";
+import { EncodeResult } from "./codecs/common";
 import * as MozJPEG from "./codecs/mozjpeg/codec";
 import * as JXL from "./codecs/jxl/codec";
 import * as WebP from "./codecs/webp/codec";
@@ -14,7 +15,7 @@ let data: ImageData;
 let butteraugli: Butteraugli;
 
 interface CodecModule<T> {
-	encode(image: ImageData, options: T): Promise<{ buffer: ArrayBufferLike; time: number }>;
+	encode(image: ImageData, options: T): Promise<EncodeResult>;
 }
 
 function bindEncoder<T>(module: CodecModule<T>) {

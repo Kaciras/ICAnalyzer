@@ -1,8 +1,8 @@
-import { Remote, wrap } from "comlink";
+import { wrap } from "comlink";
 import { blobToImg, canDecodeImageType } from "squoosh/src/client/lazy-app/util";
 import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas";
-import { WorkerApi } from "./worker";
-import { newWorker } from "./analyzing";
+import { ImageWorkerApi } from "./worker";
+import { ImageWorker, workerFactory } from "./image-worker";
 
 export async function decodeImageNative(blob: Blob) {
 	const bitmap = "createImageBitmap" in self
@@ -55,7 +55,7 @@ export async function svgToImageData(svgXml: string) {
 	return drawableToImageData(await blobToImg(blob));
 }
 
-export async function decode(blob: Blob, worker?: Remote<WorkerApi>) {
+export async function decode(blob: Blob, worker?: ImageWorker) {
 	const { type } = blob;
 
 	if (type === "image/svg+xml") {
@@ -65,7 +65,7 @@ export async function decode(blob: Blob, worker?: Remote<WorkerApi>) {
 		return decodeImageNative(blob);
 	}
 
-	worker ??= wrap<WorkerApi>(newWorker());
+	worker ??= wrap<ImageWorkerApi>(workerFactory());
 	const buffer = await blob.arrayBuffer();
 	switch (type) {
 		case "image/webp":
