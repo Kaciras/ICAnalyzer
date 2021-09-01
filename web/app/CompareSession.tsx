@@ -5,7 +5,7 @@ import { Button, Dialog } from "../ui";
 import { ImageWorkerApi } from "../worker";
 import { OptionsKey } from "../form";
 import RangeControl from "../form/RangeControl";
-import { AnalyzeResult, getPooledWorker, newImagePool } from "../image-worker";
+import { AnalyzeResult, getPooledWorker, newImagePool, setOriginalImage } from "../image-worker";
 import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
@@ -75,7 +75,10 @@ export default function CompareSession(props: CompareSessionProps) {
 			],
 		};
 
-		const pool = await newImagePool(measureOptions.workerCount, original.raw);
+		const pool = newImagePool(measureOptions.workerCount);
+		setWorkers(pool);
+
+		await setOriginalImage(pool, original);
 		const worker = getPooledWorker(pool);
 
 		const seriesMeta = [];
@@ -83,7 +86,6 @@ export default function CompareSession(props: CompareSessionProps) {
 		seriesMeta.push(...metricsMeta);
 
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-		const tasks = [];
 
 		for (let i = 0; i < changed.length; i++) {
 			const { raw, file } = changed[i];
@@ -94,19 +96,22 @@ export default function CompareSession(props: CompareSessionProps) {
 				data: imageB,
 				metrics: {},
 			};
-			tasks.push(measure(measureOptions, worker, output, progress.increase));
 			outputMap.set({ codec: "_", key: { i } }, output);
+
+			// noinspection ES6MissingAwait
+			measure(measureOptions, worker, output, progress.increase);
 		}
 
-		setWorkers(pool);
 		progress.reset(1 + calculations);
 		try {
-			await Promise.all(tasks);
-
-			if (!pool.terminated) {
-				setWorkers(undefined);
-				onChange({ input: original, outputMap, seriesMeta, controlsMap });
-			}
+			await pool.join();
+			setWorkers(undefined);
+			onChange({
+				input: original,
+				outputMap,
+				seriesMeta,
+				controlsMap,
+			});
 		} catch (e) {
 			console.error(e);
 			setError(e.message);
@@ -135,7 +140,6 @@ export default function CompareSession(props: CompareSessionProps) {
 	if (workers) {
 		return (
 			<ProgressDialog
-				title="Analyzing"
 				value={progress.value}
 				max={progress.max}
 				error={error}

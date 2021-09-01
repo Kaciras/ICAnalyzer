@@ -2,6 +2,7 @@ import { Remote } from "comlink";
 import { NOOP } from "./utils";
 import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
+import { InputImage } from "./app";
 
 export interface AnalyzeResult {
 	data: ImageData;
@@ -19,7 +20,7 @@ export interface AnalyzeResult {
  * @param image original image data
  * @return the image data with shared
  */
-export function share(image: ImageData): ImageData {
+function share(image: ImageData): ImageData {
 	const { width, height, data } = image;
 	const buffer = new SharedArrayBuffer(data.byteLength);
 	const uint8Array = new Uint8ClampedArray(buffer);
@@ -36,13 +37,19 @@ export function workerFactory() {
 	return new Worker(new URL("./worker", import.meta.url));
 }
 
-export function newImagePool(size: number, image: ImageData): Promise<ImagePool> {
-	const pool = new WorkerPool<ImageWorkerApi>(workerFactory, size);
+export function newImagePool(size: number): ImagePool {
+	return new WorkerPool<ImageWorkerApi>(workerFactory, size);
+}
+
+export function setOriginalImage(pool: ImagePool, input: InputImage) {
+	const { raw } = input;
 
 	if ("SharedArrayBuffer" in window) {
-		image = share(image);
+		const shared = share(raw);
+		return pool.runOnEach(r => r.setOriginal(shared));
+	} else {
+		return pool.runOnEach(r => r.setOriginal(raw));
 	}
-	return pool.runOnEach(r => r.setOriginal(image)).then(() => pool);
 }
 
 class PooledWorkerHandler<T extends Record<string, any>> implements ProxyHandler<T> {

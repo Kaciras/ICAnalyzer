@@ -4,24 +4,32 @@ export type WorkerFactory = () => Worker;
 
 export type TaskFn<T, R> = (remote: Remote<T>) => Promise<R>;
 
+interface PromiseController {
+	resolve: () => void;
+	reject: (reason: any) => void;
+}
+
 interface WorkerJob<T> {
 	task: TaskFn<T, any>;
 	resolve: (value: any) => void;
+	reject: (reason: any) => void;
 }
 
-// Is a worker pool necessary? Multiple consumer cycles can also works.
+/**
+ * Executes each submitted task using one of possibly several pooled workers.
+ *
+ * The pool uses single task queue that may cause dead lock if schedule and wait a new task inside another.
+ */
 export default class WorkerPool<T> {
 
 	terminated = false;
 
-	private readonly queue: Array<WorkerJob<T>> = [];
-
-	private readonly waiters: Array<() => void> = [];
-
-	// Track workers for terminate
 	private readonly workers: Worker[];
-
 	private readonly remotes: Array<Remote<T>>;
+
+	private readonly waiters: PromiseController[] = [];
+
+	private readonly queue: Array<WorkerJob<T>> = [];
 
 	constructor(factory: WorkerFactory, size: number) {
 		if (size < 1) {
@@ -38,7 +46,7 @@ export default class WorkerPool<T> {
 	}
 
 	/**
-	 * Run a function with each worker.
+	 * Execute a function with each worker.
 	 *
 	 * @param fn Function
 	 */
@@ -47,21 +55,27 @@ export default class WorkerPool<T> {
 	}
 
 	run<R>(task: TaskFn<T, R>) {
-		return new Promise<R>(resolve => this.addJob({ task, resolve }));
+		return new Promise<R>((resolve, reject) => this.addJob({ task, resolve, reject }));
 	}
 
+	/**
+	 * Wait task queue for empty or an error occurred in tasks.
+	 */
 	join() {
-		const { queue, remotes, workers, waiters } = this;
-		if (queue.length === 0 && remotes.length === workers.length) {
+		const { queue, waiters } = this;
+		if (queue.length === 0 && this.allWorkerAreFree) {
 			return Promise.resolve();
 		}
-		return new Promise<void>(resolve => waiters.push(resolve));
+		return new Promise<void>((resolve, reject) => waiters.push({ resolve, reject }));
 	}
 
 	terminate() {
 		this.terminated = true;
 		this.workers.forEach(worker => worker.terminate());
-		this.waiters.forEach(resolve => resolve());
+	}
+
+	private get allWorkerAreFree() {
+		return this.remotes.length === this.workers.length;
 	}
 
 	private addJob(job: WorkerJob<T>) {
@@ -74,18 +88,25 @@ export default class WorkerPool<T> {
 	}
 
 	private async runJob(remote: Remote<T>, job: WorkerJob<T>): Promise<void> {
-		const { task, resolve } = job;
-		resolve(await task(remote));
+		const { remotes, waiters } = this;
+		const { task, resolve, reject } = job;
+
+		try {
+			resolve(await task(remote));
+		} catch (e) {
+			reject(e);
+			waiters.splice(0, waiters.length).forEach(p => p.reject(e));
+		}
 
 		const next = this.queue.pop();
 		if (next) {
 			return this.runJob(remote, next);
 		}
 
-		const { remotes, workers, waiters } = this;
 		remotes.push(remote);
-		if (remotes.length === workers.length) {
-			waiters.splice(0, waiters.length).forEach(resolve => resolve());
+
+		if (this.allWorkerAreFree) {
+			waiters.splice(0, waiters.length).forEach(p => p.resolve());
 		}
 	}
 }

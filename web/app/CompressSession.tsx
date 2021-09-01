@@ -1,7 +1,7 @@
 import { Dispatch, useState } from "react";
 import { ENCODERS } from "../codecs";
 import { decode } from "../decode";
-import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool } from "../image-worker";
+import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool, setOriginalImage } from "../image-worker";
 import { OptionsKey } from "../form";
 import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
@@ -42,12 +42,15 @@ export default function CompressSession(props: CompressSessionProps) {
 		const { file } = input;
 		const { encoding, measurement } = config;
 
-		const pool = await newImagePool(measurement.workerCount, input.raw);
+		const pool = newImagePool(measurement.workerCount);
+		setEncoder(pool);
+
+		await setOriginalImage(pool, input);
 		const worker = getPooledWorker(pool);
 
 		const controlsMap: ControlsMap = {};
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-		const tasks: Array<Promise<void>> = [];
+		let encodeTaskCount = 0;
 
 		for (const encoder of ENCODERS) {
 			const { name } = encoder;
@@ -59,13 +62,15 @@ export default function CompressSession(props: CompressSessionProps) {
 			controlsMap[name] = encoder.getControls(state);
 			const optionsList = encoder.getOptionsList(state);
 
+			encodeTaskCount += optionsList.length;
 			// Warmup workers to reduce disturbance of initialize time
 			// if (measurement.encodeTime.enabled) {
 			// 	const { options } = optionsList[0];
 			// 	await pool.runOnEach(r => encoder.encode(options, r));
 			// }
 
-			const tasksForImage = optionsList.map(async item => {
+			// noinspection ES6MissingAwait
+			optionsList.forEach(async item => {
 				const { key, options } = item;
 				const { buffer, time } = await encoder.encode(options, worker);
 
@@ -77,15 +82,13 @@ export default function CompressSession(props: CompressSessionProps) {
 					data: await decode(file, worker),
 					metrics: { time },
 				};
-				await measure(measurement, worker, output, progress.increase);
 				outputMap.set({ codec: encoder.name, key }, output);
+				measure(measurement, worker, output, progress.increase);
 			});
-
-			tasks.push(...tasksForImage);
 		}
 
 		const { calculations, metricsMeta } = getMetricsMeta(measurement);
-		let taskCount = tasks.length;
+		let taskCount = encodeTaskCount;
 		taskCount *= (1 + calculations);
 
 		const seriesMeta: MetricMeta[] = [];
@@ -97,14 +100,15 @@ export default function CompressSession(props: CompressSessionProps) {
 		}
 
 		progress.reset(taskCount);
-		setEncoder(pool);
 		try {
-			await Promise.all(tasks);
-
-			if (!pool.terminated) {
-				setEncoder(undefined);
-				onChange({ input, controlsMap, seriesMeta, outputMap });
-			}
+			await pool.join();
+			setEncoder(undefined);
+			onChange({
+				input,
+				controlsMap,
+				seriesMeta,
+				outputMap,
+			});
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
 			console.error(e);
