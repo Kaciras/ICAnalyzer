@@ -89,18 +89,25 @@ export interface EncodeModule<T> {
 }
 
 export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
-	let module: Promise<EncodeModule<T>> | undefined;
+	let loadModuleTask: Promise<EncodeModule<T>> | undefined;
 
 	return async (image: ImageData, options: T) => {
 		const { data, width, height } = image;
-		if (!module) {
-			module = loader();
-		}
-		const result = (await module).encode(data, width, height, options);
-		if (!result) {
+		const module = await (loadModuleTask ??= loader());
+
+		const start = performance.now();
+		const output = module.encode(data, width, height, options);
+		const end = performance.now();
+
+		if (!output) {
 			throw new Error("Encoding error");
 		}
-		return Comlink.transfer(result.buffer, [result.buffer]);
+
+		const result = {
+			time: (end - start) / 1000,
+			buffer: output.buffer,
+		};
+		return Comlink.transfer(result, [result.buffer]);
 	};
 }
 
@@ -111,16 +118,15 @@ export interface DecodeModule {
 export type DecodeModuleLoader = () => Promise<DecodeModule>;
 
 export function wasmDecodeFn(loader: DecodeModuleLoader) {
-	let module: Promise<DecodeModule> | undefined;
+	let loadModuleTask: Promise<DecodeModule> | undefined;
 
 	return async (data: ArrayBuffer) => {
-		if (!module) {
-			module = loader();
-		}
-		const result = (await module).decode(data);
-		if (!result) {
+		const module = await (loadModuleTask ??= loader());
+
+		const output = module.decode(data);
+		if (!output) {
 			throw new Error("Decoding error");
 		}
-		return Comlink.transfer(result, [result.data.buffer]);
+		return Comlink.transfer(output, [output.data.buffer]);
 	};
 }

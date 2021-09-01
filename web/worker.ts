@@ -14,16 +14,11 @@ let data: ImageData;
 let butteraugli: Butteraugli;
 
 interface CodecModule<T> {
-	encode(image: ImageData, options: T): Promise<ArrayBufferLike>;
+	encode(image: ImageData, options: T): Promise<{ buffer: ArrayBufferLike; time: number }>;
 }
 
 function bindEncoder<T>(module: CodecModule<T>) {
-	return async (options: T) => {
-		const start = performance.now();
-		const buffer = await module.encode(data, options);
-		const end = performance.now();
-		return { buffer, time: (end - start) / 1000 };
-	};
+	return (options: T) => module.encode(data, options);
 }
 
 const publicApis = {
@@ -55,9 +50,8 @@ const publicApis = {
 
 	async calcButteraugli(image: ImageData, options?: ButteraugliOptions) {
 		await Similarity.initWasmModule(wasmUrl);
-		if (!butteraugli) {
-			butteraugli = new Butteraugli(data);
-		}
+		butteraugli ??= new Butteraugli(data);
+
 		const [score, heatMap] = butteraugli.diff(image, options);
 		return {
 			score,
