@@ -1,8 +1,7 @@
 import { Dispatch, useState } from "react";
-import { AnalyzeResult, initialize, newWorker } from "../analyzing";
 import { ENCODERS } from "../codecs";
-import WorkerPool from "../WorkerPool";
-import { WorkerApi } from "../worker";
+import { decode } from "../decode";
+import { AnalyzeResult, ImagePool, newImagePool } from "../image-worker";
 import { OptionsKey } from "../form";
 import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
@@ -10,7 +9,6 @@ import { AnalyzeContext, ControlsMap, InputImage, MetricMeta } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
-import { decode } from "../decode";
 
 interface CompressSessionProps {
 	isOpen: boolean;
@@ -23,7 +21,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 	const [selectFile, setSelectFile] = useState(true);
 	const [input, setInput] = useState<InputImage>();
-	const [encoder, setEncoder] = useState<WorkerPool<WorkerApi>>();
+	const [encoder, setEncoder] = useState<ImagePool>();
 
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
@@ -44,8 +42,7 @@ export default function CompressSession(props: CompressSessionProps) {
 		const { file } = input;
 		const { encoding, measurement } = config;
 
-		const pool = new WorkerPool<WorkerApi>(newWorker, measurement.workerCount);
-		await initialize(pool, input);
+		const pool = await newImagePool(measurement.workerCount, input.raw);
 
 		const controlsMap: ControlsMap = {};
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();

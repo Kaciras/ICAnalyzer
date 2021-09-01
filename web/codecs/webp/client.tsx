@@ -1,5 +1,5 @@
 import { Remote } from "comlink";
-import { WorkerApi } from "../../worker";
+import { ImageWorkerApi } from "../../worker";
 import { BoolOption, EnumOption, NumberOption, OptionType, PresetOption } from "../../form";
 import { defaultOptions, EncodeOptions } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
@@ -159,6 +159,6 @@ export function getControls(state: EncoderState) {
 		.map(t => t.createControl(ranges[t.id]));
 }
 
-export function encode(options: EncodeOptions, worker: Remote<WorkerApi>) {
+export function encode(options: EncodeOptions, worker: Remote<ImageWorkerApi>) {
 	return worker.webpEncode(mergeOptions(defaultOptions, options));
 }

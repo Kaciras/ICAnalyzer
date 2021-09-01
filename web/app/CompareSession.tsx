@@ -1,18 +1,18 @@
 import { Dispatch, useState } from "react";
 import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas";
 import { AnalyzeContext, InputImage } from "./index";
-import { Analyzer, AnalyzeResult, newWorker } from "../analyzing";
 import { Button, Dialog } from "../ui";
-import { WorkerApi } from "../worker";
+import { ImageWorkerApi } from "../worker";
 import { OptionsKey } from "../form";
-import { getMetricsMeta } from "../measurement";
+import RangeControl from "../form/RangeControl";
+import { AnalyzeResult, newImagePool } from "../image-worker";
+import { getMetricsMeta, measure } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
 import WorkerPool from "../WorkerPool";
 import CompareDialog from "./CompareDialog";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import styles from "./ConfigDialog.scss";
-import RangeControl from "../form/RangeControl";
 
 export interface CompareData {
 	original: InputImage;
@@ -29,31 +29,6 @@ function resizeToFit(image: ImageData, target: ImageData) {
 	return builtinResize(image, 0, 0, w0, h0, w1, h1, "high");
 }
 
-async function compare(data: CompareData, analyzer: Analyzer, pool: WorkerPool<WorkerApi>) {
-	const { original, changed } = data;
-	const imageA = original.raw;
-	const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-
-	for (let i = 0; i < changed.length; i++) {
-		const { raw, file } = changed[i];
-		const imageB = resizeToFit(raw, imageA);
-
-		// const buffer = await file.arrayBuffer();
-		await analyzer.setOriginalImage(original);
-
-		const ratio = file.size / original.file.size * 100;
-		const output: AnalyzeResult = {
-			file,
-			data: imageB,
-			metrics: { ratio },
-		};
-		analyzer.measure(output);
-		outputMap.set({ codec: "_", key: { i } }, output);
-	}
-
-	return pool.join().then(() => outputMap);
-}
-
 interface CompareSessionProps {
 	isOpen: boolean;
 	onChange: Dispatch<AnalyzeContext>;
@@ -65,9 +40,9 @@ export default function CompareSession(props: CompareSessionProps) {
 
 	const [selectFile, setSelectFile] = useState(true);
 	const [data, setData] = useState<CompareData>();
-	const [measure, setMeasure] = useState(getMeasureOptions);
+	const [measureOptions, setMeasureOptions] = useState(getMeasureOptions);
 
-	const [workers, setWorkers] = useState<WorkerPool<WorkerApi>>();
+	const [workers, setWorkers] = useState<WorkerPool<ImageWorkerApi>>();
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
 
@@ -81,26 +56,41 @@ export default function CompareSession(props: CompareSessionProps) {
 	}
 
 	async function handleStart() {
-		if (!data || !measure) {
+		if (!data || !measureOptions) {
 			throw new Error("Missing required data");
 		}
-		const { original } = data;
+		const { original, changed } = data;
 
-		localStorage.setItem("Measure", JSON.stringify(measure));
+		localStorage.setItem("Measure", JSON.stringify(measureOptions));
 
-		const pool = new WorkerPool<WorkerApi>(newWorker, measure.workerCount);
-		const analyzer = new Analyzer(pool, measure);
+		const pool = await newImagePool(measureOptions.workerCount, original.raw);
 
-		const seriesMeta = [
-			{ key: "ratio", name: "Compression Ratio %" },
-		];
-		const { calculations, metricsMeta } = getMetricsMeta(measure);
+		const seriesMeta = [];
+		const { calculations, metricsMeta } = getMetricsMeta(measureOptions);
 		seriesMeta.push(...metricsMeta);
+
+		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
+		const tasks = [];
+
+		for (let i = 0; i < changed.length; i++) {
+			const { raw, file } = changed[i];
+			const imageB = resizeToFit(raw, original.raw);
+
+			const ratio = file.size / original.file.size * 100;
+			const output: AnalyzeResult = {
+				file,
+				data: imageB,
+				metrics: { ratio },
+			};
+			tasks.push(measure(measureOptions, pool, output, progress.increase));
+			outputMap.set({ codec: "_", key: { i } }, output);
+		}
 
 		setWorkers(pool);
 		progress.reset(1 + calculations);
 		try {
-			const outputMap = await compare(data, analyzer, pool);
+			await Promise.all(tasks);
+
 			const controlsMap = {
 				_: [
 					new RangeControl({
@@ -145,6 +135,7 @@ export default function CompareSession(props: CompareSessionProps) {
 	if (workers) {
 		return (
 			<ProgressDialog
+				title="Analyzing"
 				value={progress.value}
 				max={progress.max}
 				error={error}
@@ -163,8 +154,8 @@ export default function CompareSession(props: CompareSessionProps) {
 				Measure Options
 			</h2>
 			<MeasurePanel
-				value={measure}
-				onChange={setMeasure}
+				value={measureOptions}
+				onChange={setMeasureOptions}
 			/>
 			<div className="dialog-actions">
 				<Button

@@ -1,6 +1,6 @@
-import type { WorkerApi } from "./worker";
-import { InputImage } from "./app";
+import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
+import { Remote } from "comlink";
 
 export interface AnalyzeResult {
 	data: ImageData;
@@ -26,18 +26,20 @@ export function share(image: ImageData): ImageData {
 	return { width, height, data: uint8Array };
 }
 
-export function newWorker() {
+export type ImagePool = WorkerPool<ImageWorkerApi>;
+
+export type ImageWorker = Remote<ImageWorkerApi>;
+
+export function workerFactory() {
 	// @ts-ignore ts-loader will convert the file to ES module.
 	return new Worker(new URL("./worker", import.meta.url));
 }
 
-export function initialize(pool: WorkerPool<WorkerApi>, input: InputImage) {
-	const { raw } = input;
+export function newImagePool(size: number, image: ImageData): Promise<ImagePool> {
+	const pool = new WorkerPool<ImageWorkerApi>(workerFactory, size);
 
 	if ("SharedArrayBuffer" in window) {
-		const shared = share(raw);
-		return  pool.runOnEach(r => r.setImageToEncode(shared));
-	} else {
-		return pool.runOnEach(r => r.setImageToEncode(raw));
+		image = share(image);
 	}
+	return pool.runOnEach(r => r.setOriginal(image)).then(() => pool);
 }

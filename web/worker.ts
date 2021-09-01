@@ -26,9 +26,9 @@ function bindEncoder<T>(module: CodecModule<T>) {
 	};
 }
 
-const workerApi = {
+const publicApis = {
 
-	setImageToEncode(image: ImageData) {
+	setOriginal(image: ImageData) {
 		data = image;
 	},
 
@@ -66,6 +66,6 @@ const workerApi = {
 	},
 };
 
-Comlink.expose(workerApi);
+Comlink.expose(publicApis);
 
-export type WorkerApi = typeof workerApi;
+export type ImageWorkerApi = typeof publicApis;
