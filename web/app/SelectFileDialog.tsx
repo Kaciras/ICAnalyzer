@@ -7,8 +7,8 @@ import colorfulText from "../assets/demo/colorful-text.png";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import { Button, Dialog, FileDrop } from "../ui";
 import { getFileFromUrl } from "../utils";
-import { decode } from "../decode";
-import { InputImage } from "./index";
+import { decode } from "../features/decode";
+import { InputImage } from "../features/image-worker";
 import styles from "./SelectFileDialog.scss";
 
 const demos = [

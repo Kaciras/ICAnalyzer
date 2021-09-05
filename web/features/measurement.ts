@@ -1,7 +1,6 @@
 import * as SSIM from "ssim.js";
-import { ButteraugliOptions } from "../lib/diff";
-import { AnalyzeResult, ImageWorker } from "./image-worker";
-import { InputImage, MetricMeta } from "./app";
+import { ButteraugliOptions } from "../../lib/diff";
+import { AnalyzeResult, ImageWorker, InputImage } from "./image-worker";
 
 interface SimpleField {
 	enabled: boolean;
@@ -37,6 +36,11 @@ function rgbaToImage(buffer: ArrayBufferLike, width: number, height: number) {
 	const imageData = ctx.createImageData(width, height);
 	imageData.data.set(new Uint8ClampedArray(buffer));
 	return imageData;
+}
+
+export interface MetricMeta {
+	key: string;
+	name: string;
 }
 
 export interface Measurer {

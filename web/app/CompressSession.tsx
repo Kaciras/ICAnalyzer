@@ -1,18 +1,19 @@
 import { Dispatch, useState } from "react";
 import { ENCODERS, ImageEncoder } from "../codecs";
-import { decode } from "../decode";
+import { decode } from "../features/decode";
 import {
 	AnalyzeResult,
 	getPooledWorker,
 	ImagePool,
 	ImageWorker,
+	InputImage,
 	newImagePool,
 	setOriginalImage,
-} from "../image-worker";
+} from "../features/image-worker";
 import { OptionsKey, OptionsKeyPair } from "../form";
-import { createMeasurer, Measurer } from "../measurement";
+import { createMeasurer, Measurer } from "../features/measurement";
 import { NOOP, ObjectKeyMap, useProgress } from "../utils";
-import { AnalyzeContext, ControlsMap, InputImage } from ".";
+import { AnalyzeContext, ControlsMap } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";

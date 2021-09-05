@@ -3,7 +3,7 @@ import * as ssimJs from "ssim.js";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import { CheckBox, NumberInput } from "../ui";
 import { TabPanelBase } from "../ui/TabSwitch";
-import { MeasureOptions } from "../measurement";
+import { MeasureOptions } from "../features/measurement";
 import styles from "./MeasurePanel.scss";
 
 export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {

@@ -1,13 +1,13 @@
 import * as Comlink from "comlink";
-import * as Similarity from "../lib/similarity";
-import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../lib/similarity";
-import wasmUrl from "../lib/diff.wasm";
-import { EncodeResult } from "./codecs/common";
-import * as MozJPEG from "./codecs/mozjpeg/codec";
-import * as JXL from "./codecs/jxl/codec";
-import * as WebP from "./codecs/webp/codec";
-import * as AVIF from "./codecs/avif/codec";
-import * as WebP2 from "./codecs/webp2/codec";
+import * as Similarity from "../../lib/similarity";
+import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../../lib/similarity";
+import wasmUrl from "../../lib/diff.wasm";
+import { EncodeResult } from "../codecs/common";
+import * as MozJPEG from "../codecs/mozjpeg/codec";
+import * as JXL from "../codecs/jxl/codec";
+import * as WebP from "../codecs/webp/codec";
+import * as AVIF from "../codecs/avif/codec";
+import * as WebP2 from "../codecs/webp2/codec";
 
 // A worker can only convert one image at the same time, so use global variable for more simplify code.
 let data: ImageData;

@@ -1,7 +1,6 @@
 import { Dispatch } from "react";
-import { Remote } from "comlink";
+import { ImageWorker } from "../features/image-worker";
 import { ControlType, OptionsKeyPair } from "../form";
-import { ImageWorkerApi } from "../worker";
 import { EncodeResult } from "./common";
 import * as MozJPEG from "./mozjpeg/client";
 import * as JXL from "./jxl/client";
@@ -33,7 +32,7 @@ export interface ImageEncoder {
 
 	getControls(state: EncoderState): ControlType[];
 
-	encode(options: any, worker: Remote<ImageWorkerApi>): Promise<EncodeResult>;
+	encode(options: any, worker: ImageWorker): Promise<EncodeResult>;
 }
 
 export const ENCODERS: ImageEncoder[] = [MozJPEG, JXL, WebP, AVIF, WebP2];

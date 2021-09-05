@@ -5,8 +5,8 @@ import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import LockIcon from "../assets/lock.svg";
 import { Button } from "../ui";
-import { AnalyzeResult } from "../image-worker";
-import { MetricMeta } from "./index";
+import { MetricMeta } from "../features/measurement";
+import { AnalyzeResult } from "../features/image-worker";
 import styles from "./ChartPanel.scss";
 
 Export(Highcharts);

@@ -4,20 +4,11 @@ import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import CompareSession from "./CompareSession";
 import { ControlType } from "../form";
-import { AnalyzeResult } from "../image-worker";
+import { MetricMeta } from "../features/measurement";
+import { AnalyzeResult, InputImage } from "../features/image-worker";
 import { ObjectKeyMap } from "../utils";
 
-export interface InputImage {
-	file: File;
-	raw: ImageData;
-}
-
 export type ControlsMap = Record<string, ControlType[]>;
-
-export interface MetricMeta {
-	key: string;
-	name: string;
-}
 
 export interface EncodeConfig {
 	codec: string;

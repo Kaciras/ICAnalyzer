@@ -1,8 +1,12 @@
 import { Remote } from "comlink";
-import { NOOP } from "./utils";
+import { NOOP } from "../utils";
 import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
-import { InputImage } from "./app";
+
+export interface InputImage {
+	file: File;
+	raw: ImageData;
+}
 
 export interface AnalyzeResult {
 	data: ImageData;

@@ -4,7 +4,7 @@ import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas";
 import { ImageWorkerApi } from "./worker";
 import { ImageWorker, workerFactory } from "./image-worker";
 
-export async function decodeImageNative(blob: Blob) {
+async function decodeImageNative(blob: Blob) {
 	const bitmap = "createImageBitmap" in self
 		? await createImageBitmap(blob)
 		: await blobToImg(blob);
@@ -49,7 +49,7 @@ function ensureSVGSize(svgXml: string) {
 	return new XMLSerializer().serializeToString(document);
 }
 
-export async function svgToImageData(svgXml: string) {
+async function svgToImageData(svgXml: string) {
 	svgXml = ensureSVGSize(svgXml);
 	const blob = new Blob([svgXml], { type: "image/svg+xml" });
 	return drawableToImageData(await blobToImg(blob));

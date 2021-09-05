@@ -1,8 +1,8 @@
 import { Dispatch, memo, useState } from "react";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
-import { decode } from "../decode";
+import { decode } from "../features/decode";
+import { InputImage } from "../features/image-worker";
 import { Button, Dialog, FileDrop } from "../ui";
-import { InputImage } from "./index";
 import { CompareData } from "./CompareSession";
 import styles from "./CompareDialog.scss";
 import { bytes, uniqueKey } from "../utils";

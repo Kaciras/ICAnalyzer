@@ -1,6 +1,6 @@
 import { TabPanelBase } from "../ui/TabSwitch";
 import { bytes } from "../utils";
-import { InputImage } from "./index";
+import { InputImage } from "../features/image-worker";
 import styles from "./ImageInfoPanel.scss";
 
 interface ImageInfoPanelProps extends TabPanelBase{

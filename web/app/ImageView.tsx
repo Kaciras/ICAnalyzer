@@ -3,12 +3,11 @@ import clsx from "clsx";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
 import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
-import { AnalyzeResult } from "../analyzing";
 import { ButtonProps } from "../ui/Button";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton } from "../ui";
-import { InputImage } from "./index";
 import styles from "./ImageView.scss";
+import { AnalyzeResult, InputImage } from "../features/image-worker";
 
 export enum ViewType {
 	Original,
