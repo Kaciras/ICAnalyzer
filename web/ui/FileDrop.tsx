@@ -77,7 +77,7 @@ export default function FileDrop(props: FileDropProps) {
 		if (files.length === items.length) {
 			onChange(files as File[]);
 		} else {
-			onError(new Error("Non-file item in the list"));
+			onError(new Error("Non-file item in the dropped list"));
 		}
 	}
 

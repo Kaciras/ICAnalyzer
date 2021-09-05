@@ -34,14 +34,17 @@
 
 .canvas {
 	grid-area: img;
+	justify-self: center;
+	align-self: center;
+
 	display: block;
 	max-width: 160px;
-	margin: 0 auto;
+	max-height: 120px;
 }
 
 .header {
 	display: flex;
-	justify-content: space-between;
+	align-items: center;
 }
 
 .filename {

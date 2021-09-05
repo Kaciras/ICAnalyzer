@@ -2,14 +2,12 @@ import { Dispatch, useState } from "react";
 import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas";
 import { AnalyzeContext, InputImage } from "./index";
 import { Button, Dialog } from "../ui";
-import { ImageWorkerApi } from "../worker";
 import { OptionsKey } from "../form";
 import RangeControl from "../form/RangeControl";
-import { AnalyzeResult, getPooledWorker, newImagePool, setOriginalImage } from "../image-worker";
+import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool, setOriginalImage } from "../image-worker";
 import { createMeasurer } from "../measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
-import WorkerPool from "../WorkerPool";
 import CompareDialog from "./CompareDialog";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import styles from "./ConfigDialog.scss";
@@ -41,8 +39,8 @@ export default function CompareSession(props: CompareSessionProps) {
 	const [selectFile, setSelectFile] = useState(true);
 	const [data, setData] = useState<CompareData>();
 	const [measureOptions, setMeasureOptions] = useState(getMeasureOptions);
+	const [imagePool, setImagePool] = useState<ImagePool>();
 
-	const [workers, setWorkers] = useState<WorkerPool<ImageWorkerApi>>();
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
 
@@ -75,12 +73,12 @@ export default function CompareSession(props: CompareSessionProps) {
 			],
 		};
 
-		const pool = newImagePool(measureOptions.workerCount);
-		setWorkers(pool);
+		const imagePool = newImagePool(measureOptions.workerCount);
+		const worker = getPooledWorker(imagePool);
+		const measurer = createMeasurer(measureOptions, worker);
 
-		await setOriginalImage(pool, original);
-		const worker = getPooledWorker(pool);
-		const measurer = createMeasurer(original, measureOptions);
+		setImagePool(imagePool);
+		await setOriginalImage(imagePool, original);
 
 		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 
@@ -96,13 +94,13 @@ export default function CompareSession(props: CompareSessionProps) {
 			outputMap.set({ codec: "_", key: { i } }, output);
 
 			// noinspection ES6MissingAwait
-			measurer.execute(worker, output, progress.increase);
+			measurer.execute(original, output, progress.increase);
 		}
 
 		progress.reset(changed.length * (1 + measurer.calculations));
 		try {
-			await pool.join();
-			setWorkers(undefined);
+			await imagePool.join();
+			setImagePool(undefined);
 			onChange({
 				input: original,
 				outputMap,
@@ -112,14 +110,14 @@ export default function CompareSession(props: CompareSessionProps) {
 		} catch (e) {
 			console.error(e);
 			setError(e.message);
+		} finally {
+			imagePool.terminate();
 		}
-
-		pool.terminate();
 	}
 
 	function stop() {
-		workers!.terminate();
-		setWorkers(undefined);
+		imagePool!.terminate();
+		setImagePool(undefined);
 	}
 
 	if (!isOpen) {
@@ -134,7 +132,7 @@ export default function CompareSession(props: CompareSessionProps) {
 		/>;
 	}
 
-	if (workers) {
+	if (imagePool) {
 		return (
 			<ProgressDialog
 				value={progress.value}

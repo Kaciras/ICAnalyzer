@@ -4,7 +4,7 @@ import IntroPage from "./IntroPage";
 import AnalyzePage from "./AnalyzePage";
 import CompareSession from "./CompareSession";
 import { ControlType } from "../form";
-import { AnalyzeResult } from "../analyzing";
+import { AnalyzeResult } from "../image-worker";
 import { ObjectKeyMap } from "../utils";
 
 export interface InputImage {

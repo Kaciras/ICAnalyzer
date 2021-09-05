@@ -1,14 +1,100 @@
 import { Dispatch, useState } from "react";
-import { ENCODERS } from "../codecs";
+import { ENCODERS, ImageEncoder } from "../codecs";
 import { decode } from "../decode";
-import { AnalyzeResult, getPooledWorker, ImagePool, newImagePool, setOriginalImage } from "../image-worker";
-import { OptionsKey } from "../form";
-import { createMeasurer } from "../measurement";
-import { ObjectKeyMap, useProgress } from "../utils";
+import {
+	AnalyzeResult,
+	getPooledWorker,
+	ImagePool,
+	ImageWorker,
+	newImagePool,
+	setOriginalImage,
+} from "../image-worker";
+import { OptionsKey, OptionsKeyPair } from "../form";
+import { createMeasurer, Measurer } from "../measurement";
+import { NOOP, ObjectKeyMap, useProgress } from "../utils";
 import { AnalyzeContext, ControlsMap, InputImage } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
 import ProgressDialog from "./ProgressDialog";
+
+interface EncodeTask {
+	encoder: ImageEncoder;
+	optionsList: OptionsKeyPair[];
+}
+
+class EncodeAnalyzer {
+
+	private readonly config: AnalyzeConfig;
+	private readonly worker: ImageWorker;
+
+	private readonly controlsMap: ControlsMap;
+	private readonly taskQueue: EncodeTask[];
+	private readonly measurer: Measurer;
+
+	readonly outputSize: number;
+
+	onProgress: () => void;
+
+	constructor(config: AnalyzeConfig, worker: ImageWorker) {
+		this.config = config;
+		this.worker = worker;
+
+		this.controlsMap = {};
+		this.taskQueue = [];
+		this.outputSize = 0;
+		this.onProgress = NOOP;
+		this.measurer = createMeasurer(config.measurement, worker);
+
+		if (config.measurement.encodeTime.enabled) {
+			this.measurer.metrics.push({ key: "time", name: "Encode Time (s)" });
+		}
+
+		for (const encoder of ENCODERS) {
+			const { name } = encoder;
+			const { enable, state } = config.encoding[name];
+			if (!enable) {
+				continue;
+			}
+			const optionsList = encoder.getOptionsList(state);
+			this.taskQueue.push({ encoder, optionsList });
+			this.outputSize += optionsList.length;
+			this.controlsMap[name] = encoder.getControls(state);
+		}
+	}
+
+	get TaskCount() {
+		return this.outputSize * (1 + this.measurer.calculations);
+	}
+
+	run(input: InputImage) {
+		const { worker, controlsMap, measurer, taskQueue } = this;
+		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
+		const tasks = [];
+
+		for (const { encoder, optionsList } of taskQueue) {
+			const filename = input.file.name.replace(/.[^.]*$/, `.${encoder.extension}`);
+
+			tasks.push(...optionsList.map(async item => {
+				const { key, options } = item;
+				const { buffer, time } = await encoder.encode(options, worker);
+
+				const file = new File([buffer], filename, { type: encoder.mimeType });
+				this.onProgress();
+
+				const output: AnalyzeResult = {
+					file,
+					data: await decode(file, worker),
+					metrics: { time },
+				};
+				outputMap.set({ codec: encoder.name, key }, output);
+				await measurer.execute(input, output, this.onProgress);
+			}));
+		}
+
+		const seriesMeta = measurer.metrics;
+		return Promise.all(tasks).then(() => ({ input, controlsMap, seriesMeta, outputMap }));
+	}
+}
 
 interface CompressSessionProps {
 	isOpen: boolean;
@@ -21,7 +107,7 @@ export default function CompressSession(props: CompressSessionProps) {
 
 	const [selectFile, setSelectFile] = useState(true);
 	const [input, setInput] = useState<InputImage>();
-	const [encoder, setEncoder] = useState<ImagePool>();
+	const [imagePool, setImagePool] = useState<ImagePool>();
 
 	const progress = useProgress();
 	const [error, setError] = useState<string>();
@@ -39,79 +125,39 @@ export default function CompressSession(props: CompressSessionProps) {
 		if (!input) {
 			throw new Error("File is null");
 		}
-		const { file } = input;
-		const { encoding, measurement } = config;
+		const { measurement } = config;
 
-		const pool = newImagePool(measurement.workerCount);
-		setEncoder(pool);
+		const imagePool = newImagePool(measurement.workerCount);
+		const worker = getPooledWorker(imagePool);
+		const analyzer = new EncodeAnalyzer(config, worker);
 
-		await setOriginalImage(pool, input);
-		const worker = getPooledWorker(pool);
-
-		const measurer = createMeasurer(input, measurement);
-		if (measurement.encodeTime.enabled) {
-			measurer.metrics.push({ key: "time", name: "Encode Time (s)" });
-		}
-
-		const controlsMap: ControlsMap = {};
-		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-		const tasks = [];
-
-		for (const encoder of ENCODERS) {
-			const { name } = encoder;
-			const { enable, state } = encoding[name];
-			if (!enable) {
-				continue;
-			}
-			const filename = file.name.replace(/.[^.]*$/, `.${encoder.extension}`);
-			controlsMap[name] = encoder.getControls(state);
-			const optionsList = encoder.getOptionsList(state);
-
-			tasks.push(...optionsList.map(async item => {
-				const { key, options } = item;
-				const { buffer, time } = await encoder.encode(options, worker);
-
-				const file = new File([buffer], filename, { type: encoder.mimeType });
-				progress.increase();
-
-				const output: AnalyzeResult = {
-					file,
-					data: await decode(file, worker),
-					metrics: { time },
-				};
-				outputMap.set({ codec: encoder.name, key }, output);
-				await measurer.execute(worker, output, progress.increase);
-			}));
-		}
-
-		progress.reset(tasks.length * (1 + measurer.calculations));
+		progress.reset(analyzer.TaskCount);
+		analyzer.onProgress = progress.increase;
+		setImagePool(imagePool);
 
 		try {
-			await Promise.all(tasks);
-			setEncoder(undefined);
-			onChange({
-				input,
-				controlsMap,
-				seriesMeta: measurer.metrics,
-				outputMap,
-			});
+			await setOriginalImage(imagePool, input);
+			onChange(await analyzer.run(input));
+			setImagePool(undefined);
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
 			console.error(e);
 			setError(e.message);
+		} finally {
+			imagePool.terminate();
 		}
-
-		pool.terminate();
 	}
 
 	function stop() {
-		encoder!.terminate();
-		setEncoder(undefined);
+		imagePool!.terminate();
+		setImagePool(undefined);
 	}
 
 	if (!isOpen) {
 		return null;
-	} else if (encoder) {
+	}
+
+	if (imagePool) {
 		return (
 			<ProgressDialog
 				value={progress.value}

@@ -1,7 +1,7 @@
 import * as SSIM from "ssim.js";
 import { ButteraugliOptions } from "../lib/diff";
 import { AnalyzeResult, ImageWorker } from "./image-worker";
-import { InputImage } from "./app";
+import { InputImage, MetricMeta } from "./app";
 
 interface SimpleField {
 	enabled: boolean;
@@ -39,12 +39,20 @@ function rgbaToImage(buffer: ArrayBufferLike, width: number, height: number) {
 	return imageData;
 }
 
+export interface Measurer {
+	metrics: MetricMeta[];
+
+	calculations: number;
+
+	execute(original: InputImage, result: AnalyzeResult, onProgress: () => void): Promise<void>;
+}
+
 interface BoundCalc {
 	options: any;
 	calc: Handler["calc"];
 }
 
-export function createMeasurer(original: InputImage, config: MeasureOptions) {
+export function createMeasurer(config: MeasureOptions, worker: ImageWorker) {
 	const metrics = [];
 	const used: BoundCalc[] = [];
 
@@ -63,7 +71,7 @@ export function createMeasurer(original: InputImage, config: MeasureOptions) {
 		metrics.push({ key, name });
 	}
 
-	function execute(worker: ImageWorker, result: AnalyzeResult, onProgress: () => void) {
+	function execute(original: InputImage, result: AnalyzeResult, onProgress: () => void) {
 		const tasks = used
 			.map(b => b.calc(worker, original, result, b.options))
 			.filter(Boolean)
@@ -71,10 +79,10 @@ export function createMeasurer(original: InputImage, config: MeasureOptions) {
 			// @ts-ignore
 			.map(promise => promise.then(onProgress));
 
-		return Promise.all(tasks);
+		return Promise.all(tasks) as unknown as Promise<void>;
 	}
 
-	return { calculations, metrics, execute };
+	return { calculations, metrics, execute } as Measurer;
 }
 
 interface Handler {

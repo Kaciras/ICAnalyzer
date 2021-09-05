@@ -35,7 +35,7 @@ const PreviewBox = memo((props: PreviewBoxProps) => {
 				{
 					index === 0
 						? <span>Original</span>
-						: <span>#{index - 1}</span>
+						: <span># {index - 1}</span>
 				}
 				<Button
 					className={styles.reset}
@@ -112,6 +112,7 @@ export default function CompareDialog(props: CompareDialogProps) {
 				<FileDrop
 					className={styles.fileDrop}
 					accept="image/*"
+					multiple={true}
 					onChange={handleFileChange}
 					onError={setError}
 					onSelectStart={() => setError(undefined)}

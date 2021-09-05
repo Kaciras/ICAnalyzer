@@ -45,6 +45,13 @@ export async function getFileFromUrl(url: string, signal?: AbortSignal) {
 	return new File([blob], name, { type: blob.type, lastModified });
 }
 
+export interface ProgressState {
+	value: number;
+	max: number;
+	increase: () => void;
+	reset: (max: number) => void;
+}
+
 export function useProgress(initialMax = 1) {
 	const [max, setMax] = useState(initialMax);
 	const [value, setValue] = useState(0);
@@ -58,7 +65,7 @@ export function useProgress(initialMax = 1) {
 		setValue(v => v + 1);
 	}
 
-	return { value, max, increase, reset };
+	return { value, max, increase, reset } as ProgressState;
 }
 
 // JSON.stringify is not deterministic, be careful with the properties order.

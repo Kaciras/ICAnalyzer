@@ -10,9 +10,9 @@ export const mimeType = "image/jxl";
 export const extension = "jxl";
 
 const templates: OptionType[] = [
-	new NumberOption({ // 100 = lossless
+	new NumberOption({
 		id: "quality",
-		label: "Quality",
+		label: "Quality (100 = lossless)",
 		min: 0,
 		max: 100,
 		step: 0.1,
@@ -30,10 +30,11 @@ const templates: OptionType[] = [
 	}),
 	new NumberOption({
 		id: "speed",
-		label: "Speed",
+		label: "Effort",
 		min: 0,
 		max: 6,
 		step: 1,
+		mapFn: v => 7 - v,
 		defaultValue: defaultOptions.speed,
 	}),
 	new NumberOption({
