@@ -6,6 +6,7 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"lib": [
+			"ESNext",
 			"DOM",
 			"DOM.Iterable",
 			"WebWorker"
