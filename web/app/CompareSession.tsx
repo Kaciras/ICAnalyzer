@@ -14,7 +14,7 @@ import {
 import { createMeasurer, MeasureOptions } from "../features/measurement";
 import { ObjectKeyMap, useProgress } from "../utils";
 import ProgressDialog from "./ProgressDialog";
-import CompareDialog from "./CompareDialog";
+import CompareFileDialog from "./CompareFileDialog";
 import CompareConfigDialog from "./CompareConfigDialog";
 
 export interface CompareData {
@@ -43,7 +43,6 @@ export default function CompareSession(props: CompareSessionProps) {
 
 	const [selectFile, setSelectFile] = useState(true);
 	const [data, setData] = useState<CompareData>();
-	const [measureOptions, setMeasureOptions] = useState(getMeasureOptions);
 	const [imagePool, setImagePool] = useState<ImagePool>();
 
 	const progress = useProgress();
@@ -58,13 +57,11 @@ export default function CompareSession(props: CompareSessionProps) {
 		data ? setSelectFile(false) : onClose();
 	}
 
-	async function handleStart() {
+	async function handleStart(measureOptions: MeasureOptions) {
 		if (!data || !measureOptions) {
 			throw new Error("Missing required data");
 		}
 		const { original, changed } = data;
-
-		localStorage.setItem("Measure", JSON.stringify(measureOptions));
 
 		const controlsMap = {
 			_: [
@@ -130,7 +127,7 @@ export default function CompareSession(props: CompareSessionProps) {
 	}
 
 	if (selectFile) {
-		return <CompareDialog
+		return <CompareFileDialog
 			data={data}
 			onAccept={handleAccept}
 			onCancel={handleSelectCancel}
@@ -149,36 +146,10 @@ export default function CompareSession(props: CompareSessionProps) {
 	}
 
 	return (
-		<Dialog
-			name="Compare config"
-			className={styles.dialog}
+		<CompareConfigDialog
+			onStart={handleStart}
 			onClose={onClose}
-		>
-			<h2 className={styles.title}>
-				Measure Options
-			</h2>
-			<MeasurePanel
-				value={measureOptions}
-				onChange={setMeasureOptions}
-			/>
-			<div className="dialog-actions">
-				<Button
-					onClick={() => setSelectFile(true)}
-				>
-					Select files...
-				</Button>
-				<Button
-					className="second"
-					onClick={onClose}
-				>
-					Cancel
-				</Button>
-				<Button
-					onClick={handleStart}
-				>
-					Next
-				</Button>
-			</div>
-		</Dialog>
+			onSelectFile={() => setSelectFile(true)}
+		/>
 	);
 }

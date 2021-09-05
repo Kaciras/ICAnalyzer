@@ -6,38 +6,29 @@ import { useLocalStorage } from "../utils";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel";
-import styles from "./ConfigDialog.scss";
+import styles from "./CompressConfigDialog.scss";
 
 export interface AnalyzeConfig {
 	encoding: EncodingOptions;
 	measurement: MeasureOptions;
 }
 
-export interface ConfigDialogProps {
+export interface CompressConfigDialogProps {
 	image: InputImage;
 	onStart: Dispatch<AnalyzeConfig>;
 	onClose: () => void;
 	onSelectFile: () => void;
 }
 
-function loadOptions<T>(key: string, processor: (saved?: T) => T) {
-	return () => {
-		const saved = localStorage.getItem(key);
-		return processor(saved ? JSON.parse(saved) : undefined);
-	};
-}
-
-export default function ConfigDialog(props: ConfigDialogProps) {
+export default function CompressConfigDialog(props: CompressConfigDialogProps) {
 	const { image, onStart, onClose, onSelectFile } = props;
 
 	const [index, setIndex] = useState(0);
-	const [encoding, setEncoding] = useState(loadOptions("Encoding", getEncodingOptions));
-	const [measurement, setMeasurement] = useState(loadOptions("Measure", getMeasureOptions));
+	const [encoding, setEncoding] = useLocalStorage("Encoding", getEncodingOptions);
+	const [measurement, setMeasurement] = useLocalStorage("Measure", getMeasureOptions);
 
 	function start() {
 		onStart({ encoding, measurement });
-		localStorage.setItem("Encoding", JSON.stringify(encoding));
-		localStorage.setItem("Measure", JSON.stringify(measurement));
 	}
 
 	const ready = image && Object.values(encoding).some(e => e.enable);

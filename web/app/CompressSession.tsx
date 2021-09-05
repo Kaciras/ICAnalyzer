@@ -15,7 +15,7 @@ import { createMeasurer, Measurer } from "../features/measurement";
 import { NOOP, ObjectKeyMap, useProgress } from "../utils";
 import { AnalyzeContext, ControlsMap } from ".";
 import SelectFileDialog from "./SelectFileDialog";
-import ConfigDialog, { AnalyzeConfig } from "./ConfigDialog";
+import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog";
 import ProgressDialog from "./ProgressDialog";
 
 interface EncodeTask {
@@ -176,7 +176,7 @@ export default function CompressSession(props: CompressSessionProps) {
 		);
 	} else {
 		return (
-			<ConfigDialog
+			<CompressConfigDialog
 				image={input!}
 				onStart={handleStart}
 				onClose={onClose}

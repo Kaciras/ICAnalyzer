@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export const NOOP = () => {};
 
@@ -66,6 +66,23 @@ export function useProgress(initialMax = 1) {
 	}
 
 	return { value, max, increase, reset } as ProgressState;
+}
+
+type LocalStorageState<T> = [T, Dispatch<SetStateAction<T>>, () => void];
+
+export function useLocalStorage<T>(key: string, processor: (saved?: T) => T) {
+	const [value, setValue] = useState(() => {
+		const v = localStorage.getItem(key);
+		return processor(v ? JSON.parse(v) : undefined);
+	});
+
+	function persist() {
+		localStorage.setItem(key, JSON.stringify(value));
+	}
+
+	useEffect(() => persist, [value]);
+
+	return [value, setValue, persist] as LocalStorageState<T>;
 }
 
 // JSON.stringify is not deterministic, be careful with the properties order.

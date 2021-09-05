@@ -1,11 +1,11 @@
 import { Dispatch, memo, useState } from "react";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
+import { Button, Dialog, FileDrop } from "../ui";
+import { bytes, uniqueKey } from "../utils";
 import { decode } from "../features/decode";
 import { InputImage } from "../features/image-worker";
-import { Button, Dialog, FileDrop } from "../ui";
 import { CompareData } from "./CompareSession";
-import styles from "./CompareDialog.scss";
-import { bytes, uniqueKey } from "../utils";
+import styles from "./CompareFileDialog.scss";
 
 interface PreviewBoxProps {
 	value: InputImage;
@@ -54,13 +54,13 @@ const PreviewBox = memo((props: PreviewBoxProps) => {
 
 PreviewBox.displayName = "PreviewBox";
 
-export interface CompareDialogProps {
+export interface CompareFileDialogProps {
 	data: CompareData | undefined;
 	onAccept: Dispatch<CompareData>;
 	onCancel: () => void;
 }
 
-export default function CompareDialog(props: CompareDialogProps) {
+export default function CompareFileDialog(props: CompareFileDialogProps) {
 	const { data, onAccept, onCancel } = props;
 
 	const [error, setError] = useState<Error>();
