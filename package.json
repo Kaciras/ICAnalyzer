@@ -16,8 +16,8 @@
 		"build": "webpack --env production --env report"
 	},
 	"dependencies": {
-		"@sentry/react": "^6.11.0",
-		"@sentry/tracing": "^6.11.0",
+		"@sentry/react": "^6.12.0",
+		"@sentry/tracing": "^6.12.0",
 		"bootstrap-icons": "^1.5.0",
 		"clsx": "^1.1.1",
 		"comlink": "^4.3.1",
@@ -29,7 +29,7 @@
 		"wasm-feature-detect": "^1.2.11"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.15.0",
+		"@babel/core": "^7.15.5",
 		"@kaciras/eslint-config-core": "^1.6.0",
 		"@kaciras/eslint-config-jest": "^1.6.0",
 		"@kaciras/eslint-config-react": "^1.6.0",
@@ -38,27 +38,27 @@
 		"@svgr/webpack": "^5.5.0",
 		"@types/emscripten": "^1.39.5",
 		"@types/jest": "^27.0.1",
-		"@types/react": "^17.0.19",
-		"@types/react-dom": "^17.0.9",
+		"@types/react": "^17.0.20",
 		"@types/react-beautiful-dnd": "^13.1.2",
-		"@types/sharp": "^0.28.5",
+		"@types/react-dom": "^17.0.9",
+		"@types/sharp": "^0.28.6",
 		"babel-loader": "^8.2.2",
 		"css-loader": "^6.2.0",
 		"eslint": "^7.32.0",
 		"html-webpack-plugin": "^5.3.2",
 		"jest": "^27.1.0",
-		"mini-css-extract-plugin": "^2.2.0",
+		"mini-css-extract-plugin": "^2.2.2",
 		"react-refresh": "^0.10.0",
-		"sass": "~1.38.2",
+		"sass": "^1.39.0",
 		"sass-loader": "^12.1.0",
 		"sharp": "^0.29.0",
 		"style-loader": "^3.2.1",
 		"ts-jest": "^27.0.5",
 		"ts-loader": "^9.2.5",
 		"typescript": "^4.4.2",
-		"webpack": "^5.51.1",
+		"webpack": "^5.52.0",
 		"webpack-bundle-analyzer": "^4.4.2",
 		"webpack-cli": "^4.8.0",
-		"webpack-dev-server": "^4.0.0"
+		"webpack-dev-server": "^4.1.0"
 	}
 }
