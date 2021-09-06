@@ -42,7 +42,7 @@
 	max-height: 120px;
 }
 
-.header {
+.attrLine {
 	display: flex;
 	align-items: center;
 }
@@ -58,6 +58,11 @@
 	font-size: 30px;
 	color: red;
 	align-self: end;
+}
+
+.mime {
+	font-weight: 600;
+	margin-right: auto;
 }
 
 .aside {

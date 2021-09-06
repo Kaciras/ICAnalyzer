@@ -1,5 +1,6 @@
-import { Dispatch, memo, useState } from "react";
+import { Dispatch, ForwardedRef, forwardRef, useEffect, useRef, useState } from "react";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
+import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { Button, Dialog, FileDrop } from "../ui";
 import { bytes, uniqueKey } from "../utils";
 import { decode } from "../features/decode";
@@ -7,31 +8,39 @@ import { InputImage } from "../features/image-worker";
 import { CompareData } from "./CompareSession";
 import styles from "./CompareFileDialog.scss";
 
+interface InputWithId extends InputImage {
+	id: number;
+}
+
 interface PreviewBoxProps {
 	value: InputImage;
 	index: number;
 	onRemove: () => void;
 }
 
-const PreviewBox = memo((props: PreviewBoxProps) => {
-	const { value, index, onRemove } = props;
+const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIElement>) => {
+	const { value, index, onRemove, ...others } = props;
 	const { file, raw } = value;
 	const { type, size } = file;
 	const { width, height } = raw;
 
-	function drawImage(el: HTMLCanvasElement | null) {
-		el?.getContext("2d")!.putImageData(raw, 0, 0);
+	const canvas = useRef<HTMLCanvasElement>(null);
+
+	function drawImage() {
+		canvas.current?.getContext("2d")!.putImageData(raw, 0, 0);
 	}
 
+	useEffect(() => drawImage(), []);
+
 	return (
-		<li className={styles.listitem}>
+		<li {...others} className={styles.listitem} ref={ref}>
 			<canvas
 				className={styles.canvas}
-				ref={drawImage}
+				ref={canvas}
 				width={width}
 				height={height}
 			/>
-			<div className={styles.header}>
+			<div className={styles.attrLine}>
 				{
 					index === 0
 						? <span>Original</span>
@@ -46,13 +55,80 @@ const PreviewBox = memo((props: PreviewBoxProps) => {
 					<CloseIcon/>
 				</Button>
 			</div>
-			<div className={styles.filename}>{file.name}</div>
-			<div>{type} ({width} x {height},{bytes(size)})</div>
+			<div className={styles.filename}>
+				{file.name}
+			</div>
+			<div className={styles.attrLine}>
+				<span className={styles.mime}>{type}</span>
+				({width} x {height}, {bytes(size)})
+			</div>
 		</li>
 	);
 });
 
 PreviewBox.displayName = "PreviewBox";
+
+interface PreviewListProps {
+	value: InputWithId[];
+	onChange: Dispatch<InputWithId[]>;
+}
+
+function PreviewList(props: PreviewListProps) {
+	const { value, onChange } = props;
+
+	function removeAt(index: number) {
+		const copy = Array.from(value);
+		copy.splice(index, 1);
+		onChange(copy);
+	}
+
+	function dragSort(result: DropResult) {
+		const { source, destination } = result;
+		if (!destination) {
+			return;
+		}
+		const newValue = [...value];
+		const [remove] = newValue.splice(source.index, 1);
+		newValue.splice(destination.index, 0, remove);
+		onChange(newValue);
+	}
+
+	const items = value.map((v, i) => (
+		<Draggable
+			key={v.id}
+			draggableId={v.id.toString()}
+			index={i}
+		>
+			{provided => (
+				<PreviewBox
+					{...provided.draggableProps}
+					{...provided.dragHandleProps}
+					ref={provided.innerRef}
+					value={v}
+					index={i}
+					onRemove={() => removeAt(i)}
+				/>
+			)}
+		</Draggable>
+	));
+
+	return (
+		<DragDropContext onDragEnd={dragSort}>
+			<Droppable droppableId="compare">
+				{provided =>
+					<ol
+						className={styles.list}
+						ref={provided.innerRef}
+						{...provided.droppableProps}
+					>
+						{items}
+						{provided.placeholder}
+					</ol>
+				}
+			</Droppable>
+		</DragDropContext>
+	);
+}
 
 export interface CompareFileDialogProps {
 	data: CompareData | undefined;
@@ -64,7 +140,9 @@ export default function CompareFileDialog(props: CompareFileDialogProps) {
 	const { data, onAccept, onCancel } = props;
 
 	const [error, setError] = useState<Error>();
-	const [images, setImages] = useState(() => data ? [data.original, ...data.changed] : []);
+	const [images, setImages] = useState<InputWithId[]>(() => {
+		return data ? ([data.original, ...data.changed] as InputWithId[]) : [];
+	});
 
 	function handleFileChange(files: File[]) {
 		const tasks = [];
@@ -80,32 +158,18 @@ export default function CompareFileDialog(props: CompareFileDialogProps) {
 		onAccept({ original: images[0], changed: images.slice(1) });
 	}
 
-	function removeAt(index: number) {
-		const copy = Array.from(images);
-		copy.splice(index, 1);
-		setImages(copy);
-	}
-
-	const items = images.map((v, i) => (
-		<PreviewBox
-			key={(v as any).id}
-			value={v}
-			index={i}
-			onRemove={() => removeAt(i)}
-		/>
-	));
-
-	const invalid = images.length < 2 || Boolean(error);
+	const isInvalid = images.length < 2 || Boolean(error);
 
 	return (
 		<Dialog className={styles.dialog} onClose={onCancel}>
 			{
 				images.length > 0 ?
-					<ol className={styles.list}>{items}</ol>
+					<PreviewList value={images} onChange={setImages}/>
 					:
 					<div className={styles.placeholder}>
 						<p>Add at least two images</p>
 						<p>The first will be the original</p>
+						<p>Use drag & drop to change the order</p>
 					</div>
 			}
 			<div className={styles.aside}>
@@ -120,7 +184,7 @@ export default function CompareFileDialog(props: CompareFileDialogProps) {
 				<div className={styles.error}>{error?.message}</div>
 				<div className={styles.actions}>
 					<Button className="second" onClick={onCancel}>Back</Button>
-					<Button disabled={invalid} onClick={handleAccept}>Next</Button>
+					<Button disabled={isInvalid} onClick={handleAccept}>Next</Button>
 				</div>
 			</div>
 		</Dialog>
