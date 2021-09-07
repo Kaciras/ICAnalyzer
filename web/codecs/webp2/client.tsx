@@ -1,6 +1,6 @@
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
-import { Csp, defaultOptions, EncodeOptions, UVMode } from "./codec";
+import { Csp, defaultOptions, EncodeOptions, Subsample } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
 
@@ -9,16 +9,11 @@ export const mimeType = "image/webp2";
 export const extension = "wp2";
 
 const templates: OptionType[] = [
-	// new BoolOption({
-	// 	id: "lossless",
-	// 	label: "lossless",
-	// 	defaultValue: defaultOptions.lossless,
-	// }),
 	new NumberOption({
 		id: "quality",
-		label: "Quality",
+		label: "Quality (100 = lossless)",
 		min: 0,
-		max: 95,
+		max: 100,
 		step: 0.1,
 		defaultValue: defaultOptions.quality,
 	}),
@@ -64,9 +59,9 @@ const templates: OptionType[] = [
 	}),
 	new EnumOption({
 		id: "uv_mode",
-		label: "UVMode",
-		enumObject: UVMode,
-		defaultValue: "Adapt",
+		label: "Subsample chroma",
+		enumObject: Subsample,
+		defaultValue: "Auto",
 	}),
 	new EnumOption({
 		id: "csp_type",

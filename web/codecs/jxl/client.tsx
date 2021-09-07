@@ -22,6 +22,22 @@ const templates: OptionType[] = [
 		label: "Slight loss",
 		defaultValue: defaultOptions.lossyPalette,
 	}),
+	new NumberOption({
+		id: "epf",
+		label: "Edge preserving filter (-1 = auto)",
+		min: -1,
+		max: 6,
+		step: 1,
+		defaultValue: defaultOptions.epf,
+	}),
+	new NumberOption({
+		id: "decodingSpeedTier",
+		label: "Optimise for decoding speed",
+		min: 0,
+		max: 4,
+		step: 1,
+		defaultValue: defaultOptions.decodingSpeedTier,
+	}),
 	new BoolOption({
 		id: "progressive",
 		label: "Progressive",
@@ -35,14 +51,6 @@ const templates: OptionType[] = [
 		step: 1,
 		mapFn: v => 7 - v,
 		defaultValue: defaultOptions.speed,
-	}),
-	new NumberOption({
-		id: "epf",
-		label: "Edge preserving filter",
-		min: -1,
-		max: 6,
-		step: 1,
-		defaultValue: defaultOptions.epf,
 	}),
 ];
 

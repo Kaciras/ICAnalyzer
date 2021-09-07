@@ -1,5 +1,5 @@
 import { ImageWorker } from "../../features/image-worker";
-import { BoolOption, EnumOption, NumberOption, OptionType, PresetOption } from "../../form";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { defaultOptions, EncodeOptions } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
 import { buildOptions, createState, mergeOptions, renderOption } from "../common";
@@ -8,46 +8,10 @@ export const name = "WebP";
 export const mimeType = "image/webp";
 export const extension = "webp";
 
-const WebPImageHint = {
-	Default: 0,
-	Picture: 1,
-	Photo: 2,
-	Graph: 3,
-};
-
-// https://github.com/webmproject/libwebp/blob/83604bf3ac2212a353c53d8c9df35d94fa9ab000/src/enc/config_enc.c#L62
-const WebPPreset = {
-	default: {
-		// nothing to do.
-	},
-	photo: {
-		sns_strength: 80,
-		filter_sharpness: 3,
-		filter_strength: 30,
-		preprocessing: (v: number) => v | 2,
-	},
-	picture: {
-		sns_strength: 80,
-		filter_sharpness: 4,
-		filter_strength: 35,
-		preprocessing: (v: number) => v & ~2,
-	},
-	drawing: {
-		sns_strength: 25,
-		filter_sharpness: 6,
-		filter_strength: 10,
-	},
-	icon: {
-		sns_strength: 25,
-		filter_strength: 10,
-		preprocessing: (v: number) => v & ~2,
-	},
-	text: {
-		sns_strength: 0,
-		filter_strength: 0,
-		segments: 2,
-		preprocessing: (v: number) => v & ~2,
-	},
+const Preprocess = {
+	"None": 0,
+	"Segment smooth": 1,
+	"Dithering": 2,
 };
 
 const templates: OptionType[] = [
@@ -55,6 +19,14 @@ const templates: OptionType[] = [
 		id: "lossless",
 		label: "lossless",
 		defaultValue: defaultOptions.lossless,
+	}),
+	new NumberOption({
+		id: "method",
+		label: "Method (-m)",
+		min: 0,
+		max: 6,
+		step: 1,
+		defaultValue: defaultOptions.method,
 	}),
 	new NumberOption({
 		id: "quality",
@@ -72,34 +44,6 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.near_lossless,
 	}),
-	new NumberOption({
-		id: "method",
-		label: "Method (-m)",
-		min: 0,
-		max: 6,
-		step: 1,
-		defaultValue: defaultOptions.method,
-	}),
-	new PresetOption({
-		id: "preset",
-		label: "Preset (-preset)",
-		enumObject: WebPPreset,
-		defaultValue: "default",
-	}),
-	new NumberOption({
-		id: "sns_strength",
-		label: "Spatial noise shaping (-sns)",
-		min: 0,
-		max: 100,
-		step: 1,
-		defaultValue: defaultOptions.sns_strength,
-	}),
-	new BoolOption({
-		id: "filter_type",
-		label: "User strong filter (-strong)",
-		defaultValue: defaultOptions.filter_type,
-	}),
-
 	new BoolOption({
 		id: "autofilter",
 		label: "Auto adjust filter strength (-af)",
@@ -112,6 +56,11 @@ const templates: OptionType[] = [
 		max: 100,
 		step: 1,
 		defaultValue: defaultOptions.filter_strength,
+	}),
+	new BoolOption({
+		id: "filter_type",
+		label: "User strong filter (-strong)",
+		defaultValue: defaultOptions.filter_type,
 	}),
 	new NumberOption({
 		id: "filter_sharpness",
@@ -126,12 +75,38 @@ const templates: OptionType[] = [
 		label: "Sharp YUV",
 		defaultValue: defaultOptions.use_sharp_yuv,
 	}),
-	new EnumOption({
-		id: "image_hint",
-		label: "Hint (-hint)",
-		enumObject: WebPImageHint,
-		defaultValue: "Default",
+	new NumberOption({
+		id: "pass",
+		label: "Passes",
+		min: 1,
+		max: 10,
+		step: 1,
+		defaultValue: defaultOptions.pass,
 	}),
+	new NumberOption({
+		id: "sns_strength",
+		label: "Spatial noise shaping (-sns)",
+		min: 0,
+		max: 100,
+		step: 1,
+		defaultValue: defaultOptions.sns_strength,
+	}),
+	new EnumOption({
+		id: "preprocessing",
+		label: "Preprocess",
+		enumObject: Preprocess,
+		defaultValue: "None",
+	}),
+	new NumberOption({
+		id: "segments",
+		label: "Segments",
+		min: 1,
+		max: 4,
+		step: 1,
+		defaultValue: defaultOptions.segments,
+	}),
+
+	// There is no image_hint option since it have no effect.
 ];
 
 export function getState(saved?: EncoderState): EncoderState {

@@ -23,23 +23,11 @@ const templates: OptionType[] = [
 		enumObject: ColorSpace,
 		defaultValue: "YCbCr",
 	}),
-	new EnumOption({
-		id: "quant_table",
-		label: "Quantization",
-		enumObject: Quantization,
-		defaultValue: "ImageMagick",
-	}),
-	new BoolOption({
-		id: "arithmetic",
-		label: "Arithmetic",
-		defaultValue: defaultOptions.arithmetic,
-	}),
 	new BoolOption({
 		id: "auto_subsample",
 		label: "Auto subsample chroma",
 		defaultValue: defaultOptions.auto_subsample,
 	}),
-
 	new BoolOption({
 		id: "separate_chroma_quality",
 		label: "Separate chroma quality",
@@ -53,16 +41,6 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.chroma_quality,
 	}),
-
-	new NumberOption({
-		id: "smoothing",
-		label: "Smoothing",
-		min: 0,
-		max: 100,
-		step: 1,
-		defaultValue: defaultOptions.smoothing,
-	}),
-
 	new BoolOption({
 		id: "baseline",
 		label: "Pointless spec compliance",
@@ -73,18 +51,31 @@ const templates: OptionType[] = [
 		label: "Progressive",
 		defaultValue: defaultOptions.progressive,
 	}),
-	new BoolOption({
+	new BoolOption({  // Visible when baseline enabled in Squoosh
 		id: "optimize_coding",
 		label: "Optimize Huffman table",
 		defaultValue: defaultOptions.optimize_coding,
 	}),
-
+	new NumberOption({
+		id: "smoothing",
+		label: "Smoothing",
+		min: 0,
+		max: 100,
+		step: 1,
+		defaultValue: defaultOptions.smoothing,
+	}),
+	new EnumOption({
+		id: "quant_table",
+		label: "Quantization",
+		enumObject: Quantization,
+		defaultValue: "ImageMagick",
+	}),
 	new BoolOption({
 		id: "trellis_multipass",
 		label: "Trellis multipass",
 		defaultValue: defaultOptions.trellis_multipass,
 	}),
-	new BoolOption({
+	new BoolOption({ // Visible when trellis_multipass enabled in Squoosh
 		id: "trellis_opt_zero",
 		label: "Optimize zero block runs",
 		defaultValue: defaultOptions.trellis_opt_zero,

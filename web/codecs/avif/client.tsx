@@ -8,15 +8,27 @@ export const name = "AVIF";
 export const mimeType = "image/avif";
 export const extension = "avif";
 
+const AVIFTune = {
+	Auto: 0,
+	PSNR: 1,
+	SSIM: 3,
+};
+
 const templates: OptionType[] = [
 	new NumberOption({
 		id: "cqLevel",
-		label: "Quality",
+		label: "Quality (63 = lossless)",
 		min: 0,
 		max: 63,
 		step: 1,
 		mapFn: i => 63 - i,
 		defaultValue: defaultOptions.cqLevel,
+	}),
+	new EnumOption({
+		id: "subsample",
+		label: "Subsample",
+		enumObject: Subsampling,
+		defaultValue: "YUV420",
 	}),
 	new NumberOption({
 		id: "cqAlphaLevel",
@@ -26,6 +38,11 @@ const templates: OptionType[] = [
 		step: 1,
 		mapFn: i => (i === -1) ? -1 : 63 - i,
 		defaultValue: defaultOptions.cqAlphaLevel,
+	}),
+	new BoolOption({
+		id: "chromaDeltaQ",
+		label: "Extra chroma compression",
+		defaultValue: defaultOptions.chromaDeltaQ,
 	}),
 	new NumberOption({
 		id: "sharpness",
@@ -43,10 +60,11 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.denoiseLevel,
 	}),
-	new BoolOption({
-		id: "chromaDeltaQ",
-		label: "Extra chroma compression",
-		defaultValue: defaultOptions.chromaDeltaQ,
+	new EnumOption({
+		id: "tune",
+		label: "Tuning",
+		enumObject: AVIFTune,
+		defaultValue: "Auto",
 	}),
 	new NumberOption({
 		id: "tileRowsLog2",
@@ -71,12 +89,6 @@ const templates: OptionType[] = [
 		max: 10,
 		step: 1,
 		defaultValue: defaultOptions.speed,
-	}),
-	new EnumOption({
-		id: "subsample",
-		label: "Subsample",
-		enumObject: Subsampling,
-		defaultValue: "YUV420",
 	}),
 ];
 

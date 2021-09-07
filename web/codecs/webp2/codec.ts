@@ -4,17 +4,17 @@ import { wasmDecodeFn, wasmEncodeFn } from "../common";
 
 export { EncodeOptions };
 
-export const UVMode = {
-	"Adapt": 0,
-	"420": 1,
-	"444": 2,
+export const Subsample = {
 	"Auto": 3,
+	"Vary": 0, // Adapt
+	"Half": 1, // YUV420
+	"Off": 2,  // YUV444
 };
 
 export const Csp = {
 	YCoCg: 0,
 	YCbCr: 1,
-	Custom: 2,
+	// Custom: 2,
 	YIQ: 3,
 };
 
@@ -24,7 +24,7 @@ export const defaultOptions: EncodeOptions = {
 	effort: 5,
 	pass: 1,
 	sns: 50,
-	uv_mode: UVMode.Adapt,
+	uv_mode: Subsample.Auto,
 	csp_type: Csp.YCoCg,
 	error_diffusion: 0,
 	use_random_matrix: false,
