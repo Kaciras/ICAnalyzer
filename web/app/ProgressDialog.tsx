@@ -13,20 +13,29 @@ export default function ProgressDialog(props: ProgressDialogProps) {
 	const { value, max, error, onCancel } = props;
 
 	const startTime = useRef(performance.now());
+	const timer = useRef(0);
 	const [timeUsage, setTimeUsage] = useState("--:--:--");
 
-	function scheduleRefreshTask() {
-		function refreshTime() {
+	function scheduleTimer() {
+
+		function refresh() {
 			const ms = performance.now() - startTime.current;
 			const date = new Date(ms);
 			setTimeUsage(date.toISOString().substr(11, 8));
 		}
 
-		const timer = setInterval(refreshTime, 1000);
-		return () => clearInterval(timer);
+		timer.current = window.setInterval(refresh, 1000);
+		return () => window.clearInterval(timer.current);
 	}
 
-	useEffect(scheduleRefreshTask, []);
+	function interruptOnError() {
+		if (error) {
+			window.clearInterval(timer.current);
+		}
+	}
+
+	useEffect(scheduleTimer, []);
+	useEffect(interruptOnError, [error]);
 
 	return (
 		<Dialog onClose={onCancel}>
