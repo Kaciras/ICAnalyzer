@@ -23,6 +23,9 @@ export function getEncodingOptions(saved?: EncodingOptions) {
 		}
 	}
 	if (!saved) {
+		const { quality } = config.WebP.state;
+		quality.isVariable = true;
+		quality.range.step = 5;
 		config.WebP.enable = true;
 	}
 	return config;

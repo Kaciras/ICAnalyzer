@@ -3,45 +3,42 @@ import { OptionsKeyPair, OptionType } from "../form";
 import { EncoderState, OptionPanelProps } from "./index";
 
 export function createState(templates: OptionType[]) {
-	const values: Record<string, any> = {};
-	const ranges: Record<string, any> = {};
+	const state: EncoderState = {};
 
 	for (const t of templates) {
 		const [value, range] = t.createState();
-		values[t.id] = value;
-		ranges[t.id] = range;
+
+		state[t.id] = {
+			value,
+			range,
+			isVariable: false,
+		};
 	}
-	return { varNames: [], values, ranges } as EncoderState;
+	return state;
 }
 
 export function renderOption(template: OptionType, props: OptionPanelProps) {
 	const { id, OptionField } = template;
 	const { state, onChange } = props;
-	const { varNames, values, ranges } = state;
 
-	function handleTypeChange(value: boolean) {
-		let { varNames } = state;
-		if (value) {
-			varNames.push(id);
-		} else {
-			varNames = varNames.filter(v => v !== id);
-		}
-		onChange({ ...state, varNames });
+	function handleTypeChange(isVariable: boolean) {
+		const newOption = { ...state[id], isVariable };
+		onChange({ ...state, [id]: newOption });
 	}
 
 	function handleValueChange(value: any) {
-		onChange({ ...state, values: { ...values, [id]: value } });
+		const newOption = { ...state[id], value };
+		onChange({ ...state, [id]: newOption });
 	}
 
 	function handleRangeChange(range: any) {
-		onChange({ ...state, ranges: { ...ranges, [id]: range } });
+		const newOption = { ...state[id], range };
+		onChange({ ...state, [id]: newOption });
 	}
 
 	return <OptionField
 		key={id}
-		isVariable={varNames.includes(id)}
-		value={values[id]}
-		range={ranges[id]}
+		{...state[id]}
 		onValueChange={handleValueChange}
 		onRangeChange={handleRangeChange}
 		onVariabilityChange={handleTypeChange}
@@ -49,21 +46,21 @@ export function renderOption(template: OptionType, props: OptionPanelProps) {
 }
 
 export function buildOptions(templates: OptionType[], state: EncoderState) {
-	const { varNames, values, ranges } = state;
 
 	function applyOption(list: OptionsKeyPair[], template: OptionType) {
 		const { id } = template;
+		const { isVariable, value, range } = state[id];
 
-		if (varNames.includes(id)) {
+		if (isVariable) {
 			const newList: OptionsKeyPair[] = [];
 
 			for (const { key, options } of list) {
-				const generated = template.generate(ranges[id], key, options);
+				const generated = template.generate(range, key, options);
 				newList.push(...generated);
 			}
 			return newList;
 		} else {
-			list.forEach(({ options }) => template.populate(values[id], options));
+			list.forEach(({ options }) => template.populate(value, options));
 			return list;
 		}
 	}

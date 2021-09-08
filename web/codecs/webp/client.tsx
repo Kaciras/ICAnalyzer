@@ -109,13 +109,8 @@ const templates: OptionType[] = [
 	// There is no image_hint option since it have no effect.
 ];
 
-export function getState(saved?: EncoderState): EncoderState {
-	if (saved) {
-		return saved;
-	}
-	const { values, ranges } = createState(templates);
-	(ranges.quality as any).step = 5;
-	return { varNames: ["quality"], values, ranges };
+export function getState(saved?: EncoderState) {
+	return saved ?? createState(templates);
 }
 
 export function OptionsPanel(props: OptionPanelProps) {
@@ -127,10 +122,9 @@ export function getOptionsList(state: EncoderState) {
 }
 
 export function getControls(state: EncoderState) {
-	const { varNames, ranges } = state;
 	return templates
-		.filter(t => varNames.includes(t.id))
-		.map(t => t.createControl(ranges[t.id]));
+		.filter(t => state[t.id].isVariable)
+		.map(t => t.createControl(state[t.id].range));
 }
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {

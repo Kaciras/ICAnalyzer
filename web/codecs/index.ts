@@ -8,11 +8,13 @@ import * as WebP from "./webp/client";
 import * as AVIF from "./avif/client";
 import * as WebP2 from "./webp2/client";
 
-export interface EncoderState {
-	varNames: string[];
-	values: Record<string, unknown>;
-	ranges: Record<string, unknown>;
+interface OptionState {
+	value: any;
+	range: any;
+	isVariable: boolean;
 }
+
+export type EncoderState = Record<string, OptionState>;
 
 export interface OptionPanelProps {
 	state: EncoderState;

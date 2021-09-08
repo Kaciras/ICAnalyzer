@@ -89,10 +89,9 @@ export function getOptionsList(state: EncoderState) {
 }
 
 export function getControls(state: EncoderState) {
-	const { varNames, ranges } = state;
 	return templates
-		.filter(t => varNames.includes(t.id))
-		.map(t => t.createControl(ranges[t.id]));
+		.filter(t => state[t.id].isVariable)
+		.map(t => t.createControl(state[t.id].range));
 }
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
