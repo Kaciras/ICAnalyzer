@@ -2,7 +2,7 @@ import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { defaultOptions, EncodeOptions } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
-import { buildOptions, createState, mergeOptions, renderOption } from "../common";
+import { buildOptions, createState, renderOption } from "../options";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -118,7 +118,7 @@ export function OptionsPanel(props: OptionPanelProps) {
 }
 
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	return buildOptions(templates, state, defaultOptions);
 }
 
 export function getControls(state: EncoderState) {
@@ -128,5 +128,5 @@ export function getControls(state: EncoderState) {
 }
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
-	return worker.webpEncode(mergeOptions(defaultOptions, options));
+	return worker.webpEncode(options);
 }

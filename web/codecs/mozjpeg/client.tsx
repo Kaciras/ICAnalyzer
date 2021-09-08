@@ -2,7 +2,7 @@ import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { ColorSpace, defaultOptions, EncodeOptions, Quantization } from "./codec";
 import { EncoderState, OptionPanelProps } from "../index";
-import { buildOptions, createState, mergeOptions, renderOption } from "../common";
+import { buildOptions, createState, renderOption } from "../options";
 
 export const name = "MozJPEG";
 export const mimeType = "image/jpeg";
@@ -104,7 +104,7 @@ export function OptionsPanel(props: OptionPanelProps) {
 }
 
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	return buildOptions(templates, state, defaultOptions);
 }
 
 export function getControls(state: EncoderState) {
@@ -114,5 +114,5 @@ export function getControls(state: EncoderState) {
 }
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
-	return worker.mozjpegEncode(mergeOptions(defaultOptions, options));
+	return worker.mozjpegEncode(options);
 }

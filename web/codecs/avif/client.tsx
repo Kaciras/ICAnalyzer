@@ -1,7 +1,7 @@
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
 import { EncoderState, OptionPanelProps } from "../index";
-import { buildOptions, createState, renderOption } from "../common";
+import { buildOptions, createState, renderOption } from "../options";
 import { defaultOptions, EncodeOptions, Subsampling } from "./codec";
 
 export const name = "AVIF";
@@ -101,7 +101,7 @@ export function OptionsPanel(props: OptionPanelProps) {
 }
 
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	return buildOptions(templates, state, defaultOptions);
 }
 
 export function getControls(state: EncoderState) {
@@ -111,5 +111,5 @@ export function getControls(state: EncoderState) {
 }
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
-	return worker.avifEncode({ ...defaultOptions, ...options });
+	return worker.avifEncode(options);
 }

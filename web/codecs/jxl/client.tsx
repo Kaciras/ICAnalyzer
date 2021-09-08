@@ -1,8 +1,8 @@
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, NumberOption, OptionType } from "../../form";
-import { buildOptions, createState, mergeOptions, renderOption } from "../common";
 import { EncoderState, OptionPanelProps } from "../index";
 import { defaultOptions, EncodeOptions } from "./codec";
+import { buildOptions, createState, renderOption } from "../options";
 
 export const name = "JPEG XL";
 export const mimeType = "image/jxl";
@@ -63,7 +63,7 @@ export function OptionsPanel(props: OptionPanelProps) {
 }
 
 export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state);
+	return buildOptions(templates, state, defaultOptions);
 }
 
 export function getControls(state: EncoderState) {
@@ -73,5 +73,5 @@ export function getControls(state: EncoderState) {
 }
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
-	return worker.jxlEncode(mergeOptions(defaultOptions, options));
+	return worker.jxlEncode(options);
 }
