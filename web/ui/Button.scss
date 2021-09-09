@@ -1,15 +1,26 @@
 $stripeWidth: 32px;
 
-.text {
+.base {
 	display: inline-flex;
+	align-items: center;
+
+	// Align center when align-* cannot be used
+	vertical-align: middle;
+
+	transition: .15s ease;
+}
+
+.text {
+	composes: base;
+
+	--color: rgba(0, 0, 0, .05);
+	--color-light: rgba(0, 0, 0, .08);
+
 	padding: 10px;
 	color: inherit;
 
-	// Avoid +1px height for <a> on chrome
-	line-height: 1;
-
 	&:hover, &:focus-visible {
-		background: rgba(255, 255, 255, .2);
+		background: var(--color);
 	}
 
 	&:focus-visible {
@@ -17,7 +28,7 @@ $stripeWidth: 32px;
 	}
 
 	&:active {
-		background: rgba(255, 255, 255, .15);
+		background: var(--color-light);
 	}
 
 	&.active {
@@ -35,21 +46,20 @@ $stripeWidth: 32px;
 }
 
 .button {
+	composes: base;
+
+	--color: #0776df;
+	--color-light: #0781f2;
+	--color-active: #066fd1;
+	--color-outline: rgba(0, 112, 217, 0.5);
+
 	padding: 8px 16px;
 	border-radius: 4px;
 
-	--color: #0776df;
-	--color-light: #2596ff;
-	--color-outline: rgba(0, 112, 217, 0.5);
-
 	color: white;
 	background-color: var(--color);
-
-	align-items: center;
 	letter-spacing: .5px;
-
 	text-decoration: none;
-	transition: .15s;
 
 	&:hover {
 		text-decoration: none;
@@ -60,6 +70,10 @@ $stripeWidth: 32px;
 		text-decoration: none;
 		outline: none;
 		box-shadow: 0 0 0 5px var(--color-outline);
+	}
+
+	&:active {
+		background-color: var(--color-active);
 	}
 
 	&:disabled {
@@ -85,8 +99,15 @@ $stripeWidth: 32px;
 
 :global(.second) {
 	--color: #e10199;
-	--color-light: #f525af;
+	--color-light: #f024ac;
+	--color-active: #d9219b;
 	--color-outline: rgba(242, 0, 166, .45);
+}
+
+// Text button in the dark container
+:global(.dark) {
+	--color: rgba(255, 255, 255, .2);
+	--color-light: rgba(255, 255, 255, .15);
 }
 
 .button.active {

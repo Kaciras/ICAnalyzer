@@ -15,7 +15,8 @@ export default function SwitchButton(props: SwitchButtonProps) {
 	const clazz = clsx(
 		styles.container,
 		className,
-		{ [styles.checked]: checked },
+		disabled && styles.disabled,
+		checked && styles.checked,
 	);
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {

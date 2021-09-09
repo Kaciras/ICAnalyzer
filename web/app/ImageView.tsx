@@ -99,6 +99,7 @@ export default function ImageView(props: ImageViewProps) {
 		return (
 			<Button
 				key={value}
+				className="dark"
 				type="text"
 				active={type === value}
 				disabled={disabled}

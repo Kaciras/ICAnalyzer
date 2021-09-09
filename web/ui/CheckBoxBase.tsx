@@ -45,8 +45,14 @@ export default function CheckBoxBase(props: InternalProps) {
 
 	const CheckMark = checked ? IconChecked : Icon;
 
+	const clazz = clsx(
+		styles.container,
+		className,
+		disabled && styles.disabled,
+	);
+
 	return (
-		<label className={clsx(styles.container, className)} onClick={onClick}>
+		<label className={clazz} onClick={onClick}>
 			<input
 				type={type}
 				className={styles.input}

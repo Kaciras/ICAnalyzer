@@ -38,11 +38,14 @@ export default function RangeInput(props: RangeInputProps) {
 		onValueChange(e.currentTarget.valueAsNumber);
 	}
 
+	const clazz = clsx(
+		styles.container,
+		className,
+		disabled && styles.disabled,
+	);
+
 	return (
-		<div
-			className={clsx(styles.container, className)}
-			style={cssVariables}
-		>
+		<div className={clazz} style={cssVariables}>
 			<input
 				type="range"
 				className={styles.input}

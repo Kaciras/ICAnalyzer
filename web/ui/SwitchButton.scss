@@ -3,6 +3,8 @@ $height: 24px;
 $padding: 4px;
 
 .container {
+	--thumb-color: white;
+
 	display: inline-block;
 	position: relative;
 
@@ -28,7 +30,7 @@ $padding: 4px;
 		height: $thumbSize;
 
 		border-radius: 50%;
-		background: white;
+		background: var(--thumb-color);
 		transition: margin-left .2s;
 	}
 }
@@ -39,6 +41,13 @@ $padding: 4px;
 	&::before {
 		margin-left: $width - $height;
 	}
+}
+
+.disabled {
+	--thumb-color: #eee;
+
+	cursor: default;
+	background: #bbb;
 }
 
 .input {
