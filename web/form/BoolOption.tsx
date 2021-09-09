@@ -1,5 +1,7 @@
-import { CheckBox, SwitchButton } from "../ui";
+import { SwitchButton } from "../ui";
+import { OptionMode } from "../codecs";
 import { OptionFieldProps, OptionType } from "./index";
+import ModeSwitcher from "./ModeSwitcher";
 import SwitchControl from "./SwitchControl";
 import styles from "./SwitchControl.scss";
 
@@ -32,20 +34,25 @@ export class BoolOption implements OptionType<boolean> {
 
 	OptionField(props: OptionFieldProps<boolean, any>) {
 		const { id, label } = this.data;
-		const { isVariable, value, onValueChange, onVariabilityChange } = props;
+		const { mode, value, onValueChange, onModeChange } = props;
 
 		return (
 			<fieldset className={styles.container}>
-				<CheckBox
-					className={styles.label}
-					checked={isVariable}
-					onValueChange={onVariabilityChange}
-				>
+				<ModeSwitcher
+					mode={mode}
+					onChange={onModeChange}
+				/>
+				<span className={styles.label}>
 					{label}
-				</CheckBox>
-				{isVariable
-					? <strong>OFF & ON</strong>
-					: <SwitchButton name={id} checked={value} onValueChange={onValueChange}/>
+				</span>
+				{
+					mode === OptionMode.Range
+						? <strong>OFF & ON</strong>
+						: <SwitchButton
+							name={id}
+							checked={value}
+							onValueChange={onValueChange}
+						/>
 				}
 			</fieldset>
 		);

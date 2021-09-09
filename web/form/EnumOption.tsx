@@ -1,8 +1,10 @@
 import { ChangeEvent } from "react";
-import type { OptionFieldProps, OptionType } from ".";
 import { CheckBox, RadioBox } from "../ui";
-import styles from "./EnumControl.scss";
+import { OptionMode } from "../codecs";
+import type { OptionFieldProps, OptionType } from ".";
+import ModeSwitcher from "./ModeSwitcher";
 import EnumControl from "./EnumControl";
+import styles from "./EnumControl.scss";
 
 export interface EnumOptionConfig<T extends Record<string, any>> {
 	id: string;
@@ -36,7 +38,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 
 	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
 		const { id, label, enumObject } = this.data;
-		const { isVariable, value, range, onValueChange, onRangeChange, onVariabilityChange } = props;
+		const { mode, value, range, onValueChange, onRangeChange, onModeChange } = props;
 
 		function handleChangeV(e: ChangeEvent<HTMLInputElement>) {
 			const { checked, name } = e.currentTarget;
@@ -58,7 +60,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 		}
 
 		let items: any[];
-		if (isVariable) {
+		if (mode === OptionMode.Range) {
 			items = Object.keys(enumObject).map(name => {
 				return <CheckBox
 					className={styles.item}
@@ -87,13 +89,13 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 
 		return (
 			<fieldset className={styles.fieldset}>
-				<CheckBox
-					className={styles.header}
-					checked={isVariable}
-					onValueChange={onVariabilityChange}
-				>
+				<ModeSwitcher
+					mode={mode}
+					onChange={onModeChange}
+				/>
+				<span className={styles.label}>
 					{label}
-				</CheckBox>
+				</span>
 				<div className={styles.body}>{items}</div>
 			</fieldset>
 		);

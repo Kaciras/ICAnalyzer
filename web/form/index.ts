@@ -2,13 +2,14 @@ import { Dispatch } from "react";
 import RangeControl from "./RangeControl";
 import EnumControl from "./EnumControl";
 import SwitchControl from "./SwitchControl";
+import { OptionMode } from "../codecs";
 
 export interface OptionFieldProps<T, V> {
-	isVariable: boolean;
+	mode: OptionMode;
 	value: T;
 	range: V;
 
-	onVariabilityChange: Dispatch<boolean>;
+	onModeChange: Dispatch<OptionMode>;
 	onValueChange: Dispatch<T>;
 	onRangeChange: Dispatch<V>;
 }

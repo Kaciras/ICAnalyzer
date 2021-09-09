@@ -1,9 +1,11 @@
 import { Dispatch } from "react";
-import { CheckBox, NumberInput, RangeInput } from "../ui";
+import { NumberInput, RangeInput } from "../ui";
+import { IDENTITY } from "../utils";
+import { OptionMode } from "../codecs";
 import type { OptionFieldProps, OptionType } from ".";
+import ModeSwitcher from "./ModeSwitcher";
 import RangeControl, { NumberRange, sequence } from "./RangeControl";
 import styles from "./RangeControl.scss";
-import { IDENTITY } from "../utils";
 
 interface RangePartProps {
 	name: keyof NumberRange;
@@ -106,20 +108,20 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	OptionField(props: OptionFieldProps<number, NumberRange>) {
 		const { VariableMode, ConstMode } = this;
 		const { label, min, max, step } = this.data;
-		const { isVariable, value, onVariabilityChange, onValueChange } = props;
+		const { mode, value, onModeChange, onValueChange } = props;
 
 		return (
 			<fieldset className={styles.fieldset}>
 				<div className={styles.header}>
-					<CheckBox
-						className={styles.label}
-						checked={isVariable}
-						onValueChange={onVariabilityChange}
-					>
+					<ModeSwitcher
+						mode={mode}
+						onChange={onModeChange}
+					/>
+					<span className={styles.label}>
 						{label}
-					</CheckBox>
+					</span>
 					{
-						!isVariable &&
+						mode !== OptionMode.Range &&
 						<input
 							className={styles.input}
 							type="number"
@@ -131,7 +133,11 @@ export class NumberOption implements OptionType<number, NumberRange> {
 						/>
 					}
 				</div>
-				{isVariable ? <VariableMode {...props}/> : <ConstMode {...props}/>}
+				{
+					mode === OptionMode.Range
+						? <VariableMode {...props}/>
+						: <ConstMode {...props}/>
+				}
 			</fieldset>
 		);
 	}
@@ -142,7 +148,7 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	generate(range: NumberRange, key: any, options: any) {
-		const { id,  mapFn = IDENTITY } = this.data;
+		const { id, mapFn = IDENTITY } = this.data;
 
 		return sequence(range).map(value => {
 			const newOpts = { ...options, [id]: mapFn(value) };
