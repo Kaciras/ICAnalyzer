@@ -24,34 +24,34 @@ export default class WorkerPool<T> {
 
 	private readonly factory: WorkerFactory;
 	private readonly workers: Worker[];
-	private readonly remotes: Array<Remote<T>>;
 
-	private readonly waiters: PromiseController[] = [];
+	private readonly remotes: Array<Remote<T>> = [];
 	private readonly queue: Array<WorkerJob<T>> = [];
 
-	private started = 0;
+	private readonly waiters: PromiseController[] = [];
+
+	private size = 0;
 
 	terminated = false;
 
-	constructor(factory: WorkerFactory, size: number) {
-		if (size < 1) {
+	constructor(factory: WorkerFactory, maxSize: number) {
+		if (maxSize < 1) {
 			throw new Error("Worker count must be at least 1");
 		}
 		this.factory = factory;
-		this.workers = new Array(size);
-		this.remotes = new Array(size);
+		this.workers = new Array(maxSize);
 	}
 
 	/**
-	 * Execute a function with each worker.
+	 * Execute a function with each worker, call this method will start all workers.
 	 *
 	 * @param action the Function to execute.
 	 */
 	runOnEach<R>(action: TaskFn<T, R>) {
 		const { workers, remotes } = this;
-		const size = workers.length;
+		const max = workers.length;
 
-		while (this.started < size) {
+		while (this.size < max) {
 			this.startWorker();
 		}
 		return Promise.all(remotes.map(action));
@@ -78,21 +78,21 @@ export default class WorkerPool<T> {
 	}
 
 	private get allWorkerAreFree() {
-		return this.remotes.length === this.workers.length;
+		return this.remotes.length === this.size;
 	}
 
 	private startWorker() {
 		const worker = this.factory();
 		const remote = wrap<T>(worker);
 
-		const index = this.started++;
+		const index = this.size++;
+		this.remotes.push(remote);
 		this.workers[index] = worker;
-		this.remotes[index] = remote;
 	}
 
 	private addJob(job: WorkerJob<T>) {
-		const { workers, remotes, started } = this;
-		if (remotes.length === 0 && started < workers.length) {
+		const { workers, remotes, size } = this;
+		if (remotes.length === 0 && size < workers.length) {
 			this.startWorker();
 		}
 		const remote = remotes.pop();

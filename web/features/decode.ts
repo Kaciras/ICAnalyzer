@@ -1,5 +1,5 @@
 import { wrap } from "comlink";
-import { blobToImg, canDecodeImageType } from "squoosh/src/client/lazy-app/util";
+import { blobToImg, canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util";
 import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas";
 import { ImageWorkerApi } from "./worker";
 import { ImageWorker, workerFactory } from "./image-worker";
@@ -56,8 +56,11 @@ async function svgToImageData(svgXml: string) {
 }
 
 export async function decode(blob: Blob, worker?: ImageWorker) {
-	const { type } = blob;
+	let { type } = blob;
 
+	if (!type) {
+		type = await sniffMimeType(blob);
+	}
 	if (type === "image/svg+xml") {
 		return blob.text().then(svgToImageData);
 	}
