@@ -105,6 +105,15 @@ export class NumberOption implements OptionType<number, NumberRange> {
 		);
 	}
 
+	getValues(range: NumberRange) {
+		return sequence(range);
+	}
+
+	populate(value: number, options: any) {
+		const { id, mapFn = IDENTITY } = this.data;
+		options[id] = mapFn(value);
+	}
+
 	OptionField(props: OptionFieldProps<number, NumberRange>) {
 		const { VariableMode, ConstMode } = this;
 		const { label, min, max, step } = this.data;
@@ -140,20 +149,5 @@ export class NumberOption implements OptionType<number, NumberRange> {
 				}
 			</fieldset>
 		);
-	}
-
-	populate(value: number, options: any) {
-		const { id, mapFn = IDENTITY } = this.data;
-		options[id] = mapFn(value);
-	}
-
-	generate(range: NumberRange, key: any, options: any) {
-		const { id, mapFn = IDENTITY } = this.data;
-
-		return sequence(range).map(value => {
-			const newOpts = { ...options, [id]: mapFn(value) };
-			const newKey = { ...key, [id]: value };
-			return { key: newKey, options: newOpts };
-		});
 	}
 }

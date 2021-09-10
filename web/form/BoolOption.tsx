@@ -32,6 +32,14 @@ export class BoolOption implements OptionType<boolean> {
 		return [Boolean(this.data.defaultValue), undefined] as [boolean, never];
 	}
 
+	getValues(_: never) {
+		return [false, true];
+	}
+
+	populate(value: boolean, options: any) {
+		options[this.data.id] = value;
+	}
+
 	OptionField(props: OptionFieldProps<boolean, any>) {
 		const { id, label } = this.data;
 		const { mode, value, onValueChange, onModeChange } = props;
@@ -56,23 +64,5 @@ export class BoolOption implements OptionType<boolean> {
 				}
 			</fieldset>
 		);
-	}
-
-	populate(value: boolean, options: any) {
-		options[this.data.id] = value;
-	}
-
-	generate(_: never, key: any, options: any) {
-		const { id } = this.data;
-		return [
-			{
-				key: { ...key, [id]: false },
-				options: { ...options, [id]: false },
-			},
-			{
-				key: { ...key, [id]: true },
-				options: { ...options, [id]: true },
-			},
-		];
 	}
 }

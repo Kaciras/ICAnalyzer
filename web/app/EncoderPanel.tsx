@@ -2,7 +2,7 @@ import { Dispatch, useState } from "react";
 import clsx from "clsx";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { CheckBox } from "../ui";
-import { ENCODER_MAP, ENCODERS, EncoderState } from "../codecs";
+import { ENCODER_MAP, ENCODERS, EncoderState, OptionMode } from "../codecs";
 import styles from "./EncoderPanel.scss";
 
 export interface EncoderConfig {
@@ -15,18 +15,17 @@ export type EncodingOptions = Record<string, EncoderConfig>;
 export function getEncodingOptions(saved?: EncodingOptions) {
 	const config = saved ?? {};
 
-	for (const { name, getState } of ENCODERS) {
-		if (config[name]) {
-			config[name].state = getState(config[name].state);
-		} else {
-			config[name] = { enable: false, state: getState() };
-		}
+	for (const { name, optionsGenerator } of ENCODERS) {
+		config[name] ??= {
+			enable: false,
+			state: optionsGenerator.newState(),
+		};
 	}
 	if (!saved) {
 		const { quality } = config.WebP.state;
-		quality.isVariable = true;
-		quality.range.step = 5;
 		config.WebP.enable = true;
+		quality.range.step = 5;
+		quality.mode = OptionMode.Range;
 	}
 	return config;
 }
@@ -77,7 +76,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 		onChange({ ...value, [current]: c });
 	}
 
-	const { OptionsPanel } = ENCODER_MAP[current];
+	const { OptionsList } = ENCODER_MAP[current].optionsGenerator;
 
 	return (
 		<div className={styles.container} role="tabpanel">
@@ -85,7 +84,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 				{tabs}
 			</div>
 			<form className={styles.form}>
-				<OptionsPanel
+				<OptionsList
 					state={value[current].state}
 					onChange={handleOptionChange}
 				/>

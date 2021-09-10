@@ -36,6 +36,15 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 		return [defaultValue, [defaultValue]] as [keyof T, Array<keyof T>];
 	}
 
+	getValues(range: Array<keyof T>) {
+		return range;
+	}
+
+	populate(value: keyof T, options: any) {
+		const { id, enumObject } = this.data;
+		options[id] = enumObject[value];
+	}
+
 	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
 		const { id, label, enumObject } = this.data;
 		const { mode, value, range, onValueChange, onRangeChange, onModeChange } = props;
@@ -99,20 +108,5 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 				<div className={styles.body}>{items}</div>
 			</fieldset>
 		);
-	}
-
-	populate(value: keyof T, options: any) {
-		const { id, enumObject } = this.data;
-		options[id] = enumObject[value];
-	}
-
-	generate(range: Array<keyof T>, key: any, options: any) {
-		const { id, enumObject } = this.data;
-
-		return range.map(name => {
-			const newKey = { ...key, [id]: name };
-			const newOpts = { ...options, [id]: enumObject[name] };
-			return { key: newKey, options: newOpts };
-		});
 	}
 }

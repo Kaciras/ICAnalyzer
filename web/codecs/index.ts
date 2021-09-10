@@ -1,17 +1,21 @@
 import { Dispatch } from "react";
 import { ImageWorker } from "../features/image-worker";
-import { ControlType, OptionsKeyPair } from "../form";
 import { EncodeResult } from "./common";
 import * as MozJPEG from "./mozjpeg/client";
 import * as JXL from "./jxl/client";
 import * as WebP from "./webp/client";
 import * as AVIF from "./avif/client";
 import * as WebP2 from "./webp2/client";
+import { OptionsGenerator } from "./options";
+
+export enum OptionMode {
+	Constant, Range
+}
 
 interface OptionState {
 	value: any;
 	range: any;
-	isVariable: boolean;
+	mode: OptionMode;
 }
 
 export type EncoderState = Record<string, OptionState>;
@@ -26,13 +30,7 @@ export interface ImageEncoder {
 	extension: string;
 	mimeType: string;
 
-	getState(saved?: EncoderState): EncoderState;
-
-	OptionsPanel(props: OptionPanelProps): JSX.Element;
-
-	getOptionsList(state: EncoderState): OptionsKeyPair[];
-
-	getControls(state: EncoderState): ControlType[];
+	optionsGenerator: OptionsGenerator;
 
 	encode(options: any, worker: ImageWorker): Promise<EncodeResult>;
 }

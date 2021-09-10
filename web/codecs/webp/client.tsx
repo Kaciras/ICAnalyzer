@@ -1,8 +1,7 @@
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
+import OptionsGenerator from "../OptionsGenerator";
 import { defaultOptions, EncodeOptions } from "./codec";
-import { EncoderState, OptionPanelProps } from "../index";
-import { buildOptions, createState, renderOption } from "../options";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
@@ -109,23 +108,7 @@ const templates: OptionType[] = [
 	// There is no image_hint option since it have no effect.
 ];
 
-export function getState(saved?: EncoderState) {
-	return saved ?? createState(templates);
-}
-
-export function OptionsPanel(props: OptionPanelProps) {
-	return <>{templates.map(t => renderOption(t, props))}</>;
-}
-
-export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state, defaultOptions);
-}
-
-export function getControls(state: EncoderState) {
-	return templates
-		.filter(t => state[t.id].isVariable)
-		.map(t => t.createControl(state[t.id].range));
-}
+export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.webpEncode(options);

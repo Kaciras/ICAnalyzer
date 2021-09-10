@@ -1,8 +1,7 @@
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
+import OptionsGenerator from "../OptionsGenerator";
 import { Csp, defaultOptions, EncodeOptions, Subsample } from "./codec";
-import { EncoderState, OptionPanelProps } from "../index";
-import { buildOptions, createState, renderOption } from "../options";
 
 export const name = "WebP v2";
 export const mimeType = "image/webp2";
@@ -76,23 +75,7 @@ const templates: OptionType[] = [
 	}),
 ];
 
-export function getState(saved?: EncoderState) {
-	return saved ?? createState(templates);
-}
-
-export function OptionsPanel(props: OptionPanelProps) {
-	return <>{templates.map(t => renderOption(t, props))}</>;
-}
-
-export function getOptionsList(state: EncoderState) {
-	return buildOptions(templates, state, defaultOptions);
-}
-
-export function getControls(state: EncoderState) {
-	return templates
-		.filter(t => state[t.id].isVariable)
-		.map(t => t.createControl(state[t.id].range));
-}
+export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.webp2Encode(options);
