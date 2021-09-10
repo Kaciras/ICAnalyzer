@@ -22,12 +22,14 @@ interface WorkerJob<T> {
  */
 export default class WorkerPool<T> {
 
+	private readonly factory: WorkerFactory;
 	private readonly workers: Worker[];
 	private readonly remotes: Array<Remote<T>>;
 
 	private readonly waiters: PromiseController[] = [];
-
 	private readonly queue: Array<WorkerJob<T>> = [];
+
+	private started = 0;
 
 	terminated = false;
 
@@ -35,23 +37,24 @@ export default class WorkerPool<T> {
 		if (size < 1) {
 			throw new Error("Worker count must be at least 1");
 		}
+		this.factory = factory;
 		this.workers = new Array(size);
 		this.remotes = new Array(size);
-
-		for (let i = 0; i < size; i++) {
-			const worker = factory();
-			this.workers[i] = worker;
-			this.remotes[i] = wrap<T>(worker);
-		}
 	}
 
 	/**
 	 * Execute a function with each worker.
 	 *
-	 * @param fn Function
+	 * @param action the Function to execute.
 	 */
-	runOnEach<R>(fn: TaskFn<T, R>) {
-		return Promise.all(this.remotes.map(fn));
+	runOnEach<R>(action: TaskFn<T, R>) {
+		const { workers, remotes } = this;
+		const size = workers.length;
+
+		while (this.started < size) {
+			this.startWorker();
+		}
+		return Promise.all(remotes.map(action));
 	}
 
 	run<R>(task: TaskFn<T, R>) {
@@ -78,8 +81,21 @@ export default class WorkerPool<T> {
 		return this.remotes.length === this.workers.length;
 	}
 
+	private startWorker() {
+		const worker = this.factory();
+		const remote = wrap<T>(worker);
+
+		const index = this.started++;
+		this.workers[index] = worker;
+		this.remotes[index] = remote;
+	}
+
 	private addJob(job: WorkerJob<T>) {
-		const remote = this.remotes.pop();
+		const { workers, remotes, started } = this;
+		if (remotes.length === 0 && started < workers.length) {
+			this.startWorker();
+		}
+		const remote = remotes.pop();
 		if (!remote) {
 			this.queue.push(job);
 		} else {

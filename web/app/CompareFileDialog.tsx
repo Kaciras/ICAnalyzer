@@ -4,7 +4,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautif
 import { Button, Dialog, FileDrop } from "../ui";
 import { bytes, uniqueKey } from "../utils";
 import { decode } from "../features/decode";
-import { InputImage } from "../features/image-worker";
+import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker";
 import { CompareData } from "./CompareSession";
 import styles from "./CompareFileDialog.scss";
 
@@ -139,15 +139,24 @@ export interface CompareFileDialogProps {
 export default function CompareFileDialog(props: CompareFileDialogProps) {
 	const { data, onAccept, onCancel } = props;
 
-	const [error, setError] = useState<Error>();
 	const [images, setImages] = useState<InputWithId[]>(() => {
 		return data ? ([data.original, ...data.changed] as InputWithId[]) : [];
 	});
+	const imageWorker = useRef<ImageWorker>();
+	const [error, setError] = useState<Error>();
+
+	useEffect(initImagePool, []);
+
+	function initImagePool() {
+		const imagePool = newImagePool(navigator.hardwareConcurrency);
+		imageWorker.current = getPooledWorker(imagePool);
+		return () => imagePool.terminate();
+	}
 
 	function handleFileChange(files: File[]) {
 		const tasks = [];
 		for (const file of files) {
-			tasks.push(decode(file).then(raw => ({ file, raw, id: uniqueKey() })));
+			tasks.push(decode(file, imageWorker.current).then(raw => ({ file, raw, id: uniqueKey() })));
 		}
 		Promise.all(tasks)
 			.then(v => setImages([...images, ...v]))
