@@ -1,5 +1,5 @@
-import { RadioBox, RadioGroup } from "../ui";
-import { ControlType, FieldProps } from "./index";
+import { RadioBox, RadioGroup } from "../../ui";
+import { ControlType, FieldProps } from "..";
 import styles from "./EnumControl.scss";
 
 interface ControlData {

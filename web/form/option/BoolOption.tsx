@@ -1,7 +1,7 @@
-import { SwitchButton } from "../ui";
-import { OptionMode } from "../codecs";
-import { OptionFieldProps, OptionType } from "./index";
-import SwitchControl from "./SwitchControl";
+import { SwitchButton } from "../../ui";
+import { OptionMode } from "../../codecs";
+import { OptionFieldProps, OptionType } from "../index";
+import SwitchControl from "../control/SwitchControl";
 import styles from "./BoolOption.scss";
 
 export interface BoolVariableConfig {

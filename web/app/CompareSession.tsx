@@ -2,7 +2,7 @@ import { Dispatch, useState } from "react";
 import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas";
 import { AnalyzeContext } from "./index";
 import { OptionsKey } from "../form";
-import RangeControl from "../form/RangeControl";
+import RangeControl from "../form/control/RangeControl";
 import {
 	AnalyzeResult,
 	getPooledWorker,

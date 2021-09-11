@@ -1,5 +1,5 @@
-import NumberField from "./NumberField";
-import { ControlType, FieldProps } from "./index";
+import NumberField from "../NumberField";
+import { ControlType, FieldProps } from "..";
 
 export interface NumberRange {
 	min: number;

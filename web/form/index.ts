@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
-import RangeControl from "./RangeControl";
-import EnumControl from "./EnumControl";
-import SwitchControl from "./SwitchControl";
+import RangeControl from "./control/RangeControl";
+import EnumControl from "./control/EnumControl";
+import SwitchControl from "./control/SwitchControl";
 import { OptionMode } from "../codecs";
 
 export interface OptionFieldProps<T, V> {
@@ -52,9 +52,9 @@ export interface OptionType<T = any, V = any> {
 	getValues(range: V): T[];
 }
 
-export { BoolOption } from "./BoolOption";
-export { EnumOption } from "./EnumOption";
-export { NumberOption } from "./NumberOption";
+export { BoolOption } from "./option/BoolOption";
+export { EnumOption } from "./option/EnumOption";
+export { NumberOption } from "./option/NumberOption";
 
 export const controlMap = {
 	bool: SwitchControl,
