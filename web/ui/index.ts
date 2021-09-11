@@ -12,7 +12,7 @@ export function RadioBox(props: CheckBoxProps) {
 	return CheckBoxBase({ ...props, type: "radio", Icon: RadioIcon, IconChecked: RadioIconActive });
 }
 
-export { default as RangeInput } from "./RangeInput";
+export { default as Slider } from "./Slider";
 export { default as Button } from "./Button";
 export { default as DownloadButton } from "./DownloadButton";
 export { default as NumberInput } from "./NumberInput";

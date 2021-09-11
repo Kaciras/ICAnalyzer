@@ -1,5 +1,5 @@
 import { ChangeEvent, Dispatch, ReactNode, useState } from "react";
-import { RangeInput } from "../ui";
+import { Slider } from "../ui";
 import styles from "./NumberField.scss";
 
 interface NumberFieldProps {
@@ -53,7 +53,7 @@ export default function NumberField(props: NumberFieldProps) {
 					onChange={handleNumberInput}
 				/>
 			</div>
-			<RangeInput
+			<Slider
 				name={name}
 				disabled={disabled}
 				value={value}

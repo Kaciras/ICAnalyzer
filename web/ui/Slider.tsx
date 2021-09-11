@@ -1,9 +1,9 @@
 import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch, MouseEventHandler } from "react";
 import clsx from "clsx";
 import { NOOP } from "../utils";
-import styles from "./RangeInput.scss";
+import styles from "./Slider.scss";
 
-interface RangeInputProps {
+export interface SliderProps {
 	value: number;
 	min: number;
 	max: number;
@@ -22,7 +22,7 @@ interface RangeInputCSS extends CSSProperties {
 	"--value-percent": string;
 }
 
-export default function RangeInput(props: RangeInputProps) {
+export default function Slider(props: SliderProps) {
 	const {
 		className, name, value, min, max, step, disabled,
 		onClick, onChange = NOOP, onValueChange = NOOP,
