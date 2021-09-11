@@ -1,11 +1,11 @@
 import { Dispatch } from "react";
-import { NumberInput, RangeInput } from "../ui";
+import { NumberInput } from "../ui";
 import { IDENTITY } from "../utils";
 import { OptionMode } from "../codecs";
 import type { OptionFieldProps, OptionType } from ".";
-import ModeSwitcher from "./ModeSwitcher";
 import RangeControl, { NumberRange, sequence } from "./RangeControl";
-import styles from "./RangeControl.scss";
+import styles from "./NumberOption.scss";
+import NumberField from "./NumberField";
 
 interface RangePartProps {
 	name: keyof NumberRange;
@@ -15,6 +15,29 @@ interface RangePartProps {
 	min?: number;
 	max?: number;
 	step?: number;
+}
+
+function RangePart(props: RangePartProps) {
+	const { name, min, max, step, range, onRangeChange } = props;
+
+	function handleChange(valueAsNumber: number) {
+		onRangeChange({ ...range, [name]: valueAsNumber });
+	}
+
+	return (
+		<label className={styles.spinner}>
+			<span>{name}</span>
+			<NumberInput
+				className={styles.numberInput}
+				name={name}
+				value={range[name]}
+				min={min}
+				max={max}
+				step={step}
+				onValueChange={handleChange}
+			/>
+		</label>
+	);
 }
 
 interface Metadata extends NumberRange {
@@ -33,7 +56,6 @@ export class NumberOption implements OptionType<number, NumberRange> {
 		this.VariableMode = this.VariableMode.bind(this);
 		this.ConstMode = this.ConstMode.bind(this);
 		this.OptionField = this.OptionField.bind(this);
-		this.RangePart = this.RangePart.bind(this);
 	}
 
 	get id() {
@@ -52,56 +74,43 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	ConstMode(props: OptionFieldProps<number, NumberRange>) {
-		const { id, min, max, step } = this.data;
+		const { id, label, min, max, step } = this.data;
 		const { value, onValueChange } = props;
 
 		return (
-			<RangeInput
+			<NumberField
 				className={styles.body}
 				name={id}
 				value={value}
 				min={min}
 				max={max}
 				step={step}
-				onValueChange={onValueChange}
-			/>
+				onChange={onValueChange}
+			>
+				{label}
+			</NumberField>
 		);
 	}
 
 	VariableMode(props: OptionFieldProps<number, NumberRange>) {
-		const { RangePart } = this;
-		const { step } = this.data;
+		const { data } = this;
 		const { range, onRangeChange } = props;
 
-		return (
-			<div className={styles.body}>
-				<RangePart range={range} onRangeChange={onRangeChange} name="min" max={range.max}/>
-				<RangePart range={range} onRangeChange={onRangeChange} name="max" min={range.min}/>
-				<RangePart range={range} onRangeChange={onRangeChange} name="step" min={step}/>
-			</div>
-		);
-	}
-
-	RangePart(props: RangePartProps) {
-		const { name, min, max, step, range, onRangeChange } = { ...this.data, ...props };
-
-		function handleChange(valueAsNumber: number) {
-			onRangeChange({ ...range, [name]: valueAsNumber });
-		}
+		const base = {
+			...data,
+			range,
+			onRangeChange,
+		};
 
 		return (
-			<label className={styles.spinner}>
-				<span>{name}</span>
-				<NumberInput
-					className={styles.numberInput}
-					name={name}
-					value={range[name]}
-					min={min}
-					max={max}
-					step={step}
-					onValueChange={handleChange}
-				/>
-			</label>
+			<fieldset className={styles.body}>
+				<legend className={styles.legend}>
+					{data.label}
+				</legend>
+				<RangePart {...base} name="min" max={range.max}/>
+				<RangePart {...base} name="max" min={range.min}/>
+				<RangePart {...base} name="step" min={data.step}/>
+			</fieldset>
 		);
 	}
 
@@ -115,39 +124,9 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	OptionField(props: OptionFieldProps<number, NumberRange>) {
-		const { VariableMode, ConstMode } = this;
-		const { label, min, max, step } = this.data;
-		const { mode, value, onModeChange, onValueChange } = props;
-
-		return (
-			<fieldset className={styles.fieldset}>
-				<div className={styles.header}>
-					<ModeSwitcher
-						mode={mode}
-						onChange={onModeChange}
-					/>
-					<span className={styles.label}>
-						{label}
-					</span>
-					{
-						mode !== OptionMode.Range &&
-						<input
-							className={styles.input}
-							type="number"
-							min={min}
-							max={max}
-							step={step}
-							value={value}
-							onChange={e => onValueChange(e.target.valueAsNumber)}
-						/>
-					}
-				</div>
-				{
-					mode === OptionMode.Range
-						? <VariableMode {...props}/>
-						: <ConstMode {...props}/>
-				}
-			</fieldset>
-		);
+		const { mode } = props;
+		return mode === OptionMode.Constant
+			? this.ConstMode(props)
+			: this.VariableMode(props);
 	}
 }

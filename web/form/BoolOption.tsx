@@ -1,9 +1,8 @@
 import { SwitchButton } from "../ui";
 import { OptionMode } from "../codecs";
 import { OptionFieldProps, OptionType } from "./index";
-import ModeSwitcher from "./ModeSwitcher";
 import SwitchControl from "./SwitchControl";
-import styles from "./SwitchControl.scss";
+import styles from "./BoolOption.scss";
 
 export interface BoolVariableConfig {
 	id: string;
@@ -32,7 +31,7 @@ export class BoolOption implements OptionType<boolean> {
 		return [Boolean(this.data.defaultValue), undefined] as [boolean, never];
 	}
 
-	getValues(_: never) {
+	getValues() {
 		return [false, true];
 	}
 
@@ -42,14 +41,10 @@ export class BoolOption implements OptionType<boolean> {
 
 	OptionField(props: OptionFieldProps<boolean, any>) {
 		const { id, label } = this.data;
-		const { mode, value, onValueChange, onModeChange } = props;
+		const { mode, value, onValueChange } = props;
 
 		return (
-			<fieldset className={styles.container}>
-				<ModeSwitcher
-					mode={mode}
-					onChange={onModeChange}
-				/>
+			<div className={styles.container}>
 				<span className={styles.label}>
 					{label}
 				</span>
@@ -62,7 +57,7 @@ export class BoolOption implements OptionType<boolean> {
 							onValueChange={onValueChange}
 						/>
 				}
-			</fieldset>
+			</div>
 		);
 	}
 }

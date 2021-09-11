@@ -1,37 +1,7 @@
-.spinner {
-	display: inline-flex;
-	flex-direction: column;
-
-	&:not(:last-child) {
-		margin-right: 16px;
-	}
-}
-
-.numberInput {
-	margin-top: 5px;
-	width: 120px;
-}
-
-.fieldset {
-	padding: 12px 0;
-}
-
 .header {
 	display: flex;
 	align-items: center;
-	margin-bottom: 8px;
-}
-
-.controls {
-	margin-top: 5px;
-}
-
-.label {
-	margin-right: auto;
-}
-
-.body {
-	margin-left: 41px;
+	margin-bottom: 10px;
 }
 
 .input {

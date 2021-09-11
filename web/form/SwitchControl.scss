@@ -1,12 +1,3 @@
-@import "RangeControl";
-
-.container {
-	composes: fieldset;
-
-	display: flex;
-	align-items: center;
-}
-
 .control {
 	display: flex;
 	justify-content: space-between;

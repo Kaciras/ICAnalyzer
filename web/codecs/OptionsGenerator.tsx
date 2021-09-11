@@ -1,34 +1,12 @@
+import { Dispatch } from "react";
 import { OptionsKeyPair, OptionType } from "../form";
-import { EncoderState, OptionMode, OptionPanelProps } from "./index";
+import { EncoderState, OptionMode } from "./index";
+import OptionsForm from "../form/OptionsForm";
 
-function renderOption(template: OptionType, props: OptionPanelProps) {
-	const { id, OptionField } = template;
-	const { state, onChange } = props;
-
-	function handleValueChange(value: any) {
-		const newOption = { ...state[id], value };
-		onChange({ ...state, [id]: newOption });
-	}
-
-	function handleRangeChange(range: any) {
-		const newOption = { ...state[id], range };
-		onChange({ ...state, [id]: newOption });
-	}
-
-	function handleModeChange(mode: OptionMode) {
-		const newOption = { ...state[id], mode };
-		onChange({ ...state, [id]: newOption });
-	}
-
-	return (
-		<OptionField
-			{...state[id]}
-			key={id}
-			onValueChange={handleValueChange}
-			onRangeChange={handleRangeChange}
-			onModeChange={handleModeChange}
-		/>
-	);
+export interface OptionPanelProps {
+	className?: string;
+	state: EncoderState;
+	onChange: Dispatch<EncoderState>;
 }
 
 export default class OptionsGenerator {
@@ -58,7 +36,7 @@ export default class OptionsGenerator {
 	}
 
 	OptionsList(props: OptionPanelProps) {
-		return <>{this.templates.map(t => renderOption(t, props))}</>;
+		return OptionsForm({ ...props, templates: this.templates });
 	}
 
 	generate(state: EncoderState) {

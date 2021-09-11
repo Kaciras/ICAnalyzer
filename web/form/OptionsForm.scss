@@ -1,0 +1,7 @@
+.form {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: start;
+	row-gap: 24px;
+	column-gap: 8px;
+}

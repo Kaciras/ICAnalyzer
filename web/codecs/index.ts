@@ -1,4 +1,3 @@
-import { Dispatch } from "react";
 import { ImageWorker } from "../features/image-worker";
 import { EncodeResult } from "./common";
 import * as MozJPEG from "./mozjpeg/client";
@@ -6,7 +5,7 @@ import * as JXL from "./jxl/client";
 import * as WebP from "./webp/client";
 import * as AVIF from "./avif/client";
 import * as WebP2 from "./webp2/client";
-import { OptionsGenerator } from "./options";
+import OptionsGenerator from "./OptionsGenerator";
 
 export enum OptionMode {
 	Constant, Range
@@ -20,10 +19,6 @@ interface OptionState {
 
 export type EncoderState = Record<string, OptionState>;
 
-export interface OptionPanelProps {
-	state: EncoderState;
-	onChange: Dispatch<EncoderState>;
-}
 
 export interface ImageEncoder {
 	name: string;

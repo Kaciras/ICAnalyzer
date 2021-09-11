@@ -83,12 +83,11 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 			<div className={styles.tablist}>
 				{tabs}
 			</div>
-			<form className={styles.form}>
-				<OptionsList
-					state={value[current].state}
-					onChange={handleOptionChange}
-				/>
-			</form>
+			<OptionsList
+				className={styles.form}
+				state={value[current].state}
+				onChange={handleOptionChange}
+			/>
 		</div>
 	);
 }

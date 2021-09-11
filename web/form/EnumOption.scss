@@ -1,0 +1,14 @@
+.item:not(:last-child) {
+	margin-top: 5px;
+	margin-right: 5px;
+}
+
+.label {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.body {
+	// compensate the icon's margin
+	//margin-left: 41px - 3px;
+}

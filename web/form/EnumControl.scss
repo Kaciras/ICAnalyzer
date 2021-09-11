@@ -1,15 +1,4 @@
-@import "RangeControl";
-
 .item:not(:last-child) {
 	margin-top: 5px;
 	margin-right: 5px;
-}
-
-.label {
-	vertical-align: middle;
-}
-
-.body {
-	// compensate the icon's margin
-	margin-left: 41px - 3px;
 }
