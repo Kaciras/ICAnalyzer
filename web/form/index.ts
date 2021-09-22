@@ -41,7 +41,7 @@ export interface OptionType<T = any, V = any> {
 
 	id: string;
 
-	createControl(range: V): ControlType<T>;
+	createControl(range: V): ControlType;
 
 	createState(): [T, V];
 
