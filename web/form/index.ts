@@ -1,18 +1,4 @@
 import { Dispatch } from "react";
-import RangeControl from "./control/RangeControl";
-import EnumControl from "./control/EnumControl";
-import SwitchControl from "./control/SwitchControl";
-import { OptionMode } from "../codecs";
-
-export interface OptionFieldProps<T, V> {
-	mode: OptionMode;
-	value: T;
-	range: V;
-
-	onModeChange: Dispatch<OptionMode>;
-	onValueChange: Dispatch<T>;
-	onRangeChange: Dispatch<V>;
-}
 
 export interface FieldProps<T> {
 	value: T;
@@ -30,11 +16,33 @@ export interface ControlType<T = any> {
 	Input(props: FieldProps<T>): JSX.Element;
 }
 
+export enum OptionMode {
+	Constant, Range
+}
+
+export interface OptionState {
+	value: any;
+	range: any;
+	mode: OptionMode;
+}
+
+export type OptionStateMap = Record<string, OptionState>;
+
 export type OptionsKey = Record<string, any>;
 
 export interface OptionsKeyPair {
 	options: any;
 	key: OptionsKey;
+}
+
+export interface OptionFieldProps<T, V> {
+	mode: OptionMode;
+	value: T;
+	range: V;
+
+	onModeChange: Dispatch<OptionMode>;
+	onValueChange: Dispatch<T>;
+	onRangeChange: Dispatch<V>;
 }
 
 export interface OptionType<T = any, V = any> {
@@ -55,9 +63,3 @@ export interface OptionType<T = any, V = any> {
 export { BoolOption } from "./option/BoolOption";
 export { EnumOption } from "./option/EnumOption";
 export { NumberOption } from "./option/NumberOption";
-
-export const controlMap = {
-	bool: SwitchControl,
-	enum: EnumControl,
-	number: RangeControl,
-};

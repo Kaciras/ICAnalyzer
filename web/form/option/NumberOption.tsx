@@ -1,11 +1,10 @@
 import { Dispatch } from "react";
 import { NumberInput } from "../../ui";
 import { IDENTITY } from "../../utils";
-import { OptionMode } from "../../codecs";
-import type { OptionFieldProps, OptionType } from "../index";
+import { OptionFieldProps, OptionMode, OptionType } from "..";
 import RangeControl, { NumberRange, sequence } from "../control/RangeControl";
-import styles from "./NumberOption.scss";
 import NumberField from "../NumberField";
+import styles from "./NumberOption.scss";
 
 interface RangePartProps {
 	name: keyof NumberRange;

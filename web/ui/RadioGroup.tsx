@@ -1,20 +1,21 @@
 import { Children, cloneElement, Dispatch, isValidElement, ReactNode } from "react";
 
-export interface RadioGroupProps {
-	value: string;
+export interface RadioGroupProps<T> {
+	value: T;
 
 	className?: string;
 	name?: string;
 	disabled?: boolean;
 
-	onChange: Dispatch<string>;
+	onChange: Dispatch<T>;
+
 	children: ReactNode;
 }
 
-export default function RadioGroup(props: RadioGroupProps) {
+export default function RadioGroup<T>(props: RadioGroupProps<T>) {
 	const { className, name, value, disabled, onChange, children } = props;
 
-	const tabButtons = Children.map(children, child => {
+	const radioBoxes = Children.map(children, child => {
 		if (!isValidElement(child)) {
 			return child;
 		}
@@ -29,5 +30,5 @@ export default function RadioGroup(props: RadioGroupProps) {
 		return cloneElement(child, propsAddon);
 	});
 
-	return <div className={className}>{tabButtons}</div>;
+	return <div className={className}>{radioBoxes}</div>;
 }

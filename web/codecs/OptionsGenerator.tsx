@@ -1,12 +1,11 @@
 import { Dispatch } from "react";
-import { OptionsKeyPair, OptionType } from "../form";
-import { EncoderState, OptionMode } from "./index";
+import { OptionMode, OptionsKeyPair, OptionStateMap, OptionType } from "../form";
 import OptionsForm from "../form/OptionsForm";
 
 export interface OptionPanelProps {
 	className?: string;
-	state: EncoderState;
-	onChange: Dispatch<EncoderState>;
+	state: OptionStateMap;
+	onChange: Dispatch<OptionStateMap>;
 }
 
 export default class OptionsGenerator {
@@ -21,7 +20,7 @@ export default class OptionsGenerator {
 	}
 
 	newState() {
-		const state: EncoderState = {};
+		const state: OptionStateMap = {};
 
 		for (const t of this.templates) {
 			const [value, range] = t.createState();
@@ -39,7 +38,7 @@ export default class OptionsGenerator {
 		return OptionsForm({ ...props, templates: this.templates });
 	}
 
-	generate(state: EncoderState) {
+	generate(state: OptionStateMap) {
 		const { defaults, templates } = this;
 
 		function applyOption(list: OptionsKeyPair[], template: OptionType) {
@@ -71,7 +70,7 @@ export default class OptionsGenerator {
 		return templates.reduce(applyOption, [{ key: {}, options: { ...defaults } }]);
 	}
 
-	getControls(state: EncoderState) {
+	getControls(state: OptionStateMap) {
 		return this.templates
 			.filter(t => state[t.id].mode === OptionMode.Range)
 			.map(t => t.createControl(state[t.id].range));

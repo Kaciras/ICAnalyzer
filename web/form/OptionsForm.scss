@@ -5,3 +5,19 @@
 	row-gap: 24px;
 	column-gap: 8px;
 }
+
+.default {
+	padding: 6px;
+	font-size: 24px;
+	border-radius: 4px;
+}
+
+.constant {
+	composes: default;
+	color: #2183ff;
+}
+
+.variable {
+	composes: default;
+	color: #00b900;
+}

@@ -34,7 +34,7 @@ export default class SwitchControl implements ControlType<boolean> {
 				{label}
 				<SwitchButton
 					checked={value}
-					onValueChange={onChange}
+					onCheckedChange={onChange}
 					onClick={e => e.stopPropagation()}
 				/>
 			</div>

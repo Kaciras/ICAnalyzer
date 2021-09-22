@@ -7,19 +7,6 @@ import * as AVIF from "./avif/client";
 import * as WebP2 from "./webp2/client";
 import OptionsGenerator from "./OptionsGenerator";
 
-export enum OptionMode {
-	Constant, Range
-}
-
-interface OptionState {
-	value: any;
-	range: any;
-	mode: OptionMode;
-}
-
-export type EncoderState = Record<string, OptionState>;
-
-
 export interface ImageEncoder {
 	name: string;
 	extension: string;

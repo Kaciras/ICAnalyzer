@@ -16,13 +16,15 @@ export interface CheckBoxProps {
 
 	className?: string;
 	name?: string;
-	value?: string;
 	disabled?: boolean;
 
-	onValueChange?: Dispatch<boolean>;
+	// The value of the component. The DOM API casts this to a string.
+	value?: unknown;
 
+	onCheckedChange?: Dispatch<boolean>;
 	onClick?: MouseEventHandler;
 	onChange?: ChangeEventHandler<HTMLInputElement>;
+
 	children?: ReactNode;
 }
 
@@ -35,12 +37,12 @@ interface InternalProps extends CheckBoxProps {
 export default function CheckBoxBase(props: InternalProps) {
 	const {
 		className, type, Icon, IconChecked, name, value, checked, disabled,
-		onClick, onChange = NOOP, onValueChange = NOOP, children,
+		onClick, onChange = NOOP, onCheckedChange = NOOP, children,
 	} = props;
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		onChange(e);
-		onValueChange(e.currentTarget.checked);
+		onCheckedChange(e.currentTarget.checked);
 	}
 
 	const CheckMark = checked ? IconChecked : Icon;
@@ -57,7 +59,7 @@ export default function CheckBoxBase(props: InternalProps) {
 				type={type}
 				className={styles.input}
 				name={name}
-				value={value}
+				value={value as string}
 				disabled={disabled}
 				checked={checked}
 				onChange={handleChange}

@@ -1,6 +1,5 @@
 import { SwitchButton } from "../../ui";
-import { OptionMode } from "../../codecs";
-import { OptionFieldProps, OptionType } from "../index";
+import { OptionFieldProps, OptionMode, OptionType } from "..";
 import SwitchControl from "../control/SwitchControl";
 import styles from "./BoolOption.scss";
 
@@ -54,7 +53,7 @@ export class BoolOption implements OptionType<boolean> {
 						: <SwitchButton
 							name={id}
 							checked={value}
-							onValueChange={onValueChange}
+							onCheckedChange={onValueChange}
 						/>
 				}
 			</div>

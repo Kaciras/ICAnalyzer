@@ -196,7 +196,7 @@ export default function ImageView(props: ImageViewProps) {
 					<PickColorIcon className={styles.icon}/>
 					<SwitchButton
 						checked={picking}
-						onValueChange={setPicking}
+						onCheckedChange={setPicking}
 					/>
 				</div>
 

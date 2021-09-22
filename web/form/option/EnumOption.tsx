@@ -1,7 +1,6 @@
 import { ChangeEvent } from "react";
 import { CheckBox, RadioBox } from "../../ui";
-import { OptionMode } from "../../codecs";
-import type { OptionFieldProps, OptionType } from "../index";
+import { OptionFieldProps, OptionMode, OptionType } from "..";
 import EnumControl from "../control/EnumControl";
 import styles from "./EnumOption.scss";
 

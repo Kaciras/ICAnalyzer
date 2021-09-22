@@ -2,12 +2,13 @@ import { Dispatch, useState } from "react";
 import clsx from "clsx";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { CheckBox } from "../ui";
-import { ENCODER_MAP, ENCODERS, EncoderState, OptionMode } from "../codecs";
+import { OptionMode, OptionStateMap } from "../form";
+import { ENCODER_MAP, ENCODERS } from "../codecs";
 import styles from "./EncoderPanel.scss";
 
 export interface EncoderConfig {
 	enable: boolean;
-	state: EncoderState;
+	state: OptionStateMap;
 }
 
 export type EncodingOptions = Record<string, EncoderConfig>;
@@ -64,7 +65,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 				<CheckBox
 					checked={value[name].enable}
 					onClick={e => e.stopPropagation()}
-					onValueChange={handleEnableChange}
+					onCheckedChange={handleEnableChange}
 				/>
 				<span className={styles.name}>{name}</span>
 			</button>
