@@ -23,7 +23,7 @@ interface WorkerJob<T> {
 export default class WorkerPool<T> {
 
 	private readonly factory: WorkerFactory;
-	private readonly workers: Worker[];
+	private readonly workers: Array<Worker | undefined>;
 
 	private readonly remotes: Array<Remote<T>> = [];
 	private readonly queue: Array<WorkerJob<T>> = [];
@@ -74,7 +74,7 @@ export default class WorkerPool<T> {
 
 	terminate() {
 		this.terminated = true;
-		this.workers.forEach(worker => worker.terminate());
+		this.workers.forEach(worker => worker?.terminate());
 	}
 
 	private get allWorkerAreFree() {
