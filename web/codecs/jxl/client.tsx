@@ -37,19 +37,26 @@ const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.decodingSpeedTier,
 	}),
+	new NumberOption({
+		id: "photonNoiseIso",
+		label: "Noise equivalent to ISO",
+		min: 0,
+		max: 50000,
+		step: 100,
+		defaultValue: defaultOptions.photonNoiseIso,
+	}),
 	new BoolOption({
 		id: "progressive",
 		label: "Progressive",
 		defaultValue: defaultOptions.progressive,
 	}),
 	new NumberOption({
-		id: "speed",
+		id: "effort",
 		label: "Effort",
-		min: 0,
-		max: 6,
+		min: 3,
+		max: 9,
 		step: 1,
-		mapFn: v => 7 - v,
-		defaultValue: defaultOptions.speed,
+		defaultValue: defaultOptions.effort,
 	}),
 ];
 
