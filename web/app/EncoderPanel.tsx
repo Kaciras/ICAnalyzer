@@ -1,11 +1,11 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { TabPanelBase } from "../ui/TabSwitch";
+import { Merger } from "../mutation";
 import { CheckBox } from "../ui";
 import { OptionMode, OptionStateMap } from "../form";
 import { ENCODER_MAP, ENCODERS } from "../codecs";
 import styles from "./EncoderPanel.scss";
-import { ShallowMerger } from "../mutation";
 
 export interface EncoderConfig {
 	enable: boolean;
@@ -33,8 +33,8 @@ export function getEncodingOptions(saved?: EncodingOptions) {
 }
 
 export interface EncoderPanelProps extends TabPanelBase {
-	value: Record<string, EncoderConfig>;
-	onChange: ShallowMerger;
+	value: EncodingOptions;
+	onChange: Merger<EncodingOptions>;
 }
 
 export default function EncoderPanel(props: EncoderPanelProps) {
@@ -70,7 +70,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 
 	const classes = clsx(
 		styles.container,
-		isActive ===  false && "hidden",
+		isActive === false && "hidden",
 	);
 
 	return (

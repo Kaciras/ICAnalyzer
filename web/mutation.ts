@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 
-type Mutation<T> = Dispatch<SetStateAction<T>>;
+type Mutate<T> = Dispatch<SetStateAction<T>>;
 
-export function deepUpdate<T>(updater: Mutation<T>, path: string, value: any) {
+export function deepUpdate<T>(updater: Mutate<T>, path: string, value: any) {
 	const parts = path.split(".");
 
 	function recurs(current: any, index: number) {
@@ -17,35 +17,34 @@ export function deepUpdate<T>(updater: Mutation<T>, path: string, value: any) {
 	return updater(current => recurs(current, 0));
 }
 
-export interface ShallowMerger {
+export interface Merger<T> {
 
-	(value: SetStateAction<any>): void;
+	(value: SetStateAction<T>): void;
 
-	cache: Record<string, ShallowMerger>;
+	cache: Record<any, Merger<any>>;
 
-	sub(key: string): ShallowMerger;
+	merge<K extends keyof T>(key: K, value: T[K]): void;
 
-	merge(key: string, value: any): void;
+	sub<K extends keyof T>(key: K): Merger<T[K]>;
 }
 
-export function setupMerger(merger: any) {
+function derive<T>(merger: Merger<T>, key: keyof T) {
 
-	function deliver(key: string) {
-
-		function subSetValue(action: SetStateAction<any>) {
-			if (typeof action !== "function") {
-				return merger.merge(key, action);
-			}
-			merger((prev: any) => {
-				const newVal = action(prev[key]);
-				return { ...prev, [key]: newVal };
-			});
+	function subSetValue(action: SetStateAction<any>) {
+		if (typeof action !== "function") {
+			return merger.merge(key, action);
 		}
-
-		setupMerger(subSetValue);
-
-		return subSetValue as ShallowMerger;
+		merger((prev: any) => {
+			const newVal = action(prev[key]);
+			return { ...prev, [key]: newVal };
+		});
 	}
+
+	return getMerger<T[typeof key]>(subSetValue);
+}
+
+export function getMerger<T>(mutate: Mutate<T>) {
+	const merger = mutate as Merger<T>;
 
 	if (merger.cache) {
 		return merger;
@@ -53,11 +52,13 @@ export function setupMerger(merger: any) {
 
 	merger.cache = {};
 
-	merger.sub = (key: string) => {
-		return merger.cache[key] ??= deliver(key);
+	merger.sub = (key: keyof T) => {
+		return merger.cache[key] ??= derive(merger, key);
 	};
 
-	merger.merge = (key: string, value: any) => {
+	merger.merge = (key: keyof T, value: any) => {
 		merger((prev: any) => ({ ...prev, [key]: value }));
 	};
+
+	return merger;
 }

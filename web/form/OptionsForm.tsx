@@ -4,16 +4,16 @@ import TypeIcon from "bootstrap-icons/icons/type.svg";
 import SliderIcon from "bootstrap-icons/icons/sliders.svg";
 import { OptionMode, OptionState, OptionStateMap, OptionType } from "./index";
 import { Button } from "../ui";
-import { ShallowMerger } from "../mutation";
+import { Merger } from "../mutation";
 import styles from "./OptionsForm.scss";
 
-interface OptionItemProps {
+interface OptionProps {
 	template: OptionType;
 	state: OptionState;
-	onChange: ShallowMerger;
+	onChange: Merger<OptionState>;
 }
 
-const OptionItem = memo((props: OptionItemProps) => {
+const Option = memo((props: OptionProps) => {
 	const { template, state, onChange } = props;
 	const { mode } = state;
 	const { OptionField } = template;
@@ -58,13 +58,13 @@ const OptionItem = memo((props: OptionItemProps) => {
 	);
 });
 
-OptionItem.displayName = "OptionItem";
+Option.displayName = "Option";
 
 export interface OptionsFormProps {
 	className?: string;
 	templates: OptionType[];
 	state: OptionStateMap;
-	onChange: ShallowMerger;
+	onChange: Merger<OptionStateMap>;
 }
 
 export default function OptionsForm(props: OptionsFormProps) {
@@ -74,7 +74,7 @@ export default function OptionsForm(props: OptionsFormProps) {
 		const { id } = template;
 
 		return (
-			<OptionItem
+			<Option
 				template={template}
 				key={id}
 				state={state[id]}
