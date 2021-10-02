@@ -7,6 +7,7 @@ import ImageInfoPanel from "./ImageInfoPanel";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel";
 import styles from "./CompressConfigDialog.scss";
+import { setupMerger } from "../mutation";
 
 export interface AnalyzeConfig {
 	encoding: EncodingOptions;
@@ -26,6 +27,8 @@ export default function CompressConfigDialog(props: CompressConfigDialogProps) {
 	const [index, setIndex] = useState(0);
 	const [encoding, setEncoding] = useLocalStorage("Encoding", getEncodingOptions);
 	const [measurement, setMeasurement] = useLocalStorage("Measure", getMeasureOptions);
+
+	setupMerger(setEncoding);
 
 	function start() {
 		onStart({ encoding, measurement });

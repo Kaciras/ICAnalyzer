@@ -1,18 +1,22 @@
-import { Dispatch, ReactNode } from "react";
+import { memo, ReactNode } from "react";
 import clsx from "clsx";
 import TypeIcon from "bootstrap-icons/icons/type.svg";
 import SliderIcon from "bootstrap-icons/icons/sliders.svg";
-import { OptionMode, OptionStateMap, OptionType } from "./index";
+import { OptionMode, OptionState, OptionStateMap, OptionType } from "./index";
 import { Button } from "../ui";
+import { ShallowMerger } from "../mutation";
 import styles from "./OptionsForm.scss";
 
-interface ModeSwitcherProps {
-	mode: OptionMode;
-	onChange: Dispatch<OptionMode>;
+interface OptionItemProps {
+	template: OptionType;
+	state: OptionState;
+	onChange: ShallowMerger;
 }
 
-function ModeSwitcher(props: ModeSwitcherProps) {
-	const { mode, onChange } = props;
+const OptionItem = memo((props: OptionItemProps) => {
+	const { template, state, onChange } = props;
+	const { mode } = state;
+	const { OptionField } = template;
 
 	let title: string;
 	let clazz: string;
@@ -32,64 +36,52 @@ function ModeSwitcher(props: ModeSwitcherProps) {
 	}
 
 	function toggle() {
-		onChange((mode + 1) % 2);
+		onChange.merge("mode", (mode + 1) % 2);
 	}
 
 	return (
-		<Button
-			className={clazz}
-			title={title}
-			type="text"
-			onClick={toggle}
-		>
-			{iconChildren}
-		</Button>
+		<>
+			<Button
+				className={clazz}
+				title={title}
+				type="text"
+				onClick={toggle}
+			>
+				{iconChildren}
+			</Button>
+			<OptionField
+				{...state}
+				onValueChange={onChange.sub("value")}
+				onRangeChange={onChange.sub("range")}
+			/>
+		</>
 	);
-}
+});
+
+OptionItem.displayName = "OptionItem";
 
 export interface OptionsFormProps {
 	className?: string;
 	templates: OptionType[];
 	state: OptionStateMap;
-	onChange: Dispatch<OptionStateMap>;
+	onChange: ShallowMerger;
 }
 
 export default function OptionsForm(props: OptionsFormProps) {
 	const { templates, className, state, onChange } = props;
-	const items = [];
 
-	for (const template of templates) {
-		const { id, OptionField } = template;
+	const items = templates.map(template => {
+		const { id } = template;
 
-		function handleValueChange(value: any) {
-			const newOption = { ...state[id], value };
-			onChange({ ...state, [id]: newOption });
-		}
-
-		function handleRangeChange(range: any) {
-			const newOption = { ...state[id], range };
-			onChange({ ...state, [id]: newOption });
-		}
-
-		function handleModeChange(mode: OptionMode) {
-			const newOption = { ...state[id], mode };
-			onChange({ ...state, [id]: newOption });
-		}
-
-		items.push(
-			<ModeSwitcher
-				mode={state[id].mode}
-				onChange={handleModeChange}
-			/>,
-			<OptionField
-				{...state[id]}
+		return (
+			<OptionItem
+				template={template}
 				key={id}
-				onValueChange={handleValueChange}
-				onRangeChange={handleRangeChange}
-				onModeChange={handleModeChange}
-			/>,
+				state={state[id]}
+				onChange={onChange.sub(id)}
+			/>
 		);
-	}
+	});
 
 	return <form className={clsx(styles.form, className)}>{items}</form>;
 }

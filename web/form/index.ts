@@ -39,8 +39,6 @@ export interface OptionFieldProps<T, V> {
 	mode: OptionMode;
 	value: T;
 	range: V;
-
-	onModeChange: Dispatch<OptionMode>;
 	onValueChange: Dispatch<T>;
 	onRangeChange: Dispatch<V>;
 }

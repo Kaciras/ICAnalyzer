@@ -1,6 +1,7 @@
 import { ChangeEvent, Dispatch, ReactNode, SetStateAction } from "react";
 import * as ssimJs from "ssim.js";
 import { defaultButteraugliOptions } from "../../lib/similarity";
+import { deepUpdate } from "../mutation";
 import { CheckBox, NumberInput } from "../ui";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { MeasureOptions } from "../features/measurement";
@@ -46,21 +47,6 @@ function LabelWrapper(props: LabelWrapperProps) {
 			{children}
 		</label>
 	);
-}
-
-function deepUpdate<T>(updater: Dispatch<SetStateAction<T>>, path: string, value: any) {
-	const parts = path.split(".");
-
-	function recurs(current: any, index: number) {
-		const key = parts[index];
-		let localValue = value;
-		if (index < parts.length - 1) {
-			localValue = recurs(current[key], index + 1);
-		}
-		return { ...current, [key]: localValue };
-	}
-
-	return updater(current => recurs(current, 0));
 }
 
 function detectInputValue(el: any) {
