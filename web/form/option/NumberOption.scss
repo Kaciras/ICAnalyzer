@@ -3,21 +3,16 @@
 	flex-direction: column;
 
 	&:not(:last-child) {
-		margin-right: 16px;
+		margin-right: 12px;
 	}
 }
 
 .numberInput {
 	margin-top: 5px;
-	width: 120px;
 }
 
 .controls {
 	margin-top: 5px;
-}
-
-.body {
-
 }
 
 .legend {

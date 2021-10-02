@@ -78,7 +78,6 @@ export class NumberOption implements OptionType<number, NumberRange> {
 
 		return (
 			<NumberField
-				className={styles.body}
 				name={id}
 				value={value}
 				min={min}
