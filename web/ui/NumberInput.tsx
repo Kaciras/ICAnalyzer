@@ -1,4 +1,4 @@
-import { ChangeEvent, ChangeEventHandler, Dispatch, MouseEvent, useRef } from "react";
+import React, { ChangeEvent, ChangeEventHandler, Dispatch, MouseEvent, useRef } from "react";
 import clsx from "clsx";
 import PlusIcon from "../assets/add.svg";
 import MinusIcon from "../assets/remove.svg";
@@ -49,7 +49,7 @@ export interface NumberInputProps {
 	onValueChange?: Dispatch<number>;
 }
 
-export default function NumberInput(props: NumberInputProps) {
+function NumberInput(props: NumberInputProps) {
 	const {
 		inputId,
 		title,
@@ -178,3 +178,5 @@ export default function NumberInput(props: NumberInputProps) {
 		</div>
 	);
 }
+
+export default React.memo(NumberInput);

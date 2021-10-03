@@ -1,16 +1,20 @@
+import { memo } from "react";
+import CheckBoxBase, { CheckBoxProps } from "./CheckBoxBase";
 import CheckIcon from "../assets/check_box.svg";
 import CheckIconActive from "../assets/check_box-checked.svg";
 import RadioIcon from "../assets/radio_box.svg";
 import RadioIconActive from "../assets/radio_box-checked.svg";
-import CheckBoxBase, { CheckBoxProps } from "./CheckBoxBase";
 
-export function CheckBox(props: CheckBoxProps) {
+export const CheckBox = memo((props: CheckBoxProps) => {
 	return CheckBoxBase({ ...props, type: "checkbox", Icon: CheckIcon, IconChecked: CheckIconActive });
-}
+});
 
-export function RadioBox(props: CheckBoxProps) {
+export const RadioBox = memo((props: CheckBoxProps) => {
 	return CheckBoxBase({ ...props, type: "radio", Icon: RadioIcon, IconChecked: RadioIconActive });
-}
+});
+
+CheckBox.displayName = "CheckBox";
+RadioBox.displayName = "RadioBox";
 
 export { default as Slider } from "./Slider";
 export { default as Button } from "./Button";

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { Merger } from "../mutation";
@@ -37,7 +37,7 @@ export interface EncoderPanelProps extends TabPanelBase {
 	onChange: Merger<EncodingOptions>;
 }
 
-export default function EncoderPanel(props: EncoderPanelProps) {
+function EncoderPanel(props: EncoderPanelProps) {
 	const { isActive, value, onChange } = props;
 
 	const [current, setCurrent] = useState("WebP");
@@ -87,3 +87,5 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 		</div>
 	);
 }
+
+export default React.memo(EncoderPanel);

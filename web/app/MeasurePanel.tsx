@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, ReactNode, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useCallback } from "react";
 import * as ssimJs from "ssim.js";
 import { defaultButteraugliOptions } from "../../lib/similarity";
 import { deepUpdate } from "../mutation";
@@ -49,6 +49,8 @@ function LabelWrapper(props: LabelWrapperProps) {
 	);
 }
 
+type InputTypes = HTMLInputElement | HTMLSelectElement;
+
 function detectInputValue(el: any) {
 	switch (el.tagName) {
 		case "SELECT":
@@ -74,14 +76,16 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 	const { isActive, hasEncodePhase, value, onChange } = props;
 	const { workerCount, encodeTime, SSIM, PSNR, butteraugli } = value;
 
-	if (isActive === false) {
-		return null;
-	}
-
-	function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+	let handleChange = (event: ChangeEvent<InputTypes>) => {
 		const { currentTarget } = event;
 		const newValue = detectInputValue(currentTarget);
 		deepUpdate(onChange, currentTarget.name, newValue);
+	};
+
+	handleChange = useCallback(handleChange, []);
+
+	if (isActive === false) {
+		return null;
 	}
 
 	return (
