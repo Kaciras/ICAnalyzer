@@ -59,6 +59,11 @@ a {
 	backdrop-filter: blur(2px);
 }
 
+// Convenience class to hide an element
+.hidden {
+	display: none !important;
+}
+
 .dialog-content {
 	padding: 20px;
 	flex: 1;

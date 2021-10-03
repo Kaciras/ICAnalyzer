@@ -68,6 +68,7 @@ export default function EncoderPanel(props: EncoderPanelProps) {
 
 	const { OptionsList } = ENCODER_MAP[current].optionsGenerator;
 
+	// EncoderPanel is expensive to render, so we just hide it when inactive.
 	const classes = clsx(
 		styles.container,
 		isActive === false && "hidden",

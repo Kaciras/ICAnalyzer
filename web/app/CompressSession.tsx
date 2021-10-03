@@ -28,22 +28,20 @@ class EncodeAnalyzer {
 	private readonly config: AnalyzeConfig;
 	private readonly worker: ImageWorker;
 
-	private readonly controlsMap: ControlsMap;
-	private readonly taskQueue: EncodeTask[];
+	private readonly controlsMap: ControlsMap = {};
+	private readonly taskQueue: EncodeTask[] = [];
 	private readonly measurer: Measurer;
+	private readonly outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 
 	readonly outputSize: number;
 
-	onProgress: () => void;
+	onProgress = NOOP;
 
 	constructor(config: AnalyzeConfig, worker: ImageWorker) {
 		this.config = config;
 		this.worker = worker;
 
-		this.controlsMap = {};
-		this.taskQueue = [];
 		this.outputSize = 0;
-		this.onProgress = NOOP;
 		this.measurer = createMeasurer(config.measurement, worker);
 
 		if (config.measurement.encodeTime.enabled) {
@@ -51,15 +49,15 @@ class EncodeAnalyzer {
 		}
 
 		for (const encoder of ENCODERS) {
-			const { name } = encoder;
+			const { name, optionsGenerator } = encoder;
 			const { enable, state } = config.encoding[name];
 			if (!enable) {
 				continue;
 			}
-			const optionsList = encoder.getOptionsList(state);
+			const optionsList = optionsGenerator.generate(state);
 			this.taskQueue.push({ encoder, optionsList });
 			this.outputSize += optionsList.length;
-			this.controlsMap[name] = encoder.getControls(state);
+			this.controlsMap[name] = optionsGenerator.getControls(state);
 		}
 	}
 
@@ -68,32 +66,39 @@ class EncodeAnalyzer {
 	}
 
 	run(input: InputImage) {
-		const { worker, controlsMap, measurer, taskQueue } = this;
-		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
+		const { outputMap, controlsMap, measurer, taskQueue } = this;
+
 		const tasks = [];
 
 		for (const { encoder, optionsList } of taskQueue) {
-			const filename = input.file.name.replace(/.[^.]*$/, `.${encoder.extension}`);
-
-			tasks.push(...optionsList.map(async item => {
-				const { key, options } = item;
-				const { buffer, time } = await encoder.encode(options, worker);
-
-				const file = new File([buffer], filename, { type: encoder.mimeType });
-				this.onProgress();
-
-				const output: AnalyzeResult = {
-					file,
-					data: await decode(file, worker),
-					metrics: { time },
-				};
-				outputMap.set({ codec: encoder.name, key }, output);
-				await measurer.execute(input, output, this.onProgress);
-			}));
+			for (const pair of optionsList) {
+				tasks.push(this.process(input, encoder, pair));
+			}
 		}
 
 		const seriesMeta = measurer.metrics;
-		return Promise.all(tasks).then(() => ({ input, controlsMap, seriesMeta, outputMap }));
+		const result = { input, controlsMap, seriesMeta, outputMap };
+		return Promise.all(tasks).then(() => result);
+	}
+
+	private async process(input: InputImage, encoder: ImageEncoder, pair: OptionsKeyPair) {
+		const { outputMap, worker, measurer } = this;
+		const { key, options } = pair;
+		const { name, extension, mimeType } = encoder;
+
+		const { buffer, time } = await encoder.encode(options, worker);
+		this.onProgress();
+
+		const filename = input.file.name.replace(/.[^.]*$/, `.${extension}`);
+		const file = new File([buffer], filename, { type: mimeType });
+
+		const output: AnalyzeResult = {
+			file,
+			data: await decode(file, worker),
+			metrics: { time },
+		};
+		outputMap.set({ codec: name, key }, output);
+		await measurer.execute(input, output, this.onProgress);
 	}
 }
 

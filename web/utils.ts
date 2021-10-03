@@ -45,6 +45,18 @@ export async function getFileFromUrl(url: string, signal?: AbortSignal) {
 	return new File([blob], name, { type: blob.type, lastModified });
 }
 
+export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
+	if (el === null) {
+		return;
+	}
+	const ctx = el.getContext("2d");
+	if (ctx) {
+		ctx.putImageData(data, 0, 0);
+	} else {
+		throw new Error("Canvas not initialized");
+	}
+}
+
 export interface ProgressState {
 	value: number;
 	max: number;

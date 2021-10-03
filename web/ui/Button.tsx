@@ -25,7 +25,10 @@ export interface ButtonProps {
 }
 
 export default function Button(props: ButtonProps) {
-	const { type = "button", href, active, autoFocus, title, className, disabled, onClick, children } = props;
+	const {
+		type = "button", href, active, autoFocus,
+		title, className, disabled, onClick, children,
+	} = props;
 
 	const classes = clsx(
 		styles[type],

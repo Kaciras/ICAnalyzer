@@ -1,5 +1,5 @@
 import { TabPanelBase } from "../ui/TabSwitch";
-import { bytes } from "../utils";
+import { bytes, drawImage } from "../utils";
 import { InputImage } from "../features/image-worker";
 import styles from "./ImageInfoPanel.scss";
 
@@ -18,16 +18,12 @@ export default function ImageInfoPanel(props: ImageInfoPanelProps) {
 
 	const ratio = (file.size / data.byteLength * 100).toFixed(2);
 
-	function drawImage(el: HTMLCanvasElement | null) {
-		el?.getContext("2d")!.putImageData(raw, 0, 0);
-	}
-
 	return (
 		<div className="dialog-content" role="tabpanel">
 			<canvas
 				className={styles.canvas}
 				aria-label="Preview"
-				ref={drawImage}
+				ref={el => drawImage(raw,el)}
 				width={width}
 				height={height}
 			/>

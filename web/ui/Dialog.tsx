@@ -22,8 +22,8 @@ function hidePrevious() {
 	if (!previous) {
 		return;
 	}
-	previous.classList.add(styles.hide);
-	return () => previous.classList.remove(styles.hide);
+	previous.classList.add("hidden");
+	return () => previous.classList.remove("hidden");
 }
 
 function preventScroll() {

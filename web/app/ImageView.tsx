@@ -1,4 +1,4 @@
-import { MouseEvent, RefObject, useEffect, useRef, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
@@ -6,8 +6,9 @@ import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
 import { ButtonProps } from "../ui/Button";
 import { PinchZoomState } from "../ui/PinchZoom";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton } from "../ui";
-import styles from "./ImageView.scss";
 import { AnalyzeResult, InputImage } from "../features/image-worker";
+import { drawImage } from "../utils";
+import styles from "./ImageView.scss";
 
 export enum ViewType {
 	Original,
@@ -27,18 +28,6 @@ const pinchZoomInit: PinchZoomState = {
 	y: 0,
 	scale: 1,
 };
-
-function drawDataToCanvas(data: ImageData, canvas: RefObject<HTMLCanvasElement>) {
-	const { current } = canvas;
-	if (current === null) {
-		throw new Error("Canvas is null");
-	}
-	const ctx = current.getContext("2d");
-	if (!ctx) {
-		throw new Error("Canvas not initialized");
-	}
-	ctx.putImageData(data, 0, 0);
-}
 
 export interface ImageViewProps {
 	className?: string;
@@ -67,11 +56,11 @@ export default function ImageView(props: ImageViewProps) {
 
 	function refreshBottomCanvas() {
 		setPinchZoom(pinchZoomInit);
-		drawDataToCanvas(original.raw, backCanvas);
+		drawImage(original.raw, backCanvas.current);
 	}
 
 	function refreshTopCanvas() {
-		drawDataToCanvas(topImage, topCanvas);
+		drawImage(topImage, topCanvas.current);
 	}
 
 	useEffect(refreshBottomCanvas, [original]);

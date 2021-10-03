@@ -2,7 +2,7 @@ import { Dispatch, ForwardedRef, forwardRef, useEffect, useRef, useState } from 
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { Button, Dialog, FileDrop } from "../ui";
-import { bytes, uniqueKey } from "../utils";
+import { bytes, drawImage, uniqueKey } from "../utils";
 import { decode } from "../features/decode";
 import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker";
 import { CompareData } from "./CompareSession";
@@ -26,11 +26,7 @@ const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIE
 
 	const canvas = useRef<HTMLCanvasElement>(null);
 
-	function drawImage() {
-		canvas.current?.getContext("2d")!.putImageData(raw, 0, 0);
-	}
-
-	useEffect(() => drawImage(), []);
+	useEffect(() => drawImage(raw, canvas.current), [raw]);
 
 	return (
 		<li {...others} className={styles.listitem} ref={ref}>
@@ -181,7 +177,7 @@ export default function CompareFileDialog(props: CompareFileDialogProps) {
 						<p>Use drag & drop to change the order</p>
 					</div>
 			}
-			<div className={styles.aside}>
+			<div className={styles.right}>
 				<FileDrop
 					className={styles.fileDrop}
 					accept="image/*"
