@@ -1,4 +1,5 @@
 import { Dispatch, ForwardedRef, forwardRef, useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { Button, Dialog, FileDrop } from "../ui";
@@ -15,11 +16,12 @@ interface InputWithId extends InputImage {
 interface PreviewBoxProps {
 	value: InputImage;
 	index: number;
+	isDragging: boolean;
 	onRemove: () => void;
 }
 
 const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIElement>) => {
-	const { value, index, onRemove, ...others } = props;
+	const { value, index, isDragging, onRemove, ...others } = props;
 	const { file, raw } = value;
 	const { type, size } = file;
 	const { width, height } = raw;
@@ -28,8 +30,13 @@ const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIE
 
 	useEffect(() => drawImage(raw, canvas.current), [raw]);
 
+	const clazz = clsx(
+		styles.listitem,
+		isDragging && styles.dragging,
+	);
+
 	return (
-		<li {...others} className={styles.listitem} ref={ref}>
+		<li {...others} className={clazz} ref={ref}>
 			<canvas
 				className={styles.canvas}
 				ref={canvas}
@@ -95,11 +102,12 @@ function PreviewList(props: PreviewListProps) {
 			draggableId={v.id.toString()}
 			index={i}
 		>
-			{provided => (
+			{(provided, snapshot) => (
 				<PreviewBox
 					{...provided.draggableProps}
 					{...provided.dragHandleProps}
 					ref={provided.innerRef}
+					isDragging={snapshot.isDragging}
 					value={v}
 					index={i}
 					onRemove={() => removeAt(i)}
