@@ -28,7 +28,7 @@ declare module "*.scss" {
 declare module "*.svg" {
 	import { ComponentType, SVGProps } from "react";
 
-	const SVGComponent: ComponentType<SVGProps<SVGSVGElement>>;
+	const component: ComponentType<SVGProps<SVGSVGElement>>;
 
-	export default SVGComponent;
+	export default component;
 }

@@ -3,7 +3,7 @@ import { bytes, drawImage } from "../utils";
 import { InputImage } from "../features/image-worker";
 import styles from "./ImageInfoPanel.scss";
 
-interface ImageInfoPanelProps extends TabPanelBase{
+interface ImageInfoPanelProps extends TabPanelBase {
 	value: InputImage;
 }
 
@@ -23,7 +23,7 @@ export default function ImageInfoPanel(props: ImageInfoPanelProps) {
 			<canvas
 				className={styles.canvas}
 				aria-label="Preview"
-				ref={el => drawImage(raw,el)}
+				ref={el => drawImage(raw, el)}
 				width={width}
 				height={height}
 			/>

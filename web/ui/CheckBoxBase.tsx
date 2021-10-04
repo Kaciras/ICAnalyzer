@@ -1,14 +1,6 @@
-import {
-	ChangeEvent,
-	ChangeEventHandler,
-	ComponentType,
-	Dispatch,
-	MouseEventHandler,
-	ReactNode,
-	SVGProps,
-} from "react";
+import { ChangeEvent, ChangeEventHandler, Dispatch, MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
-import { NOOP } from "../utils";
+import { NOOP, SVGComponent } from "../utils";
 import styles from "./CheckBoxBase.scss";
 
 export interface CheckBoxProps {
@@ -31,8 +23,8 @@ export interface CheckBoxProps {
 
 interface InternalProps extends CheckBoxProps {
 	type: string;
-	Icon: ComponentType<SVGProps<SVGSVGElement>>;
-	IconChecked: ComponentType<SVGProps<SVGSVGElement>>;
+	Icon: SVGComponent;
+	IconChecked: SVGComponent;
 }
 
 export default function CheckBoxBase(props: InternalProps) {

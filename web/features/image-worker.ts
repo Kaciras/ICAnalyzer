@@ -4,8 +4,8 @@ import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
 
 export interface InputImage {
-	file: File;
-	raw: ImageData;
+	readonly file: File;
+	readonly raw: ImageData;
 }
 
 export interface AnalyzeResult {

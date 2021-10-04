@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
+import { useLocalStorage } from "../hooks";
 import { Button, Dialog } from "../ui";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
-import { useLocalStorage } from "../utils";
 import { MeasureOptions } from "../features/measurement";
 import styles from "./CompressConfigDialog.scss";
 

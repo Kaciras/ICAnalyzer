@@ -33,7 +33,7 @@ interface DemoButtonProps {
 	description: string;
 	url: string;
 	icon: string;
-	onClick: (url: string) => Promise<void>;
+	onClick: Dispatch<string>;
 }
 
 function DemoButton(props: DemoButtonProps) {

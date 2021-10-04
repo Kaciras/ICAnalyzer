@@ -12,7 +12,8 @@ import {
 	setOriginalImage,
 } from "../features/image-worker";
 import { createMeasurer, MeasureOptions } from "../features/measurement";
-import { ObjectKeyMap, useProgress } from "../utils";
+import { useProgress } from "../hooks";
+import { ObjectKeyMap } from "../utils";
 import ProgressDialog from "./ProgressDialog";
 import CompareFileDialog from "./CompareFileDialog";
 import CompareConfigDialog from "./CompareConfigDialog";

@@ -1,9 +1,9 @@
 import { Dispatch, useState } from "react";
 import { MeasureOptions } from "../features/measurement";
 import { InputImage } from "../features/image-worker";
+import { useLocalStorage } from "../hooks";
 import { Button, Dialog, TabList, TabSwitch } from "../ui";
 import { getMerger } from "../mutation";
-import { useLocalStorage } from "../utils";
 import ImageInfoPanel from "./ImageInfoPanel";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
 import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel";

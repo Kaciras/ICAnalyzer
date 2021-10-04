@@ -12,7 +12,8 @@ import {
 } from "../features/image-worker";
 import { OptionsKey, OptionsKeyPair } from "../form";
 import { createMeasurer, Measurer } from "../features/measurement";
-import { NOOP, ObjectKeyMap, useProgress } from "../utils";
+import { useProgress } from "../hooks";
+import { NOOP, ObjectKeyMap } from "../utils";
 import { AnalyzeContext, ControlsMap } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog";
