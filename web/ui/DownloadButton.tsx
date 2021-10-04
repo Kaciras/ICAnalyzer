@@ -1,9 +1,8 @@
-import { ReactNode, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Button, { ButtonProps } from "./Button";
 
 export interface DownloadButtonProps extends ButtonProps {
 	file: File;
-	children: ReactNode;
 }
 
 export default function DownloadButton(props: DownloadButtonProps) {

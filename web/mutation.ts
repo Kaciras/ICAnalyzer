@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 
-type Mutate<T> = Dispatch<SetStateAction<T>>;
+export type Mutator<T> = Dispatch<SetStateAction<T>>;
 
-export function deepUpdate<T>(updater: Mutate<T>, path: string, value: any) {
+export function deepUpdate<T>(updater: Mutator<T>, path: string, value: any) {
 	const parts = path.split(".");
 
 	function recurs(current: any, index: number) {
@@ -45,7 +45,7 @@ function derive<T>(merger: Merger<T>, key: keyof T) {
 	return getMerger<T[typeof key]>(subSetValue);
 }
 
-export function getMerger<T>(mutate: Mutate<T>) {
+export function getMerger<T>(mutate: Mutator<T>) {
 	const merger = mutate as Merger<T>;
 
 	if (merger.cache) {

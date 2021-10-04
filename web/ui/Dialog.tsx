@@ -61,16 +61,17 @@ export default function Dialog(props: DialogProps) {
 	useLayoutEffect(hidePrevious, []);
 	useLayoutEffect(preventScroll, []);
 
-	return createPortal(
+	const reactNode = (
 		<div className={styles.dimmer}>
 			<div
 				role="dialog"
 				aria-label={name}
-				className={clsx(className, styles.dialog)}
+				className={clsx(styles.dialog, className)}
 			>
 				{children}
 			</div>
-		</div>,
-		document.body,
+		</div>
 	);
+
+	return createPortal(reactNode, document.body);
 }

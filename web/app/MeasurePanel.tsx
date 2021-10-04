@@ -1,13 +1,13 @@
-import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useCallback } from "react";
+import { ChangeEvent, ReactNode, useCallback } from "react";
 import * as ssimJs from "ssim.js";
 import { defaultButteraugliOptions } from "../../lib/similarity";
-import { deepUpdate } from "../mutation";
+import { deepUpdate, Mutator } from "../mutation";
 import { CheckBox, NumberInput } from "../ui";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { MeasureOptions } from "../features/measurement";
 import styles from "./MeasurePanel.scss";
 
-export function getMeasureOptions(saved?: MeasureOptions): MeasureOptions {
+export function getMeasureOptions(saved?: MeasureOptions) {
 	if (saved) {
 		return saved;
 	}
@@ -51,6 +51,7 @@ function LabelWrapper(props: LabelWrapperProps) {
 
 type InputTypes = HTMLInputElement | HTMLSelectElement;
 
+// Cannot use InputTypes for el as `Element.tagName` is not a literal.
 function detectInputValue(el: any) {
 	switch (el.tagName) {
 		case "SELECT":
@@ -69,7 +70,7 @@ function detectInputValue(el: any) {
 export interface MeasurePanelProps extends TabPanelBase {
 	hasEncodePhase?: boolean;
 	value: MeasureOptions;
-	onChange: Dispatch<SetStateAction<MeasureOptions>>;
+	onChange: Mutator<MeasureOptions>;
 }
 
 export default function MeasurePanel(props: MeasurePanelProps) {
@@ -113,6 +114,14 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 					Encode time (Not very accurate)
 				</CheckBox>
 			}
+
+			<CheckBox
+				checked={PSNR.enabled}
+				name="PSNR.enabled"
+				onChange={handleChange}
+			>
+				Peak signal-to-noise ratio
+			</CheckBox>
 
 			<CheckBox
 				checked={SSIM.enabled}
@@ -163,14 +172,6 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 					/>
 				</LabelWrapper>
 			</fieldset>
-
-			<CheckBox
-				checked={PSNR.enabled}
-				name="PSNR.enabled"
-				onChange={handleChange}
-			>
-				Peak signal-to-noise ratio
-			</CheckBox>
 
 			<CheckBox
 				name="butteraugli.enabled"

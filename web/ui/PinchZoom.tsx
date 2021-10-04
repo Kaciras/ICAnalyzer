@@ -2,12 +2,12 @@ import React, { Dispatch, ReactNode } from "react";
 
 type PointerMoveHandler = (dx: number, dy: number) => void;
 
-function watchMouseMove(baseEvent: MouseEvent, handler: PointerMoveHandler) {
+function watchMouseMove(baseEvent: MouseEvent, onMove: PointerMoveHandler) {
 	const basePageX = baseEvent.pageX;
 	const basePageY = baseEvent.pageY;
 
 	function handleMove(event: MouseEvent) {
-		handler(event.pageX - basePageX, event.pageY - basePageY);
+		onMove(event.pageX - basePageX, event.pageY - basePageY);
 	}
 
 	function handleEnd(event: Event) {
@@ -20,12 +20,15 @@ function watchMouseMove(baseEvent: MouseEvent, handler: PointerMoveHandler) {
 	document.addEventListener("mouseup", handleEnd);
 }
 
-function watchTouchMove(baseEvent: TouchEvent, handler: PointerMoveHandler) {
+function watchTouchMove(baseEvent: TouchEvent, onMove: PointerMoveHandler) {
 	const basePointer = baseEvent.touches[0];
 
 	function handleMove(event: TouchEvent) {
 		const touch = event.touches[0];
-		handler(touch.pageX - basePointer.pageX, touch.pageY - basePointer.pageY);
+		onMove(
+			touch.pageX - basePointer.pageX,
+			touch.pageY - basePointer.pageY,
+		);
 	}
 
 	function handleEnd(event: Event) {

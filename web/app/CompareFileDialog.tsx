@@ -135,7 +135,7 @@ function PreviewList(props: PreviewListProps) {
 }
 
 export interface CompareFileDialogProps {
-	data: CompareData | undefined;
+	data?: CompareData;
 	onAccept: Dispatch<CompareData>;
 	onCancel: () => void;
 }

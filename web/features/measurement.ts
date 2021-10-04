@@ -43,53 +43,8 @@ export interface MetricMeta {
 	name: string;
 }
 
-export interface Measurer {
-	metrics: MetricMeta[];
 
-	calculations: number;
-
-	execute(original: InputImage, result: AnalyzeResult, onProgress: () => void): Promise<void>;
-}
-
-interface BoundCalc {
-	options: any;
-	calc: Handler["calc"];
-}
-
-export function createMeasurer(config: MeasureOptions, worker: ImageWorker) {
-	const metrics = [];
-	const used: BoundCalc[] = [];
-
-	let calculations = 0;
-
-	for (const key of Object.keys(handlers)) {
-		const { enabled, options } = (config as any)[key] ?? { enabled: true };
-		if (!enabled) {
-			continue;
-		}
-		const { name, calc, immediately } = handlers[key];
-		if (!immediately) {
-			calculations++;
-		}
-		used.push({ calc, options });
-		metrics.push({ key, name });
-	}
-
-	function execute(original: InputImage, result: AnalyzeResult, onProgress: () => void) {
-		const tasks = used
-			.map(b => b.calc(worker, original, result, b.options))
-			.filter(Boolean)
-
-			// @ts-ignore
-			.map(promise => promise.then(onProgress));
-
-		return Promise.all(tasks) as unknown as Promise<void>;
-	}
-
-	return { calculations, metrics, execute } as Measurer;
-}
-
-interface Handler {
+interface MetricsType {
 	name: string;
 	immediately?: boolean;
 
@@ -101,7 +56,12 @@ interface Handler {
 	): void | Promise<void>;
 }
 
-const handlers: Record<string, Handler> = {
+interface BoundCalc {
+	options: any;
+	calc: MetricsType["calc"];
+}
+
+const handlers: Record<string, MetricsType> = {
 	ratio: {
 		name: "Compression Ratio %",
 		immediately: true,
@@ -136,3 +96,44 @@ const handlers: Record<string, Handler> = {
 		},
 	},
 };
+
+export interface Measurer {
+	metrics: MetricMeta[];
+
+	calculations: number;
+
+	execute(original: InputImage, result: AnalyzeResult, onProgress: () => void): Promise<void>;
+}
+
+export function createMeasurer(config: MeasureOptions, worker: ImageWorker) {
+	const metrics = [];
+	const used: BoundCalc[] = [];
+
+	let calculations = 0;
+
+	for (const key of Object.keys(handlers)) {
+		const { enabled, options } = (config as any)[key] ?? { enabled: true };
+		if (!enabled) {
+			continue;
+		}
+		const { name, calc, immediately } = handlers[key];
+		if (!immediately) {
+			calculations++;
+		}
+		used.push({ calc, options });
+		metrics.push({ key, name });
+	}
+
+	function execute(original: InputImage, result: AnalyzeResult, onProgress: () => void) {
+		const tasks = used
+			.map(b => b.calc(worker, original, result, b.options))
+			.filter(Boolean)
+
+			// @ts-ignore
+			.map(promise => promise.then(onProgress));
+
+		return Promise.all(tasks) as unknown as Promise<void>;
+	}
+
+	return { calculations, metrics, execute } as Measurer;
+}

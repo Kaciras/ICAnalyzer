@@ -22,6 +22,7 @@ declare module "highcharts" {
 const baseOptions: Options = {
 	chart: {
 		styledMode: true,
+		animation: false,
 	},
 	title: {
 		text: "",

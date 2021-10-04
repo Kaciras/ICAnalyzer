@@ -33,7 +33,7 @@ export default function Button(props: ButtonProps) {
 	const classes = clsx(
 		styles[type],
 		className,
-		{ [styles.active]: active },
+		active && styles.active,
 	);
 
 	const ButtonTag = href ? "a" : "button";

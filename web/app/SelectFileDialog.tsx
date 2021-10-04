@@ -11,24 +11,6 @@ import { decode } from "../features/decode";
 import { InputImage } from "../features/image-worker";
 import styles from "./SelectFileDialog.scss";
 
-const demos = [
-	{
-		description: "Large photo (488KB)",
-		url: photo,
-		icon: photoIcon,
-	},
-	{
-		description: "Artwork (894KB)",
-		url: artwork,
-		icon: artworkIcon,
-	},
-	{
-		description: "Colorful text (68KB)",
-		url: colorfulText,
-		icon: colorfulTextIcon,
-	},
-];
-
 interface DemoButtonProps {
 	description: string;
 	url: string;
@@ -101,10 +83,6 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 		}
 	}
 
-	const demoButtons = demos.map(demo =>
-		<DemoButton {...demo} key={demo.url} onClick={acceptUrl}/>,
-	);
-
 	return (
 		<Dialog onClose={onCancel}>
 			<div className="dialog-content">
@@ -118,7 +96,26 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 				<span className={styles.demoLabel}>
 					Or try one of these:
 				</span>
-				<div className={styles.demo}>{demoButtons}</div>
+				<div className={styles.demo}>
+					<DemoButton
+						description="Large photo (488KB)"
+						url={photo}
+						icon={photoIcon}
+						onClick={acceptUrl}
+					/>
+					<DemoButton
+						description="Artwork (894KB)"
+						url={artwork}
+						icon={artworkIcon}
+						onClick={acceptUrl}
+					/>
+					<DemoButton
+						description="Colorful text (68KB)"
+						url={colorfulText}
+						icon={colorfulTextIcon}
+						onClick={acceptUrl}
+					/>
+				</div>
 			</div>
 			<div className="dialog-actions">
 				<span className={styles.error}>{error}</span>

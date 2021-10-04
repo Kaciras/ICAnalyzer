@@ -8,8 +8,8 @@ export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
 
 export default function SwitchButton(props: SwitchButtonProps) {
 	const {
-		className, name, checked, disabled,
-		onClick, onChange = NOOP, onCheckedChange = NOOP,
+		className, name, value, checked, disabled,
+		onClick, onChange = NOOP, onCheckedChange = NOOP, onSelected = NOOP,
 	} = props;
 
 	const clazz = clsx(
@@ -20,8 +20,12 @@ export default function SwitchButton(props: SwitchButtonProps) {
 	);
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+		const { checked } = e.currentTarget;
+		if (checked) {
+			onSelected(value);
+		}
 		onChange(e);
-		onCheckedChange(e.currentTarget.checked);
+		onCheckedChange(checked);
 	}
 
 	return (
@@ -32,6 +36,7 @@ export default function SwitchButton(props: SwitchButtonProps) {
 				disabled={disabled}
 				checked={checked}
 				name={name}
+				value={value as string}
 				onClick={onClick}
 				onChange={handleChange}
 			/>

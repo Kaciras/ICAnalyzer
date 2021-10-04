@@ -6,6 +6,7 @@ import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button, DownloadButton } from "../ui";
 import { OptionsKey } from "../form";
 import { getEncoderNames } from "../codecs";
+import { getMerger } from "../mutation";
 import { AnalyzeResult } from "../features/image-worker";
 import { MetricMeta } from "../features/measurement";
 import { AnalyzeContext, ControlsMap } from "./index";
@@ -13,7 +14,6 @@ import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import styles from "./AnalyzePage.scss";
-import { getMerger } from "../mutation";
 
 interface SimplePanelProps {
 	visible: boolean;
@@ -30,11 +30,12 @@ function SimplePanel(props: SimplePanelProps) {
 
 	const items = [];
 	for (const { key, name } of metas) {
-		items.push(<dt>{name}:</dt>);
-		items.push(<dd>{metrics[key].toFixed(3)}</dd>);
+		const value = metrics[key].toFixed(3);
+		items.push(<dt key={name}>{name}:</dt>);
+		items.push(<dd key={key}>{value}</dd>);
 	}
 
-	return <dl className={styles.simpleMetrics}>{items}</dl>;
+	return <dl className={styles.simple}>{items}</dl>;
 }
 
 export enum VariableType {

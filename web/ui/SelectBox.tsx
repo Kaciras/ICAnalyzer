@@ -3,9 +3,9 @@ import CaretDownIcon from "bootstrap-icons/icons/caret-down-fill.svg";
 import { NOOP } from "../utils";
 import styles from "./SelectBox.scss";
 
-type SelectBoxProps = SelectHTMLAttributes<HTMLSelectElement> & {
+interface SelectBoxProps extends SelectHTMLAttributes<HTMLSelectElement> {
 	onValueChange: Dispatch<string>;
-};
+}
 
 export default function SelectBox(props: SelectBoxProps) {
 	const { onChange = NOOP, onValueChange, ...others } = props;

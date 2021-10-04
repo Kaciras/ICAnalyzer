@@ -45,7 +45,7 @@ function EncoderPanel(props: EncoderPanelProps) {
 	const tabs = ENCODERS.map(({ name }) => {
 		const classes = clsx(
 			styles.tab,
-			{ [styles.active]: name === current },
+			name === current && styles.active,
 		);
 
 		const handleEnableChange = onChange.sub(name).sub("enable");

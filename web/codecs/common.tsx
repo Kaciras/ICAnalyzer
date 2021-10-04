@@ -7,7 +7,10 @@ export interface EncodeModule<T> {
 }
 
 export interface EncodeResult {
+
+	/** Time used for encoding (in seconds) */
 	time: number;
+
 	buffer: ArrayBufferLike;
 }
 
@@ -33,6 +36,8 @@ export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
 		return Comlink.transfer(result, [result.buffer]);
 	};
 }
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 export interface DecodeModule {
 	decode(data: BufferSource): ImageData | null;

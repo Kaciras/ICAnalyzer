@@ -8,8 +8,8 @@ interface ImageInfoPanelProps extends TabPanelBase {
 }
 
 export default function ImageInfoPanel(props: ImageInfoPanelProps) {
-	const { isActive } = props;
-	const { file, raw } = props.value;
+	const { isActive, value } = props;
+	const { file, raw } = value;
 	const { width, height, data } = raw;
 
 	if (isActive === false) {
