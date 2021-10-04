@@ -2,12 +2,12 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
-import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
 import { ButtonProps } from "../ui/Button";
 import { PinchZoomState } from "../ui/PinchZoom";
-import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton } from "../ui";
+import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui";
 import { AnalyzeResult, InputImage } from "../features/image-worker";
 import { drawImage } from "../utils";
+import theme from "../theme.module.scss";
 import styles from "./ImageView.scss";
 
 export enum ViewType {
@@ -71,10 +71,6 @@ export default function ImageView(props: ImageViewProps) {
 		setMousePos({ clientX, clientY });
 	}
 
-	function setZoom(value: number) {
-		setPinchZoom(prev => ({ ...prev, scale: value / 100 }));
-	}
-
 	const tabData = viewTypeNames.map<ImageViewTabProps>(target => ({ target }));
 
 	if (!heatMap) {
@@ -112,7 +108,7 @@ export default function ImageView(props: ImageViewProps) {
 			>
 				<BrightnessIcon className={styles.icon}/>
 				<NumberInput
-					className={styles.darkNumberInput}
+					className={theme.darkNumberInput}
 					value={brightness}
 					min={1}
 					max={255}
@@ -192,25 +188,12 @@ export default function ImageView(props: ImageViewProps) {
 				{brightnessInput}
 			</div>
 
-			<div className={styles.controls}>
-				<NumberInput
-					title="Zoom scale"
-					min={25}
-					step={1}
-					increment={25}
-					className={styles.zoomInput}
-					value={Math.round(pinchZoom.scale * 100)}
-					onValueChange={setZoom}
-				/>
-				<Button
-					title="Reset view"
-					type="text"
-					className={styles.button}
-					onClick={() => setPinchZoom(pinchZoomInit)}
-				>
-					<ResetIcon/>
-				</Button>
-			</div>
+			<ZoomControl
+				className={styles.controls}
+				initValue={pinchZoomInit}
+				value={pinchZoom}
+				onChange={setPinchZoom}
+			/>
 
 			{
 				picking && inRegion &&

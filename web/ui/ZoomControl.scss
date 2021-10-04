@@ -1,0 +1,33 @@
+.zoomInput {
+	composes: darkNumberInput from "../theme.module.scss";
+
+	--input-width: 80px;
+	--size: 32px;
+	--border-radius: 6px;
+
+	font-weight: 700;
+}
+
+.button {
+	margin-left: 10px;
+	padding: 8px;
+	font-size: 24px;
+
+	border-radius: 6px;
+	color: white;
+	background: rgba(29, 29, 29, .92);
+
+	&:hover {
+		background: rgba(50, 50, 50, .92);
+	}
+
+	&:focus-visible {
+		outline: 0;
+		box-shadow: 0 0 0 3px white;
+		background: rgba(29, 29, 29, .92);
+	}
+
+	&:active {
+		background: rgba(29, 29, 29, .92);
+	}
+}

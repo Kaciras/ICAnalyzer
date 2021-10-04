@@ -85,7 +85,7 @@ module.exports = (env) => {
 			type: "asset/resource",
 		},
 		{
-			test: /\.(?:s?css|sass)$/,
+			test: /\.s?css$/,
 			oneOf: [
 				{
 					include: [
@@ -93,6 +93,10 @@ module.exports = (env) => {
 						join(__dirname, "web", "ui"),
 						join(__dirname, "web", "form"),
 					],
+					use: cssLoaderChain(true),
+				},
+				{
+					test: /\.module\.s?css/,
 					use: cssLoaderChain(true),
 				},
 				{

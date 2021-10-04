@@ -12,7 +12,7 @@ export interface CheckBoxProps {
 	// The value of the component. The DOM API casts this to a string.
 	value?: unknown;
 
-	onSelected: Dispatch<unknown>;
+	onSelected?: Dispatch<unknown>;
 	onCheckedChange?: Dispatch<boolean>;
 
 	onClick?: MouseEventHandler;

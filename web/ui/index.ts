@@ -29,3 +29,4 @@ export { default as ColorPicker } from "./ColorPicker";
 export { default as TabList } from "./TabList";
 export { default as TabSwitch } from "./TabSwitch";
 export { default as RadioGroup } from "./RadioGroup";
+export { default as ZoomControl } from "./ZoomControl";

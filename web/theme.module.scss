@@ -1,0 +1,11 @@
+.darkNumberInput {
+	--border-color: rgba(0, 0, 0, .67);
+	--button-bg: rgba(29, 29, 29, .92);
+
+	color: white;
+	background: var(--button-bg);
+
+	&:focus-within {
+		box-shadow: 0 0 0 2px white;
+	}
+}
