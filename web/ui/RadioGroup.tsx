@@ -25,7 +25,7 @@ export default function RadioGroup<T>(props: RadioGroupProps<T>) {
 			checked: value === radioValue,
 			name,
 			disabled,
-			onChange: () => onChange(radioValue),
+			onSelected: onChange,
 		};
 		return cloneElement(child, propsAddon);
 	});

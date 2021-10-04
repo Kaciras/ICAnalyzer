@@ -2,6 +2,7 @@ import { Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { SelectBox } from "../ui";
 import { getEncoderNames } from "../codecs";
+import { Merger } from "../mutation";
 import { ControlState, VariableType } from "./AnalyzePage";
 import { ControlsMap } from "./index";
 import styles from "./ControlPanel.scss";
@@ -35,7 +36,7 @@ function FieldWrapper(props: WrapperProps) {
 export interface ControlPanelProps {
 	controlsMap: ControlsMap;
 	value: ControlState;
-	onChange: Dispatch<Partial<ControlState>>;
+	onChange: Merger<ControlState>;
 }
 
 export default function ControlPanel(props: ControlPanelProps) {
@@ -47,34 +48,23 @@ export default function ControlPanel(props: ControlPanelProps) {
 	}
 
 	const state = stateMap[codec];
+	const setState = onChange.sub("stateMap").sub(codec);
 
-	function handleValueChange(id: string, value: any) {
-		const newStateMap = {
-			...stateMap,
-			[codec]: { ...state, [id]: value },
-		};
-		onChange({ stateMap: newStateMap });
-	}
-
-	const controls = controlsMap[codec].map(C =>
+	const controls = controlsMap[codec].map(({ id, Input }) =>
 		<FieldWrapper
-			key={C.id}
+			key={id}
 			type={varType}
 			id={varId}
 			targetType={VariableType.Option}
-			targetId={C.id}
-			onChange={onChange}
+			targetId={id}
+			onChange={onChange.merge}
 		>
-			<C.Input
-				value={state[C.id]}
-				onChange={v => handleValueChange(C.id, v)}
+			<Input
+				value={state[id]}
+				onChange={setState.sub(id)}
 			/>
 		</FieldWrapper>,
 	);
-
-	function handleCodecChange(newCodec: string) {
-		onChange({ codec: newCodec });
-	}
 
 	const selectOptions = getEncoderNames(controlsMap)
 		.map(name => <option key={name} value={name}>{name}</option>);
@@ -87,12 +77,12 @@ export default function ControlPanel(props: ControlPanelProps) {
 				id={varId}
 				targetType={VariableType.Encoder}
 				targetId=""
-				onChange={onChange}
+				onChange={onChange.merge}
 			>
 				<SelectBox
 					title="Codec name"
 					value={codec}
-					onValueChange={handleCodecChange}
+					onValueChange={onChange.sub("codec")}
 				>
 					{selectOptions}
 				</SelectBox>

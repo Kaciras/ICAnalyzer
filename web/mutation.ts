@@ -23,7 +23,9 @@ export interface Merger<T> {
 
 	cache: Record<any, Merger<any>>;
 
-	merge<K extends keyof T>(key: K, value: T[K]): void;
+	merge(changes: Partial<T>): void;
+
+	set<K extends keyof T>(key: K, value: T[K]): void;
 
 	sub<K extends keyof T>(key: K): Merger<T[K]>;
 }
@@ -32,7 +34,7 @@ function derive<T>(merger: Merger<T>, key: keyof T) {
 
 	function subSetValue(action: SetStateAction<any>) {
 		if (typeof action !== "function") {
-			return merger.merge(key, action);
+			return merger.set(key, action);
 		}
 		merger((prev: any) => {
 			const newVal = action(prev[key]);
@@ -52,12 +54,16 @@ export function getMerger<T>(mutate: Mutate<T>) {
 
 	merger.cache = {};
 
-	merger.sub = (key: keyof T) => {
-		return merger.cache[key] ??= derive(merger, key);
+	merger.merge = changes => {
+		merger(prev => ({ ...prev, ...changes }));
 	};
 
-	merger.merge = (key: keyof T, value: any) => {
-		merger((prev: any) => ({ ...prev, [key]: value }));
+	merger.set = (key, value) => {
+		merger(prev => ({ ...prev, [key]: value }));
+	};
+
+	merger.sub = (key) => {
+		return merger.cache[key] ??= derive(merger, key);
 	};
 
 	return merger;

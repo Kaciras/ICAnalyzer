@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, ReactNode, useState } from "react";
+import React, { ChangeEvent, Dispatch, ReactNode, useState } from "react";
 import { Slider } from "../ui";
 import styles from "./NumberField.scss";
 
@@ -16,7 +16,7 @@ interface NumberFieldProps {
 	onChange: Dispatch<number>;
 }
 
-export default function NumberField(props: NumberFieldProps) {
+function NumberField(props: NumberFieldProps) {
 	const {
 		name, className, disabled,
 		value, min, max, step, onChange, children,
@@ -66,3 +66,5 @@ export default function NumberField(props: NumberFieldProps) {
 		</div>
 	);
 }
+
+export default React.memo(NumberField);

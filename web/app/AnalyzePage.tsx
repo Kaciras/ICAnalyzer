@@ -1,4 +1,4 @@
-import { useMemo, useReducer, useState } from "react";
+import { useMemo, useState } from "react";
 import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
 import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
 import DownloadIcon from "bootstrap-icons/icons/download.svg";
@@ -13,6 +13,7 @@ import ImageView from "./ImageView";
 import ChartPanel from "./ChartPanel";
 import ControlPanel from "./ControlPanel";
 import styles from "./AnalyzePage.scss";
+import { getMerger } from "../mutation";
 
 interface SimplePanelProps {
 	visible: boolean;
@@ -79,10 +80,6 @@ function createControlState(controlsMap: ControlsMap): ControlState {
 	return { varType, varId, codec, stateMap };
 }
 
-function updateControlState(state: ControlState, action: Partial<ControlState>) {
-	return { ...state, ...action };
-}
-
 function getSeries(result: AnalyzeContext, state: ControlState) {
 	const { controlsMap, outputMap } = result;
 	const { varType, varId, codec, stateMap } = state;
@@ -133,7 +130,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 	const { input, controlsMap, seriesMeta } = result;
 
 	const [showChart, setShowChart] = useState(true);
-	const [state, setState] = useReducer(updateControlState, controlsMap, createControlState);
+	const [state, setState] = useState(() => createControlState(controlsMap));
 
 	const { labels, series, output, varName } = useMemo(() => getSeries(result, state), [result, state]);
 
@@ -205,7 +202,11 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 				</DownloadButton>
 			</div>
 
-			<ControlPanel value={state} onChange={setState} controlsMap={controlsMap}/>
+			<ControlPanel
+				controlsMap={controlsMap}
+				value={state}
+				onChange={getMerger(setState)}
+			/>
 		</>
 	);
 }

@@ -36,7 +36,7 @@ const Option = memo((props: OptionProps) => {
 	}
 
 	function toggle() {
-		onChange.merge("mode", (mode + 1) % 2);
+		onChange.set("mode", (mode + 1) % 2);
 	}
 
 	return (

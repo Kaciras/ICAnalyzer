@@ -13,7 +13,6 @@ import styles from "./CheckBoxBase.scss";
 
 export interface CheckBoxProps {
 	checked?: boolean;
-
 	className?: string;
 	name?: string;
 	disabled?: boolean;
@@ -21,7 +20,9 @@ export interface CheckBoxProps {
 	// The value of the component. The DOM API casts this to a string.
 	value?: unknown;
 
+	onSelected: Dispatch<unknown>;
 	onCheckedChange?: Dispatch<boolean>;
+
 	onClick?: MouseEventHandler;
 	onChange?: ChangeEventHandler<HTMLInputElement>;
 
@@ -37,12 +38,16 @@ interface InternalProps extends CheckBoxProps {
 export default function CheckBoxBase(props: InternalProps) {
 	const {
 		className, type, Icon, IconChecked, name, value, checked, disabled,
-		onClick, onChange = NOOP, onCheckedChange = NOOP, children,
+		onClick, onSelected = NOOP, onChange = NOOP, onCheckedChange = NOOP, children,
 	} = props;
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+		const { checked } = e.currentTarget;
+		if (checked) {
+			onSelected(value);
+		}
 		onChange(e);
-		onCheckedChange(e.currentTarget.checked);
+		onCheckedChange(checked);
 	}
 
 	const CheckMark = checked ? IconChecked : Icon;
