@@ -1,11 +1,11 @@
-import { Dispatch } from "react";
-import { OptionMode, OptionsKeyPair, OptionStateMap, OptionType } from "../form";
+import { Merger } from "../mutation";
+import { ControlType, OptionMode, OptionsKeyPair, OptionStateMap, OptionType } from "../form";
 import OptionsForm from "../form/OptionsForm";
 
 export interface OptionPanelProps {
 	className?: string;
 	state: OptionStateMap;
-	onChange: Dispatch<OptionStateMap>;
+	onChange: Merger<OptionStateMap>;
 }
 
 export default class OptionsGenerator {
@@ -35,44 +35,50 @@ export default class OptionsGenerator {
 	}
 
 	OptionsList(props: OptionPanelProps) {
-		return OptionsForm({ ...props, templates: this.templates });
+		const { templates } = this;
+		return OptionsForm({ ...props, templates });
 	}
 
 	generate(state: OptionStateMap) {
 		const { defaults, templates } = this;
 
-		function applyOption(list: OptionsKeyPair[], template: OptionType) {
+		function mapRange(pair: OptionsKeyPair, template: OptionType) {
+			const { key, options } = pair;
 			const { id } = template;
-			const { mode, value, range } = state[id];
+			const { range } = state[id];
 
-			if (mode === OptionMode.Range) {
-				const newList: OptionsKeyPair[] = [];
+			const values = template.getValues(range);
+			const newList = [];
 
-				for (const { key, options } of list) {
-					const values = template.getValues(range);
+			for (const value of values) {
+				const k = { ...key, [id]: value };
+				const o = { ...options };
 
-					for (const value of values) {
-						const k = { ...key, [id]: value };
-						const o = { ...options };
-
-						template.populate(value, o);
-						newList.push({ key: k, options: o });
-					}
-				}
-				return newList;
-			} else if (mode === OptionMode.Constant) {
-				list.forEach(({ options }) => template.populate(value, options));
-				return list;
+				template.populate(value, o);
+				newList.push({ key: k, options: o });
 			}
-			return list;
+
+			return newList as OptionsKeyPair[];
 		}
 
-		return templates.reduce(applyOption, [{ key: {}, options: { ...defaults } }]);
-	}
+		let list: OptionsKeyPair[] = [{
+			key: {},
+			options: { ...defaults },
+		}];
 
-	getControls(state: OptionStateMap) {
-		return this.templates
-			.filter(t => state[t.id].mode === OptionMode.Range)
-			.map(t => t.createControl(state[t.id].range));
+		const controls: ControlType[] = [];
+
+		for (const template of templates) {
+			const { mode, value, range } = state[template.id];
+
+			if (mode === OptionMode.Range) {
+				list = list.flatMap(p => mapRange(p, template));
+				controls.push(template.createControl(range));
+			} else {
+				list.forEach(p => template.populate(value, p.options));
+			}
+		}
+
+		return { optionsList: list, controls };
 	}
 }

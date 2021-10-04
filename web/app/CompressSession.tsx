@@ -55,10 +55,10 @@ class EncodeAnalyzer {
 			if (!enable) {
 				continue;
 			}
-			const optionsList = optionsGenerator.generate(state);
+			const { optionsList, controls } = optionsGenerator.generate(state);
+			this.controlsMap[name] = controls;
 			this.taskQueue.push({ encoder, optionsList });
 			this.outputSize += optionsList.length;
-			this.controlsMap[name] = optionsGenerator.getControls(state);
 		}
 	}
 
