@@ -38,7 +38,7 @@
 		"@svgr/webpack": "^5.5.0",
 		"@types/emscripten": "^1.39.5",
 		"@types/jest": "^27.0.2",
-		"@types/react": "^17.0.24",
+		"@types/react": "^17.0.27",
 		"@types/react-beautiful-dnd": "^13.1.2",
 		"@types/react-dom": "^17.0.9",
 		"@types/sharp": "^0.29.2",
@@ -46,7 +46,7 @@
 		"css-loader": "^6.3.0",
 		"eslint": "^7.32.0",
 		"html-webpack-plugin": "^5.3.2",
-		"jest": "^27.2.2",
+		"jest": "^27.2.4",
 		"mini-css-extract-plugin": "^2.3.0",
 		"react-refresh": "^0.10.0",
 		"sass": "^1.42.1",
@@ -56,9 +56,9 @@
 		"ts-jest": "^27.0.5",
 		"ts-loader": "^9.2.6",
 		"typescript": "^4.4.3",
-		"webpack": "^5.54.0",
+		"webpack": "^5.56.1",
 		"webpack-bundle-analyzer": "^4.4.2",
 		"webpack-cli": "^4.8.0",
-		"webpack-dev-server": "^4.3.0"
+		"webpack-dev-server": "^4.3.1"
 	}
 }
