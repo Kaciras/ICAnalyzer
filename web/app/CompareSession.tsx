@@ -47,7 +47,6 @@ export default function CompareSession(props: CompareSessionProps) {
 	const [imagePool, setImagePool] = useState<ImagePool>();
 
 	const progress = useProgress();
-	const [error, setError] = useState<string>();
 
 	function handleAccept(data: CompareData) {
 		setData(data);
@@ -112,7 +111,7 @@ export default function CompareSession(props: CompareSessionProps) {
 			});
 		} catch (e) {
 			console.error(e);
-			setError(e.message);
+			progress.setError(e.message);
 		} finally {
 			imagePool.terminate();
 		}
@@ -140,7 +139,7 @@ export default function CompareSession(props: CompareSessionProps) {
 			<ProgressDialog
 				value={progress.value}
 				max={progress.max}
-				error={error}
+				error={progress.error}
 				onCancel={stop}
 			/>
 		);

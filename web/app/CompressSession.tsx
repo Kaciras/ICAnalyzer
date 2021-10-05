@@ -117,7 +117,6 @@ export default function CompressSession(props: CompressSessionProps) {
 	const [imagePool, setImagePool] = useState<ImagePool>();
 
 	const progress = useProgress();
-	const [error, setError] = useState<string>();
 
 	function cancelSelectFile() {
 		input ? setSelectFile(false) : onClose();
@@ -149,7 +148,7 @@ export default function CompressSession(props: CompressSessionProps) {
 		} catch (e) {
 			// Some browsers will crash the page on OOM.
 			console.error(e);
-			setError(e.message);
+			progress.setError(e.message);
 		} finally {
 			imagePool.terminate();
 		}
@@ -169,7 +168,7 @@ export default function CompressSession(props: CompressSessionProps) {
 			<ProgressDialog
 				value={progress.value}
 				max={progress.max}
-				error={error}
+				error={progress.error}
 				onCancel={stop}
 			/>
 		);
