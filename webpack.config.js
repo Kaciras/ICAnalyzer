@@ -127,6 +127,7 @@ module.exports = (env) => {
 		mode: isProd ? "production" : "development",
 		context: __dirname,
 		entry: {
+			check: "./web/support-check",
 			index: "./web/index",
 		},
 		output: {
