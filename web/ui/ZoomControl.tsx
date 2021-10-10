@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
+import { Mutator } from "../mutation";
 import { PinchZoomState } from "./PinchZoom";
 import { Button, NumberInput } from "./index";
 import styles from "./ZoomControl.scss";
@@ -8,7 +9,7 @@ export interface ZoomControlProps {
 	className?: string;
 	initValue?: PinchZoomState;
 	value: PinchZoomState;
-	onChange: Dispatch<SetStateAction<PinchZoomState>>;
+	onChange: Mutator<PinchZoomState>;
 }
 
 function ZoomControl(props: ZoomControlProps) {

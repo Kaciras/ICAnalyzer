@@ -7,9 +7,19 @@ import ArrowDownIcon from "../assets/arrow_down.svg";
 import { NOOP } from "../utils";
 import styles from "./NumberInput.scss";
 
-const UPDATE_SPEED = 50;
+/**
+ * When click and hold on a button - the delay before auto changing the value.
+ */
 const UPDATE_DELAY = 400;
 
+/**
+ * When click and hold on a button - the speed of auto changing the value.
+ */
+const UPDATE_SPEED = 50;
+
+/**
+ * Get the number of decimal places.
+ */
 function getPrecision(value: number) {
 	const s = value.toString();
 	const d = s.indexOf(".") + 1;
@@ -45,8 +55,12 @@ export interface NumberInputProps {
 	className?: string;
 	disabled?: boolean;
 
-	onChange?: ChangeEventHandler<HTMLInputElement>;
+	/**
+	 * Equivalent to onChange(e => onValueChange(e.currentTarget.valueAsNumber))
+	 */
 	onValueChange?: Dispatch<number>;
+
+	onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
 function NumberInput(props: NumberInputProps) {

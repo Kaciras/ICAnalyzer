@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { Merger } from "../mutation";
 import { CheckBox } from "../ui";
+import { stopPropagation } from "../utils";
 import { OptionMode, OptionStateMap } from "../form";
 import { ENCODER_MAP, ENCODERS } from "../codecs";
 import styles from "./EncoderPanel.scss";
@@ -58,7 +59,7 @@ function EncoderPanel(props: EncoderPanelProps) {
 			>
 				<CheckBox
 					checked={value[name].enable}
-					onClick={e => e.stopPropagation()}
+					onClick={stopPropagation}
 					onCheckedChange={handleEnableChange}
 				/>
 				<span className={styles.name}>{name}</span>

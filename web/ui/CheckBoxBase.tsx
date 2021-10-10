@@ -62,7 +62,10 @@ export default function CheckBoxBase(props: InternalProps) {
 				onChange={handleChange}
 			/>
 			<CheckMark className={styles.mark}/>
-			{children && <span className={styles.label}>{children}</span>}
+			{
+				children &&
+				<span className={styles.label}>{children}</span>
+			}
 		</label>
 	);
 }

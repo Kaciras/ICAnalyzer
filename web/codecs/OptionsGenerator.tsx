@@ -47,18 +47,13 @@ export default class OptionsGenerator {
 			const { id } = template;
 			const { range } = state[id];
 
-			const values = template.getValues(range);
-			const newList = [];
-
-			for (const value of values) {
+			return template.getValues(range).map(value => {
 				const k = { ...key, [id]: value };
 				const o = { ...options };
-
 				template.populate(value, o);
-				newList.push({ key: k, options: o });
-			}
 
-			return newList as OptionsKeyPair[];
+				return { key: k, options: o } as OptionsKeyPair;
+			});
 		}
 
 		let list: OptionsKeyPair[] = [{

@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
+import { Mutator } from "./mutation";
 
 export interface ProgressState {
 	value: number;
@@ -15,9 +16,9 @@ export function useProgress(initialMax = 1): ProgressState {
 	const [value, setValue] = useState(0);
 	const [error, setError] = useState<string>();
 
-	function reset(value: number) {
+	function reset(max: number) {
 		setValue(0);
-		setMax(value);
+		setMax(max);
 		setError(undefined);
 	}
 
@@ -28,7 +29,7 @@ export function useProgress(initialMax = 1): ProgressState {
 	return { value, max, error, increase, reset, setError };
 }
 
-type LocalStorageState<T> = [T, Dispatch<SetStateAction<T>>, () => void];
+type LocalStorageState<T> = [T, Mutator<T>, () => void];
 
 export function useLocalStorage<T>(key: string, processor: (saved?: T) => T) {
 	const [value, setValue] = useState(() => {

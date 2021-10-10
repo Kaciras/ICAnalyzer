@@ -17,11 +17,16 @@ export enum ViewType {
 	HeatMap,
 }
 
+const viewTypeNames = [
+	"Original",
+	"Output",
+	"Difference",
+	"HeatMap",
+];
+
 interface ImageViewTabProps extends ButtonProps {
 	target: string;
 }
-
-const viewTypeNames = ["Original", "Output", "Difference", "HeatMap"];
 
 const pinchZoomInit: PinchZoomState = {
 	x: 0,
@@ -40,14 +45,12 @@ export default function ImageView(props: ImageViewProps) {
 	const { width, height } = original.raw;
 	const { heatMap } = output;
 
+	const [pinchZoom, setPinchZoom] = useState(pinchZoomInit);
 	const [type, setType] = useState(ViewType.Output);
+	const [brightness, setBrightness] = useState(1);
 	const [picking, setPicking] = useState(false);
 	const [inRegion, setInRegion] = useState(false);
-	const [brightness, setBrightness] = useState(1);
-
 	const [mousePos, setMousePos] = useState({ clientX: 0, clientY: 0 });
-
-	const [pinchZoom, setPinchZoom] = useState(pinchZoomInit);
 
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
@@ -96,28 +99,11 @@ export default function ImageView(props: ImageViewProps) {
 		);
 	});
 
-	let brightnessInput = null;
+	let mixBlendMode = undefined;
 	let brightnessVal = 1;
-
 	if (type === ViewType.Difference) {
+		mixBlendMode = "difference" as const;
 		brightnessVal = brightness;
-		brightnessInput = (
-			<label
-				title="Brightness"
-				className={styles.option}
-			>
-				<BrightnessIcon className={styles.icon}/>
-				<NumberInput
-					className={theme.darkNumberInput}
-					value={brightness}
-					min={1}
-					max={255}
-					step={1}
-					minMaxButton={true}
-					onValueChange={setBrightness}
-				/>
-			</label>
-		);
 	}
 
 	const wrapperCSS = {
@@ -136,8 +122,6 @@ export default function ImageView(props: ImageViewProps) {
 		top: clientY,
 		left: clientX,
 	};
-
-	const mixBlendMode = type === ViewType.Difference ? "difference" : undefined;
 
 	return (
 		<div className={clsx(styles.container, className)}>
@@ -185,7 +169,24 @@ export default function ImageView(props: ImageViewProps) {
 					/>
 				</div>
 
-				{brightnessInput}
+				{
+					type === ViewType.Difference &&
+					<label
+						className={styles.option}
+						title="Brightness"
+					>
+						<BrightnessIcon className={styles.icon}/>
+						<NumberInput
+							value={brightness}
+							min={1}
+							max={255}
+							step={1}
+							minMaxButton={true}
+							className={theme.darkNumberInput}
+							onValueChange={setBrightness}
+						/>
+					</label>
+				}
 			</div>
 
 			<ZoomControl

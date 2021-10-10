@@ -1,10 +1,12 @@
-import { ComponentType, SVGProps } from "react";
+import React, { ComponentType, SVGProps } from "react";
 
 export type SVGComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
 export const NOOP = () => {};
 
 export const IDENTITY = <T>(v: T) => v;
+
+export const stopPropagation = (e: MouseEvent | React.MouseEvent) => e.stopPropagation();
 
 let uniqueKeyCounter = 1;
 
@@ -21,9 +23,9 @@ const SIZE_UNITS = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
  * Convert bytes to a human readable string.
  *
  * @param value The number to format.
- * @param fraction
+ * @param fraction 1000 for SI or 1024 for IEC.
  */
-export function bytes(value: number, fraction = 1024) {
+export function bytes(value: number, fraction: 1024 | 1000 = 1024) {
 	const size = Math.abs(value);
 
 	if (size === 0) {
@@ -59,7 +61,7 @@ export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
 	}
 }
 
-// JSON.stringify is not deterministic, be careful with the properties order.
+// JSON.stringify is not deterministic, the property order in key object must be same as stored.
 export class ObjectKeyMap<K, V> {
 
 	private readonly table = new Map<string, V>();
