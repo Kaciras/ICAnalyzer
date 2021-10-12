@@ -13,10 +13,34 @@ const Preprocess = {
 	"Dithering": 2,
 };
 
+// https://github.com/webmproject/libwebp/blob/df0e808fed22aa8b09f20c613fcfdc6c8c9c8c8b/src/enc/config_enc.c#L144
+const losslessPresets = [
+	{ method: 0, quality: 0 },
+	{ method: 1, quality: 20 },
+	{ method: 2, quality: 25 },
+	{ method: 3, quality: 30 },
+	{ method: 3, quality: 50 },
+	{ method: 4, quality: 50 },
+	{ method: 4, quality: 75 },
+	{ method: 4, quality: 90 },
+	{ method: 5, quality: 90 },
+	{ method: 6, quality: 100 },
+];
+
+class LosslessPresetOption extends NumberOption {
+
+	populate(value: number, options: EncodeOptions) {
+		if (!options.lossless) {
+			return;
+		}
+		Object.assign(options, losslessPresets[value]);
+	}
+}
+
 const templates: OptionType[] = [
 	new BoolOption({
 		id: "lossless",
-		label: "lossless",
+		label: "Lossless Mode (-lossless)",
 		defaultValue: defaultOptions.lossless,
 	}),
 	new NumberOption({
@@ -71,12 +95,12 @@ const templates: OptionType[] = [
 	}),
 	new BoolOption({
 		id: "use_sharp_yuv",
-		label: "Sharp YUV",
+		label: "Sharp YUV (-sharp_yuv)",
 		defaultValue: defaultOptions.use_sharp_yuv,
 	}),
 	new NumberOption({
 		id: "pass",
-		label: "Passes",
+		label: "Passes (-pass)",
 		min: 1,
 		max: 10,
 		step: 1,
@@ -92,17 +116,25 @@ const templates: OptionType[] = [
 	}),
 	new EnumOption({
 		id: "preprocessing",
-		label: "Preprocess",
+		label: "Preprocess (-pre)",
 		enumObject: Preprocess,
 		defaultValue: "None",
 	}),
 	new NumberOption({
 		id: "segments",
-		label: "Segments",
+		label: "Segments (-segments)",
 		min: 1,
 		max: 4,
 		step: 1,
 		defaultValue: defaultOptions.segments,
+	}),
+	new LosslessPresetOption({
+		id: "losslessPreset",
+		label: "Lossless Preset (-z)",
+		min: 0,
+		max: 9,
+		step: 1,
+		defaultValue: 6,
 	}),
 
 	// There is no image_hint option since it have no effect.
