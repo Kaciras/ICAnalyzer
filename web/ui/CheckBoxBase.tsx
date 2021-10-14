@@ -12,7 +12,11 @@ export interface CheckBoxProps {
 	// The value of the component. The DOM API casts this to a string.
 	value?: unknown;
 
+	/**
+	 * If the checked state changed, this handler will be called with the value prop.
+	 */
 	onSelected?: Dispatch<unknown>;
+
 	onCheckedChange?: Dispatch<boolean>;
 
 	onClick?: MouseEventHandler;

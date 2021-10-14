@@ -57,3 +57,10 @@
 .section {
 	padding: 50px;
 }
+
+.links {
+	composes: section;
+	display: flex;
+	gap: 150px;
+	justify-content: center;
+}

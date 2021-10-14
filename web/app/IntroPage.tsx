@@ -22,7 +22,7 @@ export default function IntroPage(props: IntroPageProps) {
 						ICAnalyzer
 					</h1>
 					<h2 className={styles.subTitle}>
-						Image Codec & Quality analyze tool
+						Image Compression Analyze Tool
 					</h2>
 
 					<Button
@@ -66,8 +66,15 @@ export default function IntroPage(props: IntroPageProps) {
 					</a>
 				</div>
 			</section>
-			<section className={styles.section}>
-				TODO
+			<section className={styles.links}>
+				<div>
+					<h2>Documents</h2>
+					<a href="https://github.com/Kaciras/ICAnalyzer/wiki/Tutorial-(Chinese)">Tutorial (Chinese)</a>
+				</div>
+				<div>
+					<h2>Articles</h2>
+					TBD
+				</div>
 			</section>
 		</div>
 	);

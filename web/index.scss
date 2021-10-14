@@ -5,7 +5,7 @@
 }
 
 html {
-	font-family: sans-serif;
+	font-family: Arial, sans-serif;
 	color: #333;
 }
 
@@ -20,9 +20,11 @@ fieldset {
 }
 
 button {
+	font-family: Arial, sans-serif;
 	font-size: initial;
 	border: none;
-	background: transparent;
+	border-radius: 0;
+	background: none;
 
 	&:enabled {
 		cursor: pointer;

@@ -3,22 +3,30 @@ import clsx from "clsx";
 import styles from "./Button.scss";
 
 export interface ButtonProps {
+
 	/**
 	 * The basic style of the button, default is "button".
+	 *
+	 * @default "button"
 	 */
 	type?: "button" | "text" | "outline";
 
+	/**
+	 * Apply the active style to the button?
+	 *
+	 * @default false
+	 */
 	active?: boolean;
-	disabled?: boolean;
 
 	/**
-	 * If set, will render an anchor with href attribute instead of a button.
+	 * If set, will render an anchor element with href attribute.
 	 */
 	href?: string;
 
 	autoFocus?: boolean;
 	title?: string;
 	className?: string;
+	disabled?: boolean;
 
 	onClick?: MouseEventHandler;
 	children?: ReactNode;

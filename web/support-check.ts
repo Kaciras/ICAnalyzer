@@ -7,9 +7,9 @@ interface Window {
 /*
  * Check if the browser can run this app, alert if it cannot. see README.MD for supported browsers.
  *
- * SyntaxError thrown while the code is being parsed,
- * to catch it the code must be wrapped with eval() and the script block
- * must be run before parsing any invalid code.
+ * Since SyntaxError thrown while the code is being parsed,
+ * to catch it the test code should be wrapped with eval() and the script block
+ * must run before parsing any invalid code.
  *
  * This file is an entry point and will be injected to HTML before the index chunk.
  */
