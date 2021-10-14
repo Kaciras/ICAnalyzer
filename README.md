@@ -2,13 +2,20 @@
 
 [![Test](https://github.com/Kaciras/ICAnalyzer/actions/workflows/test.yml/badge.svg)](https://github.com/Kaciras/ICAnalyzer/actions/workflows/test.yml)
 
-Online image Codec & Quality analyze tool.
+Online image compression analyze tool.
 
-🔗 [ic-analyzer.kaciras.com](https://ic-analyzer.kaciras.com/)
+[ic-analyzer.kaciras.com](https://ic-analyzer.kaciras.com/)
 
-- Convert & compare image directly within the browser.
+- Convert an image or just select images to analyze.
+- Images never leave your device since ICAnalyzer does all the work locally.
+- Support image similarity metrics: SSIM, PSNR, and [butteraugli](https://github.com/google/butteraugli)
 
-- Support image similarity metrics: SSIM, PSNR, and [butteraugli](https://github.com/google/butteraugli) 
+Supported browsers:
+
+- Firefox >= 79
+- Edge >= 85
+- Chrome >= 85
+- Safari >= 14.1
 
 # Build
 

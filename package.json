@@ -1,7 +1,7 @@
 {
 	"name": "ic-analyzer",
 	"version": "0.1.0",
-	"description": "Image Codec & Quality analyze tool",
+	"description": "Image Compression Analyze Tool",
 	"author": "Kaciras <Kaciras@protonmail.com>",
 	"license": "MIT",
 	"repository": {
