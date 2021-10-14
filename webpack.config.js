@@ -158,6 +158,9 @@ module.exports = (env) => {
 			splitChunks: {
 				chunks: "all",
 			},
+			// Set it to single fixes hot reloading with multiple entries.
+			// https://github.com/webpack/webpack-dev-server/issues/2792
+			runtimeChunk: "single",
 		},
 		cache: {
 			type: "filesystem",
