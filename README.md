@@ -12,10 +12,10 @@ Online image compression analyze tool.
 
 Supported browsers:
 
-- Firefox >= 79
-- Edge >= 85
-- Chrome >= 85
-- Safari >= 14.1
+- Firefox >= 72
+- Edge >= 80
+- Chrome >= 80
+- Safari >= 13.1
 
 # Build
 

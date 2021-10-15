@@ -67,11 +67,11 @@ export default function IntroPage(props: IntroPageProps) {
 				</div>
 			</section>
 			<section className={styles.links}>
-				<div>
+				<div className={styles.card}>
 					<h2>Documents</h2>
 					<a href="https://github.com/Kaciras/ICAnalyzer/wiki/Tutorial-(Chinese)">Tutorial (Chinese)</a>
 				</div>
-				<div>
+				<div className={styles.card}>
 					<h2>Articles</h2>
 					TBD
 				</div>

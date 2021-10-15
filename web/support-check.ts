@@ -16,8 +16,7 @@ interface Window {
 
 try {
 	// noinspection JSUnusedLocalSymbols
-	eval("class _ { i }");
-	eval("let x = 0; x ??= 1");
+	eval("const x = null ?? 0");
 
 	window.__isSupport__ = true;
 } catch {

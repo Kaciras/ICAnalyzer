@@ -4,7 +4,7 @@
 		"deps"
 	],
 	"compilerOptions": {
-		"target": "ESNext",
+		"target": "ES2020",
 		"lib": [
 			"ESNext",
 			"DOM",
