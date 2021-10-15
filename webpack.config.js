@@ -1,4 +1,4 @@
-const { join } = require("path");
+const { join, resolve } = require("path");
 const { EnvironmentPlugin } = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
@@ -165,7 +165,10 @@ module.exports = (env) => {
 		cache: {
 			type: "filesystem",
 			buildDependencies: {
-				config: [__filename],
+				config: [
+					__filename,
+					resolve(__dirname, "tsconfig.json"),
+				],
 			},
 		},
 		performance: false,
