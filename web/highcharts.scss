@@ -136,6 +136,11 @@ $scrollbar-track-border: #404043;
 	background: #477ae0;
 }
 
+// Avoid 0.5px margin in background rect.
+.highcharts-background {
+	stroke-width: 0;
+}
+
 // https://stackoverflow.com/a/63055006
 .exporting_chart_class .highcharts-background {
 	fill: #222;
