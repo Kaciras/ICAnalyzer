@@ -118,7 +118,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 				</div>
 			</div>
 			<div className="dialog-actions">
-				<span className={styles.error}>{error}</span>
+				<span className={styles.error}>{error?.message}</span>
 				<Button className="second" onClick={onCancel}>Back</Button>
 			</div>
 		</Dialog>
