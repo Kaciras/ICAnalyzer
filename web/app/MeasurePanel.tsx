@@ -166,7 +166,7 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 					<NumberInput
 						name="SSIM.options.windowSize"
 						value={SSIM.options.windowSize}
-						min={0}
+						min={1}
 						step={1}
 						onChange={handleChange}
 					/>
