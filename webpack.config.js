@@ -134,6 +134,7 @@ module.exports = (env) => {
 			filename: "s/[name].js",
 			assetModuleFilename: "s/[name][ext]",
 			clean: true,
+			hashFunction: "xxhash64",
 		},
 		devtool: isProd ? "source-map" : "cheap-module-source-map",
 		resolve: {
