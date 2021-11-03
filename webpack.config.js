@@ -40,23 +40,26 @@ module.exports = (env) => {
 	const loaders = [
 		{
 			test: /\.tsx?$/,
-			use: [
-				isDevelopment && {
-					loader: "babel-loader",
-					options: {
-						plugins: ["react-refresh/babel"],
-					},
-				},
-				{
-					loader: "ts-loader",
-					options: {
-						compilerOptions: {
-							module: "ESNext",
+			use: {
+				loader: "swc-loader",
+				options: {
+					jsc: {
+						parser: {
+							syntax: "typescript",
+							tsx: true,
+							dynamicImport: true,
 						},
-						transpileOnly: true,
+						target: "es2020",
+						transform: {
+							react: {
+								runtime: "automatic",
+								development: isDevelopment,
+								refresh: isDevelopment,
+							},
+						},
 					},
 				},
-			].filter(Boolean),
+			},
 		},
 		{
 			test: /\.wasm$/,
