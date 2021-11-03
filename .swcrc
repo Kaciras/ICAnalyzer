@@ -1,0 +1,15 @@
+{
+	"jsc": {
+		"parser": {
+			"syntax": "typescript",
+			"tsx": true,
+			"dynamicImport": true
+		},
+		"transform": {
+			"react": {
+				"runtime": "automatic"
+			}
+		},
+		"target": "es2020"
+	}
+}

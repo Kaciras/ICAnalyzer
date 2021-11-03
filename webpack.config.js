@@ -39,27 +39,8 @@ module.exports = (env) => {
 
 	const loaders = [
 		{
-			test: /\.tsx?$/,
-			use: {
-				loader: "swc-loader",
-				options: {
-					jsc: {
-						parser: {
-							syntax: "typescript",
-							tsx: true,
-							dynamicImport: true,
-						},
-						target: "es2020",
-						transform: {
-							react: {
-								runtime: "automatic",
-								development: isDevelopment,
-								refresh: isDevelopment,
-							},
-						},
-					},
-				},
-			},
+			test: /\.[jt]sx?$/,
+			use: "swc-loader",
 		},
 		{
 			test: /\.wasm$/,
