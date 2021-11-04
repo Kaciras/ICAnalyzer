@@ -36,6 +36,7 @@ specifiers:
   ssim.js: ^3.5.0
   style-loader: ^3.3.1
   swc-loader: ^0.1.15
+  terser-webpack-plugin: ^5.2.4
   ts-jest: ^27.0.7
   typescript: ^4.4.4
   wasm-feature-detect: ^1.2.11
@@ -83,6 +84,7 @@ devDependencies:
   sharp: 0.29.2
   style-loader: 3.3.1_webpack@5.61.0
   swc-loader: 0.1.15_@swc+core@1.2.106+webpack@5.61.0
+  terser-webpack-plugin: 5.2.4_@swc+core@1.2.106+webpack@5.61.0
   ts-jest: 27.0.7_64b3e2d9790b45ff46b15c2c39e45934
   typescript: 4.4.4
   webpack: 5.61.0_1786c5a86a664aa1b63bdcdf4cadede7
@@ -4112,6 +4114,7 @@ packages:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
+    requiresBuild: true
     dev: true
     optional: true
 

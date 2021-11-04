@@ -3,6 +3,7 @@ const { EnvironmentPlugin } = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 /*
@@ -140,6 +141,9 @@ module.exports = (env) => {
 		},
 		plugins: plugins.filter(Boolean),
 		optimization: {
+			minimizer: [
+				new TerserPlugin({ minify: TerserPlugin.swcMinify }),
+			],
 			splitChunks: {
 				chunks: "all",
 			},
