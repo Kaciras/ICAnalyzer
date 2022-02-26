@@ -12,6 +12,10 @@ module.exports = {
 	},
 	rules: {
 		"react-hooks/exhaustive-deps": "off",
+		"react/jsx-curly-brace-presence": ["error", {
+			props: "never",
+			children: "never",
+		}],
 	},
 	overrides: [{
 		files: jestConfig.testMatch,
