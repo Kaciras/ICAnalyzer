@@ -32,6 +32,7 @@ module.exports = (env) => {
 		};
 		if (cssModules) {
 			cssLoader.options.modules = {
+				hashStrategy: "minimal-subset",
 				localIdentName: isProd ? "[hash:base64:5]" : "[local]_[hash:base64:5]",
 			};
 		}
@@ -137,6 +138,9 @@ module.exports = (env) => {
 			},
 		},
 		module: {
+			parser: {
+				javascript: { importMeta: false },
+			},
 			rules: loaders,
 		},
 		plugins: plugins.filter(Boolean),
