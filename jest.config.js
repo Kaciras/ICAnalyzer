@@ -5,8 +5,10 @@ module.exports = {
 	moduleFileExtensions: [
 		"ts", "tsx", "mjs", "js",
 	],
-	preset: "ts-jest",
+	transform: {
+		"^.+\\.ts$": ["@swc/jest"],
+	},
 	clearMocks: true,
-	coverageDirectory: "coverage",
 	coverageProvider: "v8",
+	coverageDirectory: "coverage",
 };
