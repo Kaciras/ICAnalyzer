@@ -13,7 +13,7 @@ export default function IntroPage(props: IntroPageProps) {
 	const { onEncode, onCompare } = props;
 
 	return (
-		<div>
+		<>
 			<section className={styles.header}>
 				<img className={styles.banner} alt="banner" src={banner}/>
 
@@ -76,6 +76,6 @@ export default function IntroPage(props: IntroPageProps) {
 					TBD
 				</div>
 			</section>
-		</div>
+		</>
 	);
 }
