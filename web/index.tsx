@@ -1,11 +1,10 @@
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import packageJson from "../package.json";
 import "./index.scss";
 import App from "./app";
 
-// Can't use { name, version } = packageJson, webpack doesn't support tree shaking for object destructuring.
 // SENTRY_DSN is only defined on the CI.
 if (window.__isSupport__ && process.env.SENTRY_DSN !== null) {
 	Sentry.init({
@@ -18,4 +17,4 @@ if (window.__isSupport__ && process.env.SENTRY_DSN !== null) {
 	});
 }
 
-ReactDOM.render(<App/>, document.getElementById("root"));
+createRoot(document.getElementById("root")!).render(<App/>);
