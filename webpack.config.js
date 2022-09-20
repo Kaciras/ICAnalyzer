@@ -6,14 +6,6 @@ const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
-/*
- * Webpack converts import.meta.url to a local path, this occurred on wasm bridge files
- * that compiled with `EXPORT_ES6=1`.
- *
- * Although the value is not used at runtime, it leaks sensitive data.
- * I saw Squoosh converts them to `new URL('/c/features-worker-1ff98a60.js', location).href`
- */
-
 // css-minimizer-webpack-plugin is ineffective (index.css 27898 bytes -> 27540 bytes), so we not use it.
 
 module.exports = (env) => {
@@ -55,7 +47,14 @@ module.exports = (env) => {
 				options: {
 					svgoConfig: {
 						plugins: [
-							{ removeViewBox: false },
+							{
+								name: "preset-default",
+								params: {
+									overrides: {
+										removeViewBox: false,
+									},
+								},
+							},
 						],
 					},
 					svgProps: {
@@ -138,9 +137,6 @@ module.exports = (env) => {
 			},
 		},
 		module: {
-			parser: {
-				javascript: { importMeta: false },
-			},
 			rules: loaders,
 		},
 		plugins: plugins.filter(Boolean),
