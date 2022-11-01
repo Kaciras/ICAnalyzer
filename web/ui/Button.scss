@@ -62,12 +62,10 @@ $stripeWidth: 32px;
 	text-decoration: none;
 
 	&:hover {
-		text-decoration: none;
 		background-color: var(--color-light);
 	}
 
 	&:focus-visible {
-		text-decoration: none;
 		outline: none;
 		box-shadow: 0 0 0 5px var(--color-outline);
 	}
