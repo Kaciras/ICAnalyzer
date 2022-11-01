@@ -95,15 +95,15 @@ export default function FileDrop(props: FileDropProps) {
 			onDrop={handleDrop}
 			onDragLeave={boundary.leave}
 		>
-			<div>
+			<span>
 				<ImageIcon className={styles.icon}/>
 				<span className={styles.text}>
 					Drag & drop
 				</span>
-			</div>
-			<div className={styles.text}>
+			</span>
+			<span className={styles.text}>
 				Or select a file
-			</div>
+			</span>
 			<input
 				className={styles.fileInput}
 				name="file"
