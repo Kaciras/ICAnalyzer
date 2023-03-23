@@ -10,13 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: latest
 
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -24,8 +22,7 @@ jobs:
 
       - run: pnpm i
 
-      - name: Build
-        run: pnpm run build
+      - run: pnpm run build
         env:
           SENTRY_DSN: https://d101904fac2c486ea6f8563c2cf054af@o253601.ingest.sentry.io/5499968
 
@@ -33,7 +30,7 @@ jobs:
         run: echo "ic-analyzer.kaciras.com" > dist/CNAME
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.4.1
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           silent: true
           clean: true
