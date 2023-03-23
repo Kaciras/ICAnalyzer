@@ -8,14 +8,12 @@
 			"WebWorker"
 		],
 		"module": "CommonJS",
-		"moduleResolution": "Node",
+		"moduleResolution": "bundler",
 		"jsx": "react-jsx",
 		"resolveJsonModule": true,
-		"newLine": "LF",
 		"sourceMap": true,
 		"strict": true,
 		"useUnknownInCatchVariables": false,
-		"removeComments": true,
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": ".",
 		"paths": {
