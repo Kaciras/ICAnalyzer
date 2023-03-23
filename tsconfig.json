@@ -7,7 +7,7 @@
 			"DOM.Iterable",
 			"WebWorker"
 		],
-		"module": "CommonJS",
+		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"jsx": "react-jsx",
 		"resolveJsonModule": true,

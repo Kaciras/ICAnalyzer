@@ -1,14 +1,18 @@
-const { join, resolve } = require("path");
-const { EnvironmentPlugin } = require("webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HtmlPlugin = require("html-webpack-plugin");
-const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+import { dirname, join, resolve } from "path";
+import { fileURLToPath } from "url";
+import webpack from "webpack";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import HtmlPlugin from "html-webpack-plugin";
+import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // css-minimizer-webpack-plugin is ineffective (index.css 27898 bytes -> 27540 bytes), so we not use it.
 
-module.exports = (env) => {
+export default function (env) {
 	const shouldReport = Boolean(env?.report);
 	const isProd = Boolean(env?.production);
 	const isDevelopment = !isProd;
@@ -92,7 +96,7 @@ module.exports = (env) => {
 	];
 
 	const plugins = [
-		new EnvironmentPlugin({ SENTRY_DSN: null }),
+		new webpack.EnvironmentPlugin({ SENTRY_DSN: null }),
 
 		new HtmlPlugin({ template: "web/index.html" }),
 
@@ -131,6 +135,7 @@ module.exports = (env) => {
 				path: false,
 				fs: false,
 				crypto: false,
+				module: false,
 
 				// Required by wasm-feature-detect
 				worker_threads: false,
@@ -175,4 +180,4 @@ module.exports = (env) => {
 			},
 		},
 	};
-};
+}

@@ -1,7 +1,9 @@
-module.exports = {
+export default {
 	testMatch: [
 		"**/test/*.spec.[jt]s?(x)",
 	],
+	extensionsToTreatAsEsm: [".ts"],
+
 	moduleFileExtensions: [
 		"ts", "tsx", "mjs", "js",
 	],
