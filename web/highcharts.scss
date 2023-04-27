@@ -1,101 +1,113 @@
-/*
- * Custom Highchart theme
- */
+@import '~highcharts/css/highcharts.css';
 
-$background-color: transparent;
+:root {
+	/* Chart background, point stroke for markers and columns etc */
+	--highcharts-background-color: transparent;
 
-// Colors for data series and points.
-$colors: #4992ff #7cffb2 #fddd60 #ff6e76 #58d9f9 #05c091 #ff8a45 #8d48e3 #dd79ff;
+	/* Colors for data series and points. */
+	--highcharts-color-0: #4992ff;
+	--highcharts-color-1: #7cffb2;
+	--highcharts-color-2: #fddd60;
+	--highcharts-color-3: #ff6e76;
+	--highcharts-color-4: #58d9f9;
+	--highcharts-color-5: #05c091;
+	--highcharts-color-6: #ff8a45;
+	--highcharts-color-7: #8d48e3;
+	--highcharts-color-8: #dd79ff;
+	--highcharts-color-9: #7798bf;
 
-// Neutral colors
-$neutral-color-100: #fff;
-$neutral-color-80: #E0E0E3;
-$neutral-color-60: #E0E0E3;
-$neutral-color-40: #666;
-$neutral-color-20: #606063;
-$neutral-color-10: #707073;
-$neutral-color-5: #505053;
+	/* Neutral colors */
+	--highcharts-neutral-color-100: #ffffff;
+	--highcharts-neutral-color-80: #e0e0e3;
+	--highcharts-neutral-color-60: #e0e0e3;
+	--highcharts-neutral-color-40: #666666;
+	--highcharts-neutral-color-20: #606063;
+	--highcharts-neutral-color-10: #707073;
+	--highcharts-neutral-color-5: #505053;
+	--highcharts-neutral-color-3: #303033;
 
-// Colored, shades
-$highlight-color-100: #F0F0F3;
-$highlight-color-60: rgba(255, 255, 255, 0.1);
-$highlight-color-20: $neutral-color-10;
+	/* Highlight colors https://jsfiddle.net/highcharts/pukradvh/ */
+	--highcharts-highlight-color-100: rgb(166, 199, 237);
+	--highcharts-highlight-color-80: rgb(134, 165, 201);
+	--highcharts-highlight-color-60: rgb(102, 131, 164);
+	--highcharts-highlight-color-20: rgb(39, 64, 91);
+	--highcharts-highlight-color-10: rgb(23, 47, 73);
+}
 
-// Data-labels
-$data-label-color: #B0B0B3;
+.highcharts-container {
+	font-family: "Unica One", arial, helvetica, sans-serif;
+}
 
-// Fonts
-$title-font-size: 20px;
-$axis-labels-font-size: 12px;
-
-// Tooltip
-$tooltip-background: rgba(0, 0, 0, 0.85);
-
-// Range-selector
-$range-selector-input-text: silver;
-$range-selector-input-border: $neutral-color-5;
-
-// Buttons
-$highcharts-button-background: $neutral-color-5;
-$highcharts-button-text: #ccc;
-
-$highcharts-button-pressed-background: #000003;
-$highcharts-button-pressed-text: $neutral-color-100;
-
-$highcharts-button-hover-background: $neutral-color-10;
-$highcharts-button-hover-text: $neutral-color-100;
-
-$context-button-background: $neutral-color-5;
-
-// Navigator
-$navigator-series-fill: #7798BF;
-$navigator-series-border: #A6C7ED;
-$scrollbar-track-background: #404043;
-$scrollbar-track-border: #404043;
-
-@import '~highcharts/css/highcharts';
-
-// Titles
-.highcharts-title, .highcharts-subtitle {
+.highcharts-title,
+.highcharts-subtitle {
 	text-transform: uppercase;
 }
 
-// Tooltip
-.highcharts-tooltip text {
-	fill: #F0F0F0
+.highcharts-title {
+	font-size: 1.7em;
 }
 
-// Range-selector
+.highcharts-tooltip text {
+	fill: #f0f0f0;
+}
+
+.highcharts-tooltip-box {
+	fill: #000000;
+}
+
 .highcharts-range-selector-buttons text {
 	fill: silver;
 }
 
-// Axes
 .highcharts-yaxis-grid {
 	stroke-width: 1px;
 }
 
-.highcharts-axis-labels, .highcharts-axis-title {
-	fill: #E0E0E3;
+.highcharts-axis-labels,
+.highcharts-axis-title {
+	fill: #e0e0e3;
 }
 
-// Navigator
 .highcharts-navigator .highcharts-navigator-handle {
-	fill: $neutral-color-40;
-	stroke: #aaa;
+	fill: var(--highcharts-neutral-color-40);
+	stroke: #aaaaaa;
 }
 
 .highcharts-navigator .highcharts-navigator-outline {
-	stroke: #CCC;
+	stroke: #cccccc;
 }
 
 .highcharts-navigator .highcharts-navigator-xaxis .highcharts-grid-line {
-	stroke: $neutral-color-5;
+	stroke: var(--highcharts-neutral-color-5);
 }
 
-// Scrollbar
+.highcharts-button {
+	fill: var(--highcharts-neutral-color-5);
+}
+
+.highcharts-button text {
+	fill: #cccccc;
+}
+
+.highcharts-button-hover {
+	fill: var(--highcharts-neutral-color-10);
+}
+
+.highcharts-button-hover text {
+	fill: var(--highcharts-neutral-color-100);
+}
+
+.highcharts-button-pressed {
+	fill: #000003;
+	stroke: var(--highcharts-neutral-color-100);
+}
+
+.highcharts-button-pressed text {
+	fill: var(--highcharts-neutral-color-100);
+}
+
 .highcharts-scrollbar .highcharts-scrollbar-rifles {
-	stroke: $neutral-color-100;
+	stroke: var(--highcharts-neutral-color-100);
 }
 
 .highcharts-scrollbar .highcharts-scrollbar-button {
@@ -104,7 +116,7 @@ $scrollbar-track-border: #404043;
 }
 
 .highcharts-scrollbar .highcharts-scrollbar-arrow {
-	fill: #CCC;
+	fill: #cccccc;
 }
 
 .highcharts-scrollbar .highcharts-scrollbar-thumb {
@@ -112,36 +124,22 @@ $scrollbar-track-border: #404043;
 	stroke: #808083;
 }
 
-// Navigation
+.highcharts-contextbutton {
+	fill: var(--highcharts-neutral-color-5);
+}
+
 .highcharts-contextbutton .highcharts-button-symbol {
-	stroke: #DDDDDD;
+	stroke: #dddddd;
 }
 
-.highcharts-container {
-	font-size: 14px;
-}
-
-.highcharts-legend-item > text {
-	font-size: 14px;
-	font-weight: normal;
-}
+// ==============================================
 
 .highcharts-menu {
 	background: #222;
 	box-shadow: none;
 }
 
-.highcharts-menu-item:hover {
-	color: white;
-	background: #477ae0;
-}
-
-// Avoid 0.5px margin in background rect.
-.highcharts-background {
-	stroke-width: 0;
-}
-
 // https://stackoverflow.com/a/63055006
-.exporting_chart_class .highcharts-background {
-	fill: #222;
+.exporting_chart_class {
+	--highcharts-background-color:  #222;
 }
