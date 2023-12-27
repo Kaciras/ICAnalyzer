@@ -1,7 +1,7 @@
+import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import ImageIcon from "bootstrap-icons/icons/image.svg";
-import { NOOP } from "../utils";
 import styles from "./FileDrop.scss";
 
 /**
@@ -39,7 +39,7 @@ export interface FileDropProps {
 }
 
 export default function FileDrop(props: FileDropProps) {
-	const { className, accept = "*/*", multiple, onSelectStart = NOOP, onChange, onError } = props;
+	const { className, accept = "*/*", multiple, onSelectStart = noop, onChange, onError } = props;
 
 	const boundary = useBoundaryCounter();
 	const dragStarted = useRef(false);

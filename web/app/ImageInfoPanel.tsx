@@ -1,7 +1,8 @@
 import { TabPanelBase } from "../ui/TabSwitch";
-import { bytes, drawImage } from "../utils";
+import { drawImage } from "../utils";
 import { InputImage } from "../features/image-worker";
 import styles from "./ImageInfoPanel.scss";
+import { dataSizeIEC } from "@kaciras/utilities/browser";
 
 interface ImageInfoPanelProps extends TabPanelBase {
 	value: InputImage;
@@ -38,10 +39,10 @@ export default function ImageInfoPanel(props: ImageInfoPanelProps) {
 				<dd>{width} x {height}</dd>
 
 				<dt>Raw size:</dt>
-				<dd>{bytes(data.byteLength)}</dd>
+				<dd>{dataSizeIEC.formatDiv(data.byteLength)}</dd>
 
 				<dt>File size (Ratio %):</dt>
-				<dd>{bytes(file.size)} ({ratio}%)</dd>
+				<dd>{dataSizeIEC.formatDiv(file.size)} ({ratio}%)</dd>
 			</dl>
 		</div>
 	);

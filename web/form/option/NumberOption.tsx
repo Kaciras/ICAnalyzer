@@ -1,6 +1,6 @@
+import { identity } from "@kaciras/utilities/browser";
 import { Dispatch } from "react";
 import { NumberInput } from "../../ui";
-import { IDENTITY } from "../../utils";
 import { OptionFieldProps, OptionMode, OptionType } from "..";
 import RangeControl, { NumberRange, sequence } from "../control/RangeControl";
 import NumberField from "../NumberField";
@@ -117,7 +117,7 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	populate(value: number, options: any) {
-		const { id, mapFn = IDENTITY } = this.data;
+		const { id, mapFn = identity } = this.data;
 		options[id] = mapFn(value);
 	}
 

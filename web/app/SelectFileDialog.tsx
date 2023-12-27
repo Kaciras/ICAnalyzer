@@ -6,10 +6,10 @@ import artworkIcon from "../assets/demo/artwork-icon.png";
 import colorfulText from "../assets/demo/colorful-text.png";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import { Button, Dialog, FileDrop } from "../ui";
-import { getFileFromUrl } from "../utils";
 import { decode } from "../features/decode";
 import { InputImage } from "../features/image-worker";
 import styles from "./SelectFileDialog.scss";
+import { fetchFile } from "@kaciras/utilities/browser";
 
 interface DemoButtonProps {
 	description: string;
@@ -77,7 +77,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 
 		const { signal } = newController;
 		try {
-			accept(await getFileFromUrl(url, signal));
+			accept(await fetchFile(url, { signal }));
 		} catch (e) {
 			if (e.name !== "AbortError") setError(e);
 		}

@@ -1,6 +1,6 @@
+import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch, MouseEventHandler } from "react";
 import clsx from "clsx";
-import { NOOP } from "../utils";
 import styles from "./Slider.scss";
 
 export interface SliderProps {
@@ -25,7 +25,7 @@ interface RangeInputCSS extends CSSProperties {
 export default function Slider(props: SliderProps) {
 	const {
 		className, name, value, min, max, step, disabled,
-		onClick, onChange = NOOP, onValueChange = NOOP,
+		onClick, onChange = noop, onValueChange = noop,
 	} = props;
 
 	const percent = (value - min) / (max - min);

@@ -67,7 +67,7 @@ export interface Merger<T> {
 	set<K extends keyof T>(key: K, value: T[K]): void;
 
 	/**
-	 * Get child merger for specified property, when the child merger mutate its value,
+	 * Get the child merger for specified property, when the merger mutate its value,
 	 * the new value will be merged into the parent object recursively.
 	 *
 	 * The child merger is cached, call this function on re-renders always returns the same reference.

@@ -45,9 +45,9 @@ export default function CompressConfigDialog(props: CompressConfigDialogProps) {
 				index={index}
 				onChange={setIndex}
 			>
-				<button className={styles.tab}>Information</button>
-				<button className={styles.tab}>Encoding</button>
-				<button className={styles.tab}>Measure</button>
+				<button type="button" className={styles.tab}>Information</button>
+				<button type="button" className={styles.tab}>Encoding</button>
+				<button type="button" className={styles.tab}>Measure</button>
 			</TabList>
 
 			<TabSwitch index={index}>

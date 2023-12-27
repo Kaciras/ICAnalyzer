@@ -1,5 +1,5 @@
+import { noop } from "@kaciras/utilities/browser";
 import { Remote } from "comlink";
-import { NOOP } from "../utils";
 import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
 
@@ -88,5 +88,5 @@ class InvokeHandler<T extends Record<string, any>> implements ProxyHandler<T> {
 export function getPooledWorker<T>(workerPool: WorkerPool<T>) {
 
 	// The target must be a function, see https://stackoverflow.com/a/32360219
-	return new Proxy(NOOP as any, new PooledWorkerHandler(workerPool)) as Remote<T>;
+	return new Proxy(noop as any, new PooledWorkerHandler(workerPool)) as Remote<T>;
 }

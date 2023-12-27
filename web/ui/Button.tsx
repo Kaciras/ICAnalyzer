@@ -1,8 +1,8 @@
-import { MouseEventHandler, ReactNode } from "react";
+import { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
 import styles from "./Button.scss";
 
-export interface ButtonProps {
+export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 
 	/**
 	 * The basic style of the button, default is "button".

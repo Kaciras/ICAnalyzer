@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
-import { NOOP } from "../utils";
 import styles from "./Dialog.scss";
 
 interface DialogProps {
@@ -43,12 +42,12 @@ function preventScroll() {
 }
 
 export default function Dialog(props: DialogProps) {
-	const { className, name, onClose = NOOP, children } = props;
+	const { className, name, onClose, children } = props;
 
 	function listenKeyboardClose() {
 		function handleKeyUp(event: KeyboardEvent) {
 			if (event.key === "Escape") {
-				onClose();
+				onClose?.();
 				event.stopImmediatePropagation();
 			}
 		}

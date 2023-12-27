@@ -1,3 +1,4 @@
+import { noop } from "@kaciras/utilities/browser";
 import { Dispatch, useState } from "react";
 import { ENCODERS, ImageEncoder } from "../codecs";
 import { decode } from "../features/decode";
@@ -13,7 +14,7 @@ import {
 import { OptionsKey, OptionsKeyPair } from "../form";
 import { createMeasurer, Measurer } from "../features/measurement";
 import { useProgress } from "../hooks";
-import { NOOP, ObjectKeyMap } from "../utils";
+import { ObjectKeyMap } from "../utils";
 import { AnalyzeContext, ControlsMap } from ".";
 import SelectFileDialog from "./SelectFileDialog";
 import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog";
@@ -36,7 +37,7 @@ class EncodeAnalyzer {
 
 	readonly outputSize: number;
 
-	onProgress = NOOP;
+	onProgress = noop;
 
 	constructor(config: AnalyzeConfig, worker: ImageWorker) {
 		this.config = config;

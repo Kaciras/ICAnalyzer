@@ -1,10 +1,10 @@
+import { noop } from "@kaciras/utilities/browser";
 import React, { ChangeEvent, ChangeEventHandler, Dispatch, MouseEvent, useRef } from "react";
 import clsx from "clsx";
 import PlusIcon from "../assets/add.svg";
 import MinusIcon from "../assets/remove.svg";
 import ArrowUpIcon from "../assets/arrow_up.svg";
 import ArrowDownIcon from "../assets/arrow_down.svg";
-import { NOOP } from "../utils";
 import styles from "./NumberInput.scss";
 
 /**
@@ -76,8 +76,8 @@ function NumberInput(props: NumberInputProps) {
 		max = Number.MAX_SAFE_INTEGER,
 		step = 1,
 		increment = step,
-		onChange = NOOP,
-		onValueChange = NOOP,
+		onChange = noop,
+		onValueChange = noop,
 	} = props;
 
 	/**

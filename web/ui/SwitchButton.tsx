@@ -1,7 +1,7 @@
+import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent } from "react";
 import clsx from "clsx";
 import { CheckBoxProps } from "./CheckBoxBase";
-import { NOOP } from "../utils";
 import styles from "./SwitchButton.scss";
 
 export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
@@ -9,7 +9,7 @@ export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
 export default function SwitchButton(props: SwitchButtonProps) {
 	const {
 		className, name, value, checked, disabled,
-		onClick, onChange = NOOP, onCheckedChange = NOOP, onSelected = NOOP,
+		onClick, onChange = noop, onCheckedChange = noop, onSelected = noop,
 	} = props;
 
 	const clazz = clsx(

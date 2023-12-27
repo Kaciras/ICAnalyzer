@@ -2,8 +2,9 @@ import { Dispatch, ForwardedRef, forwardRef, useEffect, useRef, useState } from 
 import clsx from "clsx";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
+import { dataSizeIEC, uniqueId } from "@kaciras/utilities/browser";
 import { Button, Dialog, FileDrop } from "../ui";
-import { bytes, drawImage, uniqueKey } from "../utils";
+import { drawImage } from "../utils";
 import { decode } from "../features/decode";
 import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker";
 import { CompareData } from "./CompareSession";
@@ -63,7 +64,7 @@ const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIE
 			</div>
 			<div className={styles.attrLine}>
 				<span className={styles.mime}>{type}</span>
-				({width} x {height}, {bytes(size)})
+				({width} x {height}, {dataSizeIEC.formatDiv(size)})
 			</div>
 		</li>
 	);
@@ -160,7 +161,7 @@ export default function CompareFileDialog(props: CompareFileDialogProps) {
 	function handleFileChange(files: File[]) {
 		const tasks = [];
 		for (const file of files) {
-			tasks.push(decode(file, imageWorker.current).then(raw => ({ file, raw, id: uniqueKey() })));
+			tasks.push(decode(file, imageWorker.current).then(raw => ({ file, raw, id: uniqueId() })));
 		}
 		Promise.all(tasks)
 			.then(v => setImages([...images, ...v]))

@@ -1,6 +1,7 @@
+import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, ChangeEventHandler, Dispatch, MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
-import { NOOP, SVGComponent } from "../utils";
+import { SVGComponent } from "../utils";
 import styles from "./CheckBoxBase.scss";
 
 export interface CheckBoxProps {
@@ -34,7 +35,7 @@ interface InternalProps extends CheckBoxProps {
 export default function CheckBoxBase(props: InternalProps) {
 	const {
 		className, type, Icon, IconChecked, name, value, checked, disabled,
-		onClick, onSelected = NOOP, onChange = NOOP, onCheckedChange = NOOP, children,
+		onClick, onSelected = noop, onChange = noop, onCheckedChange = noop, children,
 	} = props;
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {

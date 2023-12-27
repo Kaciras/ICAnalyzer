@@ -1,5 +1,5 @@
+import { noop } from "@kaciras/utilities/browser";
 import { Children, cloneElement, Dispatch, isValidElement, KeyboardEvent, ReactNode, useRef } from "react";
-import { NOOP } from "../utils";
 
 export interface TabListProps {
 	className?: string;
@@ -20,7 +20,7 @@ export default function TabList(props: TabListProps) {
 		if (!isValidElement(child)) {
 			return child;
 		}
-		const { onClick = NOOP, ref = NOOP } = child.props;
+		const { onClick = noop, ref = noop } = child.props;
 		const selected = i === index;
 
 		function handleClick(event: MouseEvent) {

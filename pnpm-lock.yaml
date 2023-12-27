@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@kaciras/utilities':
+    specifier: ^0.10.4
+    version: 0.10.4
   '@koa/router':
     specifier: ^12.0.1
     version: 12.0.1
@@ -2062,6 +2065,10 @@ packages:
       eslint: 8.56.0
       eslint-utils: 3.0.0(eslint@8.56.0)
     dev: true
+
+  /@kaciras/utilities@0.10.4:
+    resolution: {integrity: sha512-7TyMpLebd0TlzVK532HKHRxeR8M89P8RDOzqWlpVBhztPyXiFuQlcYHSiYthTdIB6Azz63VVFAkT62TVerJ+pw==}
+    dev: false
 
   /@koa/router@12.0.1:
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
