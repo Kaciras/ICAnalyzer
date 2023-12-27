@@ -3,7 +3,6 @@ import clsx from "clsx";
 import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
-import Accessibility from "highcharts/modules/accessibility";
 import LockIcon from "../assets/lock.svg";
 import { Button } from "../ui";
 import { MetricMeta } from "../features/measurement";
@@ -12,7 +11,6 @@ import styles from "./ChartPanel.scss";
 
 Export(Highcharts);
 ExportOffline(Highcharts);
-Accessibility(Highcharts);
 
 declare module "highcharts" {
 
