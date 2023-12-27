@@ -20,7 +20,6 @@
 		"@kaciras/utilities": "^0.10.4",
 		"@koa/router": "^12.0.1",
 		"@sentry/react": "^7.91.0",
-		"@sentry/tracing": "^7.91.0",
 		"bootstrap-icons": "^1.11.2",
 		"clsx": "^2.0.0",
 		"comlink": "^4.4.1",

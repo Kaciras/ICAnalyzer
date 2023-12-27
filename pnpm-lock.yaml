@@ -14,9 +14,6 @@ dependencies:
   '@sentry/react':
     specifier: ^7.91.0
     version: 7.91.0(react@18.2.0)
-  '@sentry/tracing':
-    specifier: ^7.91.0
-    version: 7.91.0
   bootstrap-icons:
     specifier: ^1.11.2
     version: 1.11.2
@@ -2211,13 +2208,6 @@ packages:
       '@sentry/core': 7.91.0
       '@sentry/types': 7.91.0
       '@sentry/utils': 7.91.0
-    dev: false
-
-  /@sentry/tracing@7.91.0:
-    resolution: {integrity: sha512-IlSAMvqfCL/2TwwN4Tmk6bGMgilGruv5oIJ1GMenVZk53bHwjpjzMbd0ms8+S5zJwAgTQXoCbRhaFFrNmptteQ==}
-    engines: {node: '>=8'}
-    dependencies:
-      '@sentry-internal/tracing': 7.91.0
     dev: false
 
   /@sentry/types@7.91.0:
