@@ -14,7 +14,6 @@
 		"sourceMap": true,
 		"strict": true,
 		"useUnknownInCatchVariables": false,
-		"allowSyntheticDefaultImports": true,
 		"baseUrl": ".",
 		"paths": {
 			"squoosh/*": ["./deps/squoosh/*"]

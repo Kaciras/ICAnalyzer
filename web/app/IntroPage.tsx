@@ -73,7 +73,8 @@ export default function IntroPage(props: IntroPageProps) {
 				</div>
 				<div className={styles.card}>
 					<h2>Articles</h2>
-					TBD
+					<a href="https://blog.kaciras.com/article/24/analyze-WebP-encode-options">WebP 参数分析</a>
+					<a href="https://blog.kaciras.com/article/23/icanalyzer-development-log">ICAnalyzer 开发小记</a>
 				</div>
 			</section>
 		</>

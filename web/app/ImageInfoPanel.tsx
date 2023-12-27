@@ -1,8 +1,8 @@
+import { dataSizeIEC } from "@kaciras/utilities/browser";
 import { TabPanelBase } from "../ui/TabSwitch";
 import { drawImage } from "../utils";
 import { InputImage } from "../features/image-worker";
 import styles from "./ImageInfoPanel.scss";
-import { dataSizeIEC } from "@kaciras/utilities/browser";
 
 interface ImageInfoPanelProps extends TabPanelBase {
 	value: InputImage;

@@ -1,4 +1,3 @@
-
 module.exports = {
 	root: true,
 	extends: [
@@ -11,10 +10,6 @@ module.exports = {
 	},
 	rules: {
 		"react-hooks/exhaustive-deps": "off",
-		"react/jsx-curly-brace-presence": ["error", {
-			props: "never",
-			children: "never",
-		}],
 	},
 	overrides: [{
 		files: "**/test/*.spec.[jt]s?(x)",
