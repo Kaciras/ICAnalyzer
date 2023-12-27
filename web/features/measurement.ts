@@ -1,6 +1,6 @@
 import * as SSIM from "ssim.js";
-import { ButteraugliOptions } from "../../lib/diff";
-import { AnalyzeResult, ImageWorker, InputImage } from "./image-worker";
+import { ButteraugliOptions } from "../../lib/diff.js";
+import { AnalyzeResult, ImageWorker, InputImage } from "./image-worker.ts";
 
 interface SimpleField {
 	enabled: boolean;

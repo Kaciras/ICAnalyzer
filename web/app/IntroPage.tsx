@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import GitHubIcon from "../assets/github-logo.svg";
 import banner from "../assets/intro-banner.png";
-import { Button } from "../ui";
+import { Button } from "../ui/index.ts";
 import styles from "./IntroPage.scss";
 
 interface IntroPageProps {

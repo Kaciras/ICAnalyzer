@@ -1,7 +1,7 @@
 import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, ChangeEventHandler, Dispatch, MouseEventHandler, ReactNode } from "react";
 import clsx from "clsx";
-import { SVGComponent } from "../utils";
+import { SVGComponent } from "../utils.ts";
 import styles from "./CheckBoxBase.scss";
 
 export interface CheckBoxProps {

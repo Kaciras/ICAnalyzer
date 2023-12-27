@@ -3,11 +3,11 @@ import clsx from "clsx";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { dataSizeIEC, uniqueId } from "@kaciras/utilities/browser";
-import { Button, Dialog, FileDrop } from "../ui";
-import { drawImage } from "../utils";
-import { decode } from "../features/decode";
-import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker";
-import { CompareData } from "./CompareSession";
+import { Button, Dialog, FileDrop } from "../ui/index.ts";
+import { drawImage } from "../utils.ts";
+import { decode } from "../features/decode.ts";
+import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker.ts";
+import { CompareData } from "./CompareSession.tsx";
 import styles from "./CompareFileDialog.scss";
 
 interface InputWithId extends InputImage {

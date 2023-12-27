@@ -1,7 +1,7 @@
 import { noop } from "@kaciras/utilities/browser";
 import { Dispatch, useState } from "react";
-import { ENCODERS, ImageEncoder } from "../codecs";
-import { decode } from "../features/decode";
+import { ENCODERS, ImageEncoder } from "../codecs/index.ts";
+import { decode } from "../features/decode.ts";
 import {
 	AnalyzeResult,
 	getPooledWorker,
@@ -10,15 +10,15 @@ import {
 	InputImage,
 	newImagePool,
 	setOriginalImage,
-} from "../features/image-worker";
-import { OptionsKey, OptionsKeyPair } from "../form";
-import { createMeasurer, Measurer } from "../features/measurement";
-import { useProgress } from "../hooks";
-import { ObjectKeyMap } from "../utils";
-import { AnalyzeContext, ControlsMap } from ".";
-import SelectFileDialog from "./SelectFileDialog";
-import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog";
-import ProgressDialog from "./ProgressDialog";
+} from "../features/image-worker.ts";
+import { OptionsKey, OptionsKeyPair } from "../form/index.ts";
+import { createMeasurer, Measurer } from "../features/measurement.ts";
+import { useProgress } from "../hooks.ts";
+import { ObjectKeyMap } from "../utils.ts";
+import { AnalyzeContext, ControlsMap } from "./index.tsx";
+import SelectFileDialog from "./SelectFileDialog.tsx";
+import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog.tsx";
+import ProgressDialog from "./ProgressDialog.tsx";
 
 interface EncodeTask {
 	encoder: ImageEncoder;

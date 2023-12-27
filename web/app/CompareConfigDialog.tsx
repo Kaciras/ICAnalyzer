@@ -1,8 +1,8 @@
 import { Dispatch } from "react";
-import { useLocalStorage } from "../hooks";
-import { Button, Dialog } from "../ui";
-import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
-import { MeasureOptions } from "../features/measurement";
+import { useLocalStorage } from "../hooks.ts";
+import { Button, Dialog } from "../ui/index.ts";
+import MeasurePanel, { getMeasureOptions } from "./MeasurePanel.tsx";
+import { MeasureOptions } from "../features/measurement.ts";
 import styles from "./CompressConfigDialog.scss";
 
 interface CompareConfigDialogProps {

@@ -1,7 +1,7 @@
-import { ImageWorker } from "../../features/image-worker";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
-import OptionsGenerator from "../OptionsGenerator";
-import { Csp, defaultOptions, EncodeOptions, Subsample } from "./codec";
+import { ImageWorker } from "../../features/image-worker.ts";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import OptionsGenerator from "../OptionsGenerator.tsx";
+import { Csp, defaultOptions, EncodeOptions, Subsample } from "./codec.ts";
 
 export const name = "WebP v2";
 export const mimeType = "image/webp2";

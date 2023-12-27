@@ -1,5 +1,5 @@
 import { Dispatch, useEffect, useState } from "react";
-import { Mutator } from "./mutation";
+import { Mutator } from "./mutation.ts";
 
 export interface ProgressState {
 	value: number;

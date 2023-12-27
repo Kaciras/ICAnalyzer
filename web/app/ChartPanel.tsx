@@ -4,9 +4,9 @@ import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "hig
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import LockIcon from "../assets/lock.svg";
-import { Button } from "../ui";
-import { MetricMeta } from "../features/measurement";
-import { AnalyzeResult } from "../features/image-worker";
+import { Button } from "../ui/index.ts";
+import { MetricMeta } from "../features/measurement.ts";
+import { AnalyzeResult } from "../features/image-worker.ts";
 import styles from "./ChartPanel.scss";
 
 Export(Highcharts);

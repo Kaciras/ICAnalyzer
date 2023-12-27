@@ -1,6 +1,6 @@
-import type { EncodeOptions } from "squoosh/codecs/mozjpeg/enc/mozjpeg_enc";
-import { initEmscriptenModule } from "squoosh/src/features/worker-utils";
-import { wasmEncodeFn } from "../common";
+import type { EncodeOptions } from "squoosh/codecs/mozjpeg/enc/mozjpeg_enc.js";
+import { initEmscriptenModule } from "squoosh/src/features/worker-utils/index.ts";
+import { wasmEncodeFn } from "../common.ts";
 
 export { EncodeOptions };
 

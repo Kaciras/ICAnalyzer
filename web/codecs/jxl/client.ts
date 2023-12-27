@@ -1,7 +1,7 @@
-import { ImageWorker } from "../../features/image-worker";
-import { BoolOption, NumberOption, OptionType } from "../../form";
-import OptionsGenerator from "../OptionsGenerator";
-import { defaultOptions, EncodeOptions } from "./codec";
+import { ImageWorker } from "../../features/image-worker.ts";
+import { BoolOption, NumberOption, OptionType } from "../../form/index.ts";
+import OptionsGenerator from "../OptionsGenerator.tsx";
+import { defaultOptions, EncodeOptions } from "./codec.ts";
 
 export const name = "JPEG XL";
 export const mimeType = "image/jxl";

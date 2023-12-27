@@ -16,10 +16,10 @@
  * Modifications copyright (C) 2020 Kaciras
  */
 import { RPC } from "@kaciras/utilities/browser";
-import { blobToImg, canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util";
-import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas";
-import { ImageWorkerApi } from "./worker";
-import { ImageWorker, workerFactory } from "./image-worker";
+import { blobToImg, canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util/index.ts";
+import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas.ts";
+import { ImageWorkerApi } from "./worker.ts";
+import { ImageWorker, workerFactory } from "./image-worker.ts";
 
 async function decodeImageNative(blob: Blob) {
 	const bitmap = "createImageBitmap" in self

@@ -1,10 +1,10 @@
 import { Dispatch, ReactNode } from "react";
 import clsx from "clsx";
-import { SelectBox } from "../ui";
-import { getEncoderNames } from "../codecs";
-import { Merger } from "../mutation";
-import { ControlState, VariableType } from "./AnalyzePage";
-import { ControlsMap } from "./index";
+import { SelectBox } from "../ui/index.ts";
+import { getEncoderNames } from "../codecs/index.ts";
+import { Merger } from "../mutation.ts";
+import { ControlsMap } from "./index.ts";
+import { ControlState, VariableType } from "./AnalyzePage.tsx";
 import styles from "./ControlPanel.scss";
 
 interface WrapperProps {

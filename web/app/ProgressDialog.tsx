@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Button, Dialog } from "../ui";
+import { Button, Dialog } from "../ui/index.ts";
 import styles from "./ProgressDialog.scss";
 
 interface ProgressDialogProps {

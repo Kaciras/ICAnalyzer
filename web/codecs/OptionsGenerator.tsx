@@ -1,6 +1,6 @@
-import { Merger } from "../mutation";
-import { ControlType, OptionMode, OptionsKeyPair, OptionStateMap, OptionType } from "../form";
-import OptionsForm from "../form/OptionsForm";
+import { Merger } from "../mutation.ts";
+import { ControlType, OptionMode, OptionsKeyPair, OptionStateMap, OptionType } from "../form/index.ts";
+import OptionsForm from "../form/OptionsForm.tsx";
 
 export interface OptionPanelProps {
 	className?: string;

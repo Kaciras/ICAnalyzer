@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import Button, { ButtonProps } from "./Button";
+import Button, { ButtonProps } from "./Button.tsx";
 
 export interface DownloadButtonProps extends ButtonProps {
 	file: File;

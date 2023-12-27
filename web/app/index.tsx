@@ -1,12 +1,12 @@
 import { useState } from "react";
-import CompressSession from "./CompressSession";
-import IntroPage from "./IntroPage";
-import AnalyzePage from "./AnalyzePage";
-import CompareSession from "./CompareSession";
-import { ControlType } from "../form";
-import { MetricMeta } from "../features/measurement";
-import { AnalyzeResult, InputImage } from "../features/image-worker";
-import { ObjectKeyMap } from "../utils";
+import CompressSession from "./CompressSession.tsx";
+import IntroPage from "./IntroPage.tsx";
+import AnalyzePage from "./AnalyzePage.tsx";
+import CompareSession from "./CompareSession.tsx";
+import { ControlType } from "../form/index.ts";
+import { MetricMeta } from "../features/measurement.ts";
+import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
+import { ObjectKeyMap } from "../utils.ts";
 
 export type ControlsMap = Record<string, ControlType[]>;
 

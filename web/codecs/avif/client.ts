@@ -1,7 +1,7 @@
 import { ImageWorker } from "../../features/image-worker";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
-import OptionsGenerator from "../OptionsGenerator";
-import { defaultOptions, EncodeOptions, Subsampling } from "./codec";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import OptionsGenerator from "../OptionsGenerator.tsx";
+import { defaultOptions, EncodeOptions, Subsampling } from "./codec.ts";
 
 export const name = "AVIF";
 export const mimeType = "image/avif";

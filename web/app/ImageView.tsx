@@ -2,11 +2,11 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
 import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
-import { ButtonProps } from "../ui/Button";
-import { PinchZoomState } from "../ui/PinchZoom";
-import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui";
-import { AnalyzeResult, InputImage } from "../features/image-worker";
-import { drawImage } from "../utils";
+import { ButtonProps } from "../ui/Button.tsx";
+import { PinchZoomState } from "../ui/PinchZoom.tsx";
+import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui/index.ts";
+import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
+import { drawImage } from "../utils.ts";
 import theme from "../theme.module.scss";
 import styles from "./ImageView.scss";
 

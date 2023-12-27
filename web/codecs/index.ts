@@ -1,11 +1,11 @@
-import { ImageWorker } from "../features/image-worker";
-import { EncodeResult } from "./common";
-import * as MozJPEG from "./mozjpeg/client";
-import * as JXL from "./jxl/client";
-import * as WebP from "./webp/client";
-import * as AVIF from "./avif/client";
-import * as WebP2 from "./webp2/client";
-import OptionsGenerator from "./OptionsGenerator";
+import { ImageWorker } from "../features/image-worker.ts";
+import { EncodeResult } from "./common.ts";
+import * as MozJPEG from "./mozjpeg/client.ts";
+import * as JXL from "./jxl/client.ts";
+import * as WebP from "./webp/client.ts";
+import * as AVIF from "./avif/client.ts";
+import * as WebP2 from "./webp2/client.ts";
+import OptionsGenerator from "./OptionsGenerator.tsx";
 
 export interface ImageEncoder {
 	name: string;

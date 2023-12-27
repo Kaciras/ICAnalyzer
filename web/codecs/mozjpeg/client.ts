@@ -1,7 +1,7 @@
-import { ImageWorker } from "../../features/image-worker";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form";
-import OptionsGenerator from "../OptionsGenerator";
-import { ColorSpace, defaultOptions, EncodeOptions, Quantization } from "./codec";
+import { ImageWorker } from "../../features/image-worker.ts";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import OptionsGenerator from "../OptionsGenerator.tsx";
+import { ColorSpace, defaultOptions, EncodeOptions, Quantization } from "./codec.ts";
 
 export const name = "MozJPEG";
 export const mimeType = "image/jpeg";

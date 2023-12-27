@@ -1,6 +1,6 @@
+import type { ImageWorkerApi } from "./worker.ts";
 import { noop, RPC } from "@kaciras/utilities/browser";
-import type { ImageWorkerApi } from "./worker";
-import WorkerPool from "./WorkerPool";
+import WorkerPool from "./WorkerPool.ts";
 
 export interface InputImage {
 	readonly file: File;

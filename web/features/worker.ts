@@ -1,13 +1,13 @@
 import { RPC } from "@kaciras/utilities/browser";
-import * as Similarity from "../../lib/similarity";
-import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../../lib/similarity";
+import * as Similarity from "../../lib/similarity.ts";
+import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../../lib/similarity.ts";
 import wasmUrl from "../../lib/diff.wasm";
-import { EncodeResult } from "../codecs/common";
-import * as MozJPEG from "../codecs/mozjpeg/codec";
-import * as JXL from "../codecs/jxl/codec";
-import * as WebP from "../codecs/webp/codec";
-import * as AVIF from "../codecs/avif/codec";
-import * as WebP2 from "../codecs/webp2/codec";
+import { EncodeResult } from "../codecs/common.ts";
+import * as MozJPEG from "../codecs/mozjpeg/codec.ts";
+import * as JXL from "../codecs/jxl/codec.ts";
+import * as WebP from "../codecs/webp/codec.ts";
+import * as AVIF from "../codecs/avif/codec.ts";
+import * as WebP2 from "../codecs/webp2/codec.ts";
 
 // A worker can only convert one image at the same time, so use global variable for more simplify code.
 let data: ImageData;

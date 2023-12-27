@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { TabPanelBase } from "../ui/TabSwitch";
-import { Merger } from "../mutation";
-import { CheckBox } from "../ui";
-import { stopPropagation } from "../utils";
-import { OptionMode, OptionStateMap } from "../form";
-import { ENCODER_MAP, ENCODERS } from "../codecs";
+import { TabPanelBase } from "../ui/TabSwitch.tsx";
+import { CheckBox } from "../ui/index.ts";
+import { Merger } from "../mutation.ts";
+import { stopPropagation } from "../utils.ts";
+import { OptionMode, OptionStateMap } from "../form/index.ts";
+import { ENCODER_MAP, ENCODERS } from "../codecs/index.ts";
 import styles from "./EncoderPanel.scss";
 
 export interface EncoderConfig {

@@ -1,8 +1,8 @@
 import { Dispatch, useState } from "react";
-import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas";
-import { AnalyzeContext } from "./index";
-import { OptionsKey } from "../form";
-import RangeControl from "../form/control/RangeControl";
+import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas.ts";
+import { AnalyzeContext } from "./index.ts";
+import { OptionsKey } from "../form/index.ts";
+import RangeControl from "../form/control/RangeControl.tsx";
 import {
 	AnalyzeResult,
 	getPooledWorker,
@@ -10,13 +10,13 @@ import {
 	InputImage,
 	newImagePool,
 	setOriginalImage,
-} from "../features/image-worker";
-import { createMeasurer, MeasureOptions } from "../features/measurement";
-import { useProgress } from "../hooks";
-import { ObjectKeyMap } from "../utils";
-import ProgressDialog from "./ProgressDialog";
-import CompareFileDialog from "./CompareFileDialog";
-import CompareConfigDialog from "./CompareConfigDialog";
+} from "../features/image-worker.ts";
+import { createMeasurer, MeasureOptions } from "../features/measurement.ts";
+import { useProgress } from "../hooks.ts";
+import { ObjectKeyMap } from "../utils.ts";
+import ProgressDialog from "./ProgressDialog.tsx";
+import CompareFileDialog from "./CompareFileDialog.tsx";
+import CompareConfigDialog from "./CompareConfigDialog.tsx";
 
 export interface CompareData {
 	original: InputImage;

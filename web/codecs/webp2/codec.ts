@@ -1,6 +1,6 @@
-import type { EncodeOptions } from "squoosh/codecs/wp2/enc/wp2_enc";
-import { initEmscriptenModule } from "squoosh/src/features/worker-utils";
-import { wasmDecodeFn, wasmEncodeFn } from "../common";
+import type { EncodeOptions } from "squoosh/codecs/wp2/enc/wp2_enc.js";
+import { initEmscriptenModule } from "squoosh/src/features/worker-utils/index.ts";
+import { wasmDecodeFn, wasmEncodeFn } from "../common.ts";
 
 export { EncodeOptions };
 

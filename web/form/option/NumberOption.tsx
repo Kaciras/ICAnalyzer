@@ -1,9 +1,9 @@
 import { identity } from "@kaciras/utilities/browser";
 import { Dispatch } from "react";
-import { NumberInput } from "../../ui";
-import { OptionFieldProps, OptionMode, OptionType } from "..";
-import RangeControl, { NumberRange, sequence } from "../control/RangeControl";
-import NumberField from "../NumberField";
+import { OptionFieldProps, OptionMode, OptionType } from "../index.ts";
+import { NumberInput } from "../../ui/index.ts";
+import RangeControl, { NumberRange, sequence } from "../control/RangeControl.tsx";
+import NumberField from "../NumberField.tsx";
 import styles from "./NumberOption.scss";
 
 interface RangePartProps {

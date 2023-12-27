@@ -2,9 +2,9 @@ import { memo, ReactNode } from "react";
 import clsx from "clsx";
 import TypeIcon from "bootstrap-icons/icons/type.svg";
 import SliderIcon from "bootstrap-icons/icons/sliders.svg";
-import { OptionMode, OptionState, OptionStateMap, OptionType } from "./index";
-import { Button } from "../ui";
-import { Merger } from "../mutation";
+import { OptionMode, OptionState, OptionStateMap, OptionType } from "./index.ts";
+import { Button } from "../ui/index.ts";
+import { Merger } from "../mutation.ts";
 import styles from "./OptionsForm.scss";
 
 interface OptionProps {

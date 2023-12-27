@@ -1,12 +1,12 @@
 import { Dispatch, useState } from "react";
-import { MeasureOptions } from "../features/measurement";
-import { InputImage } from "../features/image-worker";
-import { useLocalStorage } from "../hooks";
-import { Button, Dialog, TabList, TabSwitch } from "../ui";
-import { getMerger } from "../mutation";
-import ImageInfoPanel from "./ImageInfoPanel";
-import MeasurePanel, { getMeasureOptions } from "./MeasurePanel";
-import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel";
+import { MeasureOptions } from "../features/measurement.ts";
+import { InputImage } from "../features/image-worker.ts";
+import { useLocalStorage } from "../hooks.ts";
+import { Button, Dialog, TabList, TabSwitch } from "../ui/index.ts";
+import { getMerger } from "../mutation.ts";
+import ImageInfoPanel from "./ImageInfoPanel.tsx";
+import MeasurePanel, { getMeasureOptions } from "./MeasurePanel.tsx";
+import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel.tsx";
 import styles from "./CompressConfigDialog.scss";
 
 export interface AnalyzeConfig {

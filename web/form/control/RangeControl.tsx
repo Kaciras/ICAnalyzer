@@ -1,5 +1,5 @@
-import NumberField from "../NumberField";
-import { ControlType, FieldProps } from "..";
+import type { ControlType, FieldProps } from "../index.ts";
+import NumberField from "../NumberField.tsx";
 
 export interface NumberRange {
 	min: number;

@@ -1,5 +1,5 @@
-import { SwitchButton } from "../../ui";
-import { ControlType, FieldProps } from "..";
+import type { ControlType, FieldProps } from "../index.ts";
+import { SwitchButton } from "../../ui/index.ts";
 import styles from "./SwitchControl.scss";
 
 export interface SwitchControlConfig {

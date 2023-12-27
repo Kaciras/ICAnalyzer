@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react";
-import { CheckBox, RadioBox } from "../../ui";
-import { OptionFieldProps, OptionMode, OptionType } from "..";
-import EnumControl from "../control/EnumControl";
+import { OptionFieldProps, OptionMode, OptionType } from "../index.ts";
+import { CheckBox, RadioBox } from "../../ui/index.ts";
+import EnumControl from "../control/EnumControl.tsx";
 import styles from "./EnumOption.scss";
 
 export interface EnumOptionConfig<T extends Record<string, any>> {

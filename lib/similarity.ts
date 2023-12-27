@@ -1,4 +1,4 @@
-import metrics, { ButteraugliDiff, ButteraugliOptions, MetricsModule } from "./diff";
+import metrics, { ButteraugliDiff, ButteraugliOptions, MetricsModule } from "./diff.js";
 import ssim, { Options } from "ssim.js";
 
 export type SSIMOptions = Partial<Options>;

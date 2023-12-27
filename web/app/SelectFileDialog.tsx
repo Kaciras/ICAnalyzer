@@ -1,3 +1,4 @@
+import { fetchFile } from "@kaciras/utilities/browser";
 import { Dispatch, useRef, useState } from "react";
 import photo from "../assets/demo/photo.jpg";
 import photoIcon from "../assets/demo/photo-icon.jpg";
@@ -5,11 +6,10 @@ import artwork from "../assets/demo/artwork.png";
 import artworkIcon from "../assets/demo/artwork-icon.png";
 import colorfulText from "../assets/demo/colorful-text.png";
 import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
-import { Button, Dialog, FileDrop } from "../ui";
-import { decode } from "../features/decode";
-import { InputImage } from "../features/image-worker";
+import { Button, Dialog, FileDrop } from "../ui/index.ts";
+import { decode } from "../features/decode.ts";
+import { InputImage } from "../features/image-worker.ts";
 import styles from "./SelectFileDialog.scss";
-import { fetchFile } from "@kaciras/utilities/browser";
 
 interface DemoButtonProps {
 	description: string;

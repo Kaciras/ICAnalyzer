@@ -10,9 +10,10 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"jsx": "react-jsx",
-		"resolveJsonModule": true,
 		"sourceMap": true,
+		"resolveJsonModule": true,
 		"strict": true,
+		"allowImportingTsExtensions": true,
 		"useUnknownInCatchVariables": false,
 		"baseUrl": ".",
 		"paths": {

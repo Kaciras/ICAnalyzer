@@ -1,8 +1,8 @@
 import React from "react";
 import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
-import { Mutator } from "../mutation";
-import { PinchZoomState } from "./PinchZoom";
-import { Button, NumberInput } from "./index";
+import { Mutator } from "../mutation.ts";
+import { PinchZoomState } from "./PinchZoom.tsx";
+import { Button, NumberInput } from "./index.ts";
 import styles from "./ZoomControl.scss";
 
 export interface ZoomControlProps {

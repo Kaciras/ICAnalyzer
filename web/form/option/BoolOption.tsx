@@ -1,6 +1,6 @@
-import { SwitchButton } from "../../ui";
-import { OptionFieldProps, OptionMode, OptionType } from "..";
-import SwitchControl from "../control/SwitchControl";
+import { OptionFieldProps, OptionMode, OptionType } from "../index.ts";
+import { SwitchButton } from "../../ui/index.ts";
+import SwitchControl from "../control/SwitchControl.tsx";
 import styles from "./BoolOption.scss";
 
 export interface BoolVariableConfig {
