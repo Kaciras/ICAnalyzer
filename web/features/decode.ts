@@ -15,7 +15,7 @@
  *
  * Modifications copyright (C) 2020 Kaciras
  */
-import { wrap } from "comlink";
+import { RPC } from "@kaciras/utilities/browser";
 import { blobToImg, canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util";
 import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas";
 import { ImageWorkerApi } from "./worker";
@@ -85,7 +85,7 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 		return decodeImageNative(blob);
 	}
 
-	worker ??= wrap<ImageWorkerApi>(workerFactory());
+	worker ??= RPC.probeClient<ImageWorkerApi>(workerFactory());
 	const buffer = await blob.arrayBuffer();
 	switch (type) {
 		case "image/webp":

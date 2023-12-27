@@ -1,8 +1,8 @@
-import { Remote, wrap } from "comlink";
+import { RPC } from "@kaciras/utilities/browser";
 
 export type WorkerFactory = () => Worker;
 
-export type TaskFn<T, R> = (remote: Remote<T>) => Promise<R>;
+export type TaskFn<T, R> = (remote: RPC.Remote<T>) => Promise<R>;
 
 interface PromiseController {
 	resolve: () => void;
@@ -25,7 +25,7 @@ export default class WorkerPool<T> {
 	private readonly factory: WorkerFactory;
 	private readonly workers: Array<Worker | undefined>;
 
-	private readonly remotes: Array<Remote<T>> = [];
+	private readonly remotes: Array<RPC.Remote<T>> = [];
 	private readonly queue: Array<WorkerJob<T>> = [];
 
 	private readonly waiters: PromiseController[] = [];
@@ -83,7 +83,7 @@ export default class WorkerPool<T> {
 
 	private startWorker() {
 		const worker = this.factory();
-		const remote = wrap<T>(worker);
+		const remote = RPC.probeClient(worker);
 
 		const index = this.size++;
 		this.remotes.push(remote);
@@ -103,7 +103,7 @@ export default class WorkerPool<T> {
 		}
 	}
 
-	private async runJob(remote: Remote<T>, job: WorkerJob<T>): Promise<void> {
+	private async runJob(remote: RPC.Remote<T>, job: WorkerJob<T>): Promise<void> {
 		const { queue, remotes, waiters } = this;
 		const { task, resolve, reject } = job;
 

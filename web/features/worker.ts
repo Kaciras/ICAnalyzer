@@ -1,4 +1,4 @@
-import * as Comlink from "comlink";
+import { RPC } from "@kaciras/utilities/browser";
 import * as Similarity from "../../lib/similarity";
 import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../../lib/similarity";
 import wasmUrl from "../../lib/diff.wasm";
@@ -56,11 +56,11 @@ const publicApis = {
 		const [score, heatMap] = butteraugli.diff(image, options);
 		return {
 			score,
-			heatMap: Comlink.transfer(heatMap, [heatMap.buffer]),
+			heatMap: RPC.transfer(heatMap, [heatMap.buffer]),
 		};
 	},
 };
 
-Comlink.expose(publicApis);
+RPC.probeServer(publicApis, self);
 
 export type ImageWorkerApi = typeof publicApis;

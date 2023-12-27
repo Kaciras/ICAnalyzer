@@ -1,5 +1,4 @@
-import { noop } from "@kaciras/utilities/browser";
-import { Remote } from "comlink";
+import { noop, RPC } from "@kaciras/utilities/browser";
 import type { ImageWorkerApi } from "./worker";
 import WorkerPool from "./WorkerPool";
 
@@ -29,12 +28,12 @@ function share(image: ImageData): ImageData {
 	const buffer = new SharedArrayBuffer(data.byteLength);
 	const uint8Array = new Uint8ClampedArray(buffer);
 	uint8Array.set(data);
-	return { width, height, data: uint8Array };
+	return { width, height, data: uint8Array } as any;
 }
 
 export type ImagePool = WorkerPool<ImageWorkerApi>;
 
-export type ImageWorker = Remote<ImageWorkerApi>;
+export type ImageWorker = RPC.Remote<ImageWorkerApi>;
 
 export function workerFactory() {
 	// @ts-ignore ts-loader will convert the file to ES module.
@@ -79,7 +78,7 @@ class InvokeHandler<T extends Record<string, any>> implements ProxyHandler<T> {
 		this.method = method;
 	}
 
-	apply(target: T, thisArg: any, argArray: any[]) {
+	apply(_: T, __: unknown, argArray: any[]) {
 		const { workerPool, method } = this;
 		return workerPool.run(worker => worker[method](...argArray));
 	}
@@ -88,5 +87,5 @@ class InvokeHandler<T extends Record<string, any>> implements ProxyHandler<T> {
 export function getPooledWorker<T>(workerPool: WorkerPool<T>) {
 
 	// The target must be a function, see https://stackoverflow.com/a/32360219
-	return new Proxy(noop as any, new PooledWorkerHandler(workerPool)) as Remote<T>;
+	return new Proxy(noop as any, new PooledWorkerHandler(workerPool)) as RPC.Remote<T>;
 }

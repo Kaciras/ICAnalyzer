@@ -1,4 +1,4 @@
-import * as Comlink from "comlink";
+import { RPC } from "@kaciras/utilities/browser";
 
 export type EncodeModuleLoader<T> = () => Promise<EncodeModule<T>>;
 
@@ -33,7 +33,7 @@ export function wasmEncodeFn<T>(loader: EncodeModuleLoader<T>) {
 			time: (end - start) / 1000,
 			buffer: output.buffer,
 		};
-		return Comlink.transfer(result, [result.buffer]);
+		return RPC.transfer(result, [result.buffer]);
 	};
 }
 
@@ -55,6 +55,6 @@ export function wasmDecodeFn(loader: DecodeModuleLoader) {
 		if (!output) {
 			throw new Error("Decoding error");
 		}
-		return Comlink.transfer(output, [output.data.buffer]);
+		return RPC.transfer(output, [output.data.buffer]);
 	};
 }
