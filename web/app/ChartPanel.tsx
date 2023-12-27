@@ -20,6 +20,9 @@ declare module "highcharts" {
 }
 
 const baseOptions: Options = {
+	accessibility: {
+		enabled: false,
+	},
 	chart: {
 		styledMode: true,
 		animation: false,
@@ -100,7 +103,7 @@ const baseOptions: Options = {
 	},
 };
 
-function handleMouseover(chart: Chart, i: number) {
+function switchYAxis(chart: Chart, i: number) {
 	const { yAxis } = chart;
 	for (let j = 1; j < yAxis.length; j++) {
 		yAxis[j].update({ visible: i === j }, false);
@@ -109,16 +112,18 @@ function handleMouseover(chart: Chart, i: number) {
 }
 
 function addSeriesListener(chart: Chart) {
-	const { allItems } = chart.legend;
-	for (let i = 1; i < allItems.length; i++) {
-		allItems[i].onMouseOver = () => handleMouseover(chart, i);
+	const { series } = chart;
+	for (let i = 1; i < series.length; i++) {
+		series[i].onMouseOver = () => switchYAxis(chart, i);
 	}
 }
 
 function addLegendListener(chart: Chart) {
 	const { series } = chart;
+
 	for (let i = 1; i < series.length; i++) {
-		(series[i] as any).legendItem.on("mouseover", () => handleMouseover(chart, i));
+		const { element } = (series[i] as any).legendItem.group;
+		element.onmouseenter = () => switchYAxis(chart, i);
 	}
 }
 
