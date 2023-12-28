@@ -25,22 +25,6 @@ function hidePrevious() {
 	return () => previous.classList.remove("hidden");
 }
 
-function preventScroll() {
-	const { style } = document.body;
-
-	const old = {
-		maxWidth: style.maxWidth,
-		maxHeight: style.maxHeight,
-		overflow: style.overflow,
-	};
-
-	style.maxWidth = "100vw";
-	style.maxHeight = "100vh";
-	style.overflow = "hidden";
-
-	return () => void Object.assign(style, old);
-}
-
 export default function Dialog(props: DialogProps) {
 	const { className, name, onClose, children } = props;
 
@@ -58,7 +42,6 @@ export default function Dialog(props: DialogProps) {
 
 	useEffect(listenKeyboardClose, [onClose]);
 	useLayoutEffect(hidePrevious, []);
-	useLayoutEffect(preventScroll, []);
 
 	const reactNode = (
 		<div className={styles.dimmer}>
