@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react";
-import { OptionFieldProps, OptionMode, OptionType } from "../index.ts";
+import { OptionFieldProps, OptionType } from "../index.ts";
 import { CheckBox, RadioBox } from "../../ui/index.ts";
 import EnumControl from "../control/EnumControl.tsx";
 import styles from "./EnumOption.scss";
@@ -45,7 +45,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 
 	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
 		const { id, label, enumObject } = this.data;
-		const { mode, value, range, onValueChange, onRangeChange } = props;
+		const { isVariable, value, range, onValueChange, onRangeChange } = props;
 
 		function handleChangeV(e: ChangeEvent<HTMLInputElement>) {
 			const { checked, name } = e.currentTarget;
@@ -67,7 +67,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 		}
 
 		let items: any[];
-		if (mode === OptionMode.Range) {
+		if (isVariable) {
 			items = Object.keys(enumObject).map(name => {
 				return <CheckBox
 					className={styles.item}

@@ -4,7 +4,7 @@ import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { CheckBox } from "../ui/index.ts";
 import { Merger } from "../mutation.ts";
 import { stopPropagation } from "../utils.ts";
-import { OptionMode, OptionStateMap } from "../form/index.ts";
+import { OptionStateMap } from "../form/index.ts";
 import { ENCODER_MAP, ENCODERS } from "../codecs/index.ts";
 import styles from "./EncoderPanel.scss";
 
@@ -28,7 +28,7 @@ export function getEncodingOptions(saved?: EncodingOptions) {
 		const { quality } = config.WebP.state;
 		config.WebP.enable = true;
 		quality.range.step = 5;
-		quality.mode = OptionMode.Range;
+		quality.isVariable = true;
 	}
 	return config;
 }

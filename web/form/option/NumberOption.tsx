@@ -1,6 +1,6 @@
 import { identity } from "@kaciras/utilities/browser";
 import { Dispatch } from "react";
-import { OptionFieldProps, OptionMode, OptionType } from "../index.ts";
+import { OptionFieldProps, OptionType } from "../index.ts";
 import { NumberInput } from "../../ui/index.ts";
 import RangeControl, { NumberRange, sequence } from "../control/RangeControl.tsx";
 import NumberField from "../NumberField.tsx";
@@ -122,9 +122,6 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	OptionField(props: OptionFieldProps<number, NumberRange>) {
-		const { mode } = props;
-		return mode === OptionMode.Constant
-			? this.ConstMode(props)
-			: this.VariableMode(props);
+		return props.isVariable ? this.VariableMode(props) : this.ConstMode(props);
 	}
 }

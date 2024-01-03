@@ -1,4 +1,4 @@
-import { OptionFieldProps, OptionMode, OptionType } from "../index.ts";
+import { OptionFieldProps, OptionType } from "../index.ts";
 import { SwitchButton } from "../../ui/index.ts";
 import SwitchControl from "../control/SwitchControl.tsx";
 import styles from "./BoolOption.scss";
@@ -40,7 +40,7 @@ export class BoolOption implements OptionType<boolean> {
 
 	OptionField(props: OptionFieldProps<boolean, any>) {
 		const { id, label } = this.data;
-		const { mode, value, onValueChange } = props;
+		const { isVariable, value, onValueChange } = props;
 
 		return (
 			<div className={styles.container}>
@@ -48,7 +48,7 @@ export class BoolOption implements OptionType<boolean> {
 					{label}
 				</span>
 				{
-					mode === OptionMode.Range
+					isVariable
 						? <strong>OFF & ON</strong>
 						: <SwitchButton
 							name={id}

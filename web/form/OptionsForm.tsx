@@ -2,7 +2,7 @@ import { memo, ReactNode } from "react";
 import clsx from "clsx";
 import TypeIcon from "bootstrap-icons/icons/type.svg";
 import SliderIcon from "bootstrap-icons/icons/sliders.svg";
-import { OptionMode, OptionState, OptionStateMap, OptionType } from "./index.ts";
+import { OptionState, OptionStateMap, OptionType } from "./index.ts";
 import { Button } from "../ui/index.ts";
 import { Merger } from "../mutation.ts";
 import styles from "./OptionsForm.scss";
@@ -15,28 +15,25 @@ interface OptionProps {
 
 const Option = memo((props: OptionProps) => {
 	const { template, state, onChange } = props;
-	const { mode } = state;
+	const { isVariable } = state;
 	const { OptionField } = template;
 
 	let title: string;
 	let clazz: string;
 	let iconChildren: ReactNode;
 
-	switch (mode) {
-		case OptionMode.Constant:
-			title = "Constant Mode";
-			clazz = styles.constant;
-			iconChildren = <TypeIcon/>;
-			break;
-		case OptionMode.Range:
-			title = "Range Mode";
-			clazz = styles.variable;
-			iconChildren = <SliderIcon/>;
-			break;
+	if (isVariable) {
+		clazz = styles.variable;
+		title = "Range Mode";
+		iconChildren = <SliderIcon/>;
+	} else {
+		clazz = styles.constant;
+		title = "Constant Mode";
+		iconChildren = <TypeIcon/>;
 	}
 
 	function toggle() {
-		onChange.set("mode", (mode + 1) % 2);
+		onChange.set("isVariable", !isVariable);
 	}
 
 	return (

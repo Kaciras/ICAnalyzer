@@ -16,14 +16,10 @@ export interface ControlType<T = any> {
 	Input(props: FieldProps<T>): JSX.Element;
 }
 
-export enum OptionMode {
-	Constant, Range
-}
-
 export interface OptionState {
 	value: any;
 	range: any;
-	mode: OptionMode;
+	isVariable: boolean;
 }
 
 export type OptionStateMap = Record<string, OptionState>;
@@ -36,7 +32,7 @@ export interface OptionsKeyPair {
 }
 
 export interface OptionFieldProps<T, V> {
-	mode: OptionMode;
+	isVariable: boolean;
 	value: T;
 	range: V;
 	onValueChange: Dispatch<T>;

@@ -1,5 +1,5 @@
 import { Merger } from "../mutation.ts";
-import { ControlType, OptionMode, OptionsKeyPair, OptionStateMap, OptionType } from "../form/index.ts";
+import { ControlType, OptionsKeyPair, OptionStateMap, OptionType } from "../form/index.ts";
 import OptionsForm from "../form/OptionsForm.tsx";
 
 export interface OptionPanelProps {
@@ -28,7 +28,7 @@ export default class OptionsGenerator {
 			state[t.id] = {
 				value,
 				range,
-				mode: OptionMode.Constant,
+				isVariable: false,
 			};
 		}
 		return state;
@@ -64,9 +64,9 @@ export default class OptionsGenerator {
 		const controls: ControlType[] = [];
 
 		for (const template of templates) {
-			const { mode, value, range } = state[template.id];
+			const { isVariable, value, range } = state[template.id];
 
-			if (mode === OptionMode.Range) {
+			if (isVariable) {
 				list = list.flatMap(p => mapRange(p, template));
 				controls.push(template.createControl(range));
 			} else {
