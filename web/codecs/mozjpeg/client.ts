@@ -1,13 +1,14 @@
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import OptionsGenerator from "../OptionsGenerator.tsx";
 import { ColorSpace, defaultOptions, EncodeOptions, Quantization } from "./codec.ts";
 
 export const name = "MozJPEG";
 export const mimeType = "image/jpeg";
 export const extension = "jpg";
 
-const templates: OptionType[] = [
+export { defaultOptions };
+
+export const templates: OptionType[] = [
 	new NumberOption({
 		id: "quality",
 		label: "Quality (-q)",
@@ -93,8 +94,6 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.trellis_loops,
 	}),
 ];
-
-export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.mozjpegEncode(options);

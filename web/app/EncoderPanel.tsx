@@ -5,8 +5,9 @@ import { CheckBox } from "../ui/index.ts";
 import { Merger } from "../mutation.ts";
 import { stopPropagation } from "../utils.ts";
 import { OptionStateMap } from "../form/index.ts";
-import { ENCODER_MAP, ENCODERS } from "../codecs/index.ts";
+import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs/index.ts";
 import styles from "./EncoderPanel.scss";
+import OptionsForm from "../form/OptionsForm.tsx";
 
 export interface EncoderConfig {
 	enable: boolean;
@@ -15,13 +16,23 @@ export interface EncoderConfig {
 
 export type EncodingOptions = Record<string, EncoderConfig>;
 
+function newState(encoder: ImageEncoder) {
+	const state: OptionStateMap = {};
+
+	for (const t of encoder.templates) {
+		const [value, range] = t.createState();
+		state[t.id] = { value, range, isVariable: false };
+	}
+	return state;
+}
+
 export function getEncodingOptions(saved?: EncodingOptions) {
 	const config = saved ?? {};
 
-	for (const { name, optionsGenerator } of ENCODERS) {
-		config[name] ??= {
+	for (const encoder of ENCODERS) {
+		config[encoder.name] ??= {
 			enable: false,
-			state: optionsGenerator.newState(),
+			state: newState(encoder),
 		};
 	}
 	if (!saved) {
@@ -55,6 +66,7 @@ function EncoderPanel(props: EncoderPanelProps) {
 			<button
 				className={classes}
 				key={name}
+				type="button"
 				onClick={() => setCurrent(name)}
 			>
 				<CheckBox
@@ -67,8 +79,6 @@ function EncoderPanel(props: EncoderPanelProps) {
 		);
 	});
 
-	const { OptionsList } = ENCODER_MAP[current].optionsGenerator;
-
 	// EncoderPanel is expensive to render, so we just hide it when inactive.
 	const classes = clsx(
 		styles.container,
@@ -80,7 +90,8 @@ function EncoderPanel(props: EncoderPanelProps) {
 			<div className={styles.tablist}>
 				{tabs}
 			</div>
-			<OptionsList
+			<OptionsForm
+				templates={ENCODER_MAP[current].templates}
 				className={styles.form}
 				state={value[current].state}
 				onChange={onChange.sub(current).sub("state")}

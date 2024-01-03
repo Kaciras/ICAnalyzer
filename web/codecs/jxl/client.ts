@@ -1,13 +1,14 @@
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, NumberOption, OptionType } from "../../form/index.ts";
-import OptionsGenerator from "../OptionsGenerator.tsx";
 import { defaultOptions, EncodeOptions } from "./codec.ts";
 
 export const name = "JPEG XL";
 export const mimeType = "image/jxl";
 export const extension = "jxl";
 
-const templates: OptionType[] = [
+export { defaultOptions };
+
+export const templates: OptionType[] = [
 	new NumberOption({
 		id: "quality",
 		label: "Quality (100 = lossless)",
@@ -59,8 +60,6 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.effort,
 	}),
 ];
-
-export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.jxlEncode(options);

@@ -1,13 +1,14 @@
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import OptionsGenerator from "../OptionsGenerator.tsx";
 import { Csp, defaultOptions, EncodeOptions, Subsample } from "./codec.ts";
 
 export const name = "WebP v2";
 export const mimeType = "image/webp2";
 export const extension = "wp2";
 
-const templates: OptionType[] = [
+export { defaultOptions };
+
+export const templates: OptionType[] = [
 	new NumberOption({
 		id: "quality",
 		label: "Quality (100 = lossless)",
@@ -74,8 +75,6 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.use_random_matrix,
 	}),
 ];
-
-export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.webp2Encode(options);

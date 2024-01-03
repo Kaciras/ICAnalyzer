@@ -1,11 +1,12 @@
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import OptionsGenerator from "../OptionsGenerator.tsx";
 import { defaultOptions, EncodeOptions } from "./codec.ts";
 
 export const name = "WebP";
 export const mimeType = "image/webp";
 export const extension = "webp";
+
+export { defaultOptions };
 
 const Preprocess = {
 	"None": 0,
@@ -37,7 +38,7 @@ class LosslessPresetOption extends NumberOption {
 	}
 }
 
-const templates: OptionType[] = [
+export const templates: OptionType[] = [
 	new BoolOption({
 		id: "lossless",
 		label: "Lossless Mode (-lossless)",
@@ -139,8 +140,6 @@ const templates: OptionType[] = [
 
 	// There is no image_hint option since it have no effect.
 ];
-
-export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.webpEncode(options);

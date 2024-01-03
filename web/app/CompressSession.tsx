@@ -1,6 +1,6 @@
 import { noop } from "@kaciras/utilities/browser";
 import { Dispatch, useState } from "react";
-import { ENCODERS, ImageEncoder } from "../codecs/index.ts";
+import { buildProfiles, ENCODERS, ImageEncoder } from "../codecs/index.ts";
 import { decode } from "../features/decode.ts";
 import {
 	AnalyzeResult,
@@ -51,12 +51,12 @@ class EncodeAnalyzer {
 		}
 
 		for (const encoder of ENCODERS) {
-			const { name, optionsGenerator } = encoder;
+			const { name } = encoder;
 			const { enable, state } = config.encoding[name];
 			if (!enable) {
 				continue;
 			}
-			const { optionsList, controls } = optionsGenerator.generate(state);
+			const { optionsList, controls } = buildProfiles(encoder, state);
 			this.controlsMap[name] = controls;
 			this.taskQueue.push({ encoder, optionsList });
 			this.outputSize += optionsList.length;

@@ -1,6 +1,5 @@
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import OptionsGenerator from "../OptionsGenerator.tsx";
 import { defaultOptions, EncodeOptions, Subsampling } from "./codec.ts";
 
 export const name = "AVIF";
@@ -13,7 +12,9 @@ const AVIFTune = {
 	SSIM: 3,
 };
 
-const templates: OptionType[] = [
+export { defaultOptions };
+
+export const templates: OptionType[] = [
 	new NumberOption({
 		id: "cqLevel",
 		label: "Quality (63 = lossless)",
@@ -90,8 +91,6 @@ const templates: OptionType[] = [
 		defaultValue: defaultOptions.speed,
 	}),
 ];
-
-export const optionsGenerator = new OptionsGenerator(templates, defaultOptions);
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	return worker.avifEncode(options);
