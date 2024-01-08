@@ -1,4 +1,4 @@
-import { Dispatch } from "react";
+import { Dispatch, JSX } from "react";
 
 export interface FieldProps<T> {
 	value: T;
