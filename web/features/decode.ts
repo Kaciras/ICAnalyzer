@@ -88,8 +88,6 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 	worker ??= RPC.probeClient<ImageWorkerApi>(workerFactory());
 	const buffer = await blob.arrayBuffer();
 	switch (type) {
-		case "image/webp":
-			return worker.webpDecode(buffer);
 		case "image/avif":
 			return worker.avifDecode(buffer);
 		case "image/jxl":

@@ -35,7 +35,6 @@ const publicApis = {
 	webp2Encode: bindEncoder(WebP2),
 
 	jxlDecode: JXL.decode,
-	webpDecode: WebP.decode,
 	avifDecode: AVIF.decode,
 	webp2Decode: WebP2.decode,
 
