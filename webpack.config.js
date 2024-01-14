@@ -116,8 +116,8 @@ export default function (env) {
 		mode: isProd ? "production" : "development",
 		context: __dirname,
 		entry: {
-			check: "./web/support-check",
-			index: "./web/index",
+			check: "./web/support-check.ts",
+			index: "./web/index.tsx",
 		},
 		output: {
 			filename: "s/[name].js",
