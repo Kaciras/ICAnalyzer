@@ -37,7 +37,7 @@ export default function (env) {
 
 	const loaders = [
 		{
-			test: /\.[jt]sx?$/,
+			test: /\.tsx?$/,
 			use: "swc-loader",
 		},
 		{
