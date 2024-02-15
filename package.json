@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@kaciras/utilities": "^0.12.1",
 		"@koa/router": "^12.0.1",
-		"@sentry/react": "^7.100.1",
+		"@sentry/react": "^7.101.0",
 		"bootstrap-icons": "^1.11.3",
 		"clsx": "^2.1.0",
 		"highcharts": "^11.3.0",
@@ -39,7 +39,7 @@
 		"@kaciras/eslint-config-typescript": "^2.6.3",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
 		"@svgr/webpack": "^8.1.0",
-		"@swc/core": "^1.4.0",
+		"@swc/core": "^1.4.1",
 		"@swc/jest": "^0.2.36",
 		"@types/emscripten": "^1.39.10",
 		"@types/koa": "^2.14.0",
@@ -64,6 +64,6 @@
 		"webpack": "^5.90.1",
 		"webpack-bundle-analyzer": "^4.10.1",
 		"webpack-cli": "^5.1.4",
-		"webpack-dev-server": "^4.15.1"
+		"webpack-dev-server": "^5.0.1"
 	}
 }
