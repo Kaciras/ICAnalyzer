@@ -17,9 +17,9 @@
 		"build": "webpack --env production --env report"
 	},
 	"dependencies": {
-		"@kaciras/utilities": "^0.12.1",
+		"@kaciras/utilities": "^0.12.2",
 		"@koa/router": "^12.0.1",
-		"@sentry/react": "^7.101.0",
+		"@sentry/react": "^7.102.0",
 		"bootstrap-icons": "^1.11.3",
 		"clsx": "^2.1.0",
 		"highcharts": "^11.3.0",
@@ -33,19 +33,19 @@
 		"wasm-feature-detect": "^1.6.1"
 	},
 	"devDependencies": {
-		"@kaciras/eslint-config-core": "^2.6.3",
-		"@kaciras/eslint-config-jest": "^2.6.3",
-		"@kaciras/eslint-config-react": "^2.6.3",
-		"@kaciras/eslint-config-typescript": "^2.6.3",
+		"@kaciras/eslint-config-core": "^2.6.4",
+		"@kaciras/eslint-config-jest": "^2.6.4",
+		"@kaciras/eslint-config-react": "^2.6.4",
+		"@kaciras/eslint-config-typescript": "^2.6.4",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
 		"@svgr/webpack": "^8.1.0",
-		"@swc/core": "^1.4.1",
+		"@swc/core": "^1.4.2",
 		"@swc/jest": "^0.2.36",
 		"@types/emscripten": "^1.39.10",
 		"@types/koa": "^2.14.0",
 		"@types/koa-static": "^4.0.4",
 		"@types/koa__router": "^12.0.4",
-		"@types/react": "^18.2.55",
+		"@types/react": "^18.2.57",
 		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-dom": "^18.2.19",
 		"css-loader": "^6.10.0",
@@ -54,16 +54,16 @@
 		"jest": "^29.7.0",
 		"mini-css-extract-plugin": "^2.8.0",
 		"react-refresh": "^0.14.0",
-		"sass": "^1.70.0",
-		"sass-loader": "^14.1.0",
+		"sass": "^1.71.1",
+		"sass-loader": "^14.1.1",
 		"sharp": "^0.33.2",
 		"style-loader": "^3.3.4",
 		"swc-loader": "^0.2.6",
 		"terser-webpack-plugin": "^5.3.10",
 		"typescript": "^5.3.3",
-		"webpack": "^5.90.1",
+		"webpack": "^5.90.3",
 		"webpack-bundle-analyzer": "^4.10.1",
 		"webpack-cli": "^5.1.4",
-		"webpack-dev-server": "^5.0.1"
+		"webpack-dev-server": "^5.0.2"
 	}
 }
