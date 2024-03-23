@@ -19,11 +19,11 @@
 	"dependencies": {
 		"@kaciras/utilities": "^0.12.4",
 		"@koa/router": "^12.0.1",
-		"@sentry/react": "^7.107.0",
+		"@sentry/react": "^7.108.0",
 		"bootstrap-icons": "^1.11.3",
 		"clsx": "^2.1.0",
 		"highcharts": "^11.4.0",
-		"koa": "^2.15.1",
+		"koa": "^2.15.2",
 		"koa-static": "^5.0.0",
 		"open": "^10.1.0",
 		"react": "^18.2.0",
@@ -45,7 +45,7 @@
 		"@types/koa": "^2.15.0",
 		"@types/koa-static": "^4.0.4",
 		"@types/koa__router": "^12.0.4",
-		"@types/react": "^18.2.66",
+		"@types/react": "^18.2.69",
 		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-dom": "^18.2.22",
 		"css-loader": "^6.10.0",
@@ -60,10 +60,10 @@
 		"style-loader": "^3.3.4",
 		"swc-loader": "^0.2.6",
 		"terser-webpack-plugin": "^5.3.10",
-		"typescript": "^5.4.2",
-		"webpack": "^5.90.3",
+		"typescript": "^5.4.3",
+		"webpack": "^5.91.0",
 		"webpack-bundle-analyzer": "^4.10.1",
 		"webpack-cli": "^5.1.4",
-		"webpack-dev-server": "^5.0.3"
+		"webpack-dev-server": "^5.0.4"
 	}
 }
