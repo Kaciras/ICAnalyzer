@@ -29,6 +29,7 @@ export default function (env) {
 		if (cssModules) {
 			cssLoader.options.modules = {
 				hashStrategy: "minimal-subset",
+				namedExport: false,
 				localIdentName: isProd ? "[hash:base64:5]" : "[local]_[hash:base64:5]",
 			};
 		}
