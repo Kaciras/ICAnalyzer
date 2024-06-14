@@ -21,7 +21,6 @@ export const templates: OptionType[] = [
 		min: 0,
 		max: 63,
 		step: 1,
-		mapFn: i => 63 - i,
 		defaultValue: defaultOptions.cqLevel,
 	}),
 	new EnumOption({
@@ -36,7 +35,6 @@ export const templates: OptionType[] = [
 		min: -1,
 		max: 63,
 		step: 1,
-		mapFn: i => (i === -1) ? -1 : 63 - i,
 		defaultValue: defaultOptions.cqAlphaLevel,
 	}),
 	new BoolOption({
@@ -93,5 +91,8 @@ export const templates: OptionType[] = [
 ];
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
+	const { cqLevel, cqAlphaLevel } = options;
+	options.cqLevel = 63 - cqLevel;
+	options.cqAlphaLevel = (cqAlphaLevel === -1) ? -1 : 63 - cqAlphaLevel;
 	return worker.avifEncode(options);
 }

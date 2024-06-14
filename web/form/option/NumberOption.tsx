@@ -1,4 +1,3 @@
-import { identity } from "@kaciras/utilities/browser";
 import { Dispatch } from "react";
 import { OptionFieldProps, OptionType } from "../index.ts";
 import { NumberInput } from "../../ui/index.ts";
@@ -42,7 +41,6 @@ function RangePart(props: RangePartProps) {
 interface Metadata extends NumberRange {
 	id: string;
 	label: string;
-	mapFn?: (index: number) => number;
 	defaultValue: number;
 }
 
@@ -117,8 +115,7 @@ export class NumberOption implements OptionType<number, NumberRange> {
 	}
 
 	populate(value: number, options: any) {
-		const { id, mapFn = identity } = this.data;
-		options[id] = mapFn(value);
+		options[this.data.id] = value;
 	}
 
 	OptionField(props: OptionFieldProps<number, NumberRange>) {
