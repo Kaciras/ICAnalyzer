@@ -53,4 +53,8 @@ export default class EnumControl implements ControlType<string> {
 			</>
 		);
 	}
+
+	indexOf(value: string): number {
+		return this.data.names.indexOf(value);
+	}
 }

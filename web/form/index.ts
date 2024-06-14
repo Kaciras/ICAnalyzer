@@ -13,6 +13,8 @@ export interface ControlType<T = any> {
 
 	createState(): T[];
 
+	indexOf(value: T): number;
+
 	Input(props: FieldProps<T>): JSX.Element;
 }
 

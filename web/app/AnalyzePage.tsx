@@ -5,7 +5,7 @@ import DownloadIcon from "bootstrap-icons/icons/download.svg";
 import CloseIcon from "bootstrap-icons/icons/x.svg";
 import { Button, DownloadButton } from "../ui/index.ts";
 import { AnalyzeContext, ControlsMap } from "./index";
-import { OptionsKey } from "../form/index.ts";
+import { ControlType } from "../form/index.ts";
 import { getEncoderNames } from "../codecs/index.ts";
 import { getMerger } from "../mutation.ts";
 import { MetricMeta } from "../features/measurement.tsx";
@@ -44,7 +44,7 @@ export enum VariableType {
 	Option,
 }
 
-type StateMap = Record<string, OptionsKey>;
+type StateMap = Record<string, any[]>;
 
 export interface ControlState {
 	varType: VariableType;
@@ -70,49 +70,68 @@ function createControlState(controlsMap: ControlsMap): ControlState {
 	}
 
 	const stateMap: StateMap = {};
-	for (const [k, v] of kvs) {
-		const options: OptionsKey = {};
+	for (const [enc, v] of kvs) {
+		const selected = [];
 		for (const c of v) {
-			options[c.id] = c.createState()[0];
+			selected.push(c.createState()[0]);
 		}
-		stateMap[k] = options;
+		stateMap[enc] = selected;
 	}
 
 	return { varType, varId, codec, stateMap };
 }
 
-function getSeries(result: AnalyzeContext, state: ControlState) {
-	const { controlsMap, outputMap } = result;
-	const { varType, varId, codec, stateMap } = state;
+function getIndex(controls: ControlType[], weights: number[], state: any[]) {
+	let index = 0;
+	for (let i = 0; i < controls.length; i++) {
+		const control = controls[i];
+		const k = control.indexOf(state[i]);
+		index += weights[i] * k;
+	}
+	return index;
+}
 
-	const key = stateMap[codec];
-	const output = outputMap.get({ codec, key });
+function getSeries(result: AnalyzeContext, state: ControlState) {
+	const { controlsMap, outputMap, weightMap } = result;
+	const { varType, varId, codec, stateMap } = state;
 
 	let labels: string[];
 	let series: AnalyzeResult[];
+	let output: AnalyzeResult;
 	let varName: string;
 
 	if (varType === VariableType.None) {
 		labels = [""];
-		series = [output];
+		series = outputMap.get(codec)!;
 		varName = "";
+		output = series[0];
 	} else if (varType === VariableType.Encoder) {
 		labels = getEncoderNames(stateMap);
-		series = labels.map(codec => outputMap.get({
-			codec,
-			key: stateMap[codec],
-		}));
+		series = labels.map(v => {
+			const controls = controlsMap[v];
+			const state = stateMap[v];
+			const weights = weightMap.get(v)!;
+			return outputMap.get(v)![getIndex(controls, weights, state)];
+		});
+		output = series[labels.indexOf(codec)];
 		varName = "Encoding";
 	} else if (varType === VariableType.Option) {
-		const control = controlsMap[codec].find(c => c.id === varId)!;
-		const values = control.createState();
+		const controls = controlsMap[codec];
+		const i = controls.findIndex(c => c.id === varId)!;
+		const values = controls[i].createState();
+
+		const state = stateMap[codec];
+		const weights = weightMap.get(codec)!;
+		const outputs = outputMap.get(codec)!;
+
+		const w = weights[i];
+		const c = getIndex(controls, weights, state);
+		const base = c - controls[i].indexOf(state[i]) * w;
 
 		labels = values.map(v => v.toString());
-		series = values.map(v => outputMap.get({
-			codec,
-			key: { ...key, [varId]: v },
-		}));
-		varName = control.label;
+		output = outputs[c];
+		series = values.map((_, i) => outputs[base + w * i]);
+		varName = controls[i].label;
 	} else {
 		throw new Error("Missing handle of variable type: " + varType);
 	}
@@ -140,6 +159,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		throw new Error("Can't find current index in series");
 	}
 
+	const single = result.outputMap.size === 1 && result.outputMap.values().next().value.length === 1;
 	return (
 		<>
 			<ImageView
@@ -149,7 +169,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			/>
 
 			{
-				result.outputMap.size === 1 ?
+				single ?
 					<SimplePanel
 						visible={showChart}
 						metas={seriesMeta}

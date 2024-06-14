@@ -9,9 +9,8 @@ export interface NumberRange {
 
 export function sequence(range: NumberRange) {
 	const { min, max, step } = range;
-	return new Array<number>(Math.ceil((max + 1 - min) / step))
-		.fill(min)
-		.map((v, i) => v + i * step);
+	const length = Math.ceil((max + 1 - min) / step);
+	return Array.from({ length }, (_, i) => min + i * step);
 }
 
 interface Metadata extends NumberRange {
@@ -53,5 +52,10 @@ export default class RangeControl implements ControlType<number> {
 				{label}
 			</NumberField>
 		);
+	}
+
+	indexOf(value: number): number {
+		const { min, step } = this.data;
+		return (value - min) / step;
 	}
 }

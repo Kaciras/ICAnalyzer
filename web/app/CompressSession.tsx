@@ -1,4 +1,4 @@
-import { noop } from "@kaciras/utilities/browser";
+import { cartesianObject, CPSrcObject, noop } from "@kaciras/utilities/browser";
 import { Dispatch, useState } from "react";
 import { buildProfiles, ENCODERS, ImageEncoder } from "../codecs/index.ts";
 import { decode } from "../features/decode.ts";
@@ -11,10 +11,8 @@ import {
 	newImagePool,
 	setOriginalImage,
 } from "../features/image-worker.ts";
-import { OptionsKey, OptionsKeyPair } from "../form/index.ts";
 import { createMeasurer, Measurer } from "../features/measurement.ts";
 import { useProgress } from "../hooks.ts";
-import { ObjectKeyMap } from "../utils.ts";
 import { AnalyzeContext, ControlsMap } from "./index.tsx";
 import SelectFileDialog from "./SelectFileDialog.tsx";
 import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog.tsx";
@@ -22,7 +20,8 @@ import ProgressDialog from "./ProgressDialog.tsx";
 
 interface EncodeTask {
 	encoder: ImageEncoder;
-	optionsList: OptionsKeyPair[];
+	variables: CPSrcObject;
+	constants: any;
 }
 
 class EncodeAnalyzer {
@@ -33,7 +32,7 @@ class EncodeAnalyzer {
 	private readonly controlsMap: ControlsMap = {};
 	private readonly taskQueue: EncodeTask[] = [];
 	private readonly measurer: Measurer;
-	private readonly outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
+	// private readonly outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 
 	readonly outputSize: number;
 
@@ -56,10 +55,10 @@ class EncodeAnalyzer {
 			if (!enable) {
 				continue;
 			}
-			const { optionsList, controls } = buildProfiles(encoder, state);
+			const { size, variables, constants, controls } = buildProfiles(encoder, state);
+			this.outputSize += size;
 			this.controlsMap[name] = controls;
-			this.taskQueue.push({ encoder, optionsList });
-			this.outputSize += optionsList.length;
+			this.taskQueue.push({ encoder, variables, constants });
 		}
 	}
 
@@ -67,26 +66,42 @@ class EncodeAnalyzer {
 		return this.outputSize * (1 + this.measurer.calculations);
 	}
 
-	run(input: InputImage) {
-		const { outputMap, controlsMap, measurer, taskQueue } = this;
+	async run(input: InputImage) {
+		const { controlsMap, measurer, taskQueue } = this;
 
 		const tasks = [];
+		const outputMap = new Map<string, AnalyzeResult[]>();
+		const weightMap = new Map<string, number[]>();
 
-		for (const { encoder, optionsList } of taskQueue) {
-			for (const pair of optionsList) {
-				tasks.push(this.process(input, encoder, pair));
+		for (const { encoder, constants, variables } of taskQueue) {
+			const innerTasks = [];
+			for (const mutation of cartesianObject(variables)) {
+				const options = { ...constants, ...mutation };
+				innerTasks.push(this.process(input, encoder, options));
 			}
+
+			const controls = controlsMap[encoder.name];
+			const weights = new Array(controls.length);
+			let weight = 1;
+			for (let i = weights.length - 1; i >= 0; i--) {
+				weights[i] = weight;
+				weight *= controls[i].createState().length;
+			}
+			weightMap.set(encoder.name, weights);
+
+			tasks.push(Promise.all(innerTasks).then(results => {
+				outputMap.set(encoder.name, results);
+			}));
 		}
 
 		const seriesMeta = measurer.metrics;
-		const result = { input, controlsMap, seriesMeta, outputMap };
-		return Promise.all(tasks).then(() => result);
+		await Promise.all(tasks);
+		return { input, controlsMap, seriesMeta, outputMap, weightMap };
 	}
 
-	private async process(input: InputImage, encoder: ImageEncoder, pair: OptionsKeyPair) {
-		const { outputMap, worker, measurer } = this;
-		const { key, options } = pair;
-		const { name, extension, mimeType } = encoder;
+	private async process(input: InputImage, encoder: ImageEncoder, options: any) {
+		const {  worker, measurer } = this;
+		const {  extension, mimeType } = encoder;
 
 		const { buffer, time } = await encoder.encode(options, worker);
 		this.onProgress();
@@ -99,8 +114,8 @@ class EncodeAnalyzer {
 			data: await decode(file, worker),
 			metrics: { time },
 		};
-		outputMap.set({ codec: name, key }, output);
 		await measurer.execute(input, output, this.onProgress);
+		return output;
 	}
 }
 

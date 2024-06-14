@@ -25,6 +25,10 @@ export default class SwitchControl implements ControlType<boolean> {
 		return [false, true];
 	}
 
+	indexOf(value: boolean) {
+		return value ? 1 : 0;
+	}
+
 	Input(props: FieldProps<boolean>) {
 		const { value, onChange } = props;
 		const { label } = this.data;

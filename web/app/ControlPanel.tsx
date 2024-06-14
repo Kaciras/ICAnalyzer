@@ -50,7 +50,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 	const state = stateMap[codec];
 	const setState = onChange.sub("stateMap").sub(codec);
 
-	const controls = controlsMap[codec].map(({ id, Input }) =>
+	const controls = controlsMap[codec].map(({ id, Input }, i) =>
 		<FieldWrapper
 			key={id}
 			type={varType}
@@ -60,8 +60,8 @@ export default function ControlPanel(props: ControlPanelProps) {
 			onChange={onChange.merge}
 		>
 			<Input
-				value={state[id]}
-				onChange={setState.sub(id)}
+				value={state[i]}
+				onChange={setState.sub(i)}
 			/>
 		</FieldWrapper>,
 	);

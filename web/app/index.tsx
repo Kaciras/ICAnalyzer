@@ -6,20 +6,16 @@ import CompareSession from "./CompareSession.tsx";
 import { ControlType } from "../form/index.ts";
 import { MetricMeta } from "../features/measurement.ts";
 import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
-import { ObjectKeyMap } from "../utils.ts";
 
 export type ControlsMap = Record<string, ControlType[]>;
 
-export interface EncodeConfig {
-	codec: string;
-	key: Record<string, any>;
-}
-
 export interface AnalyzeContext {
 	input: InputImage;
-	controlsMap: ControlsMap;
-	outputMap: ObjectKeyMap<EncodeConfig, AnalyzeResult>;
 	seriesMeta: MetricMeta[];
+
+	weightMap: Map<string, number[]>;
+	outputMap: Map<string, AnalyzeResult[]>;
+	controlsMap: ControlsMap;
 }
 
 interface ContextWithId extends AnalyzeContext {
