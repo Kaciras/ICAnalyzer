@@ -1,19 +1,18 @@
 {
 	"name": "ic-analyzer",
 	"version": "0.2.0",
-	"description": "Image Compression Analyze Tool",
+	"description": "Image Compression & Analysis Tool",
 	"author": "Kaciras <Kaciras@outlook.com>",
-	"license": "MIT",
+	"license": "AGPL",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Kaciras/ICAnalyzer.git"
 	},
 	"type": "module",
 	"scripts": {
-		"lint": "eslint --fix .",
+		"lint": "eslint --fix",
 		"compile-wasm": "emcc -O3 --bind -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web -s EXPORT_ES6=1 -I deps/butteraugli -I src src/butteraugli.cpp deps/butteraugli/butteraugli/butteraugli.cc -o lib/diff.js",
 		"dev": "webpack-cli serve",
-		"test": "jest",
 		"build": "webpack --env production --env report"
 	},
 	"dependencies": {
@@ -22,7 +21,6 @@
 		"bootstrap-icons": "^1.11.3",
 		"clsx": "^2.1.1",
 		"highcharts": "^11.4.3",
-		"open": "^10.1.0",
 		"react": "^18.3.1",
 		"react-beautiful-dnd": "^13.1.1",
 		"react-dom": "^18.3.1",
@@ -31,13 +29,11 @@
 	},
 	"devDependencies": {
 		"@kaciras/eslint-config-core": "^3.0.3",
-		"@kaciras/eslint-config-jest": "^3.0.3",
 		"@kaciras/eslint-config-react": "^3.0.3",
 		"@kaciras/eslint-config-typescript": "^3.0.3",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
 		"@svgr/webpack": "^8.1.0",
 		"@swc/core": "^1.5.25",
-		"@swc/jest": "^0.2.36",
 		"@types/emscripten": "^1.39.13",
 		"@types/react": "^18.3.3",
 		"@types/react-beautiful-dnd": "^13.1.8",
@@ -45,12 +41,10 @@
 		"css-loader": "^7.1.2",
 		"eslint": "^9.4.0",
 		"html-webpack-plugin": "^5.6.0",
-		"jest": "^29.7.0",
 		"mini-css-extract-plugin": "^2.9.0",
 		"react-refresh": "^0.14.2",
 		"sass": "^1.77.4",
 		"sass-loader": "^14.2.1",
-		"sharp": "^0.33.4",
 		"style-loader": "^4.0.0",
 		"swc-loader": "^0.2.6",
 		"terser-webpack-plugin": "^5.3.10",
