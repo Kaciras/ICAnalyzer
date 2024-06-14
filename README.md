@@ -1,8 +1,6 @@
 # ICAnalyzer
 
-[![Test](https://github.com/Kaciras/ICAnalyzer/actions/workflows/test.yml/badge.svg)](https://github.com/Kaciras/ICAnalyzer/actions/workflows/test.yml)
-
-Online image compression analyze tool.
+Online image compression & analysis tool.
 
 [ic-analyzer.kaciras.com](https://ic-analyzer.kaciras.com/)
 
@@ -15,7 +13,7 @@ Supported browsers:
 - Firefox >= 121
 - Edge >= 105
 - Chrome >= 105
-- Safari >= 15.4
+- Safari >= 16.4
 
 # Build
 

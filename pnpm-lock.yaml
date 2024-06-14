@@ -35,9 +35,6 @@ importers:
       ssim.js:
         specifier: ^3.5.0
         version: 3.5.0
-      wasm-feature-detect:
-        specifier: ^1.6.1
-        version: 1.6.1
     devDependencies:
       '@kaciras/eslint-config-core':
         specifier: ^3.0.3
@@ -3484,9 +3481,6 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
-
-  wasm-feature-detect@1.6.1:
-    resolution: {integrity: sha512-R1i9ED8UlLu/foILNB1ck9XS63vdtqU/tP1MCugVekETp/ySCrBZRk5I/zI67cI1wlQYeSonNm1PLjDHZDNg6g==}
 
   watchpack@2.4.1:
     resolution: {integrity: sha512-8wrBCMtVhqcXP2Sup1ctSkga6uc2Bx0IIvKyT7yTFier5AXHooSI+QyQQAtTb7+E0IUCCKyTFmXqdqgum2XWGg==}
@@ -7441,8 +7435,6 @@ snapshots:
   uuid@8.3.2: {}
 
   vary@1.1.2: {}
-
-  wasm-feature-detect@1.6.1: {}
 
   watchpack@2.4.1:
     dependencies:
