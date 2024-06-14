@@ -1,4 +1,4 @@
-import { cartesianObject, CPSrcObject, noop } from "@kaciras/utilities/browser";
+import { cartesianObject, noop } from "@kaciras/utilities/browser";
 import { Dispatch, useState } from "react";
 import { buildProfiles, ENCODERS, ImageEncoder } from "../codecs/index.ts";
 import { decode } from "../features/decode.ts";
@@ -13,33 +13,28 @@ import {
 } from "../features/image-worker.ts";
 import { createMeasurer, Measurer } from "../features/measurement.ts";
 import { useProgress } from "../hooks.ts";
-import { AnalyzeContext, ControlsMap } from "./index.tsx";
+import { AnalyzeContext } from "./index.tsx";
 import SelectFileDialog from "./SelectFileDialog.tsx";
 import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog.tsx";
 import ProgressDialog from "./ProgressDialog.tsx";
 
 interface EncodeTask {
 	encoder: ImageEncoder;
-	variables: CPSrcObject;
-	constants: any;
+	profile: any;
 }
 
 class EncodeAnalyzer {
 
-	private readonly config: AnalyzeConfig;
 	private readonly worker: ImageWorker;
 
-	private readonly controlsMap: ControlsMap = {};
 	private readonly taskQueue: EncodeTask[] = [];
 	private readonly measurer: Measurer;
-	// private readonly outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
 
 	readonly outputSize: number;
 
 	onProgress = noop;
 
 	constructor(config: AnalyzeConfig, worker: ImageWorker) {
-		this.config = config;
 		this.worker = worker;
 
 		this.outputSize = 0;
@@ -55,10 +50,9 @@ class EncodeAnalyzer {
 			if (!enable) {
 				continue;
 			}
-			const { size, variables, constants, controls } = buildProfiles(encoder, state);
-			this.outputSize += size;
-			this.controlsMap[name] = controls;
-			this.taskQueue.push({ encoder, variables, constants });
+			const profile = buildProfiles(encoder, state);
+			this.outputSize += profile.size;
+			this.taskQueue.push({ encoder, profile });
 		}
 	}
 
@@ -67,28 +61,24 @@ class EncodeAnalyzer {
 	}
 
 	async run(input: InputImage) {
-		const { controlsMap, measurer, taskQueue } = this;
+		const { measurer, taskQueue } = this;
 
 		const tasks = [];
 		const weightMap = new Map<string, number[]>();
 		const offsetMap = new Map<string, number>();
+		const controlsMap = Object.create(null);
 
-		for (const { encoder, constants, variables } of taskQueue) {
+		for (const { encoder, profile } of taskQueue) {
+			const { variables, constants, controls, weights } = profile;
+
+			controlsMap[encoder.name] = controls;
 			offsetMap.set(encoder.name, tasks.length);
+			weightMap.set(encoder.name, weights);
 
 			for (const mutation of cartesianObject(variables)) {
 				const options = { ...constants, ...mutation };
 				tasks.push(this.process(input, encoder, options));
 			}
-
-			const controls = controlsMap[encoder.name];
-			const weights = new Array(controls.length);
-			let weight = 1;
-			for (let i = weights.length - 1; i >= 0; i--) {
-				weights[i] = weight;
-				weight *= controls[i].createState().length;
-			}
-			weightMap.set(encoder.name, weights);
 		}
 
 		const seriesMeta = measurer.metrics;

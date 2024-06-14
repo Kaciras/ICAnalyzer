@@ -35,8 +35,10 @@ export function buildProfiles(encoder: ImageEncoder, state: OptionStateMap) {
 	const variables: CPSrcObject = {};
 	const constants = { ...defaultOptions };
 	const controls: ControlType[] = [];
+	const weights: number[] = [];
 
 	let size = 1;
+	let weight = 1;
 
 	for (const template of templates) {
 		const { isVariable, value, range } = state[template.id];
@@ -46,10 +48,12 @@ export function buildProfiles(encoder: ImageEncoder, state: OptionStateMap) {
 		} else {
 			const values = template.getValues(range);
 			size *= values.length;
+			weights.push(weight);
+			weight *= values.length;
 			variables[template.id] = values;
 			controls.push(template.createControl(range));
 		}
 	}
 
-	return { size, variables, constants, controls };
+	return { size, variables, constants, controls, weights };
 }
