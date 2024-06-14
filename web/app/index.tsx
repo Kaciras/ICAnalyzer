@@ -12,10 +12,11 @@ export type ControlsMap = Record<string, ControlType[]>;
 export interface AnalyzeContext {
 	input: InputImage;
 	seriesMeta: MetricMeta[];
+	outputs: AnalyzeResult[];
 
-	weightMap: Map<string, number[]>;
-	outputMap: Map<string, AnalyzeResult[]>;
 	controlsMap: ControlsMap;
+	weightMap: Map<string, number[]>;
+	offsetMap: Map<string, number>;
 }
 
 interface ContextWithId extends AnalyzeContext {

@@ -70,14 +70,15 @@ class EncodeAnalyzer {
 		const { controlsMap, measurer, taskQueue } = this;
 
 		const tasks = [];
-		const outputMap = new Map<string, AnalyzeResult[]>();
 		const weightMap = new Map<string, number[]>();
+		const offsetMap = new Map<string, number>();
 
 		for (const { encoder, constants, variables } of taskQueue) {
-			const innerTasks = [];
+			offsetMap.set(encoder.name, tasks.length);
+
 			for (const mutation of cartesianObject(variables)) {
 				const options = { ...constants, ...mutation };
-				innerTasks.push(this.process(input, encoder, options));
+				tasks.push(this.process(input, encoder, options));
 			}
 
 			const controls = controlsMap[encoder.name];
@@ -88,20 +89,16 @@ class EncodeAnalyzer {
 				weight *= controls[i].createState().length;
 			}
 			weightMap.set(encoder.name, weights);
-
-			tasks.push(Promise.all(innerTasks).then(results => {
-				outputMap.set(encoder.name, results);
-			}));
 		}
 
 		const seriesMeta = measurer.metrics;
-		await Promise.all(tasks);
-		return { input, controlsMap, seriesMeta, outputMap, weightMap };
+		const outputs = await Promise.all(tasks);
+		return { input, seriesMeta, controlsMap, outputs, offsetMap, weightMap };
 	}
 
 	private async process(input: InputImage, encoder: ImageEncoder, options: any) {
-		const {  worker, measurer } = this;
-		const {  extension, mimeType } = encoder;
+		const { worker, measurer } = this;
+		const { extension, mimeType } = encoder;
 
 		const { buffer, time } = await encoder.encode(options, worker);
 		this.onProgress();

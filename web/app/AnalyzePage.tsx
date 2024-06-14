@@ -92,7 +92,7 @@ function getIndex(controls: ControlType[], weights: number[], state: any[]) {
 }
 
 function getSeries(result: AnalyzeContext, state: ControlState) {
-	const { controlsMap, outputMap, weightMap } = result;
+	const { controlsMap, offsetMap, outputs, weightMap } = result;
 	const { varType, varId, codec, stateMap } = state;
 
 	let labels: string[];
@@ -102,16 +102,17 @@ function getSeries(result: AnalyzeContext, state: ControlState) {
 
 	if (varType === VariableType.None) {
 		labels = [""];
-		series = outputMap.get(codec)!;
+		series = outputs;
 		varName = "";
 		output = series[0];
 	} else if (varType === VariableType.Encoder) {
 		labels = getEncoderNames(stateMap);
 		series = labels.map(v => {
+			const offset = offsetMap.get(v)!;
 			const controls = controlsMap[v];
 			const state = stateMap[v];
 			const weights = weightMap.get(v)!;
-			return outputMap.get(v)![getIndex(controls, weights, state)];
+			return outputs[offset + getIndex(controls, weights, state)];
 		});
 		output = series[labels.indexOf(codec)];
 		varName = "Encoding";
@@ -122,10 +123,10 @@ function getSeries(result: AnalyzeContext, state: ControlState) {
 
 		const state = stateMap[codec];
 		const weights = weightMap.get(codec)!;
-		const outputs = outputMap.get(codec)!;
+		const offset = offsetMap.get(codec)!;
 
 		const w = weights[i];
-		const c = getIndex(controls, weights, state);
+		const c = offset + getIndex(controls, weights, state);
 		const base = c - controls[i].indexOf(state[i]) * w;
 
 		labels = values.map(v => v.toString());
@@ -159,7 +160,6 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 		throw new Error("Can't find current index in series");
 	}
 
-	const single = result.outputMap.size === 1 && result.outputMap.values().next().value.length === 1;
 	return (
 		<>
 			<ImageView
@@ -169,7 +169,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 			/>
 
 			{
-				single ?
+				result.outputs.length === 1 ?
 					<SimplePanel
 						visible={showChart}
 						metas={seriesMeta}
