@@ -68,7 +68,7 @@ export default function ImageView(props: ImageViewProps) {
 	useEffect(refreshBottomCanvas, [original]);
 	useEffect(refreshTopCanvas, [topImage]);
 
-	function handleMouseMove(event: MouseEvent) {
+	function handlePointerMove(event: MouseEvent) {
 		const { clientX, clientY } = event;
 		setMousePos({ clientX, clientY });
 	}
@@ -133,9 +133,9 @@ export default function ImageView(props: ImageViewProps) {
 				<div
 					className={styles.wrapper}
 					style={wrapperCSS}
-					onMouseOver={() => setInRegion(true)}
-					onMouseMove={handleMouseMove}
-					onMouseOut={() => setInRegion(false)}
+					onPointerOver={() => setInRegion(true)}
+					onPointerMove={handlePointerMove}
+					onPointerOut={() => setInRegion(false)}
 				>
 					<canvas
 						className={styles.canvas}

@@ -1,44 +1,23 @@
 import React, { Dispatch, ReactNode } from "react";
 
-type PointerMoveHandler = (dx: number, dy: number) => void;
+type MoveHandler = (dx: number, dy: number) => void;
 
-function watchMouseMove(baseEvent: MouseEvent, onMove: PointerMoveHandler) {
+function watchMove(baseEvent: PointerEvent, onMove: MoveHandler) {
 	const basePageX = baseEvent.pageX;
 	const basePageY = baseEvent.pageY;
 
-	function handleMove(event: MouseEvent) {
+	function handleMove(event: PointerEvent) {
 		onMove(event.pageX - basePageX, event.pageY - basePageY);
 	}
 
 	function handleEnd(event: Event) {
 		event.preventDefault();
-		document.removeEventListener("mousemove", handleMove);
-		document.removeEventListener("mouseup", handleEnd);
+		document.removeEventListener("pointerup", handleEnd);
+		document.removeEventListener("pointermove", handleMove);
 	}
 
-	document.addEventListener("mousemove", handleMove);
-	document.addEventListener("mouseup", handleEnd);
-}
-
-function watchTouchMove(baseEvent: TouchEvent, onMove: PointerMoveHandler) {
-	const basePointer = baseEvent.touches[0];
-
-	function handleMove(event: TouchEvent) {
-		const touch = event.touches[0];
-		onMove(
-			touch.pageX - basePointer.pageX,
-			touch.pageY - basePointer.pageY,
-		);
-	}
-
-	function handleEnd(event: Event) {
-		event.preventDefault();
-		document.removeEventListener("touchmove", handleMove);
-		document.removeEventListener("touchend", handleEnd);
-	}
-
-	document.addEventListener("touchmove", handleMove);
-	document.addEventListener("touchend", handleEnd);
+	document.addEventListener("pointerup", handleEnd);
+	document.addEventListener("pointermove", handleMove);
 }
 
 export interface PinchZoomState {
@@ -89,15 +68,11 @@ export default function PinchZoom(props: PinchZoomProps) {
 		onChange({ scale: state.scale, x, y });
 	}
 
-	function handleMouseDown(e: React.MouseEvent) {
+	function handlePointerDown(e: React.PointerEvent) {
 		if (e.button !== 0) {
 			return;
 		}
-		watchMouseMove(e.nativeEvent, updateOffset);
-	}
-
-	function handleTouchStart(e: React.TouchEvent) {
-		watchTouchMove(e.nativeEvent, updateOffset);
+		watchMove(e.nativeEvent, updateOffset);
 	}
 
 	return (
@@ -105,8 +80,7 @@ export default function PinchZoom(props: PinchZoomProps) {
 			style={{ touchAction: "none" }}
 			className={className}
 			onWheel={handleWheel}
-			onTouchStart={handleTouchStart}
-			onMouseDown={handleMouseDown}
+			onPointerDown={handlePointerDown}
 		>
 			{children}
 		</div>

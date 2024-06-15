@@ -89,7 +89,7 @@ function NumberInput(props: NumberInputProps) {
 		input.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
 	}
 
-	function handleMouseDown(event: MouseEvent, diff: number) {
+	function handlePointerDown(event: MouseEvent, diff: number) {
 		if (event.button !== 0) {
 			return;
 		}
@@ -109,15 +109,15 @@ function NumberInput(props: NumberInputProps) {
 			timer = window.setTimeout(() => increment(newValue), UPDATE_SPEED);
 		}
 
-		function onMouseUp() {
+		function onPointerUp() {
 			clearTimeout(timer);
-			document.removeEventListener("mouseup", onMouseUp);
+			document.removeEventListener("mouseup", onPointerUp);
 		}
 
 		const newValue = next(inputRef.current!.valueAsNumber);
 		updateValue(newValue);
 		timer = window.setTimeout(() => increment(newValue), UPDATE_DELAY);
-		document.addEventListener("mouseup", onMouseUp);
+		document.addEventListener("mouseup", onPointerUp);
 	}
 
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -146,7 +146,7 @@ function NumberInput(props: NumberInputProps) {
 				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
-				onMouseDown={e => handleMouseDown(e, -increment)}
+				onPointerDown={e => handlePointerDown(e, -increment)}
 			>
 				<TbMinus shapeRendering="crispEdges"/>
 			</button>
@@ -169,7 +169,7 @@ function NumberInput(props: NumberInputProps) {
 				className={styles.button}
 				tabIndex={-1}
 				disabled={disabled}
-				onMouseDown={e => handleMouseDown(e, increment)}
+				onPointerDown={e => handlePointerDown(e, increment)}
 			>
 				<TbPlus shapeRendering="crispEdges"/>
 			</button>
