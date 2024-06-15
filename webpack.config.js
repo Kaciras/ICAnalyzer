@@ -1,16 +1,10 @@
-import { dirname, join, resolve } from "path";
-import { fileURLToPath } from "url";
+import { resolve } from "path";
 import webpack from "webpack";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlPlugin from "html-webpack-plugin";
 import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// css-minimizer-webpack-plugin is ineffective (index.css 27898 bytes -> 27540 bytes), so we not use it.
 
 export default function (env) {
 	const shouldReport = Boolean(env?.report);
@@ -79,9 +73,9 @@ export default function (env) {
 			oneOf: [
 				{
 					include: [
-						join(__dirname, "web", "app"),
-						join(__dirname, "web", "ui"),
-						join(__dirname, "web", "form"),
+						resolve("web", "app"),
+						resolve("web", "ui"),
+						resolve("web", "form"),
 					],
 					use: cssLoaderChain(true),
 				},
@@ -115,7 +109,7 @@ export default function (env) {
 
 	return {
 		mode: isProd ? "production" : "development",
-		context: __dirname,
+		context: import.meta.dirname,
 		entry: {
 			check: "./web/support-check.ts",
 			index: "./web/index.tsx",
@@ -130,7 +124,7 @@ export default function (env) {
 		resolve: {
 			extensions: [".tsx", ".ts", ".js", ".json"],
 			alias: {
-				squoosh: join(__dirname, "deps/squoosh"),
+				squoosh: resolve("deps/squoosh"),
 			},
 			fallback: {
 				path: false,
@@ -161,8 +155,8 @@ export default function (env) {
 			type: "filesystem",
 			buildDependencies: {
 				config: [
-					__filename,
-					resolve(__dirname, "tsconfig.json"),
+					import.meta.filename,
+					resolve("tsconfig.json"),
 				],
 			},
 		},
