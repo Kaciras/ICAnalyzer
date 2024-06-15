@@ -52,8 +52,6 @@ export interface OptionType<T = any, V = any> {
 	OptionField(props: OptionFieldProps<T, V>): JSX.Element;
 
 	populate(value: T, options: any): void;
-
-	getValues(range: V): T[];
 }
 
 export { BoolOption } from "./option/BoolOption";

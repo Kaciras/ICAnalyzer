@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
 import { OptionFieldProps, OptionType } from "../index.ts";
 import { NumberInput } from "../../ui/index.ts";
-import RangeControl, { NumberRange, sequence } from "../control/RangeControl.tsx";
+import RangeControl, { NumberRange } from "../control/RangeControl.tsx";
 import NumberField from "../NumberField.tsx";
 import styles from "./NumberOption.scss";
 
@@ -108,10 +108,6 @@ export class NumberOption implements OptionType<number, NumberRange> {
 				<RangePart {...base} name="step" min={data.step}/>
 			</fieldset>
 		);
-	}
-
-	getValues(range: NumberRange) {
-		return sequence(range);
 	}
 
 	populate(value: number, options: any) {

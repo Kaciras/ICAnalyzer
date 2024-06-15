@@ -34,10 +34,6 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 		return [defaultValue, [defaultValue]] as [keyof T, Array<keyof T>];
 	}
 
-	getValues(range: Array<keyof T>) {
-		return range;
-	}
-
 	populate(value: keyof T, options: any) {
 		options[this.data.id] = value;
 	}
@@ -67,8 +63,8 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 
 		let items: any[];
 		if (isVariable) {
-			items = Object.keys(enumObject).map(name => {
-				return <CheckBox
+			items = Object.keys(enumObject).map(name =>
+				<CheckBox
 					className={styles.item}
 					key={name}
 					name={name}
@@ -76,11 +72,11 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 					onChange={handleChangeV}
 				>
 					{name}
-				</CheckBox>;
-			});
+				</CheckBox>,
+			);
 		} else {
-			items = Object.keys(enumObject).map(name => {
-				return <RadioBox
+			items = Object.keys(enumObject).map(name =>
+				<RadioBox
 					className={styles.item}
 					key={name}
 					name={id}
@@ -89,8 +85,8 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 					onChange={handleChangeC}
 				>
 					{name}
-				</RadioBox>;
-			});
+				</RadioBox>,
+			);
 		}
 
 		return (

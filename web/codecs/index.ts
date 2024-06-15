@@ -1,4 +1,3 @@
-import { CPSrcObject } from "@kaciras/utilities/browser";
 import { ImageWorker } from "../features/image-worker.ts";
 import { EncodeResult } from "./common.ts";
 import * as MozJPEG from "./mozjpeg/client.ts";
@@ -38,13 +37,12 @@ export function getEncoderNames(object: Record<string, unknown>) {
 export function buildProfiles(encoder: ImageEncoder, state: OptionStateMap) {
 	const { defaultOptions, templates } = encoder;
 
-	const variables: CPSrcObject = {};
+	const variables: Record<string, unknown[]> = {};
 	const constants = { ...defaultOptions };
 	const controls: ControlType[] = [];
 	const weights: number[] = [];
 
 	let size = 1;
-	let weight = 1;
 
 	for (const template of templates) {
 		const { isVariable, value, range } = state[template.id];
@@ -52,13 +50,18 @@ export function buildProfiles(encoder: ImageEncoder, state: OptionStateMap) {
 		if (!isVariable) {
 			template.populate(value, constants);
 		} else {
-			const values = template.getValues(range);
+			const control = template.createControl(range);
+			const values = control.createState();
 			size *= values.length;
-			weights.push(weight);
-			weight *= values.length;
+			controls.push(control);
 			variables[template.id] = values;
-			controls.push(template.createControl(range));
 		}
+	}
+
+	let weight = 1;
+	for (let i = controls.length - 1; i >= 0; i--) {
+		weights.push(weight);
+		weight *= variables[controls[i].id].length;
 	}
 
 	return { size, variables, constants, controls, weights };

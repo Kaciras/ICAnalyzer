@@ -22,16 +22,12 @@ export class BoolOption implements OptionType<boolean> {
 		return this.data.id;
 	}
 
-	createControl(range: undefined) {
+	createControl() {
 		return new SwitchControl(this.data);
 	}
 
 	createState() {
 		return [Boolean(this.data.defaultValue), undefined] as [boolean, never];
-	}
-
-	getValues() {
-		return [false, true];
 	}
 
 	populate(value: boolean, options: any) {
