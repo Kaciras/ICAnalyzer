@@ -39,8 +39,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 	}
 
 	populate(value: keyof T, options: any) {
-		const { id, enumObject } = this.data;
-		options[id] = enumObject[value];
+		options[this.data.id] = value;
 	}
 
 	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {

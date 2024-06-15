@@ -142,5 +142,6 @@ export const templates: OptionType[] = [
 ];
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
+	options.preprocessing = Preprocess[options.preprocessing];
 	return worker.webpEncode(options);
 }

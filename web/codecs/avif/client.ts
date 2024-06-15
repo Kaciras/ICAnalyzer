@@ -92,6 +92,8 @@ export const templates: OptionType[] = [
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
 	const { cqLevel, cqAlphaLevel } = options;
+	options.subsample = Subsampling[options.subsample];
+	options.tune = AVIFTune[options.tune];
 	options.cqLevel = 63 - cqLevel;
 	options.cqAlphaLevel = (cqAlphaLevel === -1) ? -1 : 63 - cqAlphaLevel;
 	return worker.avifEncode(options);

@@ -96,5 +96,7 @@ export const templates: OptionType[] = [
 ];
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
+	options.color_space = ColorSpace[options.color_space];
+	options.quant_table = Quantization[options.quant_table];
 	return worker.mozjpegEncode(options);
 }

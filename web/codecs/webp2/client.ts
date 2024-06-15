@@ -77,5 +77,7 @@ export const templates: OptionType[] = [
 ];
 
 export function encode(options: EncodeOptions, worker: ImageWorker) {
+	options.uv_mode = Subsample[options.uv_mode];
+	options.csp_type = Csp[options.csp_type];
 	return worker.webp2Encode(options);
 }

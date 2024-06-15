@@ -26,6 +26,10 @@ export default class EnumControl implements ControlType<string> {
 		return this.data.names;
 	}
 
+	indexOf(value: string): number {
+		return this.data.names.indexOf(value);
+	}
+
 	Input(props: FieldProps<string>) {
 		const { id, label, names } = this.data;
 		const { value, onChange } = props;
@@ -52,9 +56,5 @@ export default class EnumControl implements ControlType<string> {
 				</RadioGroup>
 			</>
 		);
-	}
-
-	indexOf(value: string): number {
-		return this.data.names.indexOf(value);
 	}
 }
