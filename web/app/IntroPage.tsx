@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import GitHubIcon from "../assets/github-logo.svg";
+import { TbBrandGithub } from "react-icons/tb";
 import banner from "../assets/intro-banner.png";
 import { Button } from "../ui/index.ts";
 import styles from "./IntroPage.scss";
@@ -44,7 +44,7 @@ export default function IntroPage(props: IntroPageProps) {
 						type="outline"
 						href="https://github.com/Kaciras/ICAnalyzer"
 					>
-						<GitHubIcon className={styles.github}/>
+						<TbBrandGithub className={styles.github}/>
 						Source Code
 					</Button>
 				</div>

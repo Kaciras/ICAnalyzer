@@ -1,6 +1,6 @@
 import { Dispatch, ForwardedRef, forwardRef, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import CloseIcon from "bootstrap-icons/icons/x.svg";
+import { TbX } from "react-icons/tb";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { dataSizeIEC, uniqueId } from "@kaciras/utilities/browser";
 import { Button, Dialog, FileDrop } from "../ui/index.ts";
@@ -56,7 +56,7 @@ const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIE
 					title="Remove"
 					onClick={onRemove}
 				>
-					<CloseIcon/>
+					<TbX/>
 				</Button>
 			</div>
 			<div className={styles.filename}>

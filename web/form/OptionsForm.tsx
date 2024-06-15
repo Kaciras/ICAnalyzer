@@ -1,7 +1,6 @@
 import { memo, ReactNode } from "react";
 import clsx from "clsx";
-import TypeIcon from "bootstrap-icons/icons/type.svg";
-import SliderIcon from "bootstrap-icons/icons/sliders.svg";
+import { BsSliders, BsType } from "react-icons/bs";
 import { OptionState, OptionStateMap, OptionType } from "./index.ts";
 import { Button } from "../ui/index.ts";
 import { Merger } from "../mutation.ts";
@@ -25,11 +24,11 @@ const Option = memo((props: OptionProps) => {
 	if (isVariable) {
 		clazz = styles.variable;
 		title = "Range Mode";
-		iconChildren = <SliderIcon/>;
+		iconChildren = <BsSliders/>;
 	} else {
 		clazz = styles.constant;
 		title = "Constant Mode";
-		iconChildren = <TypeIcon/>;
+		iconChildren = <BsType/>;
 	}
 
 	function toggle() {

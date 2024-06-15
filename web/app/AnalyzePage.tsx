@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react";
-import UploadIcon from "bootstrap-icons/icons/cloud-upload.svg";
-import ChartIcon from "bootstrap-icons/icons/bar-chart-line.svg";
-import DownloadIcon from "bootstrap-icons/icons/download.svg";
-import CloseIcon from "bootstrap-icons/icons/x.svg";
+import { TbChartHistogram, TbDownload, TbUpload, TbX } from "react-icons/tb";
 import { Button, DownloadButton } from "../ui/index.ts";
 import { AnalyzeContext, ControlsMap } from "./index";
 import { ControlType } from "../form/index.ts";
@@ -194,7 +191,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					className={styles.iconButton}
 					onClick={onClose}
 				>
-					<CloseIcon/>
+					<TbX/>
 				</Button>
 				<Button
 					title="Try it again"
@@ -202,7 +199,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					className={styles.iconButton}
 					onClick={onStart}
 				>
-					<UploadIcon/>
+					<TbUpload/>
 				</Button>
 				<Button
 					title="Show metrics"
@@ -211,7 +208,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					active={showChart}
 					onClick={() => setShowChart(!showChart)}
 				>
-					<ChartIcon/>
+					<TbChartHistogram/>
 				</Button>
 				<DownloadButton
 					title="Download output image"
@@ -219,7 +216,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					className={styles.iconButton}
 					file={output.file}
 				>
-					<DownloadIcon/>
+					<TbDownload/>
 				</DownloadButton>
 			</div>
 

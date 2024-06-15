@@ -1,6 +1,6 @@
 import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, Dispatch, SelectHTMLAttributes } from "react";
-import CaretDownIcon from "bootstrap-icons/icons/caret-down-fill.svg";
+import { BsFillCaretDownFill } from "react-icons/bs";
 import styles from "./SelectBox.scss";
 
 interface SelectBoxProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -22,7 +22,7 @@ export default function SelectBox(props: SelectBoxProps) {
 				className={styles.select}
 				onChange={handleChange}
 			/>
-			<CaretDownIcon className={styles.icon}/>
+			<BsFillCaretDownFill className={styles.icon}/>
 		</div>
 	);
 }

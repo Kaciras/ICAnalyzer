@@ -1,10 +1,7 @@
 import { noop } from "@kaciras/utilities/browser";
 import React, { ChangeEvent, ChangeEventHandler, Dispatch, MouseEvent, useRef } from "react";
 import clsx from "clsx";
-import PlusIcon from "../assets/add.svg";
-import MinusIcon from "../assets/remove.svg";
-import ArrowUpIcon from "../assets/arrow_up.svg";
-import ArrowDownIcon from "../assets/arrow_down.svg";
+import { TbArrowDown, TbArrowUp, TbMinus, TbPlus } from "react-icons/tb";
 import styles from "./NumberInput.scss";
 
 /**
@@ -140,7 +137,7 @@ function NumberInput(props: NumberInputProps) {
 					disabled={disabled}
 					onClick={() => updateValue(min)}
 				>
-					<ArrowDownIcon/>
+					<TbArrowDown/>
 				</button>
 			}
 			<button
@@ -151,7 +148,7 @@ function NumberInput(props: NumberInputProps) {
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, -increment)}
 			>
-				<MinusIcon shapeRendering="crispEdges"/>
+				<TbMinus shapeRendering="crispEdges"/>
 			</button>
 			<input
 				type="number"
@@ -174,7 +171,7 @@ function NumberInput(props: NumberInputProps) {
 				disabled={disabled}
 				onMouseDown={e => handleMouseDown(e, increment)}
 			>
-				<PlusIcon shapeRendering="crispEdges"/>
+				<TbPlus shapeRendering="crispEdges"/>
 			</button>
 			{
 				minMaxButton &&
@@ -186,7 +183,7 @@ function NumberInput(props: NumberInputProps) {
 					disabled={disabled}
 					onClick={() => updateValue(max)}
 				>
-					<ArrowUpIcon/>
+					<TbArrowUp/>
 				</button>
 			}
 		</div>

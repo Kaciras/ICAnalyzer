@@ -1,16 +1,28 @@
 import { memo } from "react";
+import {
+	MdCheckBox,
+	MdCheckBoxOutlineBlank,
+	MdOutlineRadioButtonChecked,
+	MdOutlineRadioButtonUnchecked,
+} from "react-icons/md";
 import CheckBoxBase, { CheckBoxProps } from "./CheckBoxBase.tsx";
-import CheckIcon from "../assets/check_box.svg";
-import CheckIconActive from "../assets/check_box-checked.svg";
-import RadioIcon from "../assets/radio_box.svg";
-import RadioIconActive from "../assets/radio_box-checked.svg";
 
 export const CheckBox = memo((props: CheckBoxProps) => {
-	return CheckBoxBase({ ...props, type: "checkbox", Icon: CheckIcon, IconChecked: CheckIconActive });
+	return CheckBoxBase({
+		...props,
+		type: "checkbox",
+		Icon: MdCheckBoxOutlineBlank,
+		IconChecked: MdCheckBox,
+	});
 });
 
 export const RadioBox = memo((props: CheckBoxProps) => {
-	return CheckBoxBase({ ...props, type: "radio", Icon: RadioIcon, IconChecked: RadioIconActive });
+	return CheckBoxBase({
+		...props,
+		type: "radio",
+		Icon: MdOutlineRadioButtonUnchecked,
+		IconChecked: MdOutlineRadioButtonChecked,
+	});
 });
 
 CheckBox.displayName = "CheckBox";

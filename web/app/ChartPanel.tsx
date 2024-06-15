@@ -3,7 +3,7 @@ import clsx from "clsx";
 import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "highcharts";
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
-import LockIcon from "../assets/lock.svg";
+import { TbLockFilled } from "react-icons/tb";
 import { Button } from "../ui/index.ts";
 import { MetricMeta } from "../features/measurement.ts";
 import { AnalyzeResult } from "../features/image-worker.ts";
@@ -266,7 +266,7 @@ export default function ChartPanel(props: ChartProps) {
 				active={locked}
 				onClick={handleLockChange}
 			>
-				<LockIcon/>
+				<TbLockFilled/>
 			</Button>
 			<div className={styles.chart} ref={initHighcharts}/>
 		</section>

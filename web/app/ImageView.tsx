@@ -1,7 +1,6 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import BrightnessIcon from "bootstrap-icons/icons/brightness-high.svg";
-import PickColorIcon from "bootstrap-icons/icons/eyedropper.svg";
+import { BsBrightnessHigh, BsEyedropper } from "react-icons/bs";
 import { ButtonProps } from "../ui/Button.tsx";
 import { PinchZoomState } from "../ui/PinchZoom.tsx";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui/index.ts";
@@ -162,7 +161,7 @@ export default function ImageView(props: ImageViewProps) {
 					className={styles.option}
 					title="Pick color"
 				>
-					<PickColorIcon className={styles.icon}/>
+					<BsEyedropper className={styles.icon}/>
 					<SwitchButton
 						checked={picking}
 						onCheckedChange={setPicking}
@@ -175,7 +174,7 @@ export default function ImageView(props: ImageViewProps) {
 						className={styles.option}
 						title="Brightness"
 					>
-						<BrightnessIcon className={styles.icon}/>
+						<BsBrightnessHigh className={styles.icon}/>
 						<NumberInput
 							value={brightness}
 							min={1}

@@ -40,31 +40,6 @@ export default function (env) {
 			type: "asset/resource",
 		},
 		{
-			test: /\.svg$/,
-			use: {
-				loader: "@svgr/webpack",
-				options: {
-					svgoConfig: {
-						plugins: [
-							{
-								name: "preset-default",
-								params: {
-									overrides: {
-										removeViewBox: false,
-									},
-								},
-							},
-						],
-					},
-					svgProps: {
-						fill: "currentColor",
-						width: "1em",
-						height: "1em",
-					},
-				},
-			},
-		},
-		{
 			test: /\.(?:jpg|png|gif)$/,
 			type: "asset/resource",
 		},

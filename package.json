@@ -18,12 +18,12 @@
 	"dependencies": {
 		"@kaciras/utilities": "^1.0.0",
 		"@sentry/react": "^8.8.0",
-		"bootstrap-icons": "^1.11.3",
 		"clsx": "^2.1.1",
 		"highcharts": "^11.4.3",
 		"react": "^18.3.1",
 		"react-beautiful-dnd": "^13.1.1",
 		"react-dom": "^18.3.1",
+		"react-icons": "^5.2.1",
 		"ssim.js": "^3.5.0"
 	},
 	"devDependencies": {
@@ -31,7 +31,6 @@
 		"@kaciras/eslint-config-react": "^3.0.3",
 		"@kaciras/eslint-config-typescript": "^3.0.3",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
-		"@svgr/webpack": "^8.1.0",
 		"@swc/core": "^1.5.25",
 		"@types/emscripten": "^1.39.13",
 		"@types/react": "^18.3.3",

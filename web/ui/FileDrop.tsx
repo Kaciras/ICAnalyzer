@@ -1,7 +1,7 @@
 import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react";
 import clsx from "clsx";
-import ImageIcon from "bootstrap-icons/icons/image.svg";
+import { TbPhoto } from "react-icons/tb";
 import styles from "./FileDrop.scss";
 
 /**
@@ -96,7 +96,7 @@ export default function FileDrop(props: FileDropProps) {
 			onDragLeave={boundary.leave}
 		>
 			<span>
-				<ImageIcon className={styles.icon}/>
+				<TbPhoto className={styles.icon}/>
 				<span className={styles.text}>
 					Drag & drop
 				</span>

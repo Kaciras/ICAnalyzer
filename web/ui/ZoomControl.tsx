@@ -1,5 +1,5 @@
 import React from "react";
-import ResetIcon from "bootstrap-icons/icons/arrow-counterclockwise.svg";
+import { BsArrowCounterclockwise } from "react-icons/bs";
 import { Mutator } from "../mutation.ts";
 import { PinchZoomState } from "./PinchZoom.tsx";
 import { Button, NumberInput } from "./index.ts";
@@ -38,7 +38,7 @@ function ZoomControl(props: ZoomControlProps) {
 					className={styles.button}
 					onClick={() => onChange(initValue)}
 				>
-					<ResetIcon/>
+					<BsArrowCounterclockwise/>
 				</Button>
 			}
 		</div>
