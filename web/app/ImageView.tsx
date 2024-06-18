@@ -10,16 +10,18 @@ import theme from "../theme.module.scss";
 import styles from "./ImageView.scss";
 
 export enum ViewType {
-	Original,
+	Split,
+	Input,
 	Output,
-	Difference,
+	Diff,
 	HeatMap,
 }
 
 const viewTypeNames = [
-	"Original",
+	"Split",
+	"Input",
 	"Output",
-	"Difference",
+	"Diff",
 	"HeatMap",
 ];
 
@@ -50,6 +52,7 @@ export default function ImageView(props: ImageViewProps) {
 	const [picking, setPicking] = useState(false);
 	const [inRegion, setInRegion] = useState(false);
 	const [mousePos, setMousePos] = useState({ clientX: 0, clientY: 0 });
+	const [splitPoint, setSplitPoint] = useState(window.innerWidth / 2);
 
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
@@ -76,22 +79,21 @@ export default function ImageView(props: ImageViewProps) {
 	const tabData = viewTypeNames.map<ImageViewTabProps>(target => ({ target }));
 
 	if (!heatMap) {
-		tabData[3].disabled = true;
-		tabData[3].title = "Require enable butteraugli";
+		tabData[4].disabled = true;
+		tabData[4].title = "Require enable butteraugli";
 	}
 
-	const imageViewTabs = tabData.map(data => {
+	const imageViewTabs = tabData.map((data, index) => {
 		const { target, disabled, title } = data;
-		const value = ViewType[target as keyof typeof ViewType];
 		return (
 			<Button
-				key={value}
+				key={index}
 				className="dark"
 				type="text"
-				active={type === value}
+				active={type === index}
 				disabled={disabled}
 				title={title}
-				onClick={() => setType(value)}
+				onClick={() => setType(index)}
 			>
 				{target}
 			</Button>
@@ -100,7 +102,7 @@ export default function ImageView(props: ImageViewProps) {
 
 	let mixBlendMode = undefined;
 	let brightnessVal = 1;
-	if (type === ViewType.Difference) {
+	if (type === ViewType.Diff) {
 		mixBlendMode = "difference" as const;
 		brightnessVal = brightness;
 	}
@@ -113,6 +115,10 @@ export default function ImageView(props: ImageViewProps) {
 		"--brightness": `${brightnessVal}`,
 	};
 
+	const splitCSS = type === ViewType.Split
+		? { "--split": `${splitPoint}px` }
+		: undefined;
+
 	const { clientX, clientY } = mousePos;
 	const px = Math.floor((clientX - pinchZoom.x - (window.innerWidth - width * pinchZoom.scale) / 2) / pinchZoom.scale);
 	const py = Math.floor((clientY - pinchZoom.y - (window.innerHeight - height * pinchZoom.scale) / 2) / pinchZoom.scale);
@@ -122,8 +128,25 @@ export default function ImageView(props: ImageViewProps) {
 		left: clientX,
 	};
 
+	function onPointerDown() {
+		document.addEventListener("pointerup", onPointerUp);
+		document.addEventListener("pointermove", onPointerMove);
+	}
+
+	function onPointerMove(e: PointerEvent) {
+		const p = e.pageX;
+		if (p > 0 && p < window.innerWidth) {
+			setSplitPoint(p);
+		}
+	}
+
+	function onPointerUp() {
+		document.removeEventListener("pointerup", onPointerUp);
+		document.removeEventListener("pointermove", onPointerMove);
+	}
+
 	return (
-		<div className={clsx(styles.container, className)}>
+		<div className={clsx(styles.container, className)} style={splitCSS}>
 			<PinchZoom
 				className={styles.main}
 				state={pinchZoom}
@@ -149,10 +172,16 @@ export default function ImageView(props: ImageViewProps) {
 						width={width}
 						height={height}
 						style={{ mixBlendMode }}
-						hidden={type === ViewType.Original}
+						hidden={type === ViewType.Input}
 					/>
 				</div>
 			</PinchZoom>
+
+			<div
+				hidden={type !== ViewType.Split}
+				className={styles.separator}
+				onPointerDown={onPointerDown}
+			/>
 
 			<div className={styles.tabPanel}>
 				<div>{imageViewTabs}</div>
@@ -169,7 +198,7 @@ export default function ImageView(props: ImageViewProps) {
 				</div>
 
 				{
-					type === ViewType.Difference &&
+					type === ViewType.Diff &&
 					<label
 						className={styles.option}
 						title="Brightness"

@@ -59,7 +59,13 @@
 }
 
 .canvas {
+	--offset: calc((var(--split) - 50vw  - var(--x)) / var(--scale));
+
 	position: absolute;
+
+	& + .canvas {
+		clip-path: inset(0 calc(50% - var(--offset)) 0 0);
+	}
 }
 
 .controls {
@@ -69,4 +75,16 @@
 	transform: translateX(-50%);
 
 	display: flex;
+}
+
+.separator {
+	position: absolute;
+	z-index: 3;
+	top: 0;
+	bottom: 0;
+	width: 6px;
+	left: calc(var(--split) - 3px);
+
+	cursor: ew-resize;
+	background: rgba(0, 0, 0, 0.6);
 }
