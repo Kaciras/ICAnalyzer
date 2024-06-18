@@ -5,9 +5,9 @@ import { ButtonProps } from "../ui/Button.tsx";
 import { PinchZoomState } from "../ui/PinchZoom.tsx";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui/index.ts";
 import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
-import { drawImage } from "../utils.ts";
 import theme from "../theme.module.scss";
 import styles from "./ImageView.scss";
+import { drawImage, usePointerMove } from "../utils.ts";
 
 export enum ViewType {
 	Split,
@@ -128,22 +128,12 @@ export default function ImageView(props: ImageViewProps) {
 		left: clientX,
 	};
 
-	function onPointerDown() {
-		document.addEventListener("pointerup", onPointerUp);
-		document.addEventListener("pointermove", onPointerMove);
-	}
-
-	function onPointerMove(e: PointerEvent) {
+	const onPointerDown = usePointerMove(e => {
 		const p = e.pageX;
 		if (p > 0 && p < window.innerWidth) {
-			setSplitPoint(p);
+			setSplitPoint(p); // Prevent move to out of window.
 		}
-	}
-
-	function onPointerUp() {
-		document.removeEventListener("pointerup", onPointerUp);
-		document.removeEventListener("pointermove", onPointerMove);
-	}
+	});
 
 	return (
 		<div className={clsx(styles.container, className)} style={splitCSS}>

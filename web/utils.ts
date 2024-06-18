@@ -33,3 +33,30 @@ export class ObjectKeyMap<K, V> {
 		this.table.set(JSON.stringify(key), value);
 	}
 }
+
+type PointerMoveHandler = (e: PointerEvent, init: PointerEvent) => void;
+
+export function usePointerMove(listener: PointerMoveHandler) {
+	return function (initEvent: React.PointerEvent) {
+		if (initEvent.button !== 0) {
+			return;
+		}
+		const { nativeEvent } = initEvent;
+
+		// Avoid dragging underlying elements.
+		initEvent.preventDefault();
+
+		function handleMove(event: PointerEvent) {
+			listener(event, nativeEvent);
+		}
+
+		function handleEnd(event: Event) {
+			event.preventDefault();
+			document.removeEventListener("pointerup", handleEnd);
+			document.removeEventListener("pointermove", handleMove);
+		}
+
+		document.addEventListener("pointerup", handleEnd);
+		document.addEventListener("pointermove", handleMove);
+	};
+}

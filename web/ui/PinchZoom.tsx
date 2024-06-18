@@ -1,24 +1,5 @@
 import React, { Dispatch, ReactNode } from "react";
-
-type MoveHandler = (dx: number, dy: number) => void;
-
-function watchMove(baseEvent: PointerEvent, onMove: MoveHandler) {
-	const basePageX = baseEvent.pageX;
-	const basePageY = baseEvent.pageY;
-
-	function handleMove(event: PointerEvent) {
-		onMove(event.pageX - basePageX, event.pageY - basePageY);
-	}
-
-	function handleEnd(event: Event) {
-		event.preventDefault();
-		document.removeEventListener("pointerup", handleEnd);
-		document.removeEventListener("pointermove", handleMove);
-	}
-
-	document.addEventListener("pointerup", handleEnd);
-	document.addEventListener("pointermove", handleMove);
-}
+import { usePointerMove } from "../utils.ts";
 
 export interface PinchZoomState {
 	x: number;
@@ -62,18 +43,14 @@ export default function PinchZoom(props: PinchZoomProps) {
 		});
 	}
 
-	function updateOffset(dx: number, dy: number) {
-		const x = state.x + dx;
-		const y = state.y + dy;
-		onChange({ scale: state.scale, x, y });
-	}
+	const handlePointerDown = usePointerMove((event, init) => {
+		const { pageX, pageY } = event;
+		const { pageX: initX, pageY: initY } = init;
 
-	function handlePointerDown(e: React.PointerEvent) {
-		if (e.button !== 0) {
-			return;
-		}
-		watchMove(e.nativeEvent, updateOffset);
-	}
+		const x = state.x + pageX - initX;
+		const y = state.y + pageY - initY;
+		onChange({ scale: state.scale, x, y });
+	});
 
 	return (
 		<div
