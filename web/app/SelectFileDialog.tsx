@@ -10,6 +10,7 @@ import { Button, Dialog, FileDrop } from "../ui/index.ts";
 import { decode } from "../features/decode.ts";
 import { InputImage } from "../features/image-worker.ts";
 import styles from "./SelectFileDialog.scss";
+import i18n from "../i18n.ts";
 
 interface DemoButtonProps {
 	description: string;
@@ -94,7 +95,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 					onSelectStart={() => setError(undefined)}
 				/>
 				<span className={styles.demoLabel}>
-					Or try one of these:
+					{i18n("OrTryOneOfThese")}:
 				</span>
 				<div className={styles.demo}>
 					<DemoButton

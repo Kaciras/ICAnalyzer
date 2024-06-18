@@ -8,6 +8,7 @@ import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
 import theme from "../theme.module.scss";
 import styles from "./ImageView.scss";
 import { drawImage, usePointerMove } from "../utils.ts";
+import i18n from "../i18n.ts";
 
 export enum ViewType {
 	Split,
@@ -18,11 +19,11 @@ export enum ViewType {
 }
 
 const viewTypeNames = [
-	"Split",
-	"Input",
-	"Output",
-	"Diff",
-	"HeatMap",
+	i18n("SplitView"),
+	i18n("InputView"),
+	i18n("OutputView"),
+	i18n("DiffView"),
+	i18n("HeatMapView"),
 ];
 
 interface ImageViewTabProps extends ButtonProps {
@@ -80,7 +81,7 @@ export default function ImageView(props: ImageViewProps) {
 
 	if (!heatMap) {
 		tabData[4].disabled = true;
-		tabData[4].title = "Require enable butteraugli";
+		tabData[4].title = i18n("RequireButteraugli");
 	}
 
 	const imageViewTabs = tabData.map((data, index) => {
@@ -178,7 +179,7 @@ export default function ImageView(props: ImageViewProps) {
 
 				<div
 					className={styles.option}
-					title="Pick color"
+					title={i18n("PickColor")}
 				>
 					<BsEyedropper className={styles.icon}/>
 					<SwitchButton
@@ -191,7 +192,7 @@ export default function ImageView(props: ImageViewProps) {
 					type === ViewType.Diff &&
 					<label
 						className={styles.option}
-						title="Brightness"
+						title={i18n("Brightness")}
 					>
 						<BsBrightnessHigh className={styles.icon}/>
 						<NumberInput

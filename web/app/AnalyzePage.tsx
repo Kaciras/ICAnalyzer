@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { TbChartHistogram, TbDownload, TbUpload, TbX } from "react-icons/tb";
+import i18n from "../i18n.ts";
 import { Button, DownloadButton } from "../ui/index.ts";
 import { AnalyzeContext, ControlsMap } from "./index";
 import { ControlType } from "../form/index.ts";
@@ -186,7 +187,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 
 			<div className={styles.buttonPanel}>
 				<Button
-					title="Back"
+					title={i18n("Back")}
 					type="text"
 					className={styles.iconButton}
 					onClick={onClose}
@@ -194,7 +195,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					<TbX/>
 				</Button>
 				<Button
-					title="Try it again"
+					title={i18n("SelectFile")}
 					type="text"
 					className={styles.iconButton}
 					onClick={onStart}
@@ -202,7 +203,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					<TbUpload/>
 				</Button>
 				<Button
-					title="Show metrics"
+					title={i18n("ShowMetrics")}
 					type="text"
 					className={styles.iconButton}
 					active={showChart}
@@ -211,7 +212,7 @@ export default function AnalyzePage(props: AnalyzePageProps) {
 					<TbChartHistogram/>
 				</Button>
 				<DownloadButton
-					title="Download output image"
+					title={i18n("DownloadOutput")}
 					type="text"
 					className={styles.iconButton}
 					file={output.file}

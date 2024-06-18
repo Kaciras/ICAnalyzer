@@ -8,6 +8,7 @@ import { Button } from "../ui/index.ts";
 import { MetricMeta } from "../features/measurement.ts";
 import { AnalyzeResult } from "../features/image-worker.ts";
 import styles from "./ChartPanel.scss";
+import i18n from "../i18n.ts";
 
 Export(Highcharts);
 ExportOffline(Highcharts);
@@ -44,10 +45,13 @@ const baseOptions: Options = {
 		// Avoid layout shift on Y axis changes
 		width: 430,
 	},
+	lang: {
+		downloadSVG: i18n("DownloadSVG"),
+	},
 	exporting: {
 		menuItemDefinitions: {
 			downloadExpand: {
-				text: "Download with full Axis",
+				text: i18n("DownloadFullAxis"),
 				onclick() {
 					const yAxis = new Array(this.yAxis.length);
 					yAxis.fill({ visible: true });
@@ -260,7 +264,7 @@ export default function ChartPanel(props: ChartProps) {
 			style={display}
 		>
 			<Button
-				title="Lock Y axis range"
+				title={i18n("LockYAxis")}
 				type="text"
 				className={styles.lock}
 				active={locked}

@@ -4,6 +4,7 @@ import { Mutator } from "../mutation.ts";
 import { PinchZoomState } from "./PinchZoom.tsx";
 import { Button, NumberInput } from "./index.ts";
 import styles from "./ZoomControl.scss";
+import i18n from "../i18n.ts";
 
 export interface ZoomControlProps {
 	className?: string;
@@ -22,7 +23,7 @@ function ZoomControl(props: ZoomControlProps) {
 	return (
 		<div className={className}>
 			<NumberInput
-				title="Zoom scale"
+				title={i18n("ZoomScale")}
 				min={25}
 				step={1}
 				increment={25}
@@ -33,7 +34,7 @@ function ZoomControl(props: ZoomControlProps) {
 			{
 				initValue &&
 				<Button
-					title="Reset view"
+					title={i18n("ResetPinchZoom")}
 					type="text"
 					className={styles.button}
 					onClick={() => onChange(initValue)}

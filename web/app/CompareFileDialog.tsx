@@ -9,6 +9,7 @@ import { decode } from "../features/decode.ts";
 import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker.ts";
 import { CompareData } from "./CompareSession.tsx";
 import styles from "./CompareFileDialog.scss";
+import i18n from "../i18n.ts";
 
 interface InputWithId extends InputImage {
 	id: number;
@@ -53,7 +54,7 @@ const PreviewBox = forwardRef((props: PreviewBoxProps, ref: ForwardedRef<HTMLLIE
 				<Button
 					className={styles.reset}
 					type="text"
-					title="Remove"
+					title={i18n("Remove")}
 					onClick={onRemove}
 				>
 					<TbX/>
@@ -181,9 +182,9 @@ export default function CompareFileDialog(props: CompareFileDialogProps) {
 					<PreviewList value={images} onChange={setImages}/>
 					:
 					<div className={styles.placeholder}>
-						<p>Add at least two images</p>
-						<p>The first will be the original</p>
-						<p>Use drag & drop to change the order</p>
+						<p>{i18n("AddAtLeast2Images")}</p>
+						<p>{i18n("FirstIsTheOriginal")}</p>
+						<p>{i18n("DndToReorder")}</p>
 					</div>
 			}
 			<div className={styles.right}>

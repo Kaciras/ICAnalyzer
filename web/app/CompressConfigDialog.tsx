@@ -8,6 +8,7 @@ import ImageInfoPanel from "./ImageInfoPanel.tsx";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel.tsx";
 import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel.tsx";
 import styles from "./CompressConfigDialog.scss";
+import i18n from "../i18n.ts";
 
 export interface AnalyzeConfig {
 	encoding: EncodingOptions;
@@ -36,7 +37,7 @@ export default function CompressConfigDialog(props: CompressConfigDialogProps) {
 
 	return (
 		<Dialog
-			name="Analysis config"
+			name={i18n("AnalysisConfig")}
 			className={styles.dialog}
 			onClose={onClose}
 		>
@@ -45,9 +46,9 @@ export default function CompressConfigDialog(props: CompressConfigDialogProps) {
 				index={index}
 				onChange={setIndex}
 			>
-				<button type="button" className={styles.tab}>Information</button>
-				<button type="button" className={styles.tab}>Encoding</button>
-				<button type="button" className={styles.tab}>Measure</button>
+				<button type="button" className={styles.tab}>{i18n("Information")}</button>
+				<button type="button" className={styles.tab}>{i18n("Encoders")}</button>
+				<button type="button" className={styles.tab}>{i18n("Analysis")}</button>
 			</TabList>
 
 			<TabSwitch index={index}>
@@ -66,9 +67,9 @@ export default function CompressConfigDialog(props: CompressConfigDialogProps) {
 			</TabSwitch>
 
 			<div className="dialog-actions">
-				<Button onClick={onSelectFile}>Select file...</Button>
-				<Button className="second" onClick={onClose}>Cancel</Button>
-				<Button disabled={!ready} onClick={start}>Start</Button>
+				<Button onClick={onSelectFile}>{i18n("SelectFile")}...</Button>
+				<Button className="second" onClick={onClose}>{i18n("Cancel")}</Button>
+				<Button disabled={!ready} onClick={start}>{i18n("Start")}</Button>
 			</div>
 		</Dialog>
 	);

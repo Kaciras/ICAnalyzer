@@ -6,6 +6,7 @@ import { CheckBox, NumberInput } from "../ui/index.ts";
 import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { MeasureOptions } from "../features/measurement.ts";
 import styles from "./MeasurePanel.scss";
+import i18n from "../i18n.ts";
 
 export function getMeasureOptions(saved?: MeasureOptions) {
 	if (saved) {
@@ -93,7 +94,7 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 		<form className={styles.form} role="tabpanel">
 			<label>
 				<span className={styles.inlineLabel}>
-					Thread count:
+					{i18n("ThreadCount")}:
 				</span>
 				<NumberInput
 					name="workerCount"
@@ -111,7 +112,7 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 					name="encodeTime.enabled"
 					onChange={handleChange}
 				>
-					Encode time (Not very accurate)
+					{i18n("MeasureEncodeTime")}:
 				</CheckBox>
 			}
 
@@ -120,7 +121,7 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 				name="PSNR.enabled"
 				onChange={handleChange}
 			>
-				Peak signal-to-noise ratio
+				{i18n("MeasurePSNR")}
 			</CheckBox>
 
 			<CheckBox
@@ -128,7 +129,7 @@ export default function MeasurePanel(props: MeasurePanelProps) {
 				name="SSIM.enabled"
 				onChange={handleChange}
 			>
-				Structural similarity index measure
+				{i18n("MeasureSSIM")}
 			</CheckBox>
 			<fieldset className={styles.subfields}>
 				<LabelWrapper label="Algorithm">

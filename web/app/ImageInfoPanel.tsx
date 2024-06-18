@@ -1,4 +1,5 @@
 import { dataSizeIEC } from "@kaciras/utilities/browser";
+import i18n from "../i18n.ts";
 import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { drawImage } from "../utils.ts";
 import { InputImage } from "../features/image-worker.ts";
@@ -23,25 +24,25 @@ export default function ImageInfoPanel(props: ImageInfoPanelProps) {
 		<div className="dialog-content" role="tabpanel">
 			<canvas
 				className={styles.canvas}
-				aria-label="Preview"
+				aria-label={i18n("Preview")}
 				ref={el => drawImage(raw, el)}
 				width={width}
 				height={height}
 			/>
 			<dl className={styles.attributes}>
-				<dt>File name:</dt>
+				<dt>{i18n("FileName")}:</dt>
 				<dd>{file.name}</dd>
 
-				<dt>Type:</dt>
+				<dt>{i18n("FileType")}:</dt>
 				<dd>{file.type}</dd>
 
-				<dt>Resolution:</dt>
+				<dt>{i18n("Resolution")}:</dt>
 				<dd>{width} x {height}</dd>
 
-				<dt>Raw size:</dt>
+				<dt>{i18n("RawSize")}:</dt>
 				<dd>{dataSizeIEC.formatDiv(data.byteLength)}</dd>
 
-				<dt>File size (Ratio %):</dt>
+				<dt>{i18n("FileSizeAndRatio")}:</dt>
 				<dd>{dataSizeIEC.formatDiv(file.size)} ({ratio}%)</dd>
 			</dl>
 		</div>

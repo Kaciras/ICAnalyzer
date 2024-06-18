@@ -3,6 +3,7 @@ import { TbBrandGithub } from "react-icons/tb";
 import banner from "../assets/intro-banner.png";
 import { Button } from "../ui/index.ts";
 import styles from "./IntroPage.scss";
+import i18n from "../i18n.ts";
 
 interface IntroPageProps {
 	onEncode: () => void;
@@ -22,7 +23,7 @@ export default function IntroPage(props: IntroPageProps) {
 						ICAnalyzer
 					</h1>
 					<h2 className={styles.subTitle}>
-						Image Compression Analyze Tool
+						{i18n("ICAnalyzerIntro")}
 					</h2>
 
 					<Button
@@ -45,7 +46,7 @@ export default function IntroPage(props: IntroPageProps) {
 						href="https://github.com/Kaciras/ICAnalyzer"
 					>
 						<TbBrandGithub className={styles.github}/>
-						Source Code
+						{i18n("SourceCode")}
 					</Button>
 				</div>
 

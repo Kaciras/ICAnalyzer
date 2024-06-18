@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import i18n from "../i18n.ts";
 import { Button, Dialog } from "../ui/index.ts";
 import styles from "./ProgressDialog.scss";
 
@@ -40,13 +41,13 @@ export default function ProgressDialog(props: ProgressDialogProps) {
 	return (
 		<Dialog onClose={onCancel}>
 			<div className={styles.content}>
-				<h1>Analyzing...</h1>
+				<h1>{i18n("Encoding")}...</h1>
 
-				{error && <p className={styles.error}>Error: {error}</p>}
+				{error && <p className={styles.error}>{i18n("Error")}: {error}</p>}
 
 				<div className={styles.text}>
 					<span>{value} / {max}</span>
-					<span>Elapsed time: {timeUsage}</span>
+					<span>{i18n("ElapsedTime")}: {timeUsage}</span>
 				</div>
 
 				<progress
@@ -56,7 +57,7 @@ export default function ProgressDialog(props: ProgressDialogProps) {
 				/>
 			</div>
 			<div className={styles.buttons}>
-				<Button className="second" onClick={onCancel}>Cancel</Button>
+				<Button className="second" onClick={onCancel}>{i18n("Cancel")}</Button>
 			</div>
 		</Dialog>
 	);

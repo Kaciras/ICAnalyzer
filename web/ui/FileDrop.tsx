@@ -3,6 +3,7 @@ import { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import { TbPhoto } from "react-icons/tb";
 import styles from "./FileDrop.scss";
+import i18n from "../i18n.ts";
 
 /**
  * Since dragenter & dragleave can be triggered on crossing children element boundary,
@@ -98,11 +99,11 @@ export default function FileDrop(props: FileDropProps) {
 			<span>
 				<TbPhoto className={styles.icon}/>
 				<span className={styles.text}>
-					Drag & drop
+					{i18n("DropAFile")}
 				</span>
 			</span>
 			<span className={styles.text}>
-				Or select a file
+				{i18n("OrSelectFile")}
 			</span>
 			<input
 				className={styles.fileInput}

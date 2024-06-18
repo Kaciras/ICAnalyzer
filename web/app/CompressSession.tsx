@@ -17,6 +17,7 @@ import { AnalyzeContext } from "./index.tsx";
 import SelectFileDialog from "./SelectFileDialog.tsx";
 import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog.tsx";
 import ProgressDialog from "./ProgressDialog.tsx";
+import i18n from "../i18n.ts";
 
 interface EncodeTask {
 	encoder: ImageEncoder;
@@ -41,7 +42,7 @@ class EncodeAnalyzer {
 		this.measurer = createMeasurer(config.measurement, worker);
 
 		if (config.measurement.encodeTime.enabled) {
-			this.measurer.metrics.push({ key: "time", name: "Encode Time (s)" });
+			this.measurer.metrics.push({ key: "time", name: i18n("EncodeTimeSecond") });
 		}
 
 		for (const encoder of ENCODERS) {

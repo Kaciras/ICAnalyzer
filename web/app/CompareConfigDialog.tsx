@@ -1,5 +1,6 @@
 import { Dispatch } from "react";
 import { useLocalStorage } from "../hooks.ts";
+import i18n from "../i18n.ts";
 import { Button, Dialog } from "../ui/index.ts";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel.tsx";
 import { MeasureOptions } from "../features/measurement.ts";
@@ -17,9 +18,9 @@ export default function CompareConfigDialog(props: CompareConfigDialogProps) {
 	const [options, setOptions] = useLocalStorage("Measure", getMeasureOptions);
 
 	return (
-		<Dialog name="Compare config" className={styles.dialog} onClose={onClose}>
+		<Dialog name={i18n("MeasureOptions")} className={styles.dialog} onClose={onClose}>
 			<h2 className={styles.title}>
-				Measure Options
+				{i18n("MeasureOptions")}
 			</h2>
 			<MeasurePanel
 				value={options}

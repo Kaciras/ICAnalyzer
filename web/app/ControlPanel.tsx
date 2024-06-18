@@ -1,6 +1,7 @@
 import { Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { SelectBox } from "../ui/index.ts";
+import i18n from "../i18n.ts";
 import { getEncoderNames } from "../codecs/index.ts";
 import { Merger } from "../mutation.ts";
 import { ControlsMap } from "./index.ts";
@@ -80,7 +81,7 @@ export default function ControlPanel(props: ControlPanelProps) {
 				onChange={onChange.merge}
 			>
 				<SelectBox
-					title="Codec name"
+					title={i18n("Codec")}
 					value={codec}
 					onValueChange={onChange.sub("codec")}
 				>
