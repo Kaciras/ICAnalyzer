@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { CheckBox } from "../ui/index.ts";
-import { Merger } from "../mutation.ts";
 import { stopPropagation } from "../utils.ts";
 import { OptionStateMap } from "../form/index.ts";
 import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs/index.ts";
 import styles from "./EncoderPanel.scss";
 import OptionsForm from "../form/OptionsForm.tsx";
+import { Merger } from "../hooks.ts";
 
 export interface EncoderConfig {
 	enable: boolean;

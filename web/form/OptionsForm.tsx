@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { BsSliders, BsType } from "react-icons/bs";
 import { OptionState, OptionStateMap, OptionType } from "./index.ts";
 import { Button } from "../ui/index.ts";
-import { Merger } from "../mutation.ts";
+import { Merger } from "../hooks.ts";
 import styles from "./OptionsForm.scss";
 
 interface OptionProps {

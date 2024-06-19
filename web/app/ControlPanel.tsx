@@ -3,12 +3,12 @@ import clsx from "clsx";
 import { SelectBox } from "../ui/index.ts";
 import i18n from "../i18n.ts";
 import { getEncoderNames } from "../codecs/index.ts";
-import { Merger } from "../mutation.ts";
+import { Merger } from "../hooks.ts";
 import { ControlsMap } from "./index.ts";
 import { ControlState, VariableType } from "./AnalyzePage.tsx";
 import styles from "./ControlPanel.scss";
 
-interface WrapperProps {
+interface FieldWrapperProps {
 	type: VariableType;
 	targetType: VariableType;
 	id: string;
@@ -19,7 +19,7 @@ interface WrapperProps {
 	onChange: Dispatch<Partial<ControlState>>;
 }
 
-function FieldWrapper(props: WrapperProps) {
+function FieldWrapper(props: FieldWrapperProps) {
 	const { type, id, targetType, targetId, children, onChange } = props;
 
 	function handleClick() {

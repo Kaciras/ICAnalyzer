@@ -1,9 +1,8 @@
-import { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
+import { ComponentProps } from "react";
 import clsx from "clsx";
 import styles from "./Button.scss";
 
-export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
-
+export interface ButtonProps extends Omit<ComponentProps<"button">, "type"> {
 	/**
 	 * The basic style of the button, default is "button".
 	 *
@@ -22,42 +21,19 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 	 * If set, will render an anchor element with href attribute.
 	 */
 	href?: string;
-
-	autoFocus?: boolean;
-	title?: string;
-	className?: string;
-	disabled?: boolean;
-
-	onClick?: MouseEventHandler;
-	children?: ReactNode;
 }
 
 export default function Button(props: ButtonProps) {
-	const {
-		type = "button", href, active, autoFocus,
-		title, className, disabled, onClick, children,
-	} = props;
+	const { type = "button", href, active, className, children, ...rest } = props;
+	const nativeProps = rest as any;
+	const ButtonTag = href ? "a" : "button";
 
-	const classes = clsx(
+	nativeProps.className = clsx(
 		styles[type],
 		className,
 		active && styles.active,
 	);
+	nativeProps.type = href ? undefined : "button";
 
-	const ButtonTag = href ? "a" : "button";
-	const htmlType = href ? undefined : "button";
-
-	return (
-		<ButtonTag
-			className={classes}
-			href={href}
-			title={title}
-			autoFocus={autoFocus}
-			disabled={disabled}
-			type={htmlType}
-			onClick={onClick}
-		>
-			{children}
-		</ButtonTag>
-	);
+	return <ButtonTag {...nativeProps} href={href}>{children}</ButtonTag>;
 }

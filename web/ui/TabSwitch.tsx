@@ -1,7 +1,6 @@
 import { Children, cloneElement, Fragment, isValidElement, ReactNode } from "react";
 
 export interface TabPanelBase {
-
 	/**
 	 * Is this component the current tab panel.
 	 * If undefined, means the component is not controlled by TabList.
@@ -21,7 +20,7 @@ export default function TabSwitch(props: TabSwitchProps) {
 		if (!isValidElement(node)) {
 			return node;
 		}
-		return cloneElement(node, { isActive: i === index });
+		return cloneElement<any>(node, { isActive: i === index });
 	});
 
 	return <Fragment>{tabPanels}</Fragment>;

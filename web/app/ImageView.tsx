@@ -7,7 +7,7 @@ import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl 
 import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
 import theme from "../theme.module.scss";
 import styles from "./ImageView.scss";
-import { drawImage, usePointerMove } from "../utils.ts";
+import { dragHandler, drawImage } from "../utils.ts";
 import i18n from "../i18n.ts";
 
 export enum ViewType {
@@ -116,7 +116,7 @@ export default function ImageView(props: ImageViewProps) {
 		"--brightness": `${brightnessVal}`,
 	};
 
-	const splitCSS = type === ViewType.Split
+	const splitCSS: any = type === ViewType.Split
 		? { "--split": `${splitPoint}px` }
 		: undefined;
 
@@ -129,7 +129,7 @@ export default function ImageView(props: ImageViewProps) {
 		left: clientX,
 	};
 
-	const onPointerDown = usePointerMove(e => {
+	const onPointerDown = dragHandler(e => {
 		const p = e.pageX;
 		if (p > 0 && p < window.innerWidth) {
 			setSplitPoint(p); // Prevent move to out of window.
@@ -210,7 +210,7 @@ export default function ImageView(props: ImageViewProps) {
 
 			<ZoomControl
 				className={styles.controls}
-				initValue={pinchZoomInit}
+				defaultValue={pinchZoomInit}
 				value={pinchZoom}
 				onChange={setPinchZoom}
 			/>

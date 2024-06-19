@@ -1,27 +1,26 @@
 import React from "react";
 import { BsArrowCounterclockwise } from "react-icons/bs";
-import { Mutator } from "../mutation.ts";
+import i18n from "../i18n.ts";
 import { PinchZoomState } from "./PinchZoom.tsx";
 import { Button, NumberInput } from "./index.ts";
 import styles from "./ZoomControl.scss";
-import i18n from "../i18n.ts";
+import { Mutator } from "../hooks.ts";
 
-export interface ZoomControlProps {
-	className?: string;
-	initValue?: PinchZoomState;
+export interface ZoomControlProps extends Omit<React.ComponentProps<"div">, "onChange" | "defaultValue"> {
+	defaultValue?: PinchZoomState;
 	value: PinchZoomState;
 	onChange: Mutator<PinchZoomState>;
 }
 
 function ZoomControl(props: ZoomControlProps) {
-	const { className, initValue, value, onChange } = props;
+	const { defaultValue, value, onChange, ...otherProps } = props;
 
 	function setZoom(value: number) {
 		onChange(prev => ({ ...prev, scale: value / 100 }));
 	}
 
 	return (
-		<div className={className}>
+		<div {...otherProps}>
 			<NumberInput
 				title={i18n("ZoomScale")}
 				min={25}
@@ -32,12 +31,12 @@ function ZoomControl(props: ZoomControlProps) {
 				onValueChange={setZoom}
 			/>
 			{
-				initValue &&
+				defaultValue &&
 				<Button
 					title={i18n("ResetPinchZoom")}
 					type="text"
 					className={styles.button}
-					onClick={() => onChange(initValue)}
+					onClick={() => onChange(defaultValue)}
 				>
 					<BsArrowCounterclockwise/>
 				</Button>

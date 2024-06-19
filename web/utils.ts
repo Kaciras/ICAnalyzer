@@ -18,7 +18,7 @@ export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
 
 type PointerMoveHandler = (e: PointerEvent, init: PointerEvent) => void;
 
-export function usePointerMove(listener: PointerMoveHandler) {
+export function dragHandler(listener: PointerMoveHandler) {
 	return function (initEvent: React.PointerEvent) {
 		if (initEvent.button !== 0) {
 			return;

@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactNode } from "react";
-import { usePointerMove } from "../utils.ts";
+import { dragHandler } from "../utils.ts";
 
 export interface PinchZoomState {
 	x: number;
@@ -43,7 +43,7 @@ export default function PinchZoom(props: PinchZoomProps) {
 		});
 	}
 
-	const handlePointerDown = usePointerMove((event, init) => {
+	const handlePointerDown = dragHandler((event, init) => {
 		const { pageX, pageY } = event;
 		const { pageX: initX, pageY: initY } = init;
 

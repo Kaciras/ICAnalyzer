@@ -18,7 +18,9 @@ function pad(n: string) {
 
 /**
  * Convert the pixel data to hex color string.
- * e.g. [50, 186, 52, 0.5] -> "#32BA347F"
+ *
+ * @example
+ * pixelToHex([50, 186, 52, 0.5]); // "#32BA347F"
  */
 function pixelToHex(pixel: Uint8ClampedArray) {
 	return pixel
@@ -36,19 +38,19 @@ function ColorItem(props: ColorItemProps) {
 	const color = pixelToHex(value);
 
 	// Remove the alpha channel for color tile
-	const cssVariables: any = {
+	const style: any = {
 		"--color": color.substring(0, 7),
 	};
 
-	return <div className={styles.color} style={cssVariables}>{name}: {color}</div>;
+	return <div className={styles.color} style={style}>{name}: {color}</div>;
 }
 
 export interface ColorPickerProps {
-	style?: CSSProperties;
 	x: number;
 	y: number;
 	imageA: ImageData;
 	imageB: ImageData;
+	style?: CSSProperties;
 }
 
 export default function ColorPicker(props: ColorPickerProps) {

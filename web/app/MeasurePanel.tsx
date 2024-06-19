@@ -1,12 +1,12 @@
 import { ChangeEvent, ReactNode, useCallback } from "react";
 import * as ssimJs from "ssim.js";
 import { defaultButteraugliOptions } from "../../lib/similarity.ts";
-import { deepUpdate, Mutator } from "../mutation.ts";
 import { CheckBox, NumberInput } from "../ui/index.ts";
 import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { MeasureOptions } from "../features/measurement.ts";
 import styles from "./MeasurePanel.scss";
 import i18n from "../i18n.ts";
+import { deepUpdate, Mutator } from "../hooks.ts";
 
 export function getMeasureOptions(saved?: MeasureOptions) {
 	if (saved) {
