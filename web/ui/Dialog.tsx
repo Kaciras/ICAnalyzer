@@ -28,16 +28,16 @@ function hidePrevious() {
 export default function Dialog(props: DialogProps) {
 	const { className, name, onClose, children } = props;
 
-	function listenKeyboardClose() {
-		function handleKeyUp(event: KeyboardEvent) {
-			if (event.key === "Escape") {
-				onClose?.();
-				event.stopImmediatePropagation();
-			}
+	function handleKeyUp(event: KeyboardEvent) {
+		if (event.key === "Escape") {
+			onClose?.();
+			event.stopImmediatePropagation();
 		}
+	}
 
-		window.addEventListener("keyup", handleKeyUp);
-		return () => window.removeEventListener("keyup", handleKeyUp);
+	function listenKeyboardClose() {
+		window.addEventListener("keydown", handleKeyUp);
+		return () => window.removeEventListener("keydown", handleKeyUp);
 	}
 
 	useEffect(listenKeyboardClose, [onClose]);
