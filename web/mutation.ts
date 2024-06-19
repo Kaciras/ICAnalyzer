@@ -51,7 +51,7 @@ export interface Merger<T> {
 	/**
 	 * Internal usage, keep sub merger references.
 	 */
-	cache: Record<any, Merger<any>>;
+	cache: Map<any, Merger<any>>;
 
 	/**
 	 * Convenient function to copies properties to current value.
@@ -102,8 +102,7 @@ export function getMerger<T>(mutator: Mutator<T>) {
 	if (merger.cache) {
 		return merger;
 	}
-
-	merger.cache = {};
+	merger.cache = new Map();
 
 	merger.merge = changes => {
 		merger(prev => ({ ...prev, ...changes }));
@@ -113,8 +112,13 @@ export function getMerger<T>(mutator: Mutator<T>) {
 		merger(prev => ({ ...prev, [key]: value }));
 	};
 
-	merger.sub = (key) => {
-		return merger.cache[key] ??= derive(merger, key);
+	merger.sub = key => {
+		let cachedSetter = merger.cache.get(key);
+		if (!cachedSetter) {
+			cachedSetter = derive(merger, key);
+			merger.cache.set(key, cachedSetter);
+		}
+		return cachedSetter;
 	};
 
 	return merger;
