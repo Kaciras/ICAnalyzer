@@ -16,24 +16,6 @@ export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
 	}
 }
 
-// JSON.stringify is not deterministic, the property order in key object must be same as stored.
-export class ObjectKeyMap<K, V> {
-
-	private readonly table = new Map<string, V>();
-
-	get size() {
-		return this.table.size;
-	}
-
-	get(key: K) {
-		return this.table.get(JSON.stringify(key))!;
-	}
-
-	set(key: K, value: V) {
-		this.table.set(JSON.stringify(key), value);
-	}
-}
-
 type PointerMoveHandler = (e: PointerEvent, init: PointerEvent) => void;
 
 export function usePointerMove(listener: PointerMoveHandler) {

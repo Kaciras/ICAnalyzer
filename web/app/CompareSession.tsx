@@ -1,7 +1,6 @@
 import { Dispatch, useState } from "react";
 import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas.ts";
 import { AnalyzeContext } from "./index.ts";
-import { OptionsKey } from "../form/index.ts";
 import RangeControl from "../form/control/RangeControl.tsx";
 import {
 	AnalyzeResult,
@@ -13,7 +12,6 @@ import {
 } from "../features/image-worker.ts";
 import { createMeasurer, MeasureOptions } from "../features/measurement.ts";
 import { useProgress } from "../hooks.ts";
-import { ObjectKeyMap } from "../utils.ts";
 import ProgressDialog from "./ProgressDialog.tsx";
 import CompareFileDialog from "./CompareFileDialog.tsx";
 import CompareConfigDialog from "./CompareConfigDialog.tsx";
@@ -63,17 +61,15 @@ export default function CompareSession(props: CompareSessionProps) {
 		}
 		const { original, changed } = data;
 
-		const controlsMap = {
-			_: [
-				new RangeControl({
-					id: "i",
-					label: "Index",
-					min: 0,
-					max: data.changed.length - 1,
-					step: 1,
-				}),
-			],
-		};
+		const control = new RangeControl({
+			id: "i",
+			label: "Index",
+			min: 0,
+			step: 1,
+			max: data.changed.length - 1,
+		});
+
+		const controlsMap = { _: [control] };
 
 		const imagePool = newImagePool(measureOptions.workerCount);
 		const worker = getPooledWorker(imagePool);
@@ -82,8 +78,7 @@ export default function CompareSession(props: CompareSessionProps) {
 		setImagePool(imagePool);
 		await setOriginalImage(imagePool, original);
 
-		const outputMap = new ObjectKeyMap<OptionsKey, AnalyzeResult>();
-
+		const outputs = [];
 		for (let i = 0; i < changed.length; i++) {
 			const { raw, file } = changed[i];
 			const imageB = resizeToFit(raw, original.raw);
@@ -93,7 +88,7 @@ export default function CompareSession(props: CompareSessionProps) {
 				data: imageB,
 				metrics: {},
 			};
-			outputMap.set({ codec: "_", key: { i } }, output);
+			outputs.push(output);
 
 			// noinspection ES6MissingAwait
 			measurer.execute(original, output, progress.increase);
@@ -105,7 +100,9 @@ export default function CompareSession(props: CompareSessionProps) {
 			setImagePool(undefined);
 			onChange({
 				input: original,
-				outputMap,
+				outputs,
+				offsetMap: new Map<string, number>([["_", 0]]),
+				weightMap: new Map<string, number[]>([["_", [1]]]),
 				seriesMeta: measurer.metrics,
 				controlsMap,
 			});
