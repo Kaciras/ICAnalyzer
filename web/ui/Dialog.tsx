@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useLayoutEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import styles from "./Dialog.scss";
@@ -8,21 +8,6 @@ interface DialogProps {
 	name?: string;
 	children: ReactNode;
 	onClose?: () => void;
-}
-
-/**
- * Hide non-top-level dialogs.
- *
- * there is no :last-of-class selector so use JS to implement.
- */
-function hidePrevious() {
-	const dialogs = document.body.querySelectorAll("." + styles.dimmer);
-	const previous = dialogs[dialogs.length - 2];
-	if (!previous) {
-		return;
-	}
-	previous.classList.add("hidden");
-	return () => previous.classList.remove("hidden");
 }
 
 export default function Dialog(props: DialogProps) {
@@ -41,7 +26,6 @@ export default function Dialog(props: DialogProps) {
 	}
 
 	useEffect(listenKeyboardClose, [onClose]);
-	useLayoutEffect(hidePrevious, []);
 
 	const reactNode = (
 		<div className={styles.dimmer}>

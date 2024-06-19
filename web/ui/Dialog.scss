@@ -6,12 +6,16 @@
 	height: 100vh;
 	z-index: 1000;
 
-	display: flex;
+	display: none;
 	justify-content: center;
 	align-items: center;
 
 	background-color: rgba(0, 0, 0, .3);
 	backdrop-filter: blur(2px);
+
+	&:nth-last-child(1 of .dimmer){
+		display: flex;
+	}
 }
 
 .dialog {
