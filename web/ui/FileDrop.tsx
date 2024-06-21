@@ -1,9 +1,10 @@
 import { noop } from "@kaciras/utilities/browser";
-import { ChangeEvent, Dispatch, DragEvent, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, DragEvent, MouseEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import { TbPhoto } from "react-icons/tb";
 import styles from "./FileDrop.scss";
 import i18n from "../i18n.ts";
+import { Button } from "./index.ts";
 
 /**
  * Since dragenter & dragleave can be triggered on crossing children element boundary,
@@ -82,6 +83,18 @@ export default function FileDrop(props: FileDropProps) {
 		}
 	}
 
+	function handleSelectDirectory(event: MouseEvent<HTMLButtonElement>) {
+		event.stopPropagation();
+
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = accept;
+		input.multiple = true;
+		input.webkitdirectory = true;
+		input.click();
+		input.onchange = () => onChange(Array.from(input.files!));
+	}
+
 	const classes = clsx(
 		styles.fileDropBox,
 		className,
@@ -103,7 +116,7 @@ export default function FileDrop(props: FileDropProps) {
 				</span>
 			</span>
 			<span className={styles.text}>
-				{i18n("OrSelectFile")}
+				{i18n(multiple ? "OrSelectFiles" : "OrSelectFile")}
 			</span>
 			<input
 				className={styles.fileInput}
@@ -114,6 +127,15 @@ export default function FileDrop(props: FileDropProps) {
 				onClick={onSelectStart}
 				onChange={handleFileChange}
 			/>
+			{
+				multiple &&
+				<Button
+					className={styles.dirInput}
+					onClick={handleSelectDirectory}
+				>
+					{i18n("SelectDirectory")}
+				</Button>
+			}
 		</label>
 	);
 }
