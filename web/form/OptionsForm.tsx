@@ -5,6 +5,7 @@ import { OptionState, OptionStateMap, OptionType } from "./index.ts";
 import { Button } from "../ui/index.ts";
 import { Merger } from "../hooks.ts";
 import styles from "./OptionsForm.scss";
+import i18n from "../i18n.ts";
 
 interface OptionProps {
 	template: OptionType;
@@ -79,5 +80,11 @@ export default function OptionsForm(props: OptionsFormProps) {
 		);
 	});
 
-	return <form className={clsx(styles.form, className)}>{items}</form>;
+	return (
+		<form className={clsx(styles.form, className)}>
+			{items.length
+				? items
+				: <span className={styles.empty}>{i18n("NoOptions")}</span>}
+		</form>
+	);
 }

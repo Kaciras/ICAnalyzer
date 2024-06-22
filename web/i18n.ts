@@ -50,6 +50,7 @@ const translations = {
 		Encoders: "Encoders",
 		Analysis: "Analysis",
 		Start: "Start",
+		NoOptions: "(No Options)",
 	},
 	zh: {
 		ICAnalyzerIntro: "在线的图片转码与分析工具",
@@ -102,6 +103,7 @@ const translations = {
 		Encoders: "转码器",
 		Analysis: "分析",
 		Start: "开始",
+		NoOptions: "（没有选项）",
 	},
 };
 

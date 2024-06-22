@@ -5,6 +5,7 @@ import * as JXL from "./jxl/client.ts";
 import * as WebP from "./webp/client.ts";
 import * as AVIF from "./avif/client.ts";
 import * as WebP2 from "./webp2/client.ts";
+import * as QOI from "./qoi/client.ts";
 import { ControlType, OptionStateMap, OptionType } from "../form/index.ts";
 
 export interface ImageEncoder {
@@ -24,7 +25,7 @@ export interface ImageEncoder {
 	encode(options: any, worker: ImageWorker): Promise<EncodeResult>;
 }
 
-export const ENCODERS: ImageEncoder[] = [MozJPEG, JXL, WebP, AVIF, WebP2];
+export const ENCODERS: ImageEncoder[] = [MozJPEG, WebP, AVIF, QOI, JXL, WebP2];
 
 export const ENCODER_MAP = Object.fromEntries(ENCODERS.map(e => [e.name, e]));
 

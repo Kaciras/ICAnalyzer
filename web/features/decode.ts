@@ -92,6 +92,8 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 			return worker.avifDecode(buffer);
 		case "image/jxl":
 			return worker.jxlDecode(buffer);
+		case "image/qoi":
+			return worker.qoiDecode(buffer);
 		case "image/webp2":
 			return worker.webp2Decode(buffer);
 		default:

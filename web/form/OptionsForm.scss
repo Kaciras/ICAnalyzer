@@ -21,3 +21,11 @@
 	composes: default;
 	color: #00b900;
 }
+
+.empty {
+	color: #555;
+	grid-column: 1/-1;
+	align-self: center;
+	justify-self: center;
+	font-size: 1.125rem;
+}
