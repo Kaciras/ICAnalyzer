@@ -106,9 +106,6 @@ export default function (env) {
 				fs: false,
 				crypto: false,
 				module: false,
-
-				// Required by wasm-feature-detect
-				worker_threads: false,
 			},
 		},
 		module: {

@@ -16,5 +16,3 @@ htmlcov/
 
 # VS Code related files
 .vscode
-
-*.temp.js
