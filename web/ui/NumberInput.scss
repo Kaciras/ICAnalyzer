@@ -1,7 +1,6 @@
-$border-active-color: rgb(0, 128, 255, .8);
-
 .container {
 	--border-color: #d7d7d7;
+	--border-active-color: rgb(0, 128, 255, .8);
 	--button-bg: var(--border-color);
 	--border-radius: 4px;
 
@@ -14,7 +13,7 @@ $border-active-color: rgb(0, 128, 255, .8);
 	background: var(--background-input);
 
 	&:focus-within {
-		box-shadow: 0 0 0 3px $border-active-color;
+		box-shadow: 0 0 0 3px var(--border-active-color);
 	}
 }
 

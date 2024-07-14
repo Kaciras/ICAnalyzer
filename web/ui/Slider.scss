@@ -1,8 +1,8 @@
-$thumb-size: 18px;
 
 .container {
 	--active-color: #2183ff;
 	--active-light: #a6ccff;
+	--thumb-size: 18px;
 
 	position: relative;
 
@@ -16,8 +16,9 @@ $thumb-size: 18px;
 		width: 100%;
 		height: 2px;
 
-		background: linear-gradient(var(--active-color), var(--active-color))
-			0 / var(--value-percent) 100% no-repeat #ddd;
+		background:
+				linear-gradient(var(--active-color), var(--active-color))
+				0 / var(--value-percent) 100% no-repeat #ddd;
 	}
 
 	&.disabled {
@@ -33,13 +34,13 @@ $thumb-size: 18px;
 	top: 0;
 	left: 0;
 	bottom: 0;
-	right: $thumb-size;
+	right: var(--thumb-size);
 	pointer-events: none;
 }
 
 .thumb {
-	width: $thumb-size;
-	height: $thumb-size;
+	width: var(--thumb-size);
+	height: var(--thumb-size);
 	padding: 3px;
 	margin-left: var(--value-percent);
 

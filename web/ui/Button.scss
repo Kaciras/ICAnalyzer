@@ -1,5 +1,3 @@
-$stripeWidth: 32px;
-
 .base {
 	display: inline-flex;
 	align-items: center;
@@ -48,6 +46,7 @@ $stripeWidth: 32px;
 .button {
 	composes: base;
 
+	--stripe-width: 32px;
 	--color: #0776df;
 	--color-light: #0781f2;
 	--color-active: #066fd1;
@@ -111,7 +110,7 @@ $stripeWidth: 32px;
 .button.active {
 	&, &:hover {
 		background-color: var(--color);
-		background-size: $stripeWidth $stripeWidth;
+		background-size: var(--stripe-width);
 	}
 
 	background-image: linear-gradient(
@@ -132,6 +131,6 @@ $stripeWidth: 32px;
 		background-position: 0;
 	}
 	to {
-		background-position: -$stripeWidth;
+		background-position: calc(0 - var(--stripe-width));
 	}
 }

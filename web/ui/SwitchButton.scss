@@ -1,18 +1,17 @@
-$width: 55px;
-$height: 24px;
-$padding: 4px;
-
 .container {
 	--thumb-color: white;
+	--width: 55px;
+	--height: 24px;
+	--padding: 4px;
 
 	display: inline-block;
 	position: relative;
 
-	padding: $padding;
-	width: $width;
-	height: $height;
+	padding: var(--padding);
+	width: var(--width);
+	height: var(--height);
 
-	border-radius: $height * 0.5;
+	border-radius: calc(var(--height) / 2);
 	cursor: pointer;
 	background: #999;
 
@@ -21,13 +20,13 @@ $padding: 4px;
 	}
 
 	&::before {
-		$thumbSize: $height - $padding * 2;
+		--thumbSize: calc(var(--height) - var(--padding) * 2);
 
 		content: "";
 		display: block;
 
-		width: $thumbSize;
-		height: $thumbSize;
+		width: var(--thumbSize);
+		height: var(--thumbSize);
 
 		border-radius: 50%;
 		background: var(--thumb-color);
@@ -39,7 +38,7 @@ $padding: 4px;
 	background: #0776df;
 
 	&::before {
-		margin-left: $width - $height;
+		margin-left: calc(var(--width) - var(--height));
 	}
 }
 

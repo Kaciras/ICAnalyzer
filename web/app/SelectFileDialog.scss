@@ -21,17 +21,16 @@
 }
 
 // Styles of DemoButton
-
-$icon-size: 48px;
-$padding: 8px;
-$loading-size: 40px;
-
 .card {
+	--icon-size: 48px;
+	--padding: 8px;
+	--loading-size: 40px;
+
 	display: flex;
 	align-items: center;
 	position: relative;
 
-	padding: $padding;
+	padding: var(--padding);
 	border-radius: 4px;
 	border: 1px solid #ccc;
 
@@ -42,8 +41,8 @@ $loading-size: 40px;
 
 .demoIcon {
 	display: block;
-	width: $icon-size;
-	height: $icon-size;
+	width: var(--icon-size);
+	height: var(--icon-size);
 }
 
 .demoDescription {
@@ -55,10 +54,10 @@ $loading-size: 40px;
 
 .loading {
 	position: absolute;
-	top: $padding;
-	left: $padding;
-	width: $icon-size;
-	height: $icon-size;
+	top: var(--padding);
+	left: var(--padding);
+	width: var(--icon-size);
+	height: var(--icon-size);
 
 	background: rgba(0, 0, 0, .6);
 
@@ -80,8 +79,8 @@ $loading-size: 40px;
 
 @keyframes lds-ripple {
 	0% {
-		top: $loading-size * 0.5;
-		left: $loading-size * 0.5;
+		top: calc(var(--loading-size) / 2);
+		left: calc(var(--loading-size) / 2);
 		width: 0;
 		height: 0;
 		opacity: 1;
@@ -89,9 +88,8 @@ $loading-size: 40px;
 	100% {
 		top: 0;
 		left: 0;
-		width: $loading-size;
-		height: $loading-size;
+		width: var(--loading-size);
+		height: var(--loading-size);
 		opacity: 0;
 	}
 }
-

@@ -27,11 +27,11 @@
 		"ssim.js": "^3.5.0"
 	},
 	"devDependencies": {
-		"@kaciras/eslint-config-core": "^3.0.3",
-		"@kaciras/eslint-config-react": "^3.0.3",
-		"@kaciras/eslint-config-typescript": "^3.0.3",
+		"@kaciras/eslint-config-core": "^3.1.0",
+		"@kaciras/eslint-config-react": "^3.1.0",
+		"@kaciras/eslint-config-typescript": "^3.1.0",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
-		"@swc/core": "1.6.8-nightly-20240706.1",
+		"@swc/core": "1.7.0-nightly-20240713.1",
 		"@types/emscripten": "^1.39.13",
 		"@types/react": "^18.3.3",
 		"@types/react-beautiful-dnd": "^13.1.8",

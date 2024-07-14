@@ -1,7 +1,7 @@
-$color-checked: #069AF9;
-$size: 24px;
-
 .container {
+	--color-checked: #069AF9;
+	--size: 24px;
+
 	display: inline-block;
 	position: relative;
 	line-height: 1;
@@ -22,7 +22,7 @@ $size: 24px;
 	cursor: inherit;
 
 	&:checked + .mark {
-		color: $color-checked;
+		color: var(--color-checked);
 	}
 
 	&:disabled + .mark {
@@ -31,7 +31,7 @@ $size: 24px;
 }
 
 .mark {
-	font-size: $size;
+	font-size: var(--size);
 	color: #777;
 	vertical-align: middle;
 }
