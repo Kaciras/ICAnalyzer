@@ -7,8 +7,10 @@
 	white-space: nowrap;
 	transform: translateY(-100%);
 
-	// Allow moving when the mouse moves to the box.
-	// this also prevents user select, which needs pin the box.
+	/*
+	 * Allow moving when the mouse moves to the box.
+	 * this also prevents user select, which needs pin the box.
+	 */
 	pointer-events: none;
 
 	background: #222;

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
-import styles from "./Dialog.scss";
+import styles from "./Dialog.css";
 
 interface DialogProps {
 	className?: string;

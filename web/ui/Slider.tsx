@@ -1,7 +1,7 @@
 import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, ChangeEventHandler, CSSProperties, Dispatch, MouseEventHandler } from "react";
 import clsx from "clsx";
-import styles from "./Slider.scss";
+import styles from "./Slider.css";
 
 export interface SliderProps {
 	value: number;

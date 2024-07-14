@@ -3,7 +3,7 @@ import i18n from "../i18n.ts";
 import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { drawImage } from "../utils.ts";
 import { InputImage } from "../features/image-worker.ts";
-import styles from "./ImageInfoPanel.scss";
+import styles from "./ImageInfoPanel.css";
 
 interface ImageInfoPanelProps extends TabPanelBase {
 	value: InputImage;

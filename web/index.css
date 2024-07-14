@@ -1,4 +1,4 @@
-@import "./highcharts.scss";
+@import "./highcharts.css";
 
 * {
 	box-sizing: border-box;
@@ -43,7 +43,7 @@ a {
 	}
 }
 
-// https://stackoverflow.com/a/4298216
+/* https://stackoverflow.com/a/4298216 */
 .no-spinner {
 	-moz-appearance: textfield;
 
@@ -54,14 +54,14 @@ a {
 	}
 }
 
-// Ignore corners overflow
+/* Ignore corners overflow */
 .controls {
 	color: white;
 	background: rgba(0, 0, 0, 0.8);
 	backdrop-filter: blur(2px);
 }
 
-// Convenience class to hide an element
+/* Convenience class to hide an element */
 .hidden {
 	display: none !important;
 }

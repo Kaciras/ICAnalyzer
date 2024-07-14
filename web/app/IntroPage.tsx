@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { TbBrandGithub } from "react-icons/tb";
 import banner from "../assets/intro-banner.png";
 import { Button } from "../ui/index.ts";
-import styles from "./IntroPage.scss";
+import styles from "./IntroPage.css";
 import i18n from "../i18n.ts";
 
 interface IntroPageProps {

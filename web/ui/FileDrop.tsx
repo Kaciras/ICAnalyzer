@@ -2,7 +2,7 @@ import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, Dispatch, DragEvent, MouseEvent, useRef, useState } from "react";
 import clsx from "clsx";
 import { TbPhoto } from "react-icons/tb";
-import styles from "./FileDrop.scss";
+import styles from "./FileDrop.css";
 import i18n from "../i18n.ts";
 import { Button } from "./index.ts";
 

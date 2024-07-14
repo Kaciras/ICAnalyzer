@@ -3,7 +3,7 @@ import { OptionFieldProps, OptionType } from "../index.ts";
 import { NumberInput } from "../../ui/index.ts";
 import RangeControl, { NumberRange } from "../control/RangeControl.tsx";
 import NumberField from "../NumberField.tsx";
-import styles from "./NumberOption.scss";
+import styles from "./NumberOption.css";
 
 interface RangePartProps {
 	name: keyof NumberRange;

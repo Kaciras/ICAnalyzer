@@ -4,7 +4,7 @@ import { defaultButteraugliOptions } from "../../lib/similarity.ts";
 import { CheckBox, NumberInput } from "../ui/index.ts";
 import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { MeasureOptions } from "../features/measurement.ts";
-import styles from "./MeasurePanel.scss";
+import styles from "./MeasurePanel.css";
 import i18n from "../i18n.ts";
 import { deepUpdate, Mutator } from "../hooks.ts";
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import i18n from "../i18n.ts";
 import { Button, Dialog } from "../ui/index.ts";
-import styles from "./ProgressDialog.scss";
+import styles from "./ProgressDialog.css";
 
 interface ProgressDialogProps {
 	error?: string;

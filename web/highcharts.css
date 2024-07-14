@@ -132,14 +132,11 @@
 	stroke: #dddddd;
 }
 
-// ==============================================
-
 .highcharts-menu {
 	background: #222;
 	box-shadow: none;
 }
 
-// https://stackoverflow.com/a/63055006
 .exporting_chart_class {
 	--highcharts-background-color:  #222;
 }

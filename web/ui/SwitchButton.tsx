@@ -2,7 +2,7 @@ import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent } from "react";
 import clsx from "clsx";
 import { CheckBoxProps } from "./CheckBoxBase.tsx";
-import styles from "./SwitchButton.scss";
+import styles from "./SwitchButton.css";
 
 export type SwitchButtonProps = Omit<CheckBoxProps, "children">;
 

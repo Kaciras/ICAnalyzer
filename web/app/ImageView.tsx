@@ -5,8 +5,8 @@ import { ButtonProps } from "../ui/Button.tsx";
 import { PinchZoomState } from "../ui/PinchZoom.tsx";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui/index.ts";
 import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
-import theme from "../theme.module.scss";
-import styles from "./ImageView.scss";
+import theme from "../theme.module.css";
+import styles from "./ImageView.css";
 import { dragHandler, drawImage } from "../utils.ts";
 import i18n from "../i18n.ts";
 

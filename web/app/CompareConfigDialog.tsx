@@ -4,7 +4,7 @@ import i18n from "../i18n.ts";
 import { Button, Dialog } from "../ui/index.ts";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel.tsx";
 import { MeasureOptions } from "../features/measurement.ts";
-import styles from "./CompressConfigDialog.scss";
+import styles from "./CompressConfigDialog.css";
 
 interface CompareConfigDialogProps {
 	onClose: () => void;

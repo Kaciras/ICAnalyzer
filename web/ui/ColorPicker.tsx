@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import styles from "./ColorPicker.scss";
+import styles from "./ColorPicker.css";
 
 /**
  * Get the RGBA data at position in the image.

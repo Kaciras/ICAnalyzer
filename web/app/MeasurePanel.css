@@ -1,7 +1,7 @@
 .form {
 	composes: dialog-content from global;
 
-	// Safari does not support flex-gap
+	/* Safari does not support flex-gap */
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-gap: 10px;

@@ -20,7 +20,7 @@
 	transition-property: background-color;
 
 	&:hover, &:focus-visible {
-		outline: none; // for Chrome
+		outline: none; /* for Chrome */
 		background-color: #e8f5fe;
 	}
 }

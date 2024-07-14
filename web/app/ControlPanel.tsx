@@ -6,7 +6,7 @@ import { getEncoderNames } from "../codecs/index.ts";
 import { Merger } from "../hooks.ts";
 import { ControlsMap } from "./index.ts";
 import { ControlState, VariableType } from "./AnalyzePage.tsx";
-import styles from "./ControlPanel.scss";
+import styles from "./ControlPanel.css";
 
 interface FieldWrapperProps {
 	type: VariableType;

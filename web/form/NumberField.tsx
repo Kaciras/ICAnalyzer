@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Dispatch, ReactNode, useState } from "react";
 import { Slider } from "../ui/index.ts";
-import styles from "./NumberField.scss";
+import styles from "./NumberField.css";
 
 interface NumberFieldProps {
 	value: number;

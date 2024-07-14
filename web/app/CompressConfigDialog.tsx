@@ -6,7 +6,7 @@ import { Button, Dialog, TabList, TabSwitch } from "../ui/index.ts";
 import ImageInfoPanel from "./ImageInfoPanel.tsx";
 import MeasurePanel, { getMeasureOptions } from "./MeasurePanel.tsx";
 import EncoderPanel, { EncodingOptions, getEncodingOptions } from "./EncoderPanel.tsx";
-import styles from "./CompressConfigDialog.scss";
+import styles from "./CompressConfigDialog.css";
 import i18n from "../i18n.ts";
 
 export interface AnalyzeConfig {

@@ -9,7 +9,7 @@ import colorfulTextIcon from "../assets/demo/colorful-text-icon.png";
 import { Button, Dialog, FileDrop } from "../ui/index.ts";
 import { decode } from "../features/decode.ts";
 import { InputImage } from "../features/image-worker.ts";
-import styles from "./SelectFileDialog.scss";
+import styles from "./SelectFileDialog.css";
 import i18n from "../i18n.ts";
 
 interface DemoButtonProps {

@@ -2,7 +2,7 @@
 	display: inline-flex;
 	align-items: center;
 
-	// Align center when align-* cannot be used
+	/* Align center when align-* cannot be used*/
 	vertical-align: middle;
 
 	transition: .15s ease;
@@ -33,7 +33,7 @@
 		color: #08c5ff;
 	}
 
-	// <a> does not support :enabled
+	/* <a> does not support :enabled */
 	&[disabled] {
 		color: #999;
 
@@ -101,7 +101,7 @@
 	--color-outline: rgba(242, 0, 166, .45);
 }
 
-// Text button in the dark container
+/* Text button in the dark container */
 :global(.dark) {
 	--color: rgba(255, 255, 255, .2);
 	--color-light: rgba(255, 255, 255, .15);
@@ -114,13 +114,13 @@
 	}
 
 	background-image: linear-gradient(
-					-45deg,
-					var(--color-light) 25%,
-					transparent 25%,
-					transparent 50%,
-					var(--color-light) 50%,
-					var(--color-light) 75%,
-					transparent 75%
+			-45deg,
+			var(--color-light) 25%,
+			transparent 25%,
+			transparent 50%,
+			var(--color-light) 50%,
+			var(--color-light) 75%,
+			transparent 75%
 	);
 
 	animation: busy linear .4s infinite;

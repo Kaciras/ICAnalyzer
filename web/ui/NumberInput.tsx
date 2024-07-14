@@ -2,7 +2,7 @@ import { noop } from "@kaciras/utilities/browser";
 import React, { ChangeEvent, ChangeEventHandler, Dispatch, MouseEvent, useRef } from "react";
 import clsx from "clsx";
 import { TbArrowDown, TbArrowUp, TbMinus, TbPlus } from "react-icons/tb";
-import styles from "./NumberInput.scss";
+import styles from "./NumberInput.css";
 
 /**
  * When click and hold on a button - the delay before auto changing the value.

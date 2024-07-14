@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import packageJson from "../package.json";
-import "./index.scss";
+import "./index.css";
 import App from "./app/index.tsx";
 
 // SENTRY_DSN is defined on the CI.

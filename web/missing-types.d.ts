@@ -18,7 +18,7 @@ declare module "*.gif" {
 	export default url;
 }
 
-declare module "*.scss" {
+declare module "*.css" {
 	const classes: {
 		readonly [key: string]: string;
 	};

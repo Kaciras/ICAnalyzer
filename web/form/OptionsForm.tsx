@@ -4,7 +4,7 @@ import { BsSliders, BsType } from "react-icons/bs";
 import { OptionState, OptionStateMap, OptionType } from "./index.ts";
 import { Button } from "../ui/index.ts";
 import { Merger } from "../hooks.ts";
-import styles from "./OptionsForm.scss";
+import styles from "./OptionsForm.css";
 import i18n from "../i18n.ts";
 
 interface OptionProps {

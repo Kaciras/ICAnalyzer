@@ -8,7 +8,7 @@ import { drawImage } from "../utils.ts";
 import { decode } from "../features/decode.ts";
 import { getPooledWorker, ImageWorker, InputImage, newImagePool } from "../features/image-worker.ts";
 import { CompareData } from "./CompareSession.tsx";
-import styles from "./CompareFileDialog.scss";
+import styles from "./CompareFileDialog.css";
 import i18n from "../i18n.ts";
 
 interface InputWithId extends InputImage {

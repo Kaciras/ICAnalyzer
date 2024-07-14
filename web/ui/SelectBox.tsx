@@ -1,7 +1,7 @@
 import { noop } from "@kaciras/utilities/browser";
 import { ChangeEvent, ComponentProps, Dispatch } from "react";
 import { BsFillCaretDownFill } from "react-icons/bs";
-import styles from "./SelectBox.scss";
+import styles from "./SelectBox.css";
 
 interface SelectBoxProps extends ComponentProps<"select"> {
 	onValueChange: Dispatch<string>;

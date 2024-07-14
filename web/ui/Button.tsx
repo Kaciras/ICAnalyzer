@@ -1,6 +1,6 @@
 import { ComponentProps } from "react";
 import clsx from "clsx";
-import styles from "./Button.scss";
+import styles from "./Button.css";
 
 export interface ButtonProps extends Omit<ComponentProps<"button">, "type"> {
 	/**

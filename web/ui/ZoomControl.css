@@ -1,5 +1,5 @@
 .zoomInput {
-	composes: darkNumberInput from "../theme.module.scss";
+	composes: darkNumberInput from "../theme.module.css";
 
 	--input-width: 80px;
 	--size: 32px;
