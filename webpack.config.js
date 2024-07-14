@@ -27,7 +27,7 @@ export default function (env) {
 				localIdentName: isProd ? "[hash:base64:5]" : "[local]_[hash:base64:5]",
 			};
 		}
-		return [outputLoader, cssLoader, "sass-loader"];
+		return [outputLoader, cssLoader];
 	}
 
 	const loaders = [
