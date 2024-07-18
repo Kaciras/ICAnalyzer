@@ -7,19 +7,10 @@ interface Window {
 /*
  * Check if the browser can run this app, alert if it cannot. see README.MD for supported browsers.
  *
- * Since SyntaxError thrown while the code is being parsed,
- * to catch it the test code should be wrapped with eval() and the script block
- * must run before parsing any invalid code.
- *
  * This file is an entry point and will be injected to HTML before the index chunk.
  */
+window.__isSupport__ = CSS.supports("selector(&)") && CSS.supports("selector(:has(*))");
 
-try {
-	// noinspection JSUnusedLocalSymbols
-	eval("const x = null ?? 0");
-
-	window.__isSupport__ = true;
-} catch {
-	window.__isSupport__ = false;
+if (!window.__isSupport__) {
 	alert("ICAnalyzer doesn't support this browser, please use a modern one.");
 }

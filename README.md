@@ -11,9 +11,9 @@ Online image compression & analysis tool.
 Supported browsers:
 
 - Firefox >= 121
-- Edge >= 105
-- Chrome >= 105
-- Safari >= 16.4
+- Edge >= 120
+- Chrome >= 120
+- Safari >= 17.2
 
 # Build
 
