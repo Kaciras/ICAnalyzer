@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@kaciras/utilities": "^1.0.2",
-		"@sentry/react": "^8.17.0",
+		"@sentry/react": "^8.19.0",
 		"clsx": "^2.1.1",
 		"highcharts": "^11.4.6",
 		"react": "^18.3.1",
@@ -31,7 +31,7 @@
 		"@kaciras/eslint-config-react": "^3.1.0",
 		"@kaciras/eslint-config-typescript": "^3.1.0",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
-		"@swc/core": "1.7.0-nightly-20240713.1",
+		"@swc/core": "1.7.0",
 		"@types/emscripten": "^1.39.13",
 		"@types/react": "^18.3.3",
 		"@types/react-beautiful-dnd": "^13.1.8",
