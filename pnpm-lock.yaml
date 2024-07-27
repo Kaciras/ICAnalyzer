@@ -12,8 +12,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@sentry/react':
-        specifier: ^8.19.0
-        version: 8.19.0(react@18.3.1)
+        specifier: ^8.20.0
+        version: 8.20.0(react@18.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -38,19 +38,19 @@ importers:
     devDependencies:
       '@kaciras/eslint-config-core':
         specifier: ^3.1.0
-        version: 3.1.0(eslint@9.7.0)
+        version: 3.1.0(eslint@9.8.0)
       '@kaciras/eslint-config-react':
         specifier: ^3.1.0
-        version: 3.1.0(eslint@9.7.0)
+        version: 3.1.0(eslint@9.8.0)
       '@kaciras/eslint-config-typescript':
         specifier: ^3.1.0
-        version: 3.1.0(eslint@9.7.0)(typescript@5.5.3)
+        version: 3.1.0(eslint@9.8.0)(typescript@5.5.4)
       '@pmmmwh/react-refresh-webpack-plugin':
         specifier: ^0.5.15
-        version: 0.5.15(react-refresh@0.14.2)(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 0.5.15(react-refresh@0.14.2)(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       '@swc/core':
-        specifier: 1.7.0
-        version: 1.7.0
+        specifier: 1.7.2
+        version: 1.7.2
       '@types/emscripten':
         specifier: ^1.39.13
         version: 1.39.13
@@ -65,34 +65,34 @@ importers:
         version: 18.3.0
       css-loader:
         specifier: ^7.1.2
-        version: 7.1.2(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 7.1.2(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       eslint:
-        specifier: ^9.7.0
-        version: 9.7.0
+        specifier: ^9.8.0
+        version: 9.8.0
       html-webpack-plugin:
         specifier: ^5.6.0
-        version: 5.6.0(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 5.6.0(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       mini-css-extract-plugin:
         specifier: ^2.9.0
-        version: 2.9.0(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 2.9.0(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       react-refresh:
         specifier: ^0.14.2
         version: 0.14.2
       style-loader:
         specifier: ^4.0.0
-        version: 4.0.0(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 4.0.0(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       swc-loader:
         specifier: ^0.2.6
-        version: 0.2.6(@swc/core@1.7.0)(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 0.2.6(@swc/core@1.7.2)(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       terser-webpack-plugin:
         specifier: ^5.3.10
-        version: 5.3.10(@swc/core@1.7.0)(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+        version: 5.3.10(@swc/core@1.7.2)(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       typescript:
-        specifier: ^5.5.3
-        version: 5.5.3
+        specifier: ^5.5.4
+        version: 5.5.4
       webpack:
         specifier: ^5.93.0
-        version: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+        version: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
       webpack-bundle-analyzer:
         specifier: ^4.10.2
         version: 4.10.2
@@ -123,16 +123,16 @@ packages:
     resolution: {integrity: sha512-G/M/tIiMrTAxEWRfLfQJMmGNX28IxBg4PBz8XqQhqUHLFI6TL2htpIB1iQCj144V5ee/JaKyT9/WZ0MGZWfA7A==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
-  '@eslint/config-array@0.17.0':
-    resolution: {integrity: sha512-A68TBu6/1mHHuc5YJL0U0VVeGNiklLAL6rRmhTCP2B5XjWLMnrX+HkO+IAXyHvks5cyyY1jjK5ITPQ1HGS2EVA==}
+  '@eslint/config-array@0.17.1':
+    resolution: {integrity: sha512-BlYOpej8AQ8Ev9xVqroV7a02JK3SkBAaN9GfMMH9W6Ch8FlQlkjGw4Ir7+FgYwfirivAf4t+GtzuAxqfukmISA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/eslintrc@3.1.0':
     resolution: {integrity: sha512-4Bfj15dVJdoy3RfZmmo86RK1Fwzn6SstsvK9JS+BaVKqC6QQQQyXekNaC+g+LKNgkQ+2VhGAzm6hO40AhMR3zQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/js@9.7.0':
-    resolution: {integrity: sha512-ChuWDQenef8OSFnvuxv0TCVxEwmu3+hPNKvM9B34qpM0rDRbjL8t5QkQeHHeAfsKQjuH9wS82WeCi1J/owatng==}
+  '@eslint/js@9.8.0':
+    resolution: {integrity: sha512-MfluB7EUfxXtv3i/++oh89uzAr4PDI4nn201hsp+qaXqsjAWzinlZEHEfPgAX4doIlKvPG/i0A9dpKxOLII8yA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/object-schema@2.1.4':
@@ -261,42 +261,42 @@ packages:
   '@polka/url@1.0.0-next.25':
     resolution: {integrity: sha512-j7P6Rgr3mmtdkeDGTe0E/aYyWEWVtc5yFXtHCRHs28/jptDEWfaVOc5T7cblqy1XKPPfCxJc/8DwQ5YgLOZOVQ==}
 
-  '@sentry-internal/browser-utils@8.19.0':
-    resolution: {integrity: sha512-kM/2KlikKuBR63nFi2q7MGS3V9K9hakjvUknhr/jHZqDVfEuBKmp1ZlHFAdJtglKHHJy07gPj/XqDH7BbYh5yg==}
+  '@sentry-internal/browser-utils@8.20.0':
+    resolution: {integrity: sha512-GGYNiELnT4ByidHyS4/M8UF8Oxagm5R13QyTncQGq8nZcQhcFZ9mdxLnf1/R4+j44Fph2Cgzafe8jGP/AMA9zw==}
     engines: {node: '>=14.18'}
 
-  '@sentry-internal/feedback@8.19.0':
-    resolution: {integrity: sha512-Jc77H8fEaGcBhERc2U/o7Q8CZHvlZLT9vAlzq0ZZR20v/1vwYcJW1ysKfTuvmw22hCR6ukhFNl6pqJocXFVhvA==}
+  '@sentry-internal/feedback@8.20.0':
+    resolution: {integrity: sha512-mFvAoVpVShkDB2AgEr/dE96NSTPKI/lGMBznZMg7ZEcwZhLfH7HvLYCadIskRfzqFTLOUpbm9ciIO4SyR/4bDA==}
     engines: {node: '>=14.18'}
 
-  '@sentry-internal/replay-canvas@8.19.0':
-    resolution: {integrity: sha512-l4pKJDHrXEctxrK7Xme/+fKToXpGwr/G2t77BzeE1WEw9LwSwADz/hi8HoMdZzuKWriM2BNbz20tpVS84sODxA==}
+  '@sentry-internal/replay-canvas@8.20.0':
+    resolution: {integrity: sha512-LXV/pMH9KMw6CtImenMsiBkYIFIc97pDJ/rC7mVImKIROQ45fxGp/JBXM4Id0GENyA2+SySMWVQCAAapSfHZTw==}
     engines: {node: '>=14.18'}
 
-  '@sentry-internal/replay@8.19.0':
-    resolution: {integrity: sha512-EW9e1J6XbqXUXQST1AfSIzT9O8OwPyeFOkhkn9/gqOQv08TJvQEIBtWJEoJS+XFMEUuB8IqIzVWNVko/DnGt9A==}
+  '@sentry-internal/replay@8.20.0':
+    resolution: {integrity: sha512-sCiI7SOAHq5XsxkixtoMofeSyKd/hVgDV+4145f6nN9m7nLzig4PBQwh2SgK2piJ2mfaXfqcdzA1pShPYldaJA==}
     engines: {node: '>=14.18'}
 
-  '@sentry/browser@8.19.0':
-    resolution: {integrity: sha512-ZC1HxIFm4TIGONyy9MkPG6Dw8IAhzq43t5mq9PqrB1ehuWj8GX6Vk3E26kuc2sydAm4AXbj0562OmvZHsAJpUA==}
+  '@sentry/browser@8.20.0':
+    resolution: {integrity: sha512-JDZbCreY44/fHYN28QzsAwEHXa2rc1hzM6GE4RSlXCdAhNfrjVxyYDxhw/50pVEHZg1WXxf7ZmERjocV5VJHsw==}
     engines: {node: '>=14.18'}
 
-  '@sentry/core@8.19.0':
-    resolution: {integrity: sha512-MrgjsZCEjOJgQjIznnDSrLEy7qL+4LVpNieAvr49cV1rzBNSwGmWRnt/puVaPsLyCUgupVx/43BPUHB/HtKNUw==}
+  '@sentry/core@8.20.0':
+    resolution: {integrity: sha512-R81snuw+67VT4aCxr6ShST/s0Y6FlwN2YczhDwaGyzumn5rlvA6A4JtQDeExduNoDDyv4T3LrmW8wlYZn3CJJw==}
     engines: {node: '>=14.18'}
 
-  '@sentry/react@8.19.0':
-    resolution: {integrity: sha512-MzuMy4AEdSuIrBEyp3W7c4+v215+2MiU9ba7Y0KBKcC/Nrf1cGfRFRbjl9OYm/JIuxkaop7kgYs6sPMrVJVlrQ==}
+  '@sentry/react@8.20.0':
+    resolution: {integrity: sha512-vqA0o9ysdfA24/ADhsJwsmCNdUWRu2ycmVN1Sr76v+ZggyOCFzE7XD13kbqk1G3jPb8nptNu/6Zwpcy5pP4mtw==}
     engines: {node: '>=14.18'}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x || 19.x
 
-  '@sentry/types@8.19.0':
-    resolution: {integrity: sha512-52C8X5V7mK2KIxMJt8MV5TxXAFHqrQR1RKm1oPTwKVWm8hKr1ZYJXINymNrWvpAc3oVIKLC/sa9WFYgXQh+YlA==}
+  '@sentry/types@8.20.0':
+    resolution: {integrity: sha512-6IP278KojOpiAA7vrd1hjhUyn26cl0n0nGsShzic5ztCVs92sTeVRnh7MTB9irDVtAbOEyt/YH6go3h+Jia1pA==}
     engines: {node: '>=14.18'}
 
-  '@sentry/utils@8.19.0':
-    resolution: {integrity: sha512-8dWJJKaUN6Hf92Oxw2TBmHchGua2W3ZmonrZTTwLvl06jcAigbiQD0MGuF5ytZP8PHx860orV+SbTGKFzfU3Pg==}
+  '@sentry/utils@8.20.0':
+    resolution: {integrity: sha512-+1I5H8dojURiEUGPliDwheQk8dhjp8uV1sMccR/W/zjFrt4wZyPs+Ttp/V7gzm9LDJoNek9tmELert/jQqWTgg==}
     engines: {node: '>=14.18'}
 
   '@stylistic/eslint-plugin-js@2.3.0':
@@ -305,68 +305,68 @@ packages:
     peerDependencies:
       eslint: '>=8.40.0'
 
-  '@swc/core-darwin-arm64@1.7.0':
-    resolution: {integrity: sha512-2ylhM7f0HwUwLrFYZAe/dse8PCbPsYcJS3Dt7Q8NT3PUn7vy6QOMxNcOPPuDrnmaXqQQO3oxdmRapguTxaat9g==}
+  '@swc/core-darwin-arm64@1.7.2':
+    resolution: {integrity: sha512-Zb8KiGaESzOgh5HBnp6Vhs2fRpngHIT81JOfIo0oaGlzAckamnG7UAXC/yK6cQ8q2KXc78utJ/yq/NM2yVKLqw==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@swc/core-darwin-x64@1.7.0':
-    resolution: {integrity: sha512-SgVnN4gT1Rb9YfTkp4FCUITqSs7Yj0uB2SUciu5CV3HuGvS5YXCUzh+KrwpLFtx8NIgivISKcNnb41mJi98X8Q==}
+  '@swc/core-darwin-x64@1.7.2':
+    resolution: {integrity: sha512-qb0HY9GEexpPm46Hb3OY7E6xb4r+eniiThm+0Gcnhf19EZV2ZlsCC8Rdbhmav33x++ZqSDzZ44fxMY2vnN5VDg==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [darwin]
 
-  '@swc/core-linux-arm-gnueabihf@1.7.0':
-    resolution: {integrity: sha512-+Z9Dayart1iKJQEJJ9N/KS4z5EdXJE3WPFikY0jonKTo4Dd8RuyVz5yLvqcIMeVdz/SwximATaL6iJXw7hZS9A==}
+  '@swc/core-linux-arm-gnueabihf@1.7.2':
+    resolution: {integrity: sha512-x2+MOK3RzH3yEkaukKtpDW/udM1x9GoYtXaLNqlq6ovAzZPQ9FDFI0pm1asL4akHUw3s7YTh1aUY7QscstJAHQ==}
     engines: {node: '>=10'}
     cpu: [arm]
     os: [linux]
 
-  '@swc/core-linux-arm64-gnu@1.7.0':
-    resolution: {integrity: sha512-UnLrCiZ1EI4shznJn0xP6DLgsXUSwtfsdgHhGYCrvbgVBBve3S9iFgVFEB3SPl7Q/TdowNbrN4zHU0oChfiNfw==}
+  '@swc/core-linux-arm64-gnu@1.7.2':
+    resolution: {integrity: sha512-4J3HGEDus7a9xnrJUFGyJJgvj4w+BFGiZvs08xbw4Z1ZN4uHJQiJiDsQEAWWciKUxrOndP3SocUq/GhEGiDm0g==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
 
-  '@swc/core-linux-arm64-musl@1.7.0':
-    resolution: {integrity: sha512-H724UANA+ptsfwKRr9mnaDa9cb5fw0oFysiGKTgb3DMYcgk3Od0jMTnXVPFSVpo7FlmyxeC9K8ueUPBOoOK6XA==}
+  '@swc/core-linux-arm64-musl@1.7.2':
+    resolution: {integrity: sha512-4FhQmYbj8SCmir4pHRLSn8IIFmRKHTL3eZFtOpm26RLME7rXL7Yt33DpzIeTRoHFIesI5NEfaR38WU5mY7P1pA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
 
-  '@swc/core-linux-x64-gnu@1.7.0':
-    resolution: {integrity: sha512-SY3HA0K0Dpqt1HIfMLGpwL4hd4UaL2xHP5oZXPlRQPhUDZrbb4PbI3ZJnh66c63eL4ZR8EJ+HRFI0Alx5p69Zw==}
+  '@swc/core-linux-x64-gnu@1.7.2':
+    resolution: {integrity: sha512-Loz10Hy6z5mBIAOe6OInOVsYu+PVxyknCB3thtr7QH+uqEz6dcXhU2ERrO2Lf4dsTsFs/Wb80rv8zTSwB8dpsw==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
 
-  '@swc/core-linux-x64-musl@1.7.0':
-    resolution: {integrity: sha512-cEJ2ebtV1v/5Ilb55E05J6F5SrHKQWzUttIhR5Mkayyo+yvPslcpByuFC3D+J7X1ebziTOBpWuMpUdjLfh3SMQ==}
+  '@swc/core-linux-x64-musl@1.7.2':
+    resolution: {integrity: sha512-8p8qNWaLcTa+qHX4NSv1KNm8BQ6zPoLXuOBo9DtOEqc+K60IISGKPCAS7TJlCcv0q20JnmxZ/cEWW5Qo4TR4XQ==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
 
-  '@swc/core-win32-arm64-msvc@1.7.0':
-    resolution: {integrity: sha512-ecQOOmzEssz+m0pR4xDYCGuvn3E/l0nQ3tk5jp1NA1lsAy4bMV0YbYCHjptYvWL/UjhIerIp3IlCJ8x5DodSog==}
+  '@swc/core-win32-arm64-msvc@1.7.2':
+    resolution: {integrity: sha512-eNWAYOalBlFrhv/IVSQ1dxu7qIGuhxlUJZTYa8jsgLnKt93vAFd2cjLtKZ85k1OibBnq9PkKQyo4NKVr4hBavw==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [win32]
 
-  '@swc/core-win32-ia32-msvc@1.7.0':
-    resolution: {integrity: sha512-gz81seZkRn3zMnVOc7L5k6F4vQC82gIxmHiL+GedK+A37XI/X26AASU3zxvORnqQbwQYXQ+AEVckxBmFlz3v2g==}
+  '@swc/core-win32-ia32-msvc@1.7.2':
+    resolution: {integrity: sha512-BbpaCPCnbQHCzpQ9yDH3qp1Y5Ijd0NSMNk4qqESN2WWx0ojV2uBTjPou5NC2MZxk8fM3iJpJ05enf+IeaXuh6A==}
     engines: {node: '>=10'}
     cpu: [ia32]
     os: [win32]
 
-  '@swc/core-win32-x64-msvc@1.7.0':
-    resolution: {integrity: sha512-b5Fd1xEOw9uqBpj2lqsaR4Iq9UhiL84hNDcEsi6DQA7Y1l85waQAslTbS0E4/pJ1PISAs0jW0zIGLco1eaWBOg==}
+  '@swc/core-win32-x64-msvc@1.7.2':
+    resolution: {integrity: sha512-21mf4Jg9Arx0lUnmRQtYd8IQB4WkY4LHJrvcz3EmKbwCTCXI5rQ6Ifnjk7EmG3Tizv0giHqQBQLu5NXWBz45Mg==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [win32]
 
-  '@swc/core@1.7.0':
-    resolution: {integrity: sha512-d4vMzH6ICllDwlPuhset2h8gu/USHdbyfJim+2hQEdxC0UONtfpmu38XBgNqRjStrji1Q5M10jfeUZL3cu1i8g==}
+  '@swc/core@1.7.2':
+    resolution: {integrity: sha512-mjIlT0e6ygKR8LZ1TjtNrDVMhnB8qpyYAdwexhuVHY255yDdDQCpuPGi20odwnE82QhFBSIWs4HcENDVO/yiMw==}
     engines: {node: '>=10'}
     peerDependencies:
       '@swc/helpers': '*'
@@ -377,8 +377,8 @@ packages:
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
 
-  '@swc/types@0.1.9':
-    resolution: {integrity: sha512-qKnCno++jzcJ4lM4NTfYifm1EFSCeIfKiAHAfkENZAV5Kl9PjJIyd2yeeVv6c/2CckuLyv2NmRC5pv6pm2WQBg==}
+  '@swc/types@0.1.12':
+    resolution: {integrity: sha512-wBJA+SdtkbFhHjTMYH+dEH1y4VpfGdAc2Kw/LK09i9bXd/K6j6PkDcFCEzb6iVfZMkPRrl/q0e3toqTAJdkIVA==}
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
@@ -1139,8 +1139,8 @@ packages:
     resolution: {integrity: sha512-OtIRv/2GyiF6o/d8K7MYKKbXrOUBIK6SfkIRM4Z0dY3w+LiQ0vy3F57m0Z71bjbyeiWFiHJ8brqnmE6H6/jEuw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  eslint@9.7.0:
-    resolution: {integrity: sha512-FzJ9D/0nGiCGBf8UXO/IGLTgLVzIxze1zpfA8Ton2mjLovXdAPlYDv+MQDcqj3TmrhAGYfOpz9RfR+ent0AgAw==}
+  eslint@9.8.0:
+    resolution: {integrity: sha512-K8qnZ/QJzT2dLKdZJVX6W4XOwBzutMYmt0lqUS+JdXgd+HTYFlonFgkJ8s44d/zMPPCnOOk0kMWCApCPhiOy9A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     hasBin: true
 
@@ -2513,8 +2513,8 @@ packages:
       typescript:
         optional: true
 
-  typescript@5.5.3:
-    resolution: {integrity: sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==}
+  typescript@5.5.4:
+    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2708,14 +2708,14 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@eslint-community/eslint-utils@4.4.0(eslint@9.7.0)':
+  '@eslint-community/eslint-utils@4.4.0(eslint@9.8.0)':
     dependencies:
-      eslint: 9.7.0
+      eslint: 9.8.0
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.11.0': {}
 
-  '@eslint/config-array@0.17.0':
+  '@eslint/config-array@0.17.1':
     dependencies:
       '@eslint/object-schema': 2.1.4
       debug: 4.3.5
@@ -2737,7 +2737,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/js@9.7.0': {}
+  '@eslint/js@9.8.0': {}
 
   '@eslint/object-schema@2.1.4': {}
 
@@ -2792,29 +2792,29 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  '@kaciras/eslint-config-core@3.1.0(eslint@9.7.0)':
+  '@kaciras/eslint-config-core@3.1.0(eslint@9.8.0)':
     dependencies:
-      '@kaciras/eslint-plugin': 3.1.0(eslint@9.7.0)
-      '@stylistic/eslint-plugin-js': 2.3.0(eslint@9.7.0)
-      eslint: 9.7.0
+      '@kaciras/eslint-plugin': 3.1.0(eslint@9.8.0)
+      '@stylistic/eslint-plugin-js': 2.3.0(eslint@9.8.0)
+      eslint: 9.8.0
 
-  '@kaciras/eslint-config-react@3.1.0(eslint@9.7.0)':
+  '@kaciras/eslint-config-react@3.1.0(eslint@9.8.0)':
     dependencies:
-      eslint: 9.7.0
-      eslint-plugin-react: 7.34.4(eslint@9.7.0)
-      eslint-plugin-react-hooks: 4.6.2(eslint@9.7.0)
+      eslint: 9.8.0
+      eslint-plugin-react: 7.34.4(eslint@9.8.0)
+      eslint-plugin-react-hooks: 4.6.2(eslint@9.8.0)
 
-  '@kaciras/eslint-config-typescript@3.1.0(eslint@9.7.0)(typescript@5.5.3)':
+  '@kaciras/eslint-config-typescript@3.1.0(eslint@9.8.0)(typescript@5.5.4)':
     dependencies:
-      eslint: 9.7.0
-      typescript-eslint: 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      eslint: 9.8.0
+      typescript-eslint: 7.16.0(eslint@9.8.0)(typescript@5.5.4)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  '@kaciras/eslint-plugin@3.1.0(eslint@9.7.0)':
+  '@kaciras/eslint-plugin@3.1.0(eslint@9.8.0)':
     dependencies:
-      eslint: 9.7.0
+      eslint: 9.8.0
 
   '@kaciras/utilities@1.0.2': {}
 
@@ -2835,7 +2835,7 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@pmmmwh/react-refresh-webpack-plugin@0.5.15(react-refresh@0.14.2)(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))':
+  '@pmmmwh/react-refresh-webpack-plugin@0.5.15(react-refresh@0.14.2)(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))':
     dependencies:
       ansi-html: 0.0.9
       core-js-pure: 3.37.1
@@ -2845,125 +2845,125 @@ snapshots:
       react-refresh: 0.14.2
       schema-utils: 4.2.0
       source-map: 0.7.4
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
     optionalDependencies:
       webpack-dev-server: 5.0.4(webpack-cli@5.1.4)(webpack@5.93.0)
 
   '@polka/url@1.0.0-next.25': {}
 
-  '@sentry-internal/browser-utils@8.19.0':
+  '@sentry-internal/browser-utils@8.20.0':
     dependencies:
-      '@sentry/core': 8.19.0
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry/core': 8.20.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
 
-  '@sentry-internal/feedback@8.19.0':
+  '@sentry-internal/feedback@8.20.0':
     dependencies:
-      '@sentry/core': 8.19.0
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry/core': 8.20.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
 
-  '@sentry-internal/replay-canvas@8.19.0':
+  '@sentry-internal/replay-canvas@8.20.0':
     dependencies:
-      '@sentry-internal/replay': 8.19.0
-      '@sentry/core': 8.19.0
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry-internal/replay': 8.20.0
+      '@sentry/core': 8.20.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
 
-  '@sentry-internal/replay@8.19.0':
+  '@sentry-internal/replay@8.20.0':
     dependencies:
-      '@sentry-internal/browser-utils': 8.19.0
-      '@sentry/core': 8.19.0
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry-internal/browser-utils': 8.20.0
+      '@sentry/core': 8.20.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
 
-  '@sentry/browser@8.19.0':
+  '@sentry/browser@8.20.0':
     dependencies:
-      '@sentry-internal/browser-utils': 8.19.0
-      '@sentry-internal/feedback': 8.19.0
-      '@sentry-internal/replay': 8.19.0
-      '@sentry-internal/replay-canvas': 8.19.0
-      '@sentry/core': 8.19.0
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry-internal/browser-utils': 8.20.0
+      '@sentry-internal/feedback': 8.20.0
+      '@sentry-internal/replay': 8.20.0
+      '@sentry-internal/replay-canvas': 8.20.0
+      '@sentry/core': 8.20.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
 
-  '@sentry/core@8.19.0':
+  '@sentry/core@8.20.0':
     dependencies:
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
 
-  '@sentry/react@8.19.0(react@18.3.1)':
+  '@sentry/react@8.20.0(react@18.3.1)':
     dependencies:
-      '@sentry/browser': 8.19.0
-      '@sentry/core': 8.19.0
-      '@sentry/types': 8.19.0
-      '@sentry/utils': 8.19.0
+      '@sentry/browser': 8.20.0
+      '@sentry/core': 8.20.0
+      '@sentry/types': 8.20.0
+      '@sentry/utils': 8.20.0
       hoist-non-react-statics: 3.3.2
       react: 18.3.1
 
-  '@sentry/types@8.19.0': {}
+  '@sentry/types@8.20.0': {}
 
-  '@sentry/utils@8.19.0':
+  '@sentry/utils@8.20.0':
     dependencies:
-      '@sentry/types': 8.19.0
+      '@sentry/types': 8.20.0
 
-  '@stylistic/eslint-plugin-js@2.3.0(eslint@9.7.0)':
+  '@stylistic/eslint-plugin-js@2.3.0(eslint@9.8.0)':
     dependencies:
       '@types/eslint': 8.56.10
       acorn: 8.12.1
-      eslint: 9.7.0
+      eslint: 9.8.0
       eslint-visitor-keys: 4.0.0
       espree: 10.1.0
 
-  '@swc/core-darwin-arm64@1.7.0':
+  '@swc/core-darwin-arm64@1.7.2':
     optional: true
 
-  '@swc/core-darwin-x64@1.7.0':
+  '@swc/core-darwin-x64@1.7.2':
     optional: true
 
-  '@swc/core-linux-arm-gnueabihf@1.7.0':
+  '@swc/core-linux-arm-gnueabihf@1.7.2':
     optional: true
 
-  '@swc/core-linux-arm64-gnu@1.7.0':
+  '@swc/core-linux-arm64-gnu@1.7.2':
     optional: true
 
-  '@swc/core-linux-arm64-musl@1.7.0':
+  '@swc/core-linux-arm64-musl@1.7.2':
     optional: true
 
-  '@swc/core-linux-x64-gnu@1.7.0':
+  '@swc/core-linux-x64-gnu@1.7.2':
     optional: true
 
-  '@swc/core-linux-x64-musl@1.7.0':
+  '@swc/core-linux-x64-musl@1.7.2':
     optional: true
 
-  '@swc/core-win32-arm64-msvc@1.7.0':
+  '@swc/core-win32-arm64-msvc@1.7.2':
     optional: true
 
-  '@swc/core-win32-ia32-msvc@1.7.0':
+  '@swc/core-win32-ia32-msvc@1.7.2':
     optional: true
 
-  '@swc/core-win32-x64-msvc@1.7.0':
+  '@swc/core-win32-x64-msvc@1.7.2':
     optional: true
 
-  '@swc/core@1.7.0':
+  '@swc/core@1.7.2':
     dependencies:
       '@swc/counter': 0.1.3
-      '@swc/types': 0.1.9
+      '@swc/types': 0.1.12
     optionalDependencies:
-      '@swc/core-darwin-arm64': 1.7.0
-      '@swc/core-darwin-x64': 1.7.0
-      '@swc/core-linux-arm-gnueabihf': 1.7.0
-      '@swc/core-linux-arm64-gnu': 1.7.0
-      '@swc/core-linux-arm64-musl': 1.7.0
-      '@swc/core-linux-x64-gnu': 1.7.0
-      '@swc/core-linux-x64-musl': 1.7.0
-      '@swc/core-win32-arm64-msvc': 1.7.0
-      '@swc/core-win32-ia32-msvc': 1.7.0
-      '@swc/core-win32-x64-msvc': 1.7.0
+      '@swc/core-darwin-arm64': 1.7.2
+      '@swc/core-darwin-x64': 1.7.2
+      '@swc/core-linux-arm-gnueabihf': 1.7.2
+      '@swc/core-linux-arm64-gnu': 1.7.2
+      '@swc/core-linux-arm64-musl': 1.7.2
+      '@swc/core-linux-x64-gnu': 1.7.2
+      '@swc/core-linux-x64-musl': 1.7.2
+      '@swc/core-win32-arm64-msvc': 1.7.2
+      '@swc/core-win32-ia32-msvc': 1.7.2
+      '@swc/core-win32-x64-msvc': 1.7.2
 
   '@swc/counter@0.1.3': {}
 
-  '@swc/types@0.1.9':
+  '@swc/types@0.1.12':
     dependencies:
       '@swc/counter': 0.1.3
 
@@ -3089,34 +3089,34 @@ snapshots:
     dependencies:
       '@types/node': 20.14.2
 
-  '@typescript-eslint/eslint-plugin@7.16.0(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint@9.7.0)(typescript@5.5.3)':
+  '@typescript-eslint/eslint-plugin@7.16.0(@typescript-eslint/parser@7.16.0(eslint@9.8.0)(typescript@5.5.4))(eslint@9.8.0)(typescript@5.5.4)':
     dependencies:
       '@eslint-community/regexpp': 4.11.0
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 7.16.0(eslint@9.8.0)(typescript@5.5.4)
       '@typescript-eslint/scope-manager': 7.16.0
-      '@typescript-eslint/type-utils': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
-      '@typescript-eslint/utils': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      '@typescript-eslint/type-utils': 7.16.0(eslint@9.8.0)(typescript@5.5.4)
+      '@typescript-eslint/utils': 7.16.0(eslint@9.8.0)(typescript@5.5.4)
       '@typescript-eslint/visitor-keys': 7.16.0
-      eslint: 9.7.0
+      eslint: 9.8.0
       graphemer: 1.4.0
       ignore: 5.3.1
       natural-compare: 1.4.0
-      ts-api-utils: 1.3.0(typescript@5.5.3)
+      ts-api-utils: 1.3.0(typescript@5.5.4)
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3)':
+  '@typescript-eslint/parser@7.16.0(eslint@9.8.0)(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/scope-manager': 7.16.0
       '@typescript-eslint/types': 7.16.0
-      '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.3)
+      '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.4)
       '@typescript-eslint/visitor-keys': 7.16.0
       debug: 4.3.5
-      eslint: 9.7.0
+      eslint: 9.8.0
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
@@ -3125,21 +3125,21 @@ snapshots:
       '@typescript-eslint/types': 7.16.0
       '@typescript-eslint/visitor-keys': 7.16.0
 
-  '@typescript-eslint/type-utils@7.16.0(eslint@9.7.0)(typescript@5.5.3)':
+  '@typescript-eslint/type-utils@7.16.0(eslint@9.8.0)(typescript@5.5.4)':
     dependencies:
-      '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.3)
-      '@typescript-eslint/utils': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.4)
+      '@typescript-eslint/utils': 7.16.0(eslint@9.8.0)(typescript@5.5.4)
       debug: 4.3.5
-      eslint: 9.7.0
-      ts-api-utils: 1.3.0(typescript@5.5.3)
+      eslint: 9.8.0
+      ts-api-utils: 1.3.0(typescript@5.5.4)
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
   '@typescript-eslint/types@7.16.0': {}
 
-  '@typescript-eslint/typescript-estree@7.16.0(typescript@5.5.3)':
+  '@typescript-eslint/typescript-estree@7.16.0(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/types': 7.16.0
       '@typescript-eslint/visitor-keys': 7.16.0
@@ -3148,19 +3148,19 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.5
       semver: 7.6.2
-      ts-api-utils: 1.3.0(typescript@5.5.3)
+      ts-api-utils: 1.3.0(typescript@5.5.4)
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@7.16.0(eslint@9.7.0)(typescript@5.5.3)':
+  '@typescript-eslint/utils@7.16.0(eslint@9.8.0)(typescript@5.5.4)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.7.0)
+      '@eslint-community/eslint-utils': 4.4.0(eslint@9.8.0)
       '@typescript-eslint/scope-manager': 7.16.0
       '@typescript-eslint/types': 7.16.0
-      '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.3)
-      eslint: 9.7.0
+      '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.4)
+      eslint: 9.8.0
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -3246,19 +3246,19 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))':
+  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0)
 
-  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))':
+  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0)
 
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))':
+  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0)
     optionalDependencies:
       webpack-dev-server: 5.0.4(webpack-cli@5.1.4)(webpack@5.93.0)
@@ -3577,7 +3577,7 @@ snapshots:
     dependencies:
       tiny-invariant: 1.3.3
 
-  css-loader@7.1.2(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  css-loader@7.1.2(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.38)
       postcss: 8.4.38
@@ -3588,7 +3588,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.6.2
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
 
   css-select@4.3.0:
     dependencies:
@@ -3835,11 +3835,11 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-plugin-react-hooks@4.6.2(eslint@9.7.0):
+  eslint-plugin-react-hooks@4.6.2(eslint@9.8.0):
     dependencies:
-      eslint: 9.7.0
+      eslint: 9.8.0
 
-  eslint-plugin-react@7.34.4(eslint@9.7.0):
+  eslint-plugin-react@7.34.4(eslint@9.8.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlast: 1.2.5
@@ -3848,7 +3848,7 @@ snapshots:
       array.prototype.tosorted: 1.1.4
       doctrine: 2.1.0
       es-iterator-helpers: 1.0.19
-      eslint: 9.7.0
+      eslint: 9.8.0
       estraverse: 5.3.0
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
@@ -3876,13 +3876,13 @@ snapshots:
 
   eslint-visitor-keys@4.0.0: {}
 
-  eslint@9.7.0:
+  eslint@9.8.0:
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.7.0)
+      '@eslint-community/eslint-utils': 4.4.0(eslint@9.8.0)
       '@eslint-community/regexpp': 4.11.0
-      '@eslint/config-array': 0.17.0
+      '@eslint/config-array': 0.17.1
       '@eslint/eslintrc': 3.1.0
-      '@eslint/js': 9.7.0
+      '@eslint/js': 9.8.0
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.3.0
       '@nodelib/fs.walk': 1.2.8
@@ -4194,7 +4194,7 @@ snapshots:
       relateurl: 0.2.7
       terser: 5.31.1
 
-  html-webpack-plugin@5.6.0(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  html-webpack-plugin@5.6.0(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -4202,7 +4202,7 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.2.1
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
 
   htmlparser2@6.1.0:
     dependencies:
@@ -4547,11 +4547,11 @@ snapshots:
 
   mimic-fn@2.1.0: {}
 
-  mini-css-extract-plugin@2.9.0(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  mini-css-extract-plugin@2.9.0(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
       schema-utils: 4.2.0
       tapable: 2.2.1
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
 
   minimalistic-assert@1.0.1: {}
 
@@ -5219,9 +5219,9 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  style-loader@4.0.0(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  style-loader@4.0.0(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
 
   supports-color@7.2.0:
     dependencies:
@@ -5233,24 +5233,24 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swc-loader@0.2.6(@swc/core@1.7.0)(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  swc-loader@0.2.6(@swc/core@1.7.2)(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
-      '@swc/core': 1.7.0
+      '@swc/core': 1.7.2
       '@swc/counter': 0.1.3
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
 
   tapable@2.2.1: {}
 
-  terser-webpack-plugin@5.3.10(@swc/core@1.7.0)(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  terser-webpack-plugin@5.3.10(@swc/core@1.7.2)(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.31.1
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
     optionalDependencies:
-      '@swc/core': 1.7.0
+      '@swc/core': 1.7.2
 
   terser@5.31.1:
     dependencies:
@@ -5281,9 +5281,9 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  ts-api-utils@1.3.0(typescript@5.5.3):
+  ts-api-utils@1.3.0(typescript@5.5.4):
     dependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
 
   tslib@2.6.3: {}
 
@@ -5328,18 +5328,18 @@ snapshots:
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
 
-  typescript-eslint@7.16.0(eslint@9.7.0)(typescript@5.5.3):
+  typescript-eslint@7.16.0(eslint@9.8.0)(typescript@5.5.4):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 7.16.0(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint@9.7.0)(typescript@5.5.3)
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
-      '@typescript-eslint/utils': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
-      eslint: 9.7.0
+      '@typescript-eslint/eslint-plugin': 7.16.0(@typescript-eslint/parser@7.16.0(eslint@9.8.0)(typescript@5.5.4))(eslint@9.8.0)(typescript@5.5.4)
+      '@typescript-eslint/parser': 7.16.0(eslint@9.8.0)(typescript@5.5.4)
+      '@typescript-eslint/utils': 7.16.0(eslint@9.8.0)(typescript@5.5.4)
+      eslint: 9.8.0
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
-  typescript@5.5.3: {}
+  typescript@5.5.4: {}
 
   unbox-primitive@1.0.2:
     dependencies:
@@ -5406,9 +5406,9 @@ snapshots:
   webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
+      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
+      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       colorette: 2.0.20
       commander: 10.0.1
       cross-spawn: 7.0.3
@@ -5417,13 +5417,13 @@ snapshots:
       import-local: 3.1.0
       interpret: 3.1.1
       rechoir: 0.8.0
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
       webpack-merge: 5.10.0
     optionalDependencies:
       webpack-bundle-analyzer: 4.10.2
       webpack-dev-server: 5.0.4(webpack-cli@5.1.4)(webpack@5.93.0)
 
-  webpack-dev-middleware@7.2.1(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)):
+  webpack-dev-middleware@7.2.1(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)):
     dependencies:
       colorette: 2.0.20
       memfs: 4.9.2
@@ -5432,7 +5432,7 @@ snapshots:
       range-parser: 1.2.1
       schema-utils: 4.2.0
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
 
   webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0):
     dependencies:
@@ -5464,10 +5464,10 @@ snapshots:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack-dev-middleware: 7.2.1(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+      webpack-dev-middleware: 7.2.1(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       ws: 8.17.0
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.93.0)
     transitivePeerDependencies:
       - bufferutil
@@ -5483,7 +5483,7 @@ snapshots:
 
   webpack-sources@3.2.3: {}
 
-  webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4):
+  webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.5
@@ -5506,7 +5506,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(@swc/core@1.7.0)(webpack@5.93.0(@swc/core@1.7.0)(webpack-cli@5.1.4))
+      terser-webpack-plugin: 5.3.10(@swc/core@1.7.2)(webpack@5.93.0(@swc/core@1.7.2)(webpack-cli@5.1.4))
       watchpack: 2.4.1
       webpack-sources: 3.2.3
     optionalDependencies:
