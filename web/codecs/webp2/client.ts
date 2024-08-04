@@ -1,12 +1,12 @@
+import { wp2 } from "icodec";
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import { Csp, defaultOptions, EncodeOptions, Subsample } from "./codec.ts";
 
 export const name = "WebP v2";
-export const mimeType = "image/webp2";
-export const extension = "wp2";
+export const mimeType = wp2.mimeType;
+export const extension = wp2.extension;
 
-export { defaultOptions };
+export const defaultOptions = wp2.defaultOptions;
 
 export const templates: OptionType[] = [
 	new NumberOption({
@@ -60,13 +60,13 @@ export const templates: OptionType[] = [
 	new EnumOption({
 		id: "uv_mode",
 		label: "Subsample chroma",
-		enumObject: Subsample,
-		defaultValue: "Auto",
+		enumObject: wp2.UVMode,
+		defaultValue: "UVAuto",
 	}),
 	new EnumOption({
 		id: "csp_type",
 		label: "Color space",
-		enumObject: Csp,
+		enumObject: wp2.Csp,
 		defaultValue: "YCoCg",
 	}),
 	new BoolOption({
@@ -76,8 +76,8 @@ export const templates: OptionType[] = [
 	}),
 ];
 
-export function encode(options: EncodeOptions, worker: ImageWorker) {
-	options.uv_mode = Subsample[options.uv_mode];
-	options.csp_type = Csp[options.csp_type];
+export function encode(options: wp2.Options, worker: ImageWorker) {
+	options.uv_mode = wp2.UVMode[options.uv_mode];
+	options.csp_type = wp2.Csp[options.csp_type];
 	return worker.webp2Encode(options);
 }

@@ -1,12 +1,12 @@
+import { jpeg } from "icodec";
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import { ColorSpace, defaultOptions, EncodeOptions, Quantization } from "./codec.ts";
 
 export const name = "MozJPEG";
 export const mimeType = "image/jpeg";
 export const extension = "jpg";
 
-export { defaultOptions };
+export const defaultOptions = jpeg.defaultOptions;
 
 export const templates: OptionType[] = [
 	new NumberOption({
@@ -20,7 +20,7 @@ export const templates: OptionType[] = [
 	new EnumOption({
 		id: "color_space",
 		label: "Channels",
-		enumObject: ColorSpace,
+		enumObject: jpeg.ColorSpace,
 		defaultValue: "YCbCr",
 	}),
 	new BoolOption({
@@ -67,7 +67,7 @@ export const templates: OptionType[] = [
 	new EnumOption({
 		id: "quant_table",
 		label: "Quantization",
-		enumObject: Quantization,
+		enumObject: jpeg.Quantization,
 		defaultValue: "ImageMagick",
 	}),
 	new BoolOption({
@@ -95,8 +95,8 @@ export const templates: OptionType[] = [
 	}),
 ];
 
-export function encode(options: EncodeOptions, worker: ImageWorker) {
-	options.color_space = ColorSpace[options.color_space];
-	options.quant_table = Quantization[options.quant_table];
+export function encode(options: jpeg.Options, worker: ImageWorker) {
+	options.color_space = jpeg.ColorSpace[options.color_space];
+	options.quant_table = jpeg.Quantization[options.quant_table];
 	return worker.mozjpegEncode(options);
 }

@@ -1,26 +1,33 @@
 import { RPC } from "@kaciras/utilities/browser";
+import * as icodec from "icodec";
 import * as Similarity from "../../lib/similarity.ts";
 import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../../lib/similarity.ts";
-import wasmUrl from "../../lib/diff.wasm";
-import { EncodeResult } from "../codecs/common.ts";
-import * as MozJPEG from "../codecs/mozjpeg/codec.ts";
-import * as JXL from "../codecs/jxl/codec.ts";
-import * as WebP from "../codecs/webp/codec.ts";
-import * as AVIF from "../codecs/avif/codec.ts";
-import * as WebP2 from "../codecs/webp2/codec.ts";
-import * as QOI from "../codecs/qoi/codec.ts";
+import diffWASM from "../../lib/diff.wasm";
+import { EncodeResult } from "../codecs/index.ts";
 
 // A worker can only convert one image at the same time, so use global variable for more simplify code.
 let data: ImageData;
 
 let butteraugli: Butteraugli;
 
-interface CodecModule<T> {
-	encode(image: ImageData, options: T): Promise<EncodeResult>;
+async function bindEncoder(this: icodec.ICodecEncoder, options: any) {
+	await this.loadEncoder();
+
+	const start = performance.now();
+	const output = this.encode(data, options);
+	const end = performance.now();
+
+	const result: EncodeResult = {
+		time: (end - start) / 1000,
+		buffer: output.buffer,
+	};
+	return RPC.transfer(result, [result.buffer]);
 }
 
-function bindEncoder<T>(module: CodecModule<T>) {
-	return (options: T) => module.encode(data, options);
+async function bindDecoder(this: icodec.ICodecDecoder, buffer: BufferSource) {
+	await this.loadDecoder();
+	const output = this.decode(buffer);
+	return RPC.transfer(output, [output.data.buffer]);
 }
 
 const publicApis = {
@@ -29,30 +36,30 @@ const publicApis = {
 		data = image;
 	},
 
-	mozjpegEncode: bindEncoder(MozJPEG),
-	jxlEncode: bindEncoder(JXL),
-	webpEncode: bindEncoder(WebP),
-	avifEncode: bindEncoder(AVIF),
-	webp2Encode: bindEncoder(WebP2),
-	qoiEncode: bindEncoder(QOI),
+	qoiEncode: bindEncoder.bind(icodec.qoi as any),
+	mozjpegEncode: bindEncoder.bind(icodec.jpeg),
+	jxlEncode: bindEncoder.bind(icodec.jxl),
+	webpEncode: bindEncoder.bind(icodec.webp),
+	avifEncode: bindEncoder.bind(icodec.avif),
+	webp2Encode: bindEncoder.bind(icodec.wp2),
 
-	jxlDecode: JXL.decode,
-	avifDecode: AVIF.decode,
-	webp2Decode: WebP2.decode,
-	qoiDecode: QOI.decode,
+	jxlDecode: bindDecoder.bind(icodec.jxl),
+	avifDecode: bindDecoder.bind(icodec.avif),
+	webp2Decode: bindDecoder.bind(icodec.wp2),
+	qoiDecode: bindDecoder.bind(icodec.qoi),
 
 	async calcSSIM(image: ImageData, options?: SSIMOptions) {
-		await Similarity.initWasmModule(wasmUrl);
+		await Similarity.initWasmModule(diffWASM);
 		return Similarity.getSSIM(data, image, options);
 	},
 
 	async calcPSNR(image: ImageData) {
-		await Similarity.initWasmModule(wasmUrl);
+		await Similarity.initWasmModule(diffWASM);
 		return Similarity.getPSNR(data, image);
 	},
 
 	async calcButteraugli(image: ImageData, options?: ButteraugliOptions) {
-		await Similarity.initWasmModule(wasmUrl);
+		await Similarity.initWasmModule(diffWASM);
 		butteraugli ??= new Butteraugli(data);
 
 		const [score, heatMap] = butteraugli.diff(image, options);

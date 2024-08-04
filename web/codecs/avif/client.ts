@@ -1,41 +1,35 @@
+import { avif } from "icodec";
 import { ImageWorker } from "../../features/image-worker";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import { defaultOptions, EncodeOptions, Subsampling } from "./codec.ts";
 
 export const name = "AVIF";
-export const mimeType = "image/avif";
-export const extension = "avif";
+export const mimeType = avif.mimeType;
+export const extension = avif.extension;
 
-const AVIFTune = {
-	Auto: 0,
-	PSNR: 1,
-	SSIM: 3,
-};
-
-export { defaultOptions };
+export const defaultOptions = avif.defaultOptions;
 
 export const templates: OptionType[] = [
 	new NumberOption({
-		id: "cqLevel",
-		label: "Quality (63 = lossless)",
+		id: "quality",
+		label: "Quality (100 + YUV444 = lossless)",
 		min: 0,
-		max: 63,
+		max: 100,
 		step: 1,
-		defaultValue: defaultOptions.cqLevel,
+		defaultValue: defaultOptions.quality,
+	}),
+	new NumberOption({
+		id: "qualityAlpha",
+		label: "Alpha quality (-1 to same with the quality)",
+		min: -1,
+		max: 100,
+		step: 1,
+		defaultValue: defaultOptions.qualityAlpha,
 	}),
 	new EnumOption({
 		id: "subsample",
 		label: "Subsample",
-		enumObject: Subsampling,
+		enumObject: avif.Subsampling,
 		defaultValue: "YUV420",
-	}),
-	new NumberOption({
-		id: "cqAlphaLevel",
-		label: "Alpha quality (-1 to same with the quality)",
-		min: -1,
-		max: 63,
-		step: 1,
-		defaultValue: defaultOptions.cqAlphaLevel,
 	}),
 	new BoolOption({
 		id: "chromaDeltaQ",
@@ -61,7 +55,7 @@ export const templates: OptionType[] = [
 	new EnumOption({
 		id: "tune",
 		label: "Tuning",
-		enumObject: AVIFTune,
+		enumObject: avif.AVIFTune,
 		defaultValue: "Auto",
 	}),
 	new NumberOption({
@@ -88,13 +82,15 @@ export const templates: OptionType[] = [
 		step: 1,
 		defaultValue: defaultOptions.speed,
 	}),
+	new BoolOption({
+		id: "enableSharpYUV",
+		label: "Sharp YUV Downsampling",
+		defaultValue: defaultOptions.enableSharpYUV,
+	}),
 ];
 
-export function encode(options: EncodeOptions, worker: ImageWorker) {
-	const { cqLevel, cqAlphaLevel } = options;
-	options.subsample = Subsampling[options.subsample];
-	options.tune = AVIFTune[options.tune];
-	options.cqLevel = 63 - cqLevel;
-	options.cqAlphaLevel = (cqAlphaLevel === -1) ? -1 : 63 - cqAlphaLevel;
+export function encode(options: avif.Options, worker: ImageWorker) {
+	options.tune = avif.AVIFTune[options.tune];
+	options.subsample = avif.Subsampling[options.subsample];
 	return worker.avifEncode(options);
 }

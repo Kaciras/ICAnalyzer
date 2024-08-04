@@ -1,12 +1,12 @@
+import { jxl } from "icodec";
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, NumberOption, OptionType } from "../../form/index.ts";
-import { defaultOptions, EncodeOptions } from "./codec.ts";
 
 export const name = "JPEG XL";
-export const mimeType = "image/jxl";
-export const extension = "jxl";
+export const mimeType = jxl.mimeType;
+export const extension = jxl.extension;
 
-export { defaultOptions };
+export const defaultOptions = jxl.defaultOptions;
 
 export const templates: OptionType[] = [
 	new NumberOption({
@@ -61,6 +61,6 @@ export const templates: OptionType[] = [
 	}),
 ];
 
-export function encode(options: EncodeOptions, worker: ImageWorker) {
+export function encode(options: jxl.Options, worker: ImageWorker) {
 	return worker.jxlEncode(options);
 }

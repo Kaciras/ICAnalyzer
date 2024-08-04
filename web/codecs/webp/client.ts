@@ -1,12 +1,12 @@
+import { webp } from "icodec";
 import { ImageWorker } from "../../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
-import { defaultOptions, EncodeOptions } from "./codec.ts";
 
 export const name = "WebP";
-export const mimeType = "image/webp";
-export const extension = "webp";
+export const mimeType = webp.mimeType;
+export const extension = webp.extension;
 
-export { defaultOptions };
+export const defaultOptions = webp.defaultOptions;
 
 const Preprocess = {
 	"None": 0,
@@ -30,7 +30,7 @@ const losslessPresets = [
 
 class LosslessPresetOption extends NumberOption {
 
-	populate(value: number, options: EncodeOptions) {
+	populate(value: number, options: webp.Options) {
 		if (!options.lossless) {
 			return;
 		}
@@ -141,7 +141,7 @@ export const templates: OptionType[] = [
 	// There is no image_hint option since it have no effect.
 ];
 
-export function encode(options: EncodeOptions, worker: ImageWorker) {
+export function encode(options: webp.Options, worker: ImageWorker) {
 	options.preprocessing = Preprocess[options.preprocessing];
 	return worker.webpEncode(options);
 }
