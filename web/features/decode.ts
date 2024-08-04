@@ -13,12 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Modifications copyright (C) 2020 Kaciras
+ * Modifications copyright (C) 2024 Kaciras
  */
 import { RPC } from "@kaciras/utilities/browser";
-import { sniffMimeType } from "squoosh/src/client/lazy-app/util/index.ts";
 import { ImageWorkerApi } from "./worker.ts";
 import { ImageWorker, workerFactory } from "./image-worker.ts";
+
+const magicNumbers = [
+	["application/pdf", "%PDF-"],
+	["image/gif", "GIF87a"],
+	["image/gif", "GIF89a"],
+	["image/png", "\x89PNG\x0D\x0A\x1A\x0A"],
+	["image/jpeg", "\xFF\xD8\xFF"],
+	["image/bmp", "BM"],
+	["image/tiff", "I I"],
+	["image/tiff", "II"],
+	["image/tiff", "MM\x00"],
+	["image/webp", "RIFF....WEBPVP8[LX ]"],
+	["image/webp2", "\xF4\xFF\x6F"],
+	["image/avif", "\x00\x00\x00 ftypavif\x00\x00\x00\x00"],
+	["image/jxl", "\xff\x0a"],
+	["image/jxl", "\x00\x00\x00\x0cJXL \x0d\x0a\x87\x0a"],
+	["image/qoi", "qoif"],
+];
+
+function sniffMimeType(buffer: ArrayBuffer) {
+	const magicStr = Array.from(new Uint8Array(buffer, 0, 16))
+		.map(c => String.fromCodePoint(c)).join("");
+	return magicNumbers.find(i => magicStr.startsWith(i[1]))?.[0] ?? "";
+}
 
 const decodeUnsupported = new Set<string>();
 
@@ -81,11 +104,9 @@ async function svgToImageData(svgXml: string) {
 }
 
 export async function decode(blob: Blob, worker?: ImageWorker) {
-	let { type } = blob;
+	const buffer = await blob.arrayBuffer();
+	const type = blob.type || sniffMimeType(buffer);
 
-	if (!type) {
-		type = await sniffMimeType(blob);
-	}
 	if (type === "image/svg+xml") {
 		return blob.text().then(svgToImageData);
 	}
@@ -107,7 +128,6 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 	}
 
 	worker ??= RPC.probeClient<ImageWorkerApi>(workerFactory());
-	const buffer = await blob.arrayBuffer();
 	const input = RPC.transfer(buffer, [buffer]);
 	switch (type) {
 		case "image/avif":
