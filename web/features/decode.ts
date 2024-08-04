@@ -16,27 +16,41 @@
  * Modifications copyright (C) 2020 Kaciras
  */
 import { RPC } from "@kaciras/utilities/browser";
-import { blobToImg, canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util/index.ts";
+import { canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util/index.ts";
 import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas.ts";
 import { ImageWorkerApi } from "./worker.ts";
 import { ImageWorker, workerFactory } from "./image-worker.ts";
+
+const canvas = document.createElement("canvas");
+const ctx2d = canvas.getContext("2d")!;
+
+const imgElement = document.createElement("img");
+imgElement.decoding = "async";
+
+async function blobToImg(blob: Blob) {
+	imgElement.src = URL.createObjectURL(blob);
+	try {
+		await imgElement.decode();
+		return imgElement;
+	} finally {
+		URL.revokeObjectURL(imgElement.src);
+	}
+}
 
 async function decodeImageNative(blob: Blob) {
 	const bitmap = "createImageBitmap" in self
 		? await createImageBitmap(blob)
 		: await blobToImg(blob);
 
-	const canvas = document.createElement("canvas");
 	const { width, height } = bitmap;
 	canvas.width = width;
 	canvas.height = height;
 
-	const ctx = canvas.getContext("2d");
-	if (!ctx) {
-		throw new Error("Canvas not initialized");
-	}
-	ctx.drawImage(bitmap, 0, 0);
-	return ctx.getImageData(0, 0, width, height);
+	// if (!ctx2d) {
+	// 	throw new Error("Canvas not initialized");
+	// }
+	ctx2d.drawImage(bitmap, 0, 0);
+	return ctx2d.getImageData(0, 0, width, height);
 }
 
 /**
