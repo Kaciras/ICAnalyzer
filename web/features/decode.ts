@@ -16,10 +16,11 @@
  * Modifications copyright (C) 2020 Kaciras
  */
 import { RPC } from "@kaciras/utilities/browser";
-import { canDecodeImageType, sniffMimeType } from "squoosh/src/client/lazy-app/util/index.ts";
-import { drawableToImageData } from "squoosh/src/client/lazy-app/util/canvas.ts";
+import { sniffMimeType } from "squoosh/src/client/lazy-app/util/index.ts";
 import { ImageWorkerApi } from "./worker.ts";
 import { ImageWorker, workerFactory } from "./image-worker.ts";
+
+const decodeUnsupported = new Set<string>();
 
 const canvas = document.createElement("canvas");
 const ctx2d = canvas.getContext("2d")!;
@@ -37,18 +38,11 @@ async function blobToImg(blob: Blob) {
 	}
 }
 
-async function decodeImageNative(blob: Blob) {
-	const bitmap = "createImageBitmap" in self
-		? await createImageBitmap(blob)
-		: await blobToImg(blob);
-
+async function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
 	const { width, height } = bitmap;
 	canvas.width = width;
 	canvas.height = height;
 
-	// if (!ctx2d) {
-	// 	throw new Error("Canvas not initialized");
-	// }
 	ctx2d.drawImage(bitmap, 0, 0);
 	return ctx2d.getImageData(0, 0, width, height);
 }
@@ -95,8 +89,21 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 	if (type === "image/svg+xml") {
 		return blob.text().then(svgToImageData);
 	}
-	if (await canDecodeImageType(type)) {
-		return decodeImageNative(blob);
+
+	/*
+	 * Squoosh uses <picture> + <img> to test codec support of browser, But it seems
+	 * simpler to me to just decode it and determine by whether it succeeded or not.
+	 *
+	 * https://github.com/GoogleChromeLabs/squoosh/blob/19beb1a7ab5ab7df9625edaf7c3bf71a50e183ae/src/client/lazy-app/util/index.ts#L60
+	 */
+	if (!decodeUnsupported.has(type)) {
+		try {
+			const bitmap = await createImageBitmap(blob);
+			return await drawableToImageData(bitmap);
+		} catch (e) {
+			decodeUnsupported.add(type);
+			console.info(`Native decode failed for ${type}, switch to WASM decoder.`);
+		}
 	}
 
 	worker ??= RPC.probeClient<ImageWorkerApi>(workerFactory());
@@ -112,6 +119,6 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 		case "image/webp2":
 			return worker.webp2Decode(input);
 		default:
-			return decodeImageNative(blob);
+			throw new Error("Unsupported image format");
 	}
 }
