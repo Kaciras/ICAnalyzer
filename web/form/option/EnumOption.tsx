@@ -4,14 +4,14 @@ import { CheckBox, RadioBox } from "../../ui/index.ts";
 import EnumControl from "../control/EnumControl.tsx";
 import styles from "./EnumOption.css";
 
-export interface EnumOptionConfig<T extends Record<string, any>> {
+export interface EnumOptionConfig<T> {
 	id: string;
 	label: string;
 	enumObject: T;
 	defaultValue: keyof T;
 }
 
-export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
+export class EnumOption<T extends Record<string, any>> implements OptionType<keyof T, Array<keyof T>> {
 
 	protected readonly data: EnumOptionConfig<T>;
 
@@ -61,9 +61,10 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 			onValueChange(e.currentTarget.value as keyof T);
 		}
 
+		const keys = Object.keys(enumObject).filter(isNaN as any);
 		let items: any[];
 		if (isVariable) {
-			items = Object.keys(enumObject).map(name =>
+			items = keys.map(name =>
 				<CheckBox
 					className={styles.item}
 					key={name}
@@ -75,7 +76,7 @@ export class EnumOption<T> implements OptionType<keyof T, Array<keyof T>> {
 				</CheckBox>,
 			);
 		} else {
-			items = Object.keys(enumObject).map(name =>
+			items = keys.map(name =>
 				<RadioBox
 					className={styles.item}
 					key={name}

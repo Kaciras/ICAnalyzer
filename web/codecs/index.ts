@@ -1,11 +1,11 @@
 import { ImageWorker } from "../features/image-worker.ts";
-import * as MozJPEG from "./mozjpeg/client.ts";
-import * as JXL from "./jxl/client.ts";
-import * as WebP from "./webp/client.ts";
-import * as AVIF from "./avif/client.ts";
-import * as WebP2 from "./webp2/client.ts";
-import * as QOI from "./qoi/client.ts";
 import { ControlType, OptionStateMap, OptionType } from "../form/index.ts";
+import * as JXL from "./jxl.ts";
+import * as WebP from "./webp.ts";
+import * as AVIF from "./avif.ts";
+import * as WebP2 from "./webp2.ts";
+import * as QOI from "./qoi.ts";
+import * as MozJPEG from "./mozjpeg.ts";
 
 export interface EncodeResult {
 
