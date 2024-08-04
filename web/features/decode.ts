@@ -101,15 +101,16 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 
 	worker ??= RPC.probeClient<ImageWorkerApi>(workerFactory());
 	const buffer = await blob.arrayBuffer();
+	const input = RPC.transfer(buffer, [buffer]);
 	switch (type) {
 		case "image/avif":
-			return worker.avifDecode(buffer);
+			return worker.avifDecode(input);
 		case "image/jxl":
-			return worker.jxlDecode(buffer);
+			return worker.jxlDecode(input);
 		case "image/qoi":
-			return worker.qoiDecode(buffer);
+			return worker.qoiDecode(input);
 		case "image/webp2":
-			return worker.webp2Decode(buffer);
+			return worker.webp2Decode(input);
 		default:
 			return decodeImageNative(blob);
 	}
