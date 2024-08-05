@@ -1,6 +1,6 @@
 import { jxl } from "icodec";
-import { ImageWorker } from "../../features/image-worker.ts";
-import { BoolOption, NumberOption, OptionType } from "../../form/index.ts";
+import { ImageWorker } from "../features/image-worker.ts";
+import { BoolOption, NumberOption, OptionType } from "../form/index.ts";
 
 export const name = "JPEG XL";
 export const mimeType = jxl.mimeType;

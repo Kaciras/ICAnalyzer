@@ -1,6 +1,6 @@
 import { jpeg } from "icodec";
-import { ImageWorker } from "../../features/image-worker.ts";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import { ImageWorker } from "../features/image-worker.ts";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../form/index.ts";
 
 export const name = "MozJPEG";
 export const mimeType = "image/jpeg";

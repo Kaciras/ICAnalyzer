@@ -1,6 +1,6 @@
 import { avif } from "icodec";
-import { ImageWorker } from "../../features/image-worker";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import { ImageWorker } from "../features/image-worker.ts";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../form/index.ts";
 
 export const name = "AVIF";
 export const mimeType = avif.mimeType;
@@ -76,7 +76,7 @@ export const templates: OptionType[] = [
 	}),
 	new NumberOption({
 		id: "speed",
-		label: "Speed",
+		label: "Speed (0 = slowest, 10 = fastest)",
 		min: 0,
 		max: 10,
 		step: 1,

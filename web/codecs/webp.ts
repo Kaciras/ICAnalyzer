@@ -1,6 +1,6 @@
 import { webp } from "icodec";
-import { ImageWorker } from "../../features/image-worker.ts";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import { ImageWorker } from "../features/image-worker.ts";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../form/index.ts";
 
 export const name = "WebP";
 export const mimeType = webp.mimeType;

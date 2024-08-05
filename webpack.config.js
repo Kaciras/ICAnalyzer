@@ -96,15 +96,6 @@ export default function (env) {
 			hashFunction: "xxhash64",
 		},
 		devtool: isProd ? "source-map" : "cheap-module-source-map",
-		resolve: {
-			extensions: [".tsx", ".ts", ".js", ".json"],
-			fallback: {
-				path: false,
-				fs: false,
-				crypto: false,
-				module: false,
-			},
-		},
 		module: {
 			rules: loaders,
 		},

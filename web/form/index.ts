@@ -54,6 +54,6 @@ export interface OptionType<T = any, V = any> {
 	populate(value: T, options: any): void;
 }
 
-export { BoolOption } from "./option/BoolOption";
-export { EnumOption } from "./option/EnumOption";
-export { NumberOption } from "./option/NumberOption";
+export { BoolOption } from "./option/BoolOption.tsx";
+export { EnumOption } from "./option/EnumOption.tsx";
+export { NumberOption } from "./option/NumberOption.tsx";

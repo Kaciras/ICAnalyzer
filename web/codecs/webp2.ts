@@ -1,6 +1,6 @@
 import { wp2 } from "icodec";
-import { ImageWorker } from "../../features/image-worker.ts";
-import { BoolOption, EnumOption, NumberOption, OptionType } from "../../form/index.ts";
+import { ImageWorker } from "../features/image-worker.ts";
+import { BoolOption, EnumOption, NumberOption, OptionType } from "../form/index.ts";
 
 export const name = "WebP v2";
 export const mimeType = wp2.mimeType;

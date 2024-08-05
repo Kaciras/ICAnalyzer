@@ -4,11 +4,11 @@ import Highcharts, { Chart, Options, SeriesLineOptions, YAxisOptions } from "hig
 import Export from "highcharts/modules/exporting";
 import ExportOffline from "highcharts/modules/offline-exporting";
 import { TbLockFilled } from "react-icons/tb";
+import i18n from "../i18n.ts";
 import { Button } from "../ui/index.ts";
 import { MetricMeta } from "../features/measurement.ts";
 import { AnalyzeResult } from "../features/image-worker.ts";
 import styles from "./ChartPanel.css";
-import i18n from "../i18n.ts";
 
 Export(Highcharts);
 ExportOffline(Highcharts);

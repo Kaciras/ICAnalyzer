@@ -37,7 +37,7 @@ export type ImageWorker = RPC.Remote<ImageWorkerApi>;
 
 export function workerFactory() {
 	// @ts-ignore ts-loader will convert the file to ES module.
-	return new Worker(new URL("./worker", import.meta.url));
+	return new Worker(new URL("./worker.ts", import.meta.url));
 }
 
 export function newImagePool(size: number): ImagePool {

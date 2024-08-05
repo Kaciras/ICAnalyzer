@@ -1,5 +1,5 @@
-import { ImageWorker } from "../../features/image-worker.ts";
-import { OptionType } from "../../form/index.ts";
+import { ImageWorker } from "../features/image-worker.ts";
+import { OptionType } from "../form/index.ts";
 
 export const name = "QOI";
 export const mimeType = "image/qoi";
