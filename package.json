@@ -11,7 +11,7 @@
 	"type": "module",
 	"scripts": {
 		"lint": "eslint --fix",
-		"compile-wasm": "emcc -O3 --bind -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web -s EXPORT_ES6=1 -I deps/butteraugli -I src src/butteraugli.cpp deps/butteraugli/butteraugli/butteraugli.cc -o lib/diff.js",
+		"compile-wasm": "emcc -O3 -msimd128 --bind -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web -s EXPORT_ES6=1  -s TEXTDECODER=2 -s FILESYSTEM=0 -I deps/butteraugli -I src src/butteraugli.cpp deps/butteraugli/butteraugli/butteraugli.cc -o lib/diff.js",
 		"dev": "webpack-cli serve",
 		"build": "webpack --env production --env report"
 	},
