@@ -98,9 +98,6 @@ export default function (env) {
 		devtool: isProd ? "source-map" : "cheap-module-source-map",
 		resolve: {
 			extensions: [".tsx", ".ts", ".js", ".json"],
-			alias: {
-				squoosh: resolve("deps/squoosh"),
-			},
 			fallback: {
 				path: false,
 				fs: false,

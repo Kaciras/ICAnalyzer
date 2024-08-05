@@ -20,24 +20,24 @@ import { ImageWorkerApi } from "./worker.ts";
 import { ImageWorker, workerFactory } from "./image-worker.ts";
 
 const magicNumbers = [
-	["application/pdf", "%PDF-"],
-	["image/gif", "GIF87a"],
-	["image/gif", "GIF89a"],
 	["image/png", "\x89PNG\x0D\x0A\x1A\x0A"],
 	["image/jpeg", "\xFF\xD8\xFF"],
+	["image/webp", "RIFF....WEBPVP8[LX ]"],
+	["image/avif", "\x00\x00\x00 ftypavif\x00\x00\x00\x00"],
+	["image/gif", "GIF87a"],
+	["image/gif", "GIF89a"],
+	["application/pdf", "%PDF-"],
 	["image/bmp", "BM"],
+	["image/qoi", "qoif"],
 	["image/tiff", "I I"],
 	["image/tiff", "II"],
 	["image/tiff", "MM\x00"],
-	["image/webp", "RIFF....WEBPVP8[LX ]"],
 	["image/webp2", "\xF4\xFF\x6F"],
-	["image/avif", "\x00\x00\x00 ftypavif\x00\x00\x00\x00"],
 	["image/jxl", "\xff\x0a"],
 	["image/jxl", "\x00\x00\x00\x0cJXL \x0d\x0a\x87\x0a"],
-	["image/qoi", "qoif"],
 ];
 
-function sniffMimeType(buffer: ArrayBuffer) {
+function sniffMimeType(buffer: ArrayBufferLike) {
 	const magicStr = Array.from(new Uint8Array(buffer, 0, 16))
 		.map(c => String.fromCodePoint(c)).join("");
 	return magicNumbers.find(i => magicStr.startsWith(i[1]))?.[0] ?? "";
@@ -48,10 +48,9 @@ const decodeUnsupported = new Set<string>();
 const canvas = document.createElement("canvas");
 const ctx2d = canvas.getContext("2d")!;
 
-const imgElement = document.createElement("img");
-imgElement.decoding = "async";
-
 async function blobToImg(blob: Blob) {
+	const imgElement = document.createElement("img");
+	imgElement.decoding = "async";
 	imgElement.src = URL.createObjectURL(blob);
 	try {
 		await imgElement.decode();
@@ -68,6 +67,36 @@ async function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
 
 	ctx2d.drawImage(bitmap, 0, 0);
 	return ctx2d.getImageData(0, 0, width, height);
+}
+
+export type BuiltinResizeMethod = "pixelated" | "low" | "medium" | "high";
+
+export function builtinResize(
+	image: ImageData,
+	dw: number,
+	dh: number,
+	method: BuiltinResizeMethod,
+) {
+	const canvasDest = document.createElement("canvas");
+	canvasDest.width = dw;
+	canvasDest.height = dh;
+	const ctx1 = canvasDest.getContext("2d");
+	if (!ctx1) {
+		throw new Error("Could not create canvas context");
+	}
+
+	canvas.width = image.width;
+	canvas.height = image.height;
+	ctx2d.putImageData(image, 0, 0);
+
+	if (method === "pixelated") {
+		ctx1.imageSmoothingEnabled = false;
+	} else {
+		ctx1.imageSmoothingQuality = method;
+	}
+
+	ctx1.drawImage(canvas, 0, 0, image.width, image.height, 0, 0, dw, dh);
+	return ctx1.getImageData(0, 0, dw, dh);
 }
 
 /**

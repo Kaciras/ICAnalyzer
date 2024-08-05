@@ -16,9 +16,5 @@
 		"noEmit": true,
 		"allowImportingTsExtensions": true,
 		"useUnknownInCatchVariables": false,
-		"baseUrl": ".",
-		"paths": {
-			"squoosh/*": ["./deps/squoosh/*"]
-		}
 	}
 }

@@ -1,5 +1,4 @@
 import { Dispatch, useState } from "react";
-import { builtinResize } from "squoosh/src/client/lazy-app/util/canvas.ts";
 import { AnalyzeContext } from "./index.ts";
 import RangeControl from "../form/control/RangeControl.tsx";
 import {
@@ -12,6 +11,7 @@ import {
 } from "../features/image-worker.ts";
 import { createMeasurer, MeasureOptions } from "../features/measurement.ts";
 import { useProgress } from "../hooks.ts";
+import { builtinResize } from "../features/decode.ts";
 import ProgressDialog from "./ProgressDialog.tsx";
 import CompareFileDialog from "./CompareFileDialog.tsx";
 import CompareConfigDialog from "./CompareConfigDialog.tsx";
@@ -28,7 +28,7 @@ function resizeToFit(image: ImageData, target: ImageData) {
 	if (w0 === w1 && h0 === h1) {
 		return image;
 	}
-	return builtinResize(image, 0, 0, w0, h0, w1, h1, "high");
+	return builtinResize(image, w1, h1, "high");
 }
 
 interface CompareSessionProps {
