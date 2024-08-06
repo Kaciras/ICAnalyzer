@@ -62,9 +62,10 @@
 	--offset: calc((var(--split) - 50vw  - var(--x)) / var(--scale));
 
 	position: absolute;
+	clip-path: inset(0 calc(50% - var(--offset)) 0 0);
 
 	& + .canvas {
-		clip-path: inset(0 calc(50% - var(--offset)) 0 0);
+		clip-path: inset(0 0 0 calc(50% + var(--offset)));
 	}
 }
 

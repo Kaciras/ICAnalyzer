@@ -156,6 +156,7 @@ export default function ImageView(props: ImageViewProps) {
 						ref={backCanvas}
 						width={width}
 						height={height}
+						hidden={type === ViewType.Output}
 					/>
 					<canvas
 						className={styles.canvas}
