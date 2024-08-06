@@ -46,7 +46,7 @@ function sniffMimeType(buffer: ArrayBufferLike) {
 const decodeUnsupported = new Set<string>();
 
 const canvas = document.createElement("canvas");
-const ctx2d = canvas.getContext("2d")!;
+const ctx2d = canvas.getContext("2d", { willReadFrequently: true })!;
 
 async function blobToImg(blob: Blob) {
 	const imgElement = document.createElement("img");
