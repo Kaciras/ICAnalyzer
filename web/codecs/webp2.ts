@@ -19,9 +19,9 @@ export const templates: OptionType[] = [
 	}),
 	new NumberOption({
 		id: "alpha_quality",
-		label: "Alpha Quality",
+		label: "Alpha Quality (100 = lossless)",
 		min: 0,
-		max: 95,
+		max: 100,
 		step: 0.1,
 		defaultValue: defaultOptions.alpha_quality,
 	}),
