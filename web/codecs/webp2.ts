@@ -11,7 +11,7 @@ export const defaultOptions = wp2.defaultOptions;
 export const templates: OptionType[] = [
 	new NumberOption({
 		id: "quality",
-		label: "Quality (100 = lossless)",
+		label: "Quality",
 		min: 0,
 		max: 100,
 		step: 0.1,
@@ -19,7 +19,7 @@ export const templates: OptionType[] = [
 	}),
 	new NumberOption({
 		id: "alpha_quality",
-		label: "Alpha Quality (100 = lossless)",
+		label: "Alpha Quality",
 		min: 0,
 		max: 100,
 		step: 0.1,
