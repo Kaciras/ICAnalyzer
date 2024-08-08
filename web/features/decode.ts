@@ -45,9 +45,6 @@ function sniffMimeType(buffer: ArrayBufferLike) {
 
 const decodeUnsupported = new Set<string>();
 
-const canvas = document.createElement("canvas");
-const ctx2d = canvas.getContext("2d", { willReadFrequently: true })!;
-
 async function blobToImg(blob: Blob) {
 	const imgElement = document.createElement("img");
 	imgElement.decoding = "async";
@@ -60,13 +57,27 @@ async function blobToImg(blob: Blob) {
 	}
 }
 
+// https://stackoverflow.com/a/60564905/7065321
 async function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
 	const { width, height } = bitmap;
-	canvas.width = width;
-	canvas.height = height;
 
-	ctx2d.drawImage(bitmap, 0, 0);
-	return ctx2d.getImageData(0, 0, width, height);
+	const canvas = document.createElement("canvas");
+	const gl = canvas.getContext("webgl2")!;
+	// canvas.width = width;
+	// canvas.height = height;
+
+	gl.activeTexture(gl.TEXTURE0);
+	const texture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	const framebuffer = gl.createFramebuffer();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
+	gl.drawBuffers([gl.NONE]);
+
+	const data = new Uint8ClampedArray(width * height * 4);
+	gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+	return new ImageData(data, width, height);
 }
 
 export type BuiltinResizeMethod = "pixelated" | "low" | "medium" | "high";
@@ -80,23 +91,22 @@ export function builtinResize(
 	const canvasDest = document.createElement("canvas");
 	canvasDest.width = dw;
 	canvasDest.height = dh;
-	const ctx1 = canvasDest.getContext("2d");
-	if (!ctx1) {
-		throw new Error("Could not create canvas context");
-	}
+	const destCtx = canvasDest.getContext("2d")!;
 
+	const canvas = document.createElement("canvas");
+	const ctx2d = canvas.getContext("2d", { willReadFrequently: true })!;
 	canvas.width = image.width;
 	canvas.height = image.height;
 	ctx2d.putImageData(image, 0, 0);
 
 	if (method === "pixelated") {
-		ctx1.imageSmoothingEnabled = false;
+		destCtx.imageSmoothingEnabled = false;
 	} else {
-		ctx1.imageSmoothingQuality = method;
+		destCtx.imageSmoothingQuality = method;
 	}
 
-	ctx1.drawImage(canvas, 0, 0, image.width, image.height, 0, 0, dw, dh);
-	return ctx1.getImageData(0, 0, dw, dh);
+	destCtx.drawImage(canvas, 0, 0, image.width, image.height, 0, 0, dw, dh);
+	return destCtx.getImageData(0, 0, dw, dh);
 }
 
 /**
@@ -148,7 +158,9 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 	 */
 	if (!decodeUnsupported.has(type)) {
 		try {
-			const bitmap = await createImageBitmap(blob);
+			const bitmap = await createImageBitmap(blob,{
+				premultiplyAlpha: "none",
+			});
 			return await drawableToImageData(bitmap);
 		} catch (e) {
 			decodeUnsupported.add(type);
