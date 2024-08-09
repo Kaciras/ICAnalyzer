@@ -27,7 +27,7 @@ function newState(encoder: ImageEncoder) {
 }
 
 export function getEncodingOptions(saved?: EncodingOptions) {
-	const config = saved ?? {};
+	const config = (saved as any)?.version === 1 ? saved! : {};
 
 	for (const encoder of ENCODERS) {
 		config[encoder.name] ??= {
