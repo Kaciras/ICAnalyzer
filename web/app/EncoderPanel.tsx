@@ -27,7 +27,8 @@ function newState(encoder: ImageEncoder) {
 }
 
 export function getEncodingOptions(saved?: EncodingOptions) {
-	const config = (saved as any)?.version === 1 ? saved! : {};
+	const upgrade = (saved as any)?.version !== 1;
+	const config = upgrade ? {} : saved!;
 
 	for (const encoder of ENCODERS) {
 		config[encoder.name] ??= {
@@ -35,8 +36,9 @@ export function getEncodingOptions(saved?: EncodingOptions) {
 			state: newState(encoder),
 		};
 	}
-	if (!saved) {
+	if (upgrade) {
 		const { quality } = config.WebP.state;
+		(config as any).version = 1;
 		config.WebP.enable = true;
 		quality.range.step = 5;
 		quality.isVariable = true;
