@@ -16,29 +16,31 @@ export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
 	}
 }
 
-type PointerMoveHandler = (e: PointerEvent, init: PointerEvent) => void;
+export type BuiltinResizeMethod = "pixelated" | "low" | "medium" | "high";
 
-export function dragHandler(listener: PointerMoveHandler) {
-	return function (initEvent: React.PointerEvent) {
-		if (initEvent.button !== 0) {
-			return;
-		}
-		const { nativeEvent } = initEvent;
+export function builtinResize(
+	image: ImageData,
+	dw: number,
+	dh: number,
+	method: BuiltinResizeMethod,
+) {
+	const canvasDest = document.createElement("canvas");
+	canvasDest.width = dw;
+	canvasDest.height = dh;
+	const destCtx = canvasDest.getContext("2d")!;
 
-		// Avoid dragging underlying elements.
-		initEvent.preventDefault();
+	const canvas = document.createElement("canvas");
+	const ctx2d = canvas.getContext("2d", { willReadFrequently: true })!;
+	canvas.width = image.width;
+	canvas.height = image.height;
+	ctx2d.putImageData(image, 0, 0);
 
-		function handleMove(event: PointerEvent) {
-			listener(event, nativeEvent);
-		}
+	if (method === "pixelated") {
+		destCtx.imageSmoothingEnabled = false;
+	} else {
+		destCtx.imageSmoothingQuality = method;
+	}
 
-		function handleEnd(event: Event) {
-			event.preventDefault();
-			document.removeEventListener("pointerup", handleEnd);
-			document.removeEventListener("pointermove", handleMove);
-		}
-
-		document.addEventListener("pointerup", handleEnd);
-		document.addEventListener("pointermove", handleMove);
-	};
+	destCtx.drawImage(canvas, 0, 0, image.width, image.height, 0, 0, dw, dh);
+	return destCtx.getImageData(0, 0, dw, dh);
 }

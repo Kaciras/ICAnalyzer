@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactNode } from "react";
-import { dragHandler } from "../utils.ts";
+import { dragHandler } from "@kaciras/utilities/browser";
 
 export interface PinchZoomState {
 	x: number;
@@ -57,7 +57,7 @@ export default function PinchZoom(props: PinchZoomProps) {
 			style={{ touchAction: "none" }}
 			className={className}
 			onWheel={handleWheel}
-			onPointerDown={handlePointerDown}
+			onPointerDown={handlePointerDown as any}
 		>
 			{children}
 		</div>

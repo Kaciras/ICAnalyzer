@@ -57,14 +57,16 @@ async function blobToImg(blob: Blob) {
 	}
 }
 
-// https://stackoverflow.com/a/60564905/7065321
+/**
+ * Convert ImageBitmap or <img> element to RGBA data,
+ * uses WebGL2 context to avoid alpha premultiply loss.
+ *
+ * @see https://stackoverflow.com/a/60564905/7065321
+ */
 async function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
-	const { width, height } = bitmap;
-
 	const canvas = document.createElement("canvas");
 	const gl = canvas.getContext("webgl2")!;
-	// canvas.width = width;
-	// canvas.height = height;
+	const { width, height } = bitmap;
 
 	gl.activeTexture(gl.TEXTURE0);
 	const texture = gl.createTexture();
@@ -78,35 +80,6 @@ async function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
 	const data = new Uint8ClampedArray(width * height * 4);
 	gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 	return new ImageData(data, width, height);
-}
-
-export type BuiltinResizeMethod = "pixelated" | "low" | "medium" | "high";
-
-export function builtinResize(
-	image: ImageData,
-	dw: number,
-	dh: number,
-	method: BuiltinResizeMethod,
-) {
-	const canvasDest = document.createElement("canvas");
-	canvasDest.width = dw;
-	canvasDest.height = dh;
-	const destCtx = canvasDest.getContext("2d")!;
-
-	const canvas = document.createElement("canvas");
-	const ctx2d = canvas.getContext("2d", { willReadFrequently: true })!;
-	canvas.width = image.width;
-	canvas.height = image.height;
-	ctx2d.putImageData(image, 0, 0);
-
-	if (method === "pixelated") {
-		destCtx.imageSmoothingEnabled = false;
-	} else {
-		destCtx.imageSmoothingQuality = method;
-	}
-
-	destCtx.drawImage(canvas, 0, 0, image.width, image.height, 0, 0, dw, dh);
-	return destCtx.getImageData(0, 0, dw, dh);
 }
 
 /**

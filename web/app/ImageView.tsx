@@ -1,14 +1,15 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { BsBrightnessHigh, BsEyedropper } from "react-icons/bs";
+import { dragHandler } from "@kaciras/utilities/browser";
 import { ButtonProps } from "../ui/Button.tsx";
 import { PinchZoomState } from "../ui/PinchZoom.tsx";
 import { Button, ColorPicker, NumberInput, PinchZoom, SwitchButton, ZoomControl } from "../ui/index.ts";
 import { AnalyzeResult, InputImage } from "../features/image-worker.ts";
-import theme from "../theme.module.css";
-import styles from "./ImageView.css";
-import { dragHandler, drawImage } from "../utils.ts";
+import { drawImage } from "../utils.ts";
 import i18n from "../i18n.ts";
+import styles from "./ImageView.css";
+import theme from "../theme.module.css";
 
 export enum ViewType {
 	Split,
@@ -172,7 +173,7 @@ export default function ImageView(props: ImageViewProps) {
 			<div
 				hidden={type !== ViewType.Split}
 				className={styles.separator}
-				onPointerDown={onPointerDown}
+				onPointerDown={onPointerDown as any}
 			/>
 
 			<div className={styles.tabPanel}>
