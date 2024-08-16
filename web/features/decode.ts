@@ -28,6 +28,8 @@ function sniffMimeType(buffer: ArrayBufferLike) {
 			return "image/webp";
 		case 0x61766966:
 			return "image/avif";
+		case 0x68656963:
+			return "image/heic";
 		case 0x0d0a870a:
 			if (i0 === 0x0000000C && view.getUint32(4) === 0x4A584C20)
 				return "image/jxl";
@@ -143,6 +145,8 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 			return worker.webpDecode(input);
 		case "image/avif":
 			return worker.avifDecode(input);
+		case "image/heic":
+			return worker.heicDecode(input);
 		case "image/jxl":
 			return worker.jxlDecode(input);
 		case "image/qoi":
