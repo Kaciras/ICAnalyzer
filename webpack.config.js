@@ -127,6 +127,11 @@ export default function (env) {
 			hot: true,
 			client: {
 				logging: "none",
+				/*
+				 * Interop module of Multi-threading WASM have self-reference, when webpack enabled runtimeChunk,
+				 * it will create a circular dependency. This is not a matter.
+				 */
+				overlay: false,
 			},
 			// Required by SharedArrayBuffer
 			headers: {

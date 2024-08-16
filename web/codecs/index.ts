@@ -1,4 +1,5 @@
 import { ImageWorker } from "../features/image-worker.ts";
+import { EncodeResult } from "../features/worker.ts";
 import { ControlType, OptionStateMap, OptionType } from "../form/index.ts";
 import * as JXL from "./jxl.ts";
 import * as WebP from "./webp.ts";
@@ -6,14 +7,6 @@ import * as AVIF from "./avif.ts";
 import * as WebP2 from "./webp2.ts";
 import * as QOI from "./qoi.ts";
 import * as MozJPEG from "./mozjpeg.ts";
-
-export interface EncodeResult {
-
-	/** Time used for encoding (in seconds) */
-	time: number;
-
-	buffer: ArrayBufferLike;
-}
 
 export interface ImageEncoder {
 	name: string;

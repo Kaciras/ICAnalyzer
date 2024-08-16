@@ -1,10 +1,11 @@
 import React from "react";
 import { BsArrowCounterclockwise } from "react-icons/bs";
+import { Mutator } from "../hooks.ts";
 import i18n from "../i18n.ts";
 import { PinchZoomState } from "./PinchZoom.tsx";
-import { Button, NumberInput } from "./index.ts";
+import Button from "./Button.tsx";
+import NumberInput from "./NumberInput.tsx";
 import styles from "./ZoomControl.css";
-import { Mutator } from "../hooks.ts";
 
 export interface ZoomControlProps extends Omit<React.ComponentProps<"div">, "onChange" | "defaultValue"> {
 	defaultValue?: PinchZoomState;

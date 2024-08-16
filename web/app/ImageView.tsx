@@ -27,6 +27,8 @@ const viewTypeNames = [
 	i18n("HeatMapView"),
 ];
 
+const NO_ALPHA = { alpha: false };
+
 interface ImageViewTabProps extends ButtonProps {
 	target: string;
 }

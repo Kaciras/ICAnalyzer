@@ -3,14 +3,21 @@ import * as icodec from "icodec";
 import * as Similarity from "../../lib/similarity.ts";
 import { Butteraugli, ButteraugliOptions, SSIMOptions } from "../../lib/similarity.ts";
 import diffWASM from "../../lib/diff.wasm";
-import { EncodeResult } from "../codecs/index.ts";
+
+export interface EncodeResult {
+
+	/** Time used for encoding (in seconds) */
+	time: number;
+
+	buffer: ArrayBufferLike;
+}
 
 // A worker can only convert one image at the same time, so use global variable for more simplify code.
 let data: ImageData;
 
 let butteraugli: Butteraugli;
 
-async function bindEncoder(this: icodec.ICodecEncoder, options: any) {
+async function bindEncoder(this: icodec.ICodecModule, options: any) {
 	await this.loadEncoder();
 
 	const start = performance.now();
@@ -24,7 +31,7 @@ async function bindEncoder(this: icodec.ICodecEncoder, options: any) {
 	return RPC.transfer(result, [result.buffer]);
 }
 
-async function bindDecoder(this: icodec.ICodecDecoder, buffer: BufferSource) {
+async function bindDecoder(this: icodec.ICodecModule, buffer: Uint8Array) {
 	await this.loadDecoder();
 	const output = this.decode(buffer);
 	return RPC.transfer(output, [output.data.buffer]);

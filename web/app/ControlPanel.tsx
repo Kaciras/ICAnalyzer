@@ -5,8 +5,14 @@ import i18n from "../i18n.ts";
 import { getEncoderNames } from "../codecs/index.ts";
 import { Merger } from "../hooks.ts";
 import { ControlsMap } from "./index.ts";
-import { ControlState, VariableType } from "./AnalyzePage.tsx";
+import { ControlState } from "./AnalyzePage.tsx";
 import styles from "./ControlPanel.css";
+
+export enum VariableType {
+	None,
+	Encoder,
+	Option,
+}
 
 interface FieldWrapperProps {
 	type: VariableType;

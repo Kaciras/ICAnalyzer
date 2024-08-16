@@ -8,7 +8,7 @@ import { getEncoderNames } from "../codecs/index.ts";
 import { MetricMeta } from "../features/measurement.tsx";
 import ImageView from "./ImageView.tsx";
 import ChartPanel from "./ChartPanel.tsx";
-import ControlPanel from "./ControlPanel.tsx";
+import ControlPanel, { VariableType } from "./ControlPanel.tsx";
 import { AnalyzeResult } from "../features/image-worker.tsx";
 import styles from "./AnalyzePage.css";
 import { getMerger } from "../hooks.ts";
@@ -34,12 +34,6 @@ function SimplePanel(props: SimplePanelProps) {
 	}
 
 	return <dl className={styles.simple}>{items}</dl>;
-}
-
-export enum VariableType {
-	None,
-	Encoder,
-	Option,
 }
 
 type StateMap = Record<string, any[]>;
