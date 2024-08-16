@@ -1,46 +1,37 @@
-/*
- * Copyright 2020 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * Modifications copyright (C) 2024 Kaciras
- */
 import { RPC } from "@kaciras/utilities/browser";
 import { ImageWorkerApi } from "./worker.ts";
 import { ImageWorker, workerFactory } from "./image-worker.ts";
 
-const magicNumbers = [
-	["image/png", "\x89PNG\x0D\x0A\x1A\x0A"],
-	["image/jpeg", "\xFF\xD8\xFF"],
-	["image/webp", "RIFF....WEBPVP8[LX ]"],
-	["image/avif", "\x00\x00\x00 ftypavif\x00\x00\x00\x00"],
-	["image/gif", "GIF87a"],
-	["image/gif", "GIF89a"],
-	["application/pdf", "%PDF-"],
-	["image/bmp", "BM"],
-	["image/qoi", "qoif"],
-	["image/tiff", "I I"],
-	["image/tiff", "II"],
-	["image/tiff", "MM\x00"],
-	["image/webp2", "\xF4\xFF\x6F"],
-	["image/jxl", "\xff\x0a"],
-	["image/jxl", "\x00\x00\x00\x0cJXL \x0d\x0a\x87\x0a"],
-];
-
+/**
+ * Detect file type by its header, only support modern image formats.
+ * We don't sniff for classic image because browser already do that.
+ *
+ * @param buffer The file data, must have greater than 12 bytes length.
+ */
 function sniffMimeType(buffer: ArrayBufferLike) {
-	const magicStr = Array.from(new Uint8Array(buffer, 0, 16))
-		.map(c => String.fromCodePoint(c)).join("");
-	return magicNumbers.find(i => magicStr.startsWith(i[1]))?.[0] ?? "";
+	const view = new DataView(buffer);
+	const s0 = view.getUint16(0);
+	const i0 = view.getUint32(0);
+	const i8 = view.getUint32(8);
+
+	if (i0 === 0x716F6966) {
+		return "image/qoi";
+	}
+	if (s0 === 0xFF0A) {
+		return "image/jxl";
+	}
+	if (s0 === 0xF4FF && view.getUint8(2) === 0x6F) {
+		return "image/webp2";
+	}
+	switch (i8) {
+		case 0x57454250:
+			return "image/webp";
+		case 0x61766966:
+			return "image/avif";
+		case 0x0d0a870a:
+			if (i0 === 0x0000000C && view.getUint32(4) === 0x4A584C20)
+				return "image/jxl";
+	}
 }
 
 const decodeUnsupported = new Set<string>();
@@ -117,7 +108,7 @@ async function svgToImageData(svgXml: string) {
 
 export async function decode(blob: Blob, worker?: ImageWorker) {
 	const buffer = await blob.arrayBuffer();
-	const type = blob.type || sniffMimeType(buffer);
+	const type = (blob.type || sniffMimeType(buffer)) ?? "";
 
 	if (type === "image/svg+xml") {
 		return blob.text().then(svgToImageData);
@@ -131,11 +122,11 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 	 */
 	if (!decodeUnsupported.has(type)) {
 		try {
-			const bitmap = await createImageBitmap(blob,{
+			const bitmap = await createImageBitmap(blob, {
 				premultiplyAlpha: "none",
 			});
 			return await drawableToImageData(bitmap);
-		} catch (e) {
+		} catch {
 			decodeUnsupported.add(type);
 			console.info(`Native decode failed for ${type}, switch to WASM decoder.`);
 		}
