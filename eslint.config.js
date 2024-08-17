@@ -9,7 +9,7 @@ export default [
 	...react,
 	{
 		rules: {
-			"kaciras/import-group-sort": "warn",
+			"kaciras/import-specifier-order": "warn",
 			"react-hooks/exhaustive-deps": "off",
 		},
 	},

@@ -18,28 +18,28 @@ export const templates: OptionType[] = [
 		defaultValue: defaultOptions.quality,
 	}),
 	new EnumOption({
-		id: "color_space",
+		id: "colorSpace",
 		label: "Channels",
 		enumObject: jpeg.ColorSpace,
 		defaultValue: "YCbCr",
 	}),
 	new BoolOption({
-		id: "auto_subsample",
+		id: "autoSubsample",
 		label: "Auto subsample chroma",
-		defaultValue: defaultOptions.auto_subsample,
+		defaultValue: defaultOptions.autoSubsample,
 	}),
 	new BoolOption({
-		id: "separate_chroma_quality",
+		id: "separateChromaQuality",
 		label: "Separate chroma quality",
-		defaultValue: defaultOptions.separate_chroma_quality,
+		defaultValue: defaultOptions.separateChromaQuality,
 	}),
 	new NumberOption({
-		id: "chroma_quality",
+		id: "chromaQuality",
 		label: "Chroma quality",
 		min: 0,
 		max: 100,
 		step: 1,
-		defaultValue: defaultOptions.chroma_quality,
+		defaultValue: defaultOptions.chromaQuality,
 	}),
 	new BoolOption({
 		id: "baseline",
@@ -52,9 +52,9 @@ export const templates: OptionType[] = [
 		defaultValue: defaultOptions.progressive,
 	}),
 	new BoolOption({  // Visible when baseline enabled in Squoosh
-		id: "optimize_coding",
+		id: "optimizeCoding",
 		label: "Optimize Huffman table",
-		defaultValue: defaultOptions.optimize_coding,
+		defaultValue: defaultOptions.optimizeCoding,
 	}),
 	new NumberOption({
 		id: "smoothing",
@@ -65,38 +65,38 @@ export const templates: OptionType[] = [
 		defaultValue: defaultOptions.smoothing,
 	}),
 	new EnumOption({
-		id: "quant_table",
+		id: "quantTable",
 		label: "Quantization",
 		enumObject: jpeg.Quantization,
 		defaultValue: "ImageMagick",
 	}),
 	new BoolOption({
-		id: "trellis_multipass",
+		id: "trellisMultipass",
 		label: "Trellis multipass",
-		defaultValue: defaultOptions.trellis_multipass,
+		defaultValue: defaultOptions.trellisMultipass,
 	}),
 	new BoolOption({ // Visible when trellis_multipass enabled in Squoosh
-		id: "trellis_opt_zero",
+		id: "trellisOptZero",
 		label: "Optimize zero block runs",
-		defaultValue: defaultOptions.trellis_opt_zero,
+		defaultValue: defaultOptions.trellisOptZero,
 	}),
 	new BoolOption({
-		id: "trellis_opt_table",
+		id: "trellisOptTable",
 		label: "Optimize after trellis quantization",
-		defaultValue: defaultOptions.trellis_opt_table,
+		defaultValue: defaultOptions.trellisOptTable,
 	}),
 	new NumberOption({
-		id: "trellis_loops",
+		id: "trellisLoops",
 		label: "Trellis quantization passes",
 		min: 0,
 		max: 50,
 		step: 1,
-		defaultValue: defaultOptions.trellis_loops,
+		defaultValue: defaultOptions.trellisLoops,
 	}),
 ];
 
 export function encode(options: jpeg.Options, worker: ImageWorker) {
-	options.color_space = jpeg.ColorSpace[options.color_space];
-	options.quant_table = jpeg.Quantization[options.quant_table];
+	options.colorSpace = jpeg.ColorSpace[options.colorSpace];
+	options.quantTable = jpeg.Quantization[options.quantTable];
 	return worker.mozjpegEncode(options);
 }

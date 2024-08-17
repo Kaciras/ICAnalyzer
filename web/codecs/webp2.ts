@@ -18,12 +18,12 @@ export const templates: OptionType[] = [
 		defaultValue: defaultOptions.quality,
 	}),
 	new NumberOption({
-		id: "alpha_quality",
+		id: "alphaQuality",
 		label: "Alpha Quality",
 		min: 0,
 		max: 100,
 		step: 0.1,
-		defaultValue: defaultOptions.alpha_quality,
+		defaultValue: defaultOptions.alphaQuality,
 	}),
 	new NumberOption({
 		id: "effort",
@@ -50,34 +50,34 @@ export const templates: OptionType[] = [
 		defaultValue: defaultOptions.sns,
 	}),
 	new NumberOption({
-		id: "error_diffusion",
+		id: "errorDiffusion",
 		label: "Error diffusion",
 		min: 0,
 		max: 100,
 		step: 1,
-		defaultValue: defaultOptions.error_diffusion,
+		defaultValue: defaultOptions.errorDiffusion,
 	}),
 	new EnumOption({
-		id: "uv_mode",
+		id: "uvMode",
 		label: "Subsample chroma",
 		enumObject: wp2.UVMode,
 		defaultValue: "UVAuto",
 	}),
 	new EnumOption({
-		id: "csp_type",
+		id: "cspType",
 		label: "Color space",
 		enumObject: wp2.Csp,
 		defaultValue: "YCoCg",
 	}),
 	new BoolOption({
-		id: "use_random_matrix",
+		id: "useRandomMatrix",
 		label: "Random matrix",
-		defaultValue: defaultOptions.use_random_matrix,
+		defaultValue: defaultOptions.useRandomMatrix,
 	}),
 ];
 
 export function encode(options: wp2.Options, worker: ImageWorker) {
-	options.uv_mode = wp2.UVMode[options.uv_mode];
-	options.csp_type = wp2.Csp[options.csp_type];
+	options.uvMode = wp2.UVMode[options.uvMode];
+	options.cspType = wp2.Csp[options.cspType];
 	return worker.webp2Encode(options);
 }
