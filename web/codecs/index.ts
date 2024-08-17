@@ -6,6 +6,7 @@ import * as WebP from "./webp.ts";
 import * as AVIF from "./avif.ts";
 import * as WebP2 from "./webp2.ts";
 import * as QOI from "./qoi.ts";
+import * as PngQuant from "./pngquant.ts";
 import * as MozJPEG from "./mozjpeg.ts";
 
 export interface ImageEncoder {
@@ -25,7 +26,7 @@ export interface ImageEncoder {
 	encode(options: any, worker: ImageWorker): Promise<EncodeResult>;
 }
 
-export const ENCODERS: ImageEncoder[] = [MozJPEG, WebP, AVIF, QOI, JXL, WebP2];
+export const ENCODERS: ImageEncoder[] = [MozJPEG, PngQuant, WebP, AVIF, QOI, JXL, WebP2];
 
 export const ENCODER_MAP = Object.fromEntries(ENCODERS.map(e => [e.name, e]));
 

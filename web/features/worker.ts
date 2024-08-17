@@ -43,8 +43,9 @@ const publicApis = {
 		data = image;
 	},
 
-	qoiEncode: bindEncoder.bind(icodec.qoi as any),
+	qoiEncode: bindEncoder.bind(icodec.qoi),
 	mozjpegEncode: bindEncoder.bind(icodec.jpeg),
+	pngEncode: bindEncoder.bind(icodec.png),
 	jxlEncode: bindEncoder.bind(icodec.jxl),
 	webpEncode: bindEncoder.bind(icodec.webp),
 	avifEncode: bindEncoder.bind(icodec.avif),
