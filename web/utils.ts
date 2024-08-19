@@ -5,17 +5,16 @@ export type SVGComponent = ComponentType<SVGProps<SVGSVGElement>>;
 export const stopPropagation = (e: MouseEvent | React.MouseEvent) => e.stopPropagation();
 
 export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
-	if (el === null) {
-		return;
-	}
-	const ctx = el.getContext("2d");
-	if (ctx) {
-		ctx.putImageData(data, 0, 0);
-	} else {
-		throw new Error("Canvas not initialized");
-	}
+	el?.getContext("2d")!.putImageData(data, 0, 0);
 }
 
+/**
+ * Premultiply image's RGB channels with the alpha channel.
+ * It's also equivalent to compositing the image with an black background.
+ *
+ * @param image The original image, may contain transparent pixels.
+ * @return Premultiplied image, all pixels are opaque.
+ */
 export function premultiplyAlpha(image: ImageData) {
 	const buf = image.data;
 	const output = new Uint8ClampedArray(buf.length);
@@ -30,14 +29,19 @@ export function premultiplyAlpha(image: ImageData) {
 	return new ImageData(output, image.width, image.height);
 }
 
-export type BuiltinResizeMethod = "pixelated" | "low" | "medium" | "high";
+export type ResizeMethod = "pixelated" | "low" | "medium" | "high";
 
-export function builtinResize(
-	image: ImageData,
-	dw: number,
-	dh: number,
-	method: BuiltinResizeMethod,
-) {
+/**
+ * Resizes an ImageData object to the specified dimensions.
+ *
+ * Due to resize is always lossy, we don't care about the lossy nature of premultiplied alpha.
+ *
+ * @param image The ImageData object to resize.
+ * @param dw New width.
+ * @param dh New height.
+ * @param method Control the resize quality.
+ */
+export function builtinResize(image: ImageData, dw: number, dh: number, method: ResizeMethod) {
 	const canvasDest = document.createElement("canvas");
 	canvasDest.width = dw;
 	canvasDest.height = dh;
@@ -57,21 +61,4 @@ export function builtinResize(
 
 	destCtx.drawImage(canvas, 0, 0, image.width, image.height, 0, 0, dw, dh);
 	return destCtx.getImageData(0, 0, dw, dh);
-}
-
-export function getAlphaMask(image: ImageData) {
-	const { data, width, height } = image;
-	const rgb = data.slice();
-	const alpha = new Uint8ClampedArray(data.length);
-
-	for (let i = 0; i < data.length; i += 4) {
-		rgb[i + 3] = 255;
-		alpha[i] = data[i + 3];
-		alpha[i + 1] = data[i + 3];
-		alpha[i + 2] = data[i + 3];
-	}
-	return [
-		new ImageData(rgb, width, height),
-		new ImageData(alpha, width, height),
-	];
 }

@@ -31,7 +31,7 @@ export interface NumberInputProps {
 
 	/**
 	 * Set the stepping when using buttons to adjust the value,
-	 * The difference with the step is that it is not used for validation.
+	 * The difference with the step is that it is not use for validation.
 	 *
 	 * @default same as step
 	 */
