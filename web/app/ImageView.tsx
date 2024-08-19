@@ -204,6 +204,7 @@ export default function ImageView(props: ImageViewProps) {
 							min={1}
 							max={255}
 							step={1}
+							increment={10}
 							minMaxButton={true}
 							className={theme.darkNumberInput}
 							onValueChange={setBrightness}
