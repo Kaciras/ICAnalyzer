@@ -23,26 +23,10 @@ export interface MeasureOptions extends QualityOptions {
 	encodeTime: SimpleField;
 }
 
-function rgbaToImage(buffer: ArrayBufferLike, width: number, height: number) {
-	const channels = buffer.byteLength / width / height;
-	if (channels !== 4) {
-		throw new Error("Buffer must be a 8-bit depth RGBA array");
-	}
-	const canvas = document.createElement("canvas");
-	const ctx = canvas.getContext("2d");
-	if (!ctx) {
-		throw new Error("Could not create canvas context");
-	}
-	const imageData = ctx.createImageData(width, height);
-	imageData.data.set(new Uint8ClampedArray(buffer));
-	return imageData;
-}
-
 export interface MetricMeta {
 	key: string;
 	name: string;
 }
-
 
 interface MetricsType {
 	name: string;
@@ -92,7 +76,7 @@ const handlers: Record<string, MetricsType> = {
 
 			const { score, heatMap } = await worker.calcButteraugli(data, options);
 			metrics.butteraugli = score;
-			result.heatMap = rgbaToImage(heatMap, width, height);
+			result.heatMap = new ImageData(new Uint8ClampedArray(heatMap), width, height);
 		},
 	},
 };
@@ -128,8 +112,7 @@ export function createMeasurer(config: MeasureOptions, worker: ImageWorker) {
 		const tasks = used
 			.map(b => b.calc(worker, original, result, b.options))
 			.filter(Boolean)
-
-			// @ts-ignore
+			// @ts-expect-error
 			.map(promise => promise.then(onProgress));
 
 		return Promise.all(tasks) as unknown as Promise<void>;

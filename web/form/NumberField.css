@@ -8,7 +8,7 @@
 	composes: no-spinner from global;
 
 	margin-left: auto;
-	width: 4em;
+	width: 5em;
 	padding: 2px 4px;
 	font-size: inherit;
 	border: solid 1px transparent;
