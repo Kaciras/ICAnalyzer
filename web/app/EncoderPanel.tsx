@@ -9,6 +9,8 @@ import styles from "./EncoderPanel.css";
 import OptionsForm from "../form/OptionsForm.tsx";
 import { Merger } from "../hooks.ts";
 
+const CONFIG_VERSION = 2;
+
 export interface EncoderConfig {
 	enable: boolean;
 	state: OptionStateMap;
@@ -27,7 +29,7 @@ function newState(encoder: ImageEncoder) {
 }
 
 export function getEncodingOptions(saved?: EncodingOptions) {
-	const upgrade = (saved as any)?.version !== 1;
+	const upgrade = (saved as any)?.version !== CONFIG_VERSION;
 	const config = upgrade ? {} : saved!;
 
 	for (const encoder of ENCODERS) {
@@ -38,7 +40,7 @@ export function getEncodingOptions(saved?: EncodingOptions) {
 	}
 	if (upgrade) {
 		const { quality } = config.WebP.state;
-		(config as any).version = 1;
+		(config as any).version = CONFIG_VERSION;
 		config.WebP.enable = true;
 		quality.range.step = 5;
 		quality.isVariable = true;
