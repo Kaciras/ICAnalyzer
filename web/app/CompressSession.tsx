@@ -18,6 +18,7 @@ import SelectFileDialog from "./SelectFileDialog.tsx";
 import CompressConfigDialog, { AnalyzeConfig } from "./CompressConfigDialog.tsx";
 import ProgressDialog from "./ProgressDialog.tsx";
 import i18n from "../i18n.ts";
+import { premultiplyAlpha } from "../utils.ts";
 
 interface EncodeTask {
 	encoder: ImageEncoder;
@@ -97,9 +98,11 @@ class EncodeAnalyzer {
 		const filename = input.file.name.replace(/.[^.]*$/, `.${extension}`);
 		const file = new File([buffer], filename, { type: mimeType });
 
+		const data = await decode(file, worker);
 		const output: AnalyzeResult = {
 			file,
-			data: await decode(file, worker),
+			data,
+			dataP: premultiplyAlpha(data),
 			metrics: { time },
 		};
 		await measurer.execute(input, output, this.onProgress);

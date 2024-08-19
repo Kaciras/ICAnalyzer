@@ -14,6 +14,7 @@ export interface EncodeResult {
 
 // A worker can only convert one image at the same time, so use global variable for more simplify code.
 let data: ImageData;
+let dataP: ImageData;
 
 let butteraugli: Butteraugli;
 
@@ -39,8 +40,9 @@ async function bindDecoder(this: icodec.ICodecModule, buffer: Uint8Array) {
 
 const publicApis = {
 
-	setOriginal(image: ImageData) {
+	setOriginal(image: ImageData, imageP: ImageData) {
 		data = image;
+		dataP = imageP;
 	},
 
 	qoiEncode: bindEncoder.bind(icodec.qoi),
@@ -62,17 +64,17 @@ const publicApis = {
 
 	async calcSSIM(image: ImageData, options?: SSIMOptions) {
 		await Similarity.initWasmModule(diffWASM);
-		return Similarity.getSSIM(data, image, options);
+		return Similarity.getSSIM(dataP, image, options);
 	},
 
 	async calcPSNR(image: ImageData) {
 		await Similarity.initWasmModule(diffWASM);
-		return Similarity.getPSNR(data, image);
+		return Similarity.getPSNR(dataP, image);
 	},
 
 	async calcButteraugli(image: ImageData, options?: ButteraugliOptions) {
 		await Similarity.initWasmModule(diffWASM);
-		butteraugli ??= new Butteraugli(data);
+		butteraugli ??= new Butteraugli(dataP);
 
 		const [score, heatMap] = butteraugli.diff(image, options);
 		return {

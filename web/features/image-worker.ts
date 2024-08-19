@@ -3,12 +3,14 @@ import { noop, RPC } from "@kaciras/utilities/browser";
 import WorkerPool from "./WorkerPool.ts";
 
 export interface InputImage {
-	readonly file: File;
-	readonly raw: ImageData;
+	file: File;
+	raw: ImageData;
+	rawP: ImageData;
 }
 
 export interface AnalyzeResult {
 	data: ImageData;
+	dataP: ImageData;
 	file: File;
 	heatMap?: ImageData;
 	metrics: Record<string, number>;
@@ -36,7 +38,6 @@ export type ImagePool = WorkerPool<ImageWorkerApi>;
 export type ImageWorker = RPC.Remote<ImageWorkerApi>;
 
 export function workerFactory() {
-	// @ts-ignore ts-loader will convert the file to ES module.
 	return new Worker(new URL("./worker.ts", import.meta.url));
 }
 
@@ -45,13 +46,14 @@ export function newImagePool(size: number): ImagePool {
 }
 
 export function setOriginalImage(pool: ImagePool, input: InputImage) {
-	const { raw } = input;
+	const { raw, rawP } = input;
 
 	if ("SharedArrayBuffer" in window) {
 		const shared = share(raw);
-		return pool.runOnEach(r => r.setOriginal(shared));
+		const sharedP = share(rawP);
+		return pool.runOnEach(r => r.setOriginal(shared, sharedP));
 	} else {
-		return pool.runOnEach(r => r.setOriginal(raw));
+		return pool.runOnEach(r => r.setOriginal(raw, rawP));
 	}
 }
 

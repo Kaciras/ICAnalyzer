@@ -11,7 +11,7 @@ import {
 } from "../features/image-worker.ts";
 import { createMeasurer, MeasureOptions } from "../features/measurement.ts";
 import { useProgress } from "../hooks.ts";
-import { builtinResize } from "../utils.ts";
+import { builtinResize, premultiplyAlpha } from "../utils.ts";
 import ProgressDialog from "./ProgressDialog.tsx";
 import CompareFileDialog from "./CompareFileDialog.tsx";
 import CompareConfigDialog from "./CompareConfigDialog.tsx";
@@ -86,6 +86,7 @@ export default function CompareSession(props: CompareSessionProps) {
 			const output: AnalyzeResult = {
 				file,
 				data: imageB,
+				dataP: premultiplyAlpha(imageB),
 				metrics: {},
 			};
 			outputs.push(output);

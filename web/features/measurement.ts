@@ -57,24 +57,24 @@ const handlers: Record<string, MetricsType> = {
 	SSIM: {
 		name: "SSIM %",
 		async calc(worker, original, result, options) {
-			const { data, metrics } = result;
-			metrics.SSIM = await worker.calcSSIM(data, options) * 100;
+			const { dataP, metrics } = result;
+			metrics.SSIM = await worker.calcSSIM(dataP, options) * 100;
 		},
 	},
 	PSNR: {
 		name: "PSNR (db)",
 		async calc(worker, original, result) {
-			const { data, metrics } = result;
-			metrics.PSNR = await worker.calcPSNR(data);
+			const { dataP, metrics } = result;
+			metrics.PSNR = await worker.calcPSNR(dataP);
 		},
 	},
 	butteraugli: {
 		name: "Butteraugli Score",
 		async calc(worker, original, result, options) {
-			const { data, metrics } = result;
-			const { width, height } = data;
+			const { dataP, metrics } = result;
+			const { width, height } = dataP;
 
-			const { score, heatMap } = await worker.calcButteraugli(data, options);
+			const { score, heatMap } = await worker.calcButteraugli(dataP, options);
 			metrics.butteraugli = score;
 			result.heatMap = new ImageData(new Uint8ClampedArray(heatMap), width, height);
 		},

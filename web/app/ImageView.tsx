@@ -72,8 +72,16 @@ export default function ImageView(props: ImageViewProps) {
 		drawImage(topImage, topCanvas.current);
 	}
 
-	useEffect(refreshBottomCanvas, [original]);
-	useEffect(refreshTopCanvas, [topImage]);
+	function redrawWithoutAlpha() {
+		if (type === ViewType.Diff) {
+			drawImage(output.dataP, topCanvas.current);
+			drawImage(original.rawP, backCanvas.current);
+		}
+	}
+
+	useEffect(refreshBottomCanvas, [original, type]);
+	useEffect(refreshTopCanvas, [topImage, type]);
+	useEffect(redrawWithoutAlpha, [type, topImage]);
 
 	function handlePointerMove(event: MouseEvent) {
 		const { clientX, clientY } = event;

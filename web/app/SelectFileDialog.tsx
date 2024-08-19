@@ -11,6 +11,7 @@ import { decode } from "../features/decode.ts";
 import { InputImage } from "../features/image-worker.ts";
 import styles from "./SelectFileDialog.css";
 import i18n from "../i18n.ts";
+import { premultiplyAlpha } from "../utils.ts";
 
 interface DemoButtonProps {
 	description: string;
@@ -62,7 +63,7 @@ export default function SelectFileDialog(props: SelectFileDialogProps) {
 
 	function accept(file: File) {
 		decode(file)
-			.then(raw => onChange({ file, raw }))
+			.then(raw => onChange({ file, raw, rawP: premultiplyAlpha(raw) }))
 			.catch(setError);
 	}
 
