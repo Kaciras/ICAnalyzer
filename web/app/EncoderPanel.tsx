@@ -4,7 +4,7 @@ import { TabPanelBase } from "../ui/TabSwitch.tsx";
 import { CheckBox } from "../ui/index.ts";
 import { stopPropagation } from "../utils.ts";
 import { OptionStateMap } from "../form/index.ts";
-import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../codecs/index.ts";
+import { ENCODER_MAP, ENCODERS, ImageEncoder } from "../features/encode.ts";
 import styles from "./EncoderPanel.css";
 import OptionsForm from "../form/OptionsForm.tsx";
 import { Merger } from "../hooks.ts";

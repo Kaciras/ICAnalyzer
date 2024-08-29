@@ -2,7 +2,7 @@ import { Dispatch, ReactNode } from "react";
 import clsx from "clsx";
 import { SelectBox } from "../ui/index.ts";
 import i18n from "../i18n.ts";
-import { getEncoderNames } from "../codecs/index.ts";
+import { getEncoderNames } from "../features/encode.ts";
 import { Merger } from "../hooks.ts";
 import { ControlsMap } from "./index.ts";
 import { ControlState } from "./AnalyzePage.tsx";

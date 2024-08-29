@@ -1,6 +1,6 @@
 import { cartesianObject, noop } from "@kaciras/utilities/browser";
 import { Dispatch, useState } from "react";
-import { buildProfiles, ENCODERS, ImageEncoder } from "../codecs/index.ts";
+import { buildProfiles, ENCODERS, ImageEncoder } from "../features/encode.ts";
 import { decode } from "../features/decode.ts";
 import {
 	AnalyzeResult,

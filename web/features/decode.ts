@@ -9,6 +9,9 @@ import { ImageWorker, workerFactory } from "./image-worker.ts";
  * @param buffer The file data, must have greater than 12 bytes length.
  */
 function sniffMimeType(buffer: ArrayBufferLike) {
+	if (buffer.byteLength < 12) {
+		return;
+	}
 	const view = new DataView(buffer);
 	const s0 = view.getUint16(0);
 	const i0 = view.getUint32(0);
@@ -56,7 +59,7 @@ async function blobToImg(blob: Blob) {
  *
  * @see https://stackoverflow.com/a/60564905/7065321
  */
-async function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
+function drawableToImageData(bitmap: ImageBitmap | HTMLImageElement) {
 	const canvas = document.createElement("canvas");
 	const gl = canvas.getContext("webgl2")!;
 	const { width, height } = bitmap;
@@ -127,7 +130,7 @@ export async function decode(blob: Blob, worker?: ImageWorker) {
 			const bitmap = await createImageBitmap(blob, {
 				premultiplyAlpha: "none",
 			});
-			return await drawableToImageData(bitmap);
+			return drawableToImageData(bitmap);
 		} catch {
 			decodeUnsupported.add(type);
 			console.info(`Native decode failed for ${type}, switch to WASM decoder.`);

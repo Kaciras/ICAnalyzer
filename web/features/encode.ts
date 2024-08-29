@@ -1,14 +1,14 @@
-import { ImageWorker } from "../features/image-worker.ts";
-import { EncodeResult } from "../features/worker.ts";
+import { ImageWorker } from "./image-worker.ts";
+import { EncodeResult } from "./worker.ts";
 import { ControlType, OptionStateMap, OptionType } from "../form/index.ts";
-import * as JXL from "./jxl.ts";
-import * as WebP from "./webp.ts";
-import * as HEIC from "./heic.ts";
-import * as AVIF from "./avif.ts";
-import * as WebP2 from "./webp2.ts";
-import * as QOI from "./qoi.ts";
-import * as PngQuant from "./pngquant.ts";
-import * as MozJPEG from "./mozjpeg.ts";
+import * as JXL from "../codecs/jxl.ts";
+import * as WebP from "../codecs/webp.ts";
+import * as HEIC from "../codecs/heic.ts";
+import * as AVIF from "../codecs/avif.ts";
+import * as WebP2 from "../codecs/webp2.ts";
+import * as QOI from "../codecs/qoi.ts";
+import * as PngQuant from "../codecs/pngquant.ts";
+import * as MozJPEG from "../codecs/mozjpeg.ts";
 
 export interface ImageEncoder {
 	name: string;

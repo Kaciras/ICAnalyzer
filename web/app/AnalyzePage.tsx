@@ -4,7 +4,7 @@ import i18n from "../i18n.ts";
 import { Button, DownloadButton } from "../ui/index.ts";
 import { AnalyzeContext, ControlsMap } from "./index.tsx";
 import { ControlType } from "../form/index.ts";
-import { getEncoderNames } from "../codecs/index.ts";
+import { getEncoderNames } from "../features/encode.ts";
 import { MetricMeta } from "../features/measurement.tsx";
 import ImageView from "./ImageView.tsx";
 import ChartPanel from "./ChartPanel.tsx";
