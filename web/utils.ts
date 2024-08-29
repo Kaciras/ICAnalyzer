@@ -25,13 +25,19 @@ export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
 export function premultiplyAlpha(image: ImageData) {
 	const buf = image.data;
 	const output = new Uint8ClampedArray(buf.length);
+	let opacity = true;
 
 	for (let i = 0; i < buf.length; i += 4) {
 		const p = buf[i + 3] / 255;
+		opacity &&= (p === 1);
+
 		output[i + 3] = 255;
 		output[i] = buf[i] * p;
 		output[i + 1] = buf[i + 1] * p;
 		output[i + 2] = buf[i + 2] * p;
+	}
+	if (opacity) {
+		return image; // Opacity image is equals to premultiplied.
 	}
 	return new ImageData(output, image.width, image.height);
 }
