@@ -4,6 +4,13 @@ export type SVGComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
 export const stopPropagation = (e: MouseEvent | React.MouseEvent) => e.stopPropagation();
 
+/**
+ * Get the names of an TypeScript enum object, only work when value of the enum is number.
+ */
+export function guessEnumNames(value: object) {
+	return Object.keys(value).filter(isNaN as any);
+}
+
 export function drawImage(data: ImageData, el: HTMLCanvasElement | null) {
 	el?.getContext("2d")!.putImageData(data, 0, 0);
 }

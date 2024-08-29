@@ -50,6 +50,7 @@ const publicApis = {
 	pngEncode: bindEncoder.bind(icodec.png),
 	jxlEncode: bindEncoder.bind(icodec.jxl),
 	webpEncode: bindEncoder.bind(icodec.webp),
+	heicEncode: bindEncoder.bind(icodec.heic),
 	avifEncode: bindEncoder.bind(icodec.avif),
 	webp2Encode: bindEncoder.bind(icodec.wp2),
 

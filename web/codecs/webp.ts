@@ -97,7 +97,7 @@ export const templates: OptionType[] = [
 	new BoolOption({
 		id: "useSharpYUV",
 		label: "Sharp YUV (-sharp_yuv)",
-		defaultValue: defaultOptions.useSharpYUV,
+		defaultValue: defaultOptions.sharpYUV,
 	}),
 	new NumberOption({
 		id: "pass",

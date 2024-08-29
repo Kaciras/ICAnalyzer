@@ -9,7 +9,7 @@ import styles from "./EncoderPanel.css";
 import OptionsForm from "../form/OptionsForm.tsx";
 import { Merger } from "../hooks.ts";
 
-const CONFIG_VERSION = 2;
+const CONFIG_VERSION = 3;
 
 export interface EncoderConfig {
 	enable: boolean;

@@ -3,11 +3,13 @@ import { OptionFieldProps, OptionType } from "../index.ts";
 import { CheckBox, RadioBox } from "../../ui/index.ts";
 import EnumControl from "../control/EnumControl.tsx";
 import styles from "./EnumOption.css";
+import { guessEnumNames } from "../../utils.ts";
 
 export interface EnumOptionConfig<T> {
 	id: string;
 	label: string;
-	enumObject: T;
+	enumObject?: T;
+	names?: readonly string[];
 	defaultValue: keyof T;
 }
 
@@ -39,7 +41,7 @@ export class EnumOption<T extends Record<string, any>> implements OptionType<key
 	}
 
 	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
-		const { id, label, enumObject } = this.data;
+		const { id, label, enumObject, names } = this.data;
 		const { isVariable, value, range, onValueChange, onRangeChange } = props;
 
 		function handleChangeV(e: ChangeEvent<HTMLInputElement>) {
@@ -61,7 +63,7 @@ export class EnumOption<T extends Record<string, any>> implements OptionType<key
 			onValueChange(e.currentTarget.value as keyof T);
 		}
 
-		const keys = Object.keys(enumObject).filter(isNaN as any);
+		const keys = names ?? guessEnumNames(enumObject!);
 		let items: any[];
 		if (isVariable) {
 			items = keys.map(name =>

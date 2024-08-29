@@ -83,9 +83,9 @@ export const templates: OptionType[] = [
 		defaultValue: defaultOptions.speed,
 	}),
 	new BoolOption({
-		id: "enableSharpYUV",
-		label: "Sharp YUV Downsampling",
-		defaultValue: defaultOptions.enableSharpYUV,
+		id: "sharpYUV",
+		label: "Use SharpYUV Downsampling",
+		defaultValue: defaultOptions.sharpYUV,
 	}),
 ];
 
