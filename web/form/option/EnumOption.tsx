@@ -15,11 +15,13 @@ export interface EnumOptionConfig<T> {
 
 export class EnumOption<T extends Record<string, any>> implements OptionType<keyof T, Array<keyof T>> {
 
-	protected readonly data: EnumOptionConfig<T>;
+	readonly data: EnumOptionConfig<T>;
+	readonly keys: readonly string[];
 
 	constructor(data: EnumOptionConfig<T>) {
 		this.data = data;
 		this.OptionField = this.OptionField.bind(this);
+		this.keys = data.names ?? guessEnumNames(data.enumObject!);
 	}
 
 	get id() {
@@ -28,7 +30,11 @@ export class EnumOption<T extends Record<string, any>> implements OptionType<key
 
 	createControl(names: Array<keyof T>) {
 		const { id, label } = this.data;
-		return new EnumControl({ id, label, names: (names as string[]) });
+		return new EnumControl({
+			id,
+			label,
+			names: this.keys.filter(k => names.includes(k)),
+		});
 	}
 
 	createState() {
@@ -41,7 +47,7 @@ export class EnumOption<T extends Record<string, any>> implements OptionType<key
 	}
 
 	OptionField(props: OptionFieldProps<keyof T, Array<keyof T>>) {
-		const { id, label, enumObject, names } = this.data;
+		const { id, label } = this.data;
 		const { isVariable, value, range, onValueChange, onRangeChange } = props;
 
 		function handleChangeV(e: ChangeEvent<HTMLInputElement>) {
@@ -63,10 +69,9 @@ export class EnumOption<T extends Record<string, any>> implements OptionType<key
 			onValueChange(e.currentTarget.value as keyof T);
 		}
 
-		const keys = names ?? guessEnumNames(enumObject!);
 		let items: any[];
 		if (isVariable) {
-			items = keys.map(name =>
+			items = this.keys.map(name =>
 				<CheckBox
 					className={styles.item}
 					key={name}
@@ -78,7 +83,7 @@ export class EnumOption<T extends Record<string, any>> implements OptionType<key
 				</CheckBox>,
 			);
 		} else {
-			items = keys.map(name =>
+			items = this.keys.map(name =>
 				<RadioBox
 					className={styles.item}
 					key={name}
