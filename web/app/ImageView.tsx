@@ -59,27 +59,22 @@ export default function ImageView(props: ImageViewProps) {
 	const backCanvas = useRef<HTMLCanvasElement>(null);
 	const topCanvas = useRef<HTMLCanvasElement>(null);
 
-	const topImage = (type === ViewType.HeatMap) ? heatMap! : output.data;
+	function refreshCanvas() {
+		let [top, bottom] = [output.data, original.raw];
 
-	function refreshBottomCanvas() {
-		setPinchZoom(pinchZoomInit);
-		drawImage(original.raw, backCanvas.current);
-	}
-
-	function refreshTopCanvas() {
-		drawImage(topImage, topCanvas.current);
-	}
-
-	function redrawWithoutAlpha() {
-		if (type === ViewType.Diff) {
-			drawImage(output.dataP, topCanvas.current);
-			drawImage(original.rawP, backCanvas.current);
+		if (type === ViewType.HeatMap) {
+			top = heatMap!;
+		} else if (type === ViewType.Diff) {
+			top = output.dataP;
+			bottom = original.rawP;
 		}
+
+		drawImage(top, topCanvas.current);
+		drawImage(bottom, backCanvas.current);
 	}
 
-	useEffect(refreshBottomCanvas, [original, type]);
-	useEffect(refreshTopCanvas, [topImage, type]);
-	useEffect(redrawWithoutAlpha, [type, topImage]);
+	useEffect(refreshCanvas, [output, type]);
+	useEffect(() => setPinchZoom(pinchZoomInit), [original]);
 
 	function handlePointerMove(event: MouseEvent) {
 		const { clientX, clientY } = event;
