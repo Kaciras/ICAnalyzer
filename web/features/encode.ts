@@ -27,7 +27,7 @@ export interface ImageEncoder {
 	encode(options: any, worker: ImageWorker): Promise<EncodeResult>;
 }
 
-export const ENCODERS: ImageEncoder[] = [MozJPEG, PngQuant, WebP, HEIC, AVIF, QOI, JXL, WebP2];
+export const ENCODERS: ImageEncoder[] = [MozJPEG, PngQuant,  QOI, WebP, HEIC, AVIF,JXL, WebP2];
 
 export const ENCODER_MAP = Object.fromEntries(ENCODERS.map(e => [e.name, e]));
 
