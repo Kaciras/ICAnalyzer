@@ -3,8 +3,8 @@ import { ImageWorker } from "../features/image-worker.ts";
 import { BoolOption, EnumOption, NumberOption, OptionType } from "../form/index.ts";
 
 export const name = "MozJPEG";
-export const mimeType = "image/jpeg";
-export const extension = "jpg";
+export const mimeType = jpeg.mimeType;
+export const extension = jpeg.extension;
 
 export const defaultOptions = jpeg.defaultOptions;
 

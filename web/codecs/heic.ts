@@ -24,7 +24,7 @@ export const templates: OptionType[] = [
 	}),
 	new NumberOption({
 		id: "complexity",
-		label: "CPU Effort",
+		label: "Complexity",
 		min: 0,
 		max: 100,
 		step: 1,
