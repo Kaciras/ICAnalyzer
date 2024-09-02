@@ -24,8 +24,8 @@ importers:
         specifier: ^11.4.8
         version: 11.4.8
       icodec:
-        specifier: ^0.5.1
-        version: 0.5.1
+        specifier: ^0.5.2
+        version: 0.5.2
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1459,8 +1459,8 @@ packages:
     resolution: {integrity: sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A==}
     engines: {node: '>=10.18'}
 
-  icodec@0.5.1:
-    resolution: {integrity: sha512-S07iXg6gRmC392hc36705U0uXYm+SjGauMxD5G8rAnDYktatq2k8K9TgWjVtuBEuMtkGurdJ41jgd/GLPKJ/eA==}
+  icodec@0.5.2:
+    resolution: {integrity: sha512-Nw5tkGk/hLjpbmIibb9jnoDI4LfAQw/ZEQfeYcPVLdm8jAdRJy350e9I/ZZizpm8Tm6mLTR0Nldp7k49457YiA==}
 
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -4287,7 +4287,7 @@ snapshots:
 
   hyperdyperid@1.2.0: {}
 
-  icodec@0.5.1: {}
+  icodec@0.5.2: {}
 
   iconv-lite@0.4.24:
     dependencies:
